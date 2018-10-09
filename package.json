@@ -1,6 +1,6 @@
 {
-  "name": "insights-frontend-starter-app",
-  "version": "1.1.0",
+  "name": "insights-remediations-frontend",
+  "version": "0.1.0",
   "private": false,
   "dependencies": {
     "@patternfly/patternfly-next": "^1.0.41",
