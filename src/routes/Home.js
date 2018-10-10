@@ -2,7 +2,14 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import { Main, PageHeader, PageHeaderTitle } from '@red-hat-insights/insights-frontend-components';
+import { Link } from 'react-router-dom';
+import { Main, PageHeader, PageHeaderTitle, Table } from '@red-hat-insights/insights-frontend-components';
+
+function buildName (name, id) {
+    return (
+        <Link to={ `/${id}` }>{ name }</Link>
+    );
+}
 
 class Home extends Component {
 
@@ -17,7 +24,20 @@ class Home extends Component {
                     <PageHeaderTitle title='Remediations'></PageHeaderTitle>
                 </PageHeader>
                 <Main>
-                    <p>here be remediations..</p>
+                    <p>Your plans</p>
+                    <Table
+                        header={ [ 'Name', '# of issues', 'Last updated', 'Reboot required' ] }
+                        rows={ [
+                            {
+                                cells: [
+                                    buildName('High severity security issues', 'aba007d6-be73-4e96-9399-2967be2c2401'),
+                                    23,
+                                    '2018-10-10',
+                                    'yes'
+                                ]
+                            }
+                        ] }
+                    />
                 </Main>
             </React.Fragment>
         );
