@@ -12,5 +12,5 @@ after_success:
 - .travis/after_success.sh
 env:
     global:
-    - REPO="git@github.com:RedHatInsights/insights-frontend-starter-app-build"
-    - REPO_DIR="insights-frontend-starter-app-build"
+    - REPO="git@github.com:RedHatInsights/insights-remediations-frontend-build"
+    - REPO_DIR="insights-remediations-frontend-build"
