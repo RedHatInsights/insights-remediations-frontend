@@ -4,8 +4,9 @@
   "private": false,
   "dependencies": {
     "@patternfly/patternfly-next": "^1.0.41",
-    "@patternfly/react-core": "1.11.0",
-    "@red-hat-insights/insights-frontend-components": "^3.11.0",
+    "@patternfly/react-core": "1.19.1",
+    "@patternfly/react-tokens": "^1.5.1",
+    "@red-hat-insights/insights-frontend-components": "^3.20.2",
     "classnames": "^2.2.5",
     "create-react-class": "^15.6.3",
     "eslint-loader": "^2.1.0"
