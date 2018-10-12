@@ -1,20 +1,24 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
-import { Link } from 'react-router-dom';
-import { Main, PageHeader, PageHeaderTitle, Table } from '@red-hat-insights/insights-frontend-components';
+import * as actions from '../actions';
 
-function buildName (name, id) {
-    return (
-        <Link to={ `/${id}` }>{ name }</Link>
-    );
-}
+import { Main, PageHeader, PageHeaderTitle } from '@red-hat-insights/insights-frontend-components';
+import RemediationTable from '../components/RemediationTable';
+
+const ConnectedRemediationTable = connect(({ remediations }) => ({ ...remediations }))(RemediationTable);
 
 class Home extends Component {
 
     constructor (props, ctx) {
         super(props, ctx);
+        this.loadRemediations = () => ctx.store.dispatch(actions.loadRemediations());
+    }
+
+    componentDidMount () {
+        this.loadRemediations();
     }
 
     render() {
@@ -24,20 +28,7 @@ class Home extends Component {
                     <PageHeaderTitle title='Remediations'></PageHeaderTitle>
                 </PageHeader>
                 <Main>
-                    <p>Your plans</p>
-                    <Table
-                        header={ [ 'Name', '# of issues', 'Last updated', 'Reboot required' ] }
-                        rows={ [
-                            {
-                                cells: [
-                                    buildName('High severity security issues', 'aba007d6-be73-4e96-9399-2967be2c2401'),
-                                    23,
-                                    '2018-10-10',
-                                    'yes'
-                                ]
-                            }
-                        ] }
-                    />
+                    <ConnectedRemediationTable />
                 </Main>
             </React.Fragment>
         );
