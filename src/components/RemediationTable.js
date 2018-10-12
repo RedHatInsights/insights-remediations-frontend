@@ -6,10 +6,16 @@ import { Table } from '@red-hat-insights/insights-frontend-components';
 import { SyncAltIcon } from '@patternfly/react-icons';
 import './RemediationTable.scss';
 
+import moment from 'moment';
+
 function buildName (name, id) {
     return (
         <Link to={ `/${id}` }>{ name }</Link>
     );
+}
+
+function formatDate (date) {
+    return moment(date).format('ll');
 }
 
 const RemediationTable = function ({ value, status }) {
@@ -30,7 +36,7 @@ const RemediationTable = function ({ value, status }) {
         cells: [
             buildName(remediation.name, remediation.id),
             remediation.issueCount,
-            remediation.updated_at,
+            formatDate(remediation.updated_at),
             String(remediation.needsReboot)
         ]
     }));
