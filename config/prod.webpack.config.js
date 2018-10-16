@@ -5,5 +5,5 @@ const webpackConfig = require('./base.webpack.config');
 
 module.exports = _.merge({},
     webpackConfig,
-    require('./base.webpack.plugins.js')
+    require('./prod.webpack.plugins.js')
 );

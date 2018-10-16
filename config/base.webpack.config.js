@@ -27,7 +27,7 @@ const webpackConfig = {
     output: {
         filename: 'js/[name].js',
         path: config.paths.public,
-        publicPath: '/insights/platform/remediations/',
+        publicPath: config.paths.publicPath,
         chunkFilename: 'js/[name].js'
     },
     module: {
