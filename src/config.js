@@ -1,1 +1,1 @@
-export const API_BASE = '/v1/remediations';
+export const API_BASE = '/r/insights/platform/remediations/v1';

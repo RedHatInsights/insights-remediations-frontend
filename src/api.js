@@ -1,7 +1,11 @@
 import { API_BASE } from './config';
 
+import urijs from 'urijs';
+
 export function getRemediations () {
-    return fetch(API_BASE).then(r => {
+    const uri = urijs(API_BASE).segment('remediations').toString();
+
+    return fetch(uri).then(r => {
         if (r.ok) {
             return r.json();
         }
