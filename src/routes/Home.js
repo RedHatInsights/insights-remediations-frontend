@@ -18,7 +18,7 @@ class Home extends Component {
     }
 
     componentDidMount () {
-        this.loadRemediations();
+        window.insights.chrome.auth.getUser().then(this.loadRemediations);
     }
 
     render() {
