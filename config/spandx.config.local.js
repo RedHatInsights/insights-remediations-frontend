@@ -1,5 +1,5 @@
 /* global exports */
 
 exports.routes = {
-    '/v1/remediations': { host: 'http://localhost:9002' }
+    '/r/insights/platform/remediations': { host: 'http://localhost:9002' }
 };
