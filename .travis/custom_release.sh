@@ -4,6 +4,7 @@ set -x
 
 function release {
     .travis/release.sh prod-$1
+    cd dist
     git push --force --set-upstream travis-build HEAD:ci-$1
     git push --force --set-upstream travis-build HEAD:qa-$1
 }
