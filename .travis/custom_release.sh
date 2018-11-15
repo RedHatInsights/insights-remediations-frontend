@@ -2,16 +2,18 @@
 set -e
 set -x
 
+function release {
+    .travis/release.sh prod-$1
+    git push --force --set-upstream travis-build HEAD:ci-$1
+    git push --force --set-upstream travis-build HEAD:qa-$1
+}
+
 # If current dev branch is master, push to beta branches
-if [ "${TRAVIS_BRANCH}" = "master" ]; then
-    for i in ci-beta qa-beta prod-beta; do
-        .travis/release.sh $i
-    done
+if [[ "${TRAVIS_BRANCH}" = "master" ]]; then
+    release "beta"
 fi
 
 # If current dev branch is deployment branch, push to stable branches
 if [[ "${TRAVIS_BRANCH}" = "stable" ]]; then
-    for i in ci-stable qa-stable prod-stable; do
-        .travis/release.sh $i
-    done
+    release ${TRAVIS_BRANCH}
 fi
