@@ -1,0 +1,8 @@
+@import '@red-hat-insights/insights-frontend-components/Utilities/_mixins.scss';
+
+.select-systems-form .pf-c-form__group {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    @include rem('grid-column-gap', 30px);
+    @include rem('grid-row-gap', 15px);
+}
