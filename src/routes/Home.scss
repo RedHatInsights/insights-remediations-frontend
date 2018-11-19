@@ -1,0 +1,14 @@
+@import '@red-hat-insights/insights-frontend-components/Utilities/_mixins.scss';
+
+.page__remediations {
+    .pf-l-page-header .pf-c-content {
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+.ins-c-plan-modal {
+    .pf-c-modal-box__body{
+        > * + * { @include rem('margin-top', 20px); }
+    }
+}

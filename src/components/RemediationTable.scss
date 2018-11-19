@@ -1,3 +1,8 @@
 p.loading {
     text-align: center;
 }
+
+// TODO Fix when pf releases new version of progress that fixes title
+.pf-c-progress.remediationProgress{
+    display: block;
+}
