@@ -11,6 +11,10 @@ import RemediationTable from '../components/RemediationTable';
 
 import Wizard from '../components/Wizard.js';
 
+// Wizard Steps
+import PlanName from '../components/CreatePlanModal/ModalSteps/PlanName';
+import PlanSystems from '../components/CreatePlanModal/ModalSteps/PlanSystems';
+
 import './Home.scss';
 
 const ConnectedRemediationTable = connect(({ remediations }) => ({ ...remediations }))(RemediationTable);
@@ -40,6 +44,12 @@ class Home extends Component {
 
         const { isModalOpen } = this.state;
 
+        // Wizard Content
+        const ModalStepContent = [
+            <PlanName key='PlanName'/>,
+            <PlanSystems key='PlanSystems'/>
+        ];
+
         return (
             <React.Fragment>
                 <PageHeader>
@@ -57,6 +67,7 @@ class Home extends Component {
                     handleModalToggle = { this.handleModalToggle }
                     isOpen= { isModalOpen }
                     steps= { 6 }
+                    content = { ModalStepContent }
                 />
             </React.Fragment>
         );
