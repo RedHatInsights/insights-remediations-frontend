@@ -38,7 +38,7 @@ class Wizard extends Component {
     render() {
 
         let renderModalActions =  [
-            <Button key="cancel" variant="secondary" onClick={ this.props.handleModalToggle }>
+            <Button key="cancel" variant="secondary" onClick={ this.handleOnClose }>
             Cancel
             </Button>,
             // Conditionally render 'previous' button if not on first page
@@ -48,7 +48,7 @@ class Wizard extends Component {
             // Conditionally render 'confirm' button if on last page
             this.state.currentStep < this.props.steps - 1
                 ? <Button key="continue" variant="primary" onClick={ this.handleNextModalStep }> Continue </Button>
-                : <Button key="confirm" variant="primary" onClick={ this.props.handleModalToggle }> Confirm </Button>
+                : <Button key="confirm" variant="primary" onClick={ this.handleOnClose }> Confirm </Button>
         ];
 
         // TODO: Allow users to pass custom step content
@@ -58,7 +58,7 @@ class Wizard extends Component {
                 title= { this.props.title }
                 className= { this.props.className }
                 isOpen={ this.props.isOpen }
-                onClose={ this.onClose }
+                onClose={ this.handleOnClose }
                 actions={ renderModalActions }>
                 <CreatePlanModal step={ this.state.currentStep }/>
             </Modal>
