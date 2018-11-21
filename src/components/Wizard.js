@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import { Modal, Button } from '@patternfly/react-core';
@@ -15,6 +14,7 @@ class Wizard extends Component {
         };
         this.handlePreviousModalStep = this.handlePreviousModalStep.bind(this);
         this.handleNextModalStep = this.handleNextModalStep.bind(this);
+        this.handleOnClose = this.handleOnClose.bind(this);
     };
 
     handleNextModalStep() {
@@ -27,6 +27,12 @@ class Wizard extends Component {
         this.setState(({ currentStep }) => ({
             currentStep: currentStep - 1
         }));
+    }
+
+    // On modal close, reset currentStep back to the initial step, the call modalToggle(PF)
+    handleOnClose() {
+        this.setState({ currentStep: 0 });
+        this.props.handleModalToggle && this.props.handleModalToggle();
     }
 
     render() {
@@ -47,17 +53,15 @@ class Wizard extends Component {
 
         // TODO: Allow users to pass custom step content
         return (
-            <React.Fragment>
-                <Modal
-                    isLarge = { this.props.isLarge }
-                    title= { this.props.title }
-                    className= { this.props.className }
-                    isOpen={ this.props.isOpen }
-                    onClose={ this.props.handleModalToggle }
-                    actions={ renderModalActions }>
-                    <CreatePlanModal step={ this.state.currentStep }/>
-                </Modal>
-            </React.Fragment>
+            <Modal
+                isLarge = { this.props.isLarge }
+                title= { this.props.title }
+                className= { this.props.className }
+                isOpen={ this.props.isOpen }
+                onClose={ this.onClose }
+                actions={ renderModalActions }>
+                <CreatePlanModal step={ this.state.currentStep }/>
+            </Modal>
         );
     }
 }
@@ -71,4 +75,4 @@ Wizard.propTypes = {
     steps: PropTypes.number
 };
 
-export default withRouter(Wizard);
+export default Wizard;
