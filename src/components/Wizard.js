@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 
 import { Modal, Button } from '@patternfly/react-core';
 
-import CreatePlanModal from './CreatePlanModal/CreatePlanModal.js';
-
 class Wizard extends Component {
 
     constructor () {
@@ -37,6 +35,10 @@ class Wizard extends Component {
 
     render() {
 
+        if (this.props.steps !== this.props.content.length) { 
+            console.error(`[WIZARD] You specified ${this.props.steps} steps, but only passed content for ${this.props.content.length} steps`);
+        }
+
         let renderModalActions =  [
             <Button key="cancel" variant="secondary" onClick={ this.handleOnClose }>
             Cancel
@@ -51,7 +53,6 @@ class Wizard extends Component {
                 : <Button key="confirm" variant="primary" onClick={ this.handleOnClose }> Confirm </Button>
         ];
 
-        // TODO: Allow users to pass custom step content
         return (
             <Modal
                 isLarge = { this.props.isLarge }
@@ -60,7 +61,7 @@ class Wizard extends Component {
                 isOpen={ this.props.isOpen }
                 onClose={ this.handleOnClose }
                 actions={ renderModalActions }>
-                <CreatePlanModal step={ this.state.currentStep }/>
+                { this.props.content[this.state.currentStep] }
             </Modal>
         );
     }
@@ -72,7 +73,8 @@ Wizard.propTypes = {
     className: PropTypes.string,
     isOpen: PropTypes.any,
     handleModalToggle: PropTypes.any,
-    steps: PropTypes.number
+    steps: PropTypes.number,
+    content: PropTypes.array
 };
 
 export default Wizard;
