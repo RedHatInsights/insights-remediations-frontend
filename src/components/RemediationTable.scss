@@ -4,5 +4,6 @@ p.loading {
 
 // TODO Fix when pf releases new version of progress that fixes title
 .pf-c-progress.remediationProgress{
-    display: block;
+    --pf-c-progress--GridGap: 0;
+    // display: block;
 }
