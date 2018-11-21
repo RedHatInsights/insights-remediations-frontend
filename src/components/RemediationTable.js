@@ -32,9 +32,10 @@ function issueProgress (issueCount) {
         // TODO Fix when pf releases new version of progress that fixes title
         <Progress
             className = 'remediationProgress'
-            title={ title }
+            title=''
             value={ progress }
-            measureLocation={ ProgressMeasureLocation.none }
+            label={ title }
+            measureLocation={ ProgressMeasureLocation.outside }
         />
     );
 }

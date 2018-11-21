@@ -22,7 +22,7 @@ const CreatePlanModal = ({ step, className, ...props }) => {
         case 1:
             return (<PlanSystems/>);
         default:
-            return (<span className={ modalClass } { ...props } widget-type='CreatePlanModal'> Step { step } </span>);
+            return (<span className={ modalClass } { ...props } widget-type='CreatePlanModal'> Step { step + 1 } </span>);
     }
 };
 

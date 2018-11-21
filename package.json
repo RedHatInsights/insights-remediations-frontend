@@ -7,7 +7,7 @@
     "@patternfly/patternfly-next": "^1.0.76",
     "@patternfly/react-core": "1.35.1",
     "@patternfly/react-tokens": "^1.7.0",
-    "@red-hat-insights/insights-frontend-components": "^3.20.12",
+    "@red-hat-insights/insights-frontend-components": "^3.21.5",
     "classnames": "^2.2.5",
     "create-react-class": "^15.6.3",
     "urijs": "^1.19.1"
