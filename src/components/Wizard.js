@@ -35,7 +35,8 @@ class Wizard extends Component {
 
     render() {
 
-        if (this.props.steps !== this.props.content.length) { 
+        if (this.props.steps !== this.props.content.length) {
+            // eslint-disable-next-line
             console.error(`[WIZARD] You specified ${this.props.steps} steps, but only passed content for ${this.props.content.length} steps`);
         }
 
