@@ -20,7 +20,6 @@ function formatDate (date) {
 }
 
 function issueProgress (issueCount) {
-
     // TODO Remove random issues fixed
     let issuesFixed = Math.floor(Math.random() * (issueCount + 1));
 
@@ -57,8 +56,8 @@ const RemediationTable = function ({ value, status }) {
     const rows = value.remediations.map(remediation => ({
         cells: [
             buildName(remediation.name, remediation.id),
-            remediation.systemCount,
-            issueProgress(remediation.issueCount),
+            remediation.system_count,
+            issueProgress(remediation.issue_count),
             String(remediation.owner),
             formatDate(remediation.updated_at)
         ]
