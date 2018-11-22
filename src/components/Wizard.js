@@ -40,7 +40,7 @@ class Wizard extends Component {
             console.error(`[WIZARD] You specified ${this.props.steps} steps, but only passed content for ${this.props.content.length} steps`);
         }
 
-        let renderModalActions =  [
+        const renderModalActions =  [
             <Button key="cancel" variant="secondary" onClick={ this.handleOnClose }>
             Cancel
             </Button>,

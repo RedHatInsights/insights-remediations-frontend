@@ -21,10 +21,10 @@ function formatDate (date) {
 
 function issueProgress (issueCount) {
     // TODO Remove random issues fixed
-    let issuesFixed = Math.floor(Math.random() * (issueCount + 1));
+    const issuesFixed = Math.floor(Math.random() * (issueCount + 1));
 
-    let title = `${issuesFixed} of ${issueCount}`;
-    let progress = (issuesFixed / issueCount) * 100;
+    const title = `${issuesFixed} of ${issueCount}`;
+    const progress = (issuesFixed / issueCount) * 100;
 
     return (
 

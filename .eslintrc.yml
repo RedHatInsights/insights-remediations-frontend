@@ -97,6 +97,7 @@ rules:
     - blankLine: always
       prev: block-like
       next: "*"
+  prefer-const: 2
   quote-props:
     - error
     - as-needed
