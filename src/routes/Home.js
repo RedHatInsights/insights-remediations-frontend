@@ -5,11 +5,9 @@ import { connect } from 'react-redux';
 
 import * as actions from '../actions';
 
-import { Main, PageHeader, PageHeaderTitle } from '@red-hat-insights/insights-frontend-components';
+import { Main, PageHeader, PageHeaderTitle, Wizard } from '@red-hat-insights/insights-frontend-components';
 import { Button } from '@patternfly/react-core';
 import RemediationTable from '../components/RemediationTable';
-
-import Wizard from '../components/Wizard.js';
 
 // Wizard Steps
 import PlanName from '../components/CreatePlanModal/ModalSteps/PlanName';
@@ -66,7 +64,6 @@ class Home extends Component {
                     className='ins-c-plan-modal'
                     handleModalToggle = { this.handleModalToggle }
                     isOpen= { isModalOpen }
-                    steps= { 6 }
                     content = { ModalStepContent }
                 />
             </React.Fragment>
