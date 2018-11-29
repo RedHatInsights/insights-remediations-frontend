@@ -13,7 +13,6 @@ class PlanName extends Component {
         this.state = {
             value: ''
         };
-        this.handleTextInputChange = this.handleTextInputChange.bind(this);
     };
 
     handleTextInputChange = value => {
