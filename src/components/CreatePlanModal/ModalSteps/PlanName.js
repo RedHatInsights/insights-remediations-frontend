@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import {
     Form,
@@ -6,28 +6,46 @@ import {
     TextInput
 } from '@patternfly/react-core';
 
-const PlanName = () => {
+class PlanName extends Component {
 
-    return (
-        <React.Fragment>
-            <h2> Name your plan </h2>
-            <Form>
-                <FormGroup
-                    label="Plan Name"
-                    isRequired
-                    fieldId="plan-name"
-                >
-                    <TextInput
+    constructor () {
+        super();
+        this.state = {
+            value: ''
+        };
+        this.handleTextInputChange = this.handleTextInputChange.bind(this);
+    };
+
+    handleTextInputChange = value => {
+        this.setState({ value });
+    };
+
+    render() {
+
+        const { value } = this.state;
+
+        return (
+            <React.Fragment>
+                <h2> Name your plan </h2>
+                <Form>
+                    <FormGroup
+                        label="Plan Name"
                         isRequired
-                        type="text"
-                        value=''
-                        placeholder="What do you want to call your grand plan?"
-                        aria-label='Name your plan'
-                    />
-                </FormGroup>
-            </Form>
-        </React.Fragment>
-    );
+                        fieldId="plan-name"
+                    >
+                        <TextInput
+                            isRequired
+                            type="text"
+                            value={ value }
+                            onChange={ this.handleTextInputChange }
+                            placeholder="What do you want to call your grand plan?"
+                            aria-label='Name your plan'
+                        />
+                    </FormGroup>
+                </Form>
+            </React.Fragment>
+        );
+    }
 };
 
 export default PlanName;
