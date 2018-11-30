@@ -1,13 +1,19 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Routes } from './Routes';
 import './App.scss';
+import { register } from './store';
+
+// Notifications
+import { NotificationsPortal, notifications } from '@red-hat-insights/insights-frontend-components/components/Notifications';
+import '@red-hat-insights/insights-frontend-components/components/Notifications.css';
 
 class App extends Component {
 
     componentDidMount () {
+        register({ notifications });
         insights.chrome.init();
         insights.chrome.identifyApp('remediations');
     }
@@ -19,7 +25,10 @@ class App extends Component {
 
     render () {
         return (
-            <Routes childProps={ this.props } />
+            <Fragment>
+                <NotificationsPortal />
+                <Routes childProps={ this.props } />
+            </Fragment>
         );
     }
 }
