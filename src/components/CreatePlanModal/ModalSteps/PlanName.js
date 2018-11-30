@@ -39,6 +39,7 @@ class PlanName extends Component {
                             onChange={ this.handleTextInputChange }
                             placeholder="What do you want to call your grand plan?"
                             aria-label='Name your plan'
+                            autoFocus
                         />
                     </FormGroup>
                 </Form>
