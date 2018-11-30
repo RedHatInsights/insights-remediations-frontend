@@ -1,4 +1,4 @@
-import ReducerRegistry from '@red-hat-insights/insights-frontend-components/Utilities/ReducerRegistry';
+import { getRegistry } from '@red-hat-insights/insights-frontend-components/';
 import promiseMiddleware from 'redux-promise-middleware';
 import reducers from './reducers';
 
@@ -9,7 +9,7 @@ export function init (...middleware) {
         throw new Error('store already initialized');
     }
 
-    registry = new ReducerRegistry({}, [
+    registry = getRegistry({}, [
         promiseMiddleware(),
         ...middleware
     ]);
