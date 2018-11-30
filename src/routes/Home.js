@@ -9,6 +9,8 @@ import { Main, PageHeader, PageHeaderTitle, Wizard } from '@red-hat-insights/ins
 import { Button } from '@patternfly/react-core';
 import RemediationTable from '../components/RemediationTable';
 
+import { addNotification } from '@red-hat-insights/insights-frontend-components/components/Notifications';
+
 // Wizard Steps
 import PlanName from '../components/CreatePlanModal/ModalSteps/PlanName';
 import PlanSystems from '../components/CreatePlanModal/ModalSteps/PlanSystems';
@@ -21,6 +23,7 @@ class Home extends Component {
 
     constructor (props, ctx) {
         super(props, ctx);
+        this.store = ctx.store;
         this.loadRemediations = () => ctx.store.dispatch(actions.loadRemediations());
         this.state = {
             isModalOpen: false
@@ -32,10 +35,22 @@ class Home extends Component {
         this.setState(({ isModalOpen }) => ({
             isModalOpen: !isModalOpen
         }));
+
+        if (this.state.isModalOpen) {
+            this.sendNotification({
+                variant: 'success',
+                title: 'Wizard completed',
+                description: 'Congratulations! You successfully clicked through the temporary wizard placeholder!'
+            });
+        }
     };
 
     componentDidMount () {
         window.insights.chrome.auth.getUser().then(this.loadRemediations);
+    }
+
+    sendNotification = data => {
+        this.store.dispatch(addNotification(data));
     }
 
     render() {
@@ -52,7 +67,7 @@ class Home extends Component {
             <React.Fragment>
                 <PageHeader>
                     <PageHeaderTitle title='Remediations'></PageHeaderTitle>
-                    <Button variant='primary' onClick={ this.handleModalToggle }>Create Plan</Button>
+                    <Button variant='primary' onClick={ this.handleModalToggle }>Create Remediation</Button>
                 </PageHeader>
                 <Main>
                     <ConnectedRemediationTable />
