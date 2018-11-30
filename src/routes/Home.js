@@ -8,6 +8,7 @@ import * as actions from '../actions';
 import { Main, PageHeader, PageHeaderTitle, Wizard } from '@red-hat-insights/insights-frontend-components';
 import { Button } from '@patternfly/react-core';
 import RemediationTable from '../components/RemediationTable';
+import NewRemediationButton from '../components/NewRemediationButton';
 
 import { addNotification } from '@red-hat-insights/insights-frontend-components/components/Notifications';
 
@@ -68,6 +69,7 @@ class Home extends Component {
                 <PageHeader>
                     <PageHeaderTitle title='Remediations'></PageHeaderTitle>
                     <Button variant='primary' onClick={ this.handleModalToggle }>Create Remediation</Button>
+                    <NewRemediationButton onCreated = { this.loadRemediations } />
                 </PageHeader>
                 <Main>
                     <ConnectedRemediationTable />
