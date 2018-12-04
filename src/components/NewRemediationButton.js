@@ -26,9 +26,9 @@ class NewRemediationButton extends Component {
 
     openModal = () => this.setOpen(true);
 
-    closeModal = () => {
+    closeModal = (submitted) => {
         this.setOpen(false);
-        this.newRemediation(this.planNameStep.state.value);
+        submitted && this.newRemediation(this.planNameStep.state.value);
     };
 
     newRemediation = (name) => {
@@ -76,7 +76,7 @@ class NewRemediationButton extends Component {
                     isLarge = { true }
                     title="Create Remediation"
                     className='ins-c-plan-modal'
-                    handleModalToggle = { this.closeModal }
+                    onClose = { this.closeModal }
                     isOpen= { this.state.open }
                     content = { steps }
                 />
