@@ -29,15 +29,16 @@ class Home extends Component {
         this.state = {
             isModalOpen: false
         };
-        this.handleModalToggle = this.handleModalToggle.bind(this);
     };
 
-    handleModalToggle() {
-        this.setState(({ isModalOpen }) => ({
-            isModalOpen: !isModalOpen
-        }));
+    openModal = () => this.setState({ isModalOpen: true });
 
-        if (this.state.isModalOpen) {
+    onClose = submitted => {
+        this.setState({
+            isModalOpen: false
+        });
+
+        if (submitted) {
             this.sendNotification({
                 variant: 'success',
                 title: 'Wizard completed',
@@ -68,7 +69,7 @@ class Home extends Component {
             <React.Fragment>
                 <PageHeader>
                     <PageHeaderTitle title='Remediations'></PageHeaderTitle>
-                    <Button variant='primary' onClick={ this.handleModalToggle }>Create Remediation</Button>
+                    <Button variant='primary' onClick={ this.openModal }>Create Remediation</Button>
                     <NewRemediationButton onCreated = { this.loadRemediations } />
                 </PageHeader>
                 <Main>
@@ -79,7 +80,7 @@ class Home extends Component {
                     isLarge
                     title="Create Plan"
                     className='ins-c-plan-modal'
-                    handleModalToggle = { this.handleModalToggle }
+                    onClose = { this.onClose }
                     isOpen= { isModalOpen }
                     content = { ModalStepContent }
                 />
