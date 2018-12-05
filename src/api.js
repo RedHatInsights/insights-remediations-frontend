@@ -16,6 +16,12 @@ export function getRemediations () {
     return fetch(uri).then(json);
 }
 
+export function getRemediation (id) {
+    const uri = urijs(API_BASE).segment('remediations').segment(id).toString();
+
+    return fetch(uri).then(json);
+}
+
 export function createRemediation (data) {
     const uri = urijs(API_BASE).segment('remediations').toString();
 
