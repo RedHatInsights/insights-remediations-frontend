@@ -6,9 +6,7 @@ import * as actions from '../actions';
 
 import {
     Main,
-    PageHeader, PageHeaderTitle,
-    Table, TableVariant,
-    Pagination, 
+    PageHeader, PageHeaderTitle
 } from '@red-hat-insights/insights-frontend-components';
 
 import {
