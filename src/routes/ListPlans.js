@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { connect } from 'react-redux';
 
 import * as actions from '../actions';
 
@@ -23,30 +24,33 @@ import './ListPlans.scss';
 
 class ListPlans extends Component {
 
-    constructor (props, ctx) {
-        super(props, ctx);
-        this.store = ctx.store;
+    constructor (props) {
+        super(props);
+        this.props = props;
         this.state = {
-            remediation: '',
             autoReboot: true
         };
-        this.loadRemediation = () => ctx.store.dispatch(actions.loadRemediation(this.props.computedMatch.params.id));
+
+        this.loadRemediation = this.props.loadRemediation.bind(this, this.props.computedMatch.params.id);
     };
 
     handleRebootChange = autoReboot => {
         this.setState({ autoReboot });
     };
 
-    componentDidMount () {
-        window.insights.chrome.auth.getUser().then(
-            this.loadRemediation().then(result => this.setState({ remediation: result.value }))
-        );
+    async componentDidMount () {
+        await window.insights.chrome.auth.getUser();
+        await this.loadRemediation();
     }
 
     render() {
-        const remediation = this.state.remediation;
+        const { status, remediation } = this.props;
 
         const { autoReboot } = this.state;
+
+        if (status !== 'fulfilled') {
+            return <div>Loading</div>;
+        }
 
         return (
             <React.Fragment>
@@ -128,16 +132,22 @@ class ListPlans extends Component {
     }
 }
 
-ListPlans.contextTypes = {
-    store: PropTypes.object
-};
-
 ListPlans.propTypes = {
     computedMatch: PropTypes.shape({
         params: PropTypes.shape({
             id: PropTypes.string.isRequired
         })
-    })
+    }),
+    status: PropTypes.string.isRequired,
+    remediation: PropTypes.object,
+    loadRemediation: PropTypes.func.isRequired
 };
 
-export default withRouter(ListPlans);
+export default withRouter(
+    connect(
+        ({ selectedRemediation }) => ({ ...selectedRemediation }),
+        dispatch => ({
+            loadRemediation: id => dispatch(actions.loadRemediation(id))
+        })
+    )(ListPlans)
+);
