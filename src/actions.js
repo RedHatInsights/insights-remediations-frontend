@@ -17,3 +17,10 @@ export const createRemediation = (data) => {
         payload: api.createRemediation(data)
     };
 };
+
+export const patchRemediation = (id, data) => {
+    return {
+        type: ACTION_TYPES.PATCH_REMEDIATION,
+        payload: api.patchRemediation(id, data)
+    };
+};

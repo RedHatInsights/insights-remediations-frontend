@@ -31,11 +31,12 @@ class ListPlans extends Component {
             autoReboot: true
         };
 
-        this.loadRemediation = this.props.loadRemediation.bind(this, this.props.computedMatch.params.id);
+        this.id = this.props.computedMatch.params.id;
+        this.loadRemediation = this.props.loadRemediation.bind(this, this.id);
     };
 
     handleRebootChange = autoReboot => {
-        this.setState({ autoReboot });
+        this.props.switchAutoReboot(this.id, autoReboot);
     };
 
     async componentDidMount () {
@@ -45,8 +46,6 @@ class ListPlans extends Component {
 
     render() {
         const { status, remediation } = this.props;
-
-        const { autoReboot } = this.state;
 
         if (status !== 'fulfilled') {
             return <div>Loading</div>;
@@ -102,7 +101,8 @@ class ListPlans extends Component {
                                                     <Switch
                                                         id="autoReboot"
                                                         aria-label="Auto Reboot"
-                                                        isChecked={ autoReboot }
+                                                        isChecked={ remediation.needs_reboot ? remediation.auto_reboot : false }
+                                                        isDisabled={ !remediation.needs_reboot }
                                                         onChange={ this.handleRebootChange }
                                                     />
                                                 </StackItem>
@@ -140,14 +140,17 @@ ListPlans.propTypes = {
     }),
     status: PropTypes.string.isRequired,
     remediation: PropTypes.object,
-    loadRemediation: PropTypes.func.isRequired
+    loadRemediation: PropTypes.func.isRequired,
+    switchAutoReboot: PropTypes.func.isRequired
 };
 
 export default withRouter(
     connect(
         ({ selectedRemediation }) => ({ ...selectedRemediation }),
         dispatch => ({
-            loadRemediation: id => dispatch(actions.loadRemediation(id))
+            loadRemediation: id => dispatch(actions.loadRemediation(id)),
+            // eslint-disable-next-line camelcase
+            switchAutoReboot: (id, auto_reboot) => dispatch(actions.patchRemediation(id, { auto_reboot }))
         })
     )(ListPlans)
 );
