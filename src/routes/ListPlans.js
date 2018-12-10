@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 import * as actions from '../actions';
 
@@ -114,7 +115,7 @@ class ListPlans extends Component {
                                 <CardBody>
                                     <Stack>
                                         <StackItem>Created By: { remediation.owner }</StackItem>
-                                        <StackItem>Date: 2018-0-0</StackItem>
+                                        <StackItem>Date: { moment(remediation.created_at).format('ll') }</StackItem>
                                         <StackItem> Shared with: foo</StackItem>
                                     </Stack>
                                 </CardBody>
