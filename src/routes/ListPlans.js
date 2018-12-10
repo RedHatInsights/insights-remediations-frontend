@@ -118,7 +118,7 @@ class ListPlans extends Component {
                                 <CardHeader> Plan Details </CardHeader>
                                 <CardBody>
                                     <Stack>
-                                        <StackItem>Created By: { remediation.owner }</StackItem>
+                                        <StackItem>Created By: { remediation.created_by }</StackItem>
                                         <StackItem>Date: { moment(remediation.created_at).format('ll') }</StackItem>
                                         <StackItem> Shared with: foo</StackItem>
                                     </Stack>

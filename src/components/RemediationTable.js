@@ -58,7 +58,7 @@ const RemediationTable = function ({ value, status }) {
             buildName(remediation.name, remediation.id),
             remediation.system_count,
             issueProgress(remediation.issue_count),
-            String(remediation.owner),
+            String(remediation.updated_by),
             formatDate(remediation.updated_at)
         ]
     }));
