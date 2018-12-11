@@ -20,9 +20,9 @@ import {
     Level, LevelItem
 } from '@patternfly/react-core';
 
-import './ListPlans.scss';
+import './RemediationDetails.scss';
 
-class ListPlans extends Component {
+class RemediationDetails extends Component {
 
     constructor (props) {
         super(props);
@@ -132,7 +132,7 @@ class ListPlans extends Component {
     }
 }
 
-ListPlans.propTypes = {
+RemediationDetails.propTypes = {
     computedMatch: PropTypes.shape({
         params: PropTypes.shape({
             id: PropTypes.string.isRequired
@@ -152,5 +152,5 @@ export default withRouter(
             // eslint-disable-next-line camelcase
             switchAutoReboot: (id, auto_reboot) => dispatch(actions.patchRemediation(id, { auto_reboot }))
         })
-    )(ListPlans)
+    )(RemediationDetails)
 );

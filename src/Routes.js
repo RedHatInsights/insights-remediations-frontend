@@ -2,7 +2,7 @@ import { Switch, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Home from './routes/Home';
-import ListPlans from './routes/ListPlans';
+import RemediationDetails from './routes/RemediationDetails';
 
 const InsightsRoute = ({ component: Component, rootClass, ...rest }) => {
     const root = document.getElementById('root');
@@ -21,7 +21,7 @@ export const Routes = () => {
     return (
         <Switch>
             <InsightsRoute exact path='/' component={ Home } rootClass='remediations' />
-            <InsightsRoute exact path='/:id' component={ ListPlans } rootClass='list-plans' />
+            <InsightsRoute exact path='/:id' component={ RemediationDetails } rootClass='remediation-details' />
             <Redirect to='/' />
         </Switch>
     );
