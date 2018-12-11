@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { connect } from 'react-redux';
@@ -17,7 +17,9 @@ import {
     Progress, ProgressMeasureLocation,
     Stack, StackItem,
     Switch,
-    Level, LevelItem
+    Level, LevelItem,
+    Breadcrumb, BreadcrumbItem,
+    Button
 } from '@patternfly/react-core';
 
 import './RemediationDetails.scss';
@@ -54,7 +56,20 @@ class RemediationDetails extends Component {
         return (
             <React.Fragment>
                 <PageHeader>
-                    <PageHeaderTitle title={ `Plan: ${ remediation.name || '' }` }/>
+                    <Breadcrumb>
+                        <BreadcrumbItem>
+                            <Link to='/'> Home </Link>
+                        </BreadcrumbItem>
+                        <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
+                    </Breadcrumb>
+                    <Level>
+                        <LevelItem>
+                            <PageHeaderTitle title={ `Plan: ${ remediation.name || '' }` }/>
+                        </LevelItem>
+                        <LevelItem>
+                            <Button> Generate Playbook </Button>
+                        </LevelItem>
+                    </Level>
                 </PageHeader>
                 <Main>
                     <Grid gutter="md" sm={ 12 } md={ 4 } className='ins-c-summary-cards'>
