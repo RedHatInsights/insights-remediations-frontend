@@ -27,7 +27,7 @@ class RemediationDetailsTable extends React.Component {
                 cells: [
                     issue.description,
                     issue.resolution.description,
-                    issue.resolution.needs_reboot.toString(),
+                    issue.resolution.needs_reboot === true ? 'Yes' : 'No',
                     issue.systems.length,
                     'fix'
                 ]
