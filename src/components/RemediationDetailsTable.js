@@ -1,38 +1,78 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Table } from '@red-hat-insights/insights-frontend-components';
-import { Level, LevelItem, TextInput, Button, Stack, StackItem, Split, SplitItem } from '@patternfly/react-core';
+import { Table, Battery } from '@red-hat-insights/insights-frontend-components';
+
+import { Level, LevelItem,
+    TextInput,
+    Button,
+    Card, CardBody,
+    Stack, StackItem,
+    Grid, GridItem,
+    Split, SplitItem } from '@patternfly/react-core';
 import './RemediationTable.scss';
 
 class RemediationDetailsTable extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            rows: this.props.remediation.issues.flatMap((issue, issueIndex) => ([
+                {
+                    children: [ 1 ],
+                    isActive: false,
+                    cells: [
+                        issue.description,
+                        issue.resolution.description,
+                        issue.resolution.needs_reboot === true ? 'Yes' : 'No',
+                        issue.systems.length,
+                        'fix'
+                    ]
+                },
+                {
+                    isOpen: false,
+                    cells: [{
+                        title:
+                            <React.Fragment>
+                                <Card key={ issueIndex } className='ins-c-system-card'>
+                                    <CardBody>
+                                        <Grid>
+                                            <GridItem span={ 6 }> System </GridItem>
+                                            <GridItem span={ 3 }> Total Risk </GridItem>
+                                            <GridItem span={ 3 }> Status </GridItem>
+                                        </Grid>
+                                    </CardBody>
+                                </Card>
+                                { this.props.remediation.issues[issueIndex].systems.flatMap((system, systemIndex) => ([
+                                    <Card key={ systemIndex } className='ins-c-system-card'>
+                                        <CardBody>
+                                            <Grid>
+                                                <GridItem span={ 6 }> { system.display_name === null ? system.display_name : system.id } </GridItem>
+                                                <GridItem span={ 3 }> <Battery label='fix' severity='medium'/></GridItem>
+                                                <GridItem span={ 3 }> fix </GridItem>
+                                            </Grid>
+                                        </CardBody>
+                                    </Card>
+                                ])) }
+                            </React.Fragment>,
+                        colSpan: 4
+                    }]
+                }
+            ]))
+        };
+        this.onExpandClicked = this.onExpandClicked.bind(this);
     }
 
     onExpandClicked(event, row, rowKey) {
         const { rows } = this.state;
         rows[rowKey].isActive = !row.isActive;
-        row.children.forEach(childKey => rows[childKey].isOpen !== rows[childKey].isOpen);
+        row.children.forEach(childKey => rows[childKey].isOpen = !rows[childKey].isOpen);
         this.setState({ rows });
     }
 
     render() {
 
-        const { remediation } = this.props;
-
-        const rows = remediation.issues.map(issue => (
-            {
-                cells: [
-                    issue.description,
-                    issue.resolution.description,
-                    issue.resolution.needs_reboot === true ? 'Yes' : 'No',
-                    issue.systems.length,
-                    'fix'
-                ]
-            }
-        ));
+        const { rows } = this.state;
 
         return (
             <Stack gutter="md">
@@ -57,6 +97,7 @@ class RemediationDetailsTable extends React.Component {
                 </StackItem>
                 <StackItem>
                     <Table
+                        className='ins-c-remediations-details-table'
                         header={ [
                             {
                                 title: 'Actions',
@@ -75,6 +116,8 @@ class RemediationDetailsTable extends React.Component {
                                 hasSort: true
                             }]
                         }
+                        expandable
+                        onExpandClick={ (event, row, rowKey) => this.onExpandClicked(event, row, rowKey) }
                         hasCheckbox={ true }
                         rows= { rows }
                     />

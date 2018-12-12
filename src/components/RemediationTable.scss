@@ -13,3 +13,9 @@ p.loading {
 .ins-c-remediations-details-table__toolbar {
     @include rem('margin-top', 30px);
 }
+
+.ins-c-remediations-details-table {
+    .pf-c-table__expandable-row-content { @include rem('padding', 5px); }
+    .ins-c-system-card .pf-c-card__body { padding: 5px 10px !important; }
+    .ins-c-system-card + .ins-c-system-card { @include rem('margin-top', 5px); }
+}
