@@ -7,7 +7,9 @@ p.loading {
 // TODO Fix when pf releases new version of progress that fixes title
 .pf-c-progress.remediationProgress{
     --pf-c-progress--GridGap: 0;
-    // display: block;
+    @include rem('grid-column-gap', 15px);
+    width: 75%;
+    .pf-c-progress__bar { grid-column: 1 !important; }
 }
 
 .ins-c-remediations-details-table__toolbar {
