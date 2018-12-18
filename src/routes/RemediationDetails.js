@@ -3,7 +3,7 @@ import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { connect } from 'react-redux';
-
+import asyncComponent from '../Utilities/asyncComponent';
 import * as actions from '../actions';
 
 import {
@@ -22,7 +22,7 @@ import {
     Button
 } from '@patternfly/react-core';
 
-import RemediationDetailsTable from '../components/RemediationDetailsTable';
+const RemediationDetailsTable = asyncComponent(() => import('../components/RemediationDetailsTable'));
 import './RemediationDetails.scss';
 
 class RemediationDetails extends Component {
@@ -63,7 +63,7 @@ class RemediationDetails extends Component {
                     </Breadcrumb>
                     <Level>
                         <LevelItem>
-                            <PageHeaderTitle title={ `Plan: ${ remediation.name || '' }` }/>
+                            <PageHeaderTitle title={ `Plan: ${ remediation.name }` }/>
                         </LevelItem>
                         <LevelItem>
                             <Button> Generate Playbook </Button>
@@ -78,10 +78,10 @@ class RemediationDetails extends Component {
                                     <Card className='ins-c-card__actions-resolved'>
                                         <CardHeader>
                                             <Level>
-                                                <LevelItem>
+                                                <LevelItem className='ins-m-card__header-bold'>
                                                     Actions Resolved
                                                 </LevelItem>
-                                                <LevelItem className='ins-c-action__update-date'>
+                                                <LevelItem className='ins-c-subheader-small'>
                                                     Updated on: { remediation.updated_at }
                                                 </LevelItem>
                                             </Level>
@@ -96,7 +96,7 @@ class RemediationDetails extends Component {
                                 </GridItem>
                                 <GridItem>
                                     <Card className='ins-c-card__system-reboot'>
-                                        <CardHeader> Systems Reboot </CardHeader>
+                                        <CardHeader className='ins-m-card__header-bold'> Systems Reboot </CardHeader>
                                         <CardBody>
                                             <Grid gutter="md" md={ 4 } sm={ 4 }>
                                                 <GridItem>
@@ -113,7 +113,7 @@ class RemediationDetails extends Component {
                                                 </GridItem>
                                                 <GridItem>
                                                     <Stack>
-                                                        <StackItem>
+                                                        <StackItem className='ins-c-reboot-switch'>
                                                             <Switch
                                                                 id="autoReboot"
                                                                 aria-label="Auto Reboot"
@@ -131,12 +131,21 @@ class RemediationDetails extends Component {
                                 </GridItem>
                                 <GridItem>
                                     <Card className='ins-c-card__plan-details'>
-                                        <CardHeader> Plan Details </CardHeader>
+                                        <CardHeader>
+                                            <Level>
+                                                <LevelItem className='ins-m-card__header-bold'>
+                                                    Plan Details
+                                                </LevelItem>
+                                                <LevelItem className='ins-c-subheader-small'>
+                                                    Last Updated: fix
+                                                </LevelItem>
+                                            </Level>
+                                        </CardHeader>
                                         <CardBody>
                                             <Stack>
                                                 <StackItem>Created By: { remediation.created_by }</StackItem>
                                                 <StackItem>Date: { moment(remediation.created_at).format('ll') }</StackItem>
-                                                <StackItem> Shared with: foo</StackItem>
+                                                <StackItem> Shared with: fix </StackItem>
                                             </Stack>
                                         </CardBody>
                                     </Card>
