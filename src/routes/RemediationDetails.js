@@ -137,14 +137,14 @@ class RemediationDetails extends Component {
                                                     Plan Details
                                                 </LevelItem>
                                                 <LevelItem className='ins-c-subheader-small'>
-                                                    Last Updated: fix
+                                                    Last Updated: { moment(remediation.updated_at).format('lll') }
                                                 </LevelItem>
                                             </Level>
                                         </CardHeader>
                                         <CardBody>
                                             <Stack>
                                                 <StackItem>Created By: { remediation.created_by }</StackItem>
-                                                <StackItem>Date: { moment(remediation.created_at).format('ll') }</StackItem>
+                                                <StackItem>Date: { moment(remediation.created_at).format('lll') }</StackItem>
                                                 <StackItem> Shared with: fix </StackItem>
                                             </Stack>
                                         </CardBody>

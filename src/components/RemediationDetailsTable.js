@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Table, Battery } from '@red-hat-insights/insights-frontend-components';
+import { Table } from '@red-hat-insights/insights-frontend-components';
 
 import { Level, LevelItem,
     TextInput,
@@ -10,6 +10,7 @@ import { Level, LevelItem,
     Stack, StackItem,
     Grid, GridItem,
     Split, SplitItem } from '@patternfly/react-core';
+import { getIssueApplication, getSystemName } from '../Utilities/model';
 import './RemediationTable.scss';
 
 class RemediationDetailsTable extends React.Component {
@@ -26,7 +27,7 @@ class RemediationDetailsTable extends React.Component {
                         issue.resolution.description,
                         issue.resolution.needs_reboot === true ? 'Yes' : 'No',
                         issue.systems.length,
-                        'fix'
+                        getIssueApplication(issue)
                     ]
                 },
                 {
@@ -37,8 +38,7 @@ class RemediationDetailsTable extends React.Component {
                                 <Card key={ issueIndex } className='ins-c-system-card'>
                                     <CardBody>
                                         <Grid>
-                                            <GridItem span={ 6 }> System </GridItem>
-                                            <GridItem span={ 3 }> Total Risk </GridItem>
+                                            <GridItem span={ 9 }> System </GridItem>
                                             <GridItem span={ 3 }> Status </GridItem>
                                         </Grid>
                                     </CardBody>
@@ -47,9 +47,8 @@ class RemediationDetailsTable extends React.Component {
                                     <Card key={ systemIndex } className='ins-c-system-card'>
                                         <CardBody>
                                             <Grid>
-                                                <GridItem span={ 6 }> { system.display_name === null ? system.display_name : system.id } </GridItem>
-                                                <GridItem span={ 3 }> <Battery label='fix' severity='medium'/></GridItem>
-                                                <GridItem span={ 3 }> fix </GridItem>
+                                                <GridItem span={ 9 }> { getSystemName(system) } </GridItem>
+                                                <GridItem span={ 3 }> unknown </GridItem>
                                             </Grid>
                                         </CardBody>
                                     </Card>
@@ -89,7 +88,7 @@ class RemediationDetailsTable extends React.Component {
                         </LevelItem>
                         <LevelItem>
                             <Split gutter="md">
-                                <SplitItem><Button> Add Action </Button></SplitItem>
+                                <SplitItem><Button isDisabled ={ true }> Add Action </Button></SplitItem>
                                 <SplitItem><Button> Remove Action </Button></SplitItem>
                             </Split>
                         </LevelItem>

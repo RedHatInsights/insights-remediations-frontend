@@ -16,7 +16,7 @@ function buildName (name, id) {
 }
 
 function formatDate (date) {
-    return moment(date).format('ll');
+    return moment(date).format('lll');
 }
 
 function issueProgress (issueCount) {
