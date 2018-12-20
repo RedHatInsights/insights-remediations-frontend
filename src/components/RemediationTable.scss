@@ -1,3 +1,5 @@
+@import '@red-hat-insights/insights-frontend-components/Utilities/_mixins.scss';
+
 p.loading {
     text-align: center;
 }
@@ -5,5 +7,17 @@ p.loading {
 // TODO Fix when pf releases new version of progress that fixes title
 .pf-c-progress.remediationProgress{
     --pf-c-progress--GridGap: 0;
-    // display: block;
+    @include rem('grid-column-gap', 15px);
+    width: 75%;
+    .pf-c-progress__bar { grid-column: 1 !important; }
+}
+
+.ins-c-remediations-details-table__toolbar {
+    @include rem('margin-top', 30px);
+}
+
+.ins-c-remediations-details-table {
+    .pf-c-table__expandable-row-content { @include rem('padding', 5px); }
+    .ins-c-system-card .pf-c-card__body { padding: 5px 10px !important; }
+    .ins-c-system-card + .ins-c-system-card { @include rem('margin-top', 5px); }
 }

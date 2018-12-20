@@ -1,0 +1,50 @@
+@import '@red-hat-insights/insights-frontend-components/Utilities/_mixins.scss';
+
+
+.page__remediation-details {
+
+    // Make all cards the same height
+    .ins-c-summary-cards .pf-c-card{
+        min-height: 100%
+    }
+
+    .pf-c-card__header .ins-m-card__header-bold,
+    .pf-c-card__header.ins-m-card__header-bold {
+        font-weight: 600;
+    }
+
+    .ins-m-text-emphesis, .pf-c-progress__measure {
+        @include rem('font-size', 24px);
+        font-weight: 600;
+    }
+
+    .ins-c-subheader-small {
+        @include rem('font-size', 12px);
+    }
+
+    // Actions Resolved Card
+    .ins-c-card__actions-resolved {
+        .pf-c-card__header .pf-l-grid {
+            align-items: center;
+        }
+    }
+
+    // Systems Reboot Card
+    .ins-c-card__system-reboot {
+        .pf-l-stack, .pf-l-stack__item {
+            align-items: center;
+            text-align: center;
+        }
+        .ins-c-reboot-switch {
+            @include rem('margin-bottom', 10px);
+        }
+    }
+    // Plan Details Card
+    .ins-c-card__plan-details {
+        .pf-l-stack__item:last-of-type {
+            @include rem('margin-top', 7.5px);
+            @include rem('padding-top', 7.5px);
+            border-top: 1px solid #efefef;
+        }
+    }
+}
