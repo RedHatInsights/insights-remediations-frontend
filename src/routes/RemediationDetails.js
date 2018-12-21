@@ -15,7 +15,7 @@ import {
 import {
     Grid, GridItem,
     Card, CardHeader, CardBody,
-    Progress, ProgressMeasureLocation,
+    // Progress, ProgressMeasureLocation,
     Stack, StackItem,
     Switch,
     Level, LevelItem,
@@ -84,16 +84,16 @@ class RemediationDetails extends Component {
                                                 <LevelItem className='ins-m-card__header-bold'>
                                                     Actions Resolved
                                                 </LevelItem>
-                                                <LevelItem className='ins-c-subheader-small'>
-                                                    Updated on: { remediation.updated_at }
-                                                </LevelItem>
                                             </Level>
                                         </CardHeader>
                                         <CardBody>
+                                            { /*
                                             <Progress
                                                 value={ 19 }
                                                 label='16 of 62'
                                                 measureLocation={ ProgressMeasureLocation.outside } />
+                                            */ }
+                                            <p>Progress unknown</p>
                                         </CardBody>
                                     </Card>
                                 </GridItem>
@@ -148,7 +148,7 @@ class RemediationDetails extends Component {
                                             <Stack>
                                                 <StackItem>Created By: { remediation.created_by }</StackItem>
                                                 <StackItem>Date: { moment(remediation.created_at).format('lll') }</StackItem>
-                                                <StackItem> Shared with: fix </StackItem>
+                                                <StackItem> Shared with: unknown </StackItem>
                                             </Stack>
                                         </CardBody>
                                     </Card>
