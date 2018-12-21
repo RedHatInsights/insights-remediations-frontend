@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import { Link } from 'react-router-dom';
 import { Table } from '@red-hat-insights/insights-frontend-components';
-import { Progress, ProgressMeasureLocation } from '@patternfly/react-core';
 import { SyncAltIcon } from '@patternfly/react-icons';
 import './RemediationTable.scss';
 
@@ -17,26 +16,6 @@ function buildName (name, id) {
 
 function formatDate (date) {
     return moment(date).format('lll');
-}
-
-function issueProgress (issueCount) {
-    // TODO Remove random issues fixed
-    const issuesFixed = Math.floor(Math.random() * (issueCount + 1));
-
-    const title = `${issuesFixed} of ${issueCount}`;
-    const progress = (issuesFixed / issueCount) * 100;
-
-    return (
-
-        // TODO Fix when pf releases new version of progress that fixes title
-        <Progress
-            className = 'remediationProgress'
-            title=''
-            value={ progress }
-            label={ title }
-            measureLocation={ ProgressMeasureLocation.outside }
-        />
-    );
 }
 
 const RemediationTable = function ({ value, status }) {
@@ -57,7 +36,7 @@ const RemediationTable = function ({ value, status }) {
         cells: [
             buildName(remediation.name, remediation.id),
             remediation.system_count,
-            issueProgress(remediation.issue_count),
+            remediation.issue_count,
             String(remediation.updated_by),
             formatDate(remediation.updated_at)
         ]
@@ -67,13 +46,13 @@ const RemediationTable = function ({ value, status }) {
         <Table
             header={ [
                 {
-                    title: 'Plan',
+                    title: 'Remediation',
                     hasSort: true
                 }, {
-                    title: '# of systems',
+                    title: 'Systems',
                     hasSort: true
                 }, {
-                    title: 'Rule Hits Resolved',
+                    title: 'Actions',
                     hasSort: true
                 }, {
                     title: 'Last Modified By',
