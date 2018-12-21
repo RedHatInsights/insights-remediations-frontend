@@ -5,6 +5,7 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import asyncComponent from '../Utilities/asyncComponent';
 import * as actions from '../actions';
+import { downloadPlaybook } from '../api';
 
 import {
     Main,
@@ -66,7 +67,7 @@ class RemediationDetails extends Component {
                             <PageHeaderTitle title={ `Remediation: ${ remediation.name }` }/>
                         </LevelItem>
                         <LevelItem>
-                            <Button> Generate Playbook </Button>
+                            <Button onClick={ () => downloadPlaybook(remediation.id) }> Download Playbook </Button>
                         </LevelItem>
                     </Level>
                 </PageHeader>
