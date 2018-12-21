@@ -53,6 +53,8 @@ class RemediationDetails extends Component {
             return <div>Loading</div>;
         }
 
+        const { stats } = remediation;
+
         return (
             <React.Fragment>
                 <PageHeader>
@@ -102,13 +104,13 @@ class RemediationDetails extends Component {
                                             <Grid gutter="md" md={ 4 } sm={ 4 }>
                                                 <GridItem>
                                                     <Stack>
-                                                        <StackItem className='ins-m-text-emphesis'>11</StackItem>
+                                                        <StackItem className='ins-m-text-emphesis'>{ stats.systemsWithoutReboot }</StackItem>
                                                         <StackItem>No reboot</StackItem>
                                                     </Stack>
                                                 </GridItem>
                                                 <GridItem>
                                                     <Stack>
-                                                        <StackItem className='ins-m-text-emphesis'>2</StackItem>
+                                                        <StackItem className='ins-m-text-emphesis'>{ stats.systemsWithReboot }</StackItem>
                                                         <StackItem>Reboot Required</StackItem>
                                                     </Stack>
                                                 </GridItem>
