@@ -27,6 +27,11 @@ export function getRemediation (id) {
     return fetch(uri).then(json);
 }
 
+export function downloadPlaybook (id) {
+    const uri = urijs(API_BASE).segment('remediations').segment(id).segment('playbook').toString();
+    window.open(uri);
+}
+
 export function createRemediation (data) {
     const uri = urijs(API_BASE).segment('remediations').toString();
 
