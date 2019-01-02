@@ -20,16 +20,16 @@ function formatDate (date) {
 
 const RemediationTable = function ({ value, status }) {
 
-    if (status === 'loading') {
+    if (status !== 'fulfilled') {
         return (
-            <p className='loading'>
+            <p className='ins-c-remediations-table--loading'>
                 <SyncAltIcon/>
             </p>
         );
     }
 
-    if (status !== 'fulfilled') {
-        return null;
+    if (status === 'fulfilled' && !value.remediations.length) {
+        return <p className='ins-c-remediations-table--empty'>No Remediations</p>;
     }
 
     const rows = value.remediations.map(remediation => ({
