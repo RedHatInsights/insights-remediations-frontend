@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import * as actions from '../actions';
+import { getHosts } from '../api';
 
 import { Main, PageHeader, PageHeaderTitle, Wizard, RemediationButton } from '@red-hat-insights/insights-frontend-components';
 import { Button } from '@patternfly/react-core';
@@ -27,7 +28,8 @@ class Home extends Component {
         this.store = ctx.store;
         this.loadRemediations = () => ctx.store.dispatch(actions.loadRemediations());
         this.state = {
-            isModalOpen: false
+            isModalOpen: false,
+            allHosts: false
         };
     };
 
@@ -47,8 +49,13 @@ class Home extends Component {
         }
     };
 
-    componentDidMount () {
-        window.insights.chrome.auth.getUser().then(this.loadRemediations);
+    async componentDidMount () {
+        await window.insights.chrome.auth.getUser();
+
+        this.loadRemediations();
+        getHosts().then(hosts => this.setState({
+            allHosts: hosts.results.map(result => result.id)
+        }));
     }
 
     sendNotification = data => {
@@ -61,11 +68,7 @@ class Home extends Component {
         }, {
             id: 'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE'
         }],
-        systems: [
-            '34b9f7d9-fc81-4e0f-bef0-c4b402a1510e',
-            'faa8c67c-345a-44b3-bb8a-d1bc89c36446',
-            'da8355c0-b259-490d-a9ec-8c1bc0ba7e98'
-        ]
+        systems: this.state.allHosts
     });
 
     onRemediationCreated = result => {
@@ -75,7 +78,7 @@ class Home extends Component {
 
     render() {
 
-        const { isModalOpen } = this.state;
+        const { isModalOpen, allHosts } = this.state;
 
         // Wizard Content
         const ModalStepContent = [
@@ -91,6 +94,7 @@ class Home extends Component {
                     <NewRemediationButton onCreated = { this.loadRemediations } />
                     <RemediationButton
                         dataProvider={ this.dataProvider }
+                        isDisabled={ !allHosts || !allHosts.length }
                         onRemediationCreated={ this.onRemediationCreated } >
                         Hot-loaded Wizard
                     </RemediationButton>
