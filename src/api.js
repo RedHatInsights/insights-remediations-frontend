@@ -57,3 +57,8 @@ export function patchRemediation (id, data) {
     .then(checkResponse)
     .then(() => data);
 }
+
+// this is here for demo purposes only
+export function getHosts () {
+    return fetch('/r/insights/platform/inventory/api/v1/hosts').then(json);
+}
