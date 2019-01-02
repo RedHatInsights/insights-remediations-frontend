@@ -1,6 +1,6 @@
 @import '@red-hat-insights/insights-frontend-components/Utilities/_mixins.scss';
 
-p.loading {
+.ins-c-remediations-table--loading, .ins-c-remediations-table--empty {
     text-align: center;
 }
 
