@@ -20,7 +20,8 @@ import {
     Switch,
     Level, LevelItem,
     Breadcrumb, BreadcrumbItem,
-    Button
+    Button,
+    Split, SplitItem
 } from '@patternfly/react-core';
 
 const RemediationDetailsTable = asyncComponent(() => import('../components/RemediationDetailsTable'));
@@ -30,16 +31,21 @@ class RemediationDetails extends Component {
 
     constructor (props) {
         super(props);
-        this.props = props;
         this.state = {
             autoReboot: true
         };
         this.id = this.props.computedMatch.params.id;
         this.loadRemediation = this.props.loadRemediation.bind(this, this.id);
     };
+
     handleRebootChange = autoReboot => {
         this.props.switchAutoReboot(this.id, autoReboot);
     };
+
+    deleteRemediation = () => {
+        this.props.deleteRemediation(this.id);
+        this.props.history.push('/');
+    }
 
     async componentDidMount () {
         await window.insights.chrome.auth.getUser();
@@ -64,12 +70,15 @@ class RemediationDetails extends Component {
                         </BreadcrumbItem>
                         <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
                     </Breadcrumb>
-                    <Level>
+                    <Level className="ins-c-level">
                         <LevelItem>
                             <PageHeaderTitle title={ `Remediation: ${ remediation.name }` }/>
                         </LevelItem>
                         <LevelItem>
-                            <Button onClick={ () => downloadPlaybook(remediation.id) }> Download Playbook </Button>
+                            <Split gutter="md">
+                                <SplitItem><Button onClick={ () => downloadPlaybook(remediation.id) }> Download Playbook </Button></SplitItem>
+                                <SplitItem><Button onClick={ this.deleteRemediation }>Delete</Button></SplitItem>
+                            </Split>
                         </LevelItem>
                     </Level>
                 </PageHeader>
@@ -173,8 +182,10 @@ RemediationDetails.propTypes = {
     }),
     status: PropTypes.string.isRequired,
     remediation: PropTypes.object,
+    history: PropTypes.object.isRequired,
     loadRemediation: PropTypes.func.isRequired,
-    switchAutoReboot: PropTypes.func.isRequired
+    switchAutoReboot: PropTypes.func.isRequired,
+    deleteRemediation: PropTypes.func.isRequired
 };
 
 export default withRouter(
@@ -183,7 +194,8 @@ export default withRouter(
         dispatch => ({
             loadRemediation: id => dispatch(actions.loadRemediation(id)),
             // eslint-disable-next-line camelcase
-            switchAutoReboot: (id, auto_reboot) => dispatch(actions.patchRemediation(id, { auto_reboot }))
+            switchAutoReboot: (id, auto_reboot) => dispatch(actions.patchRemediation(id, { auto_reboot })),
+            deleteRemediation: id => dispatch(actions.deleteRemediation(id))
         })
     )(RemediationDetails)
 );

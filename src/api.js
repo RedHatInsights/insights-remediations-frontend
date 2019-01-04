@@ -62,3 +62,11 @@ export function patchRemediation (id, data) {
 export function getHosts () {
     return fetch('/r/insights/platform/inventory/api/v1/hosts').then(json);
 }
+
+export function deleteRemediation (id) {
+    const uri = urijs(API_BASE).segment('remediations').segment(id).toString();
+
+    return fetch(uri, {
+        method: 'DELETE'
+    }).then(json);
+}
