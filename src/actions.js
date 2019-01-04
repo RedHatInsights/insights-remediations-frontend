@@ -24,3 +24,8 @@ export const patchRemediation = (id, data) => {
         payload: api.patchRemediation(id, data)
     };
 };
+
+export const deleteRemediation = (id) => ({
+    type: ACTION_TYPES.DELETE_REMEDIATION,
+    payload: api.deleteRemediation(id)
+});
