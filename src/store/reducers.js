@@ -45,6 +45,16 @@ const reducers = {
             status: 'fulfilled',
             remediation: computeRebootStats(action.payload)
         }),
+        [ACTION_TYPES.REFRESH_REMEDIATION_FULFILLED]: (state, action) => {
+            if (action.payload.id === state.remediation.id) {
+                return {
+                    status: 'fulfilled',
+                    remediation: computeRebootStats(action.payload)
+                };
+            }
+
+            return state;
+        },
         [ACTION_TYPES.LOAD_REMEDIATION_REJECTED]: () => ({
             status: 'rejected'
         }),
