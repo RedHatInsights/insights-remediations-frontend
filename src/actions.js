@@ -11,6 +11,11 @@ export const loadRemediation = (id) => ({
     payload: api.getRemediation(id)
 });
 
+export const refreshRemediation = (id) => ({
+    type: ACTION_TYPES.REFRESH_REMEDIATION,
+    payload: api.getRemediation(id)
+});
+
 export const createRemediation = (data) => {
     return {
         type: ACTION_TYPES.CREATE_REMEDIATIONS,
@@ -28,4 +33,9 @@ export const patchRemediation = (id, data) => {
 export const deleteRemediation = (id) => ({
     type: ACTION_TYPES.DELETE_REMEDIATION,
     payload: api.deleteRemediation(id)
+});
+
+export const patchRemediationIssue = (id, issue, resolution) => ({
+    type: ACTION_TYPES.PATCH_REMEDIATION_ISSUE,
+    payload: api.patchRemediationIssue(id, issue, resolution)
 });

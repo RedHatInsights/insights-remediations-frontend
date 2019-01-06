@@ -67,6 +67,8 @@ class Home extends Component {
             id: 'vulnerabilities:CVE_2017_6074_kernel|KERNEL_CVE_2017_6074'
         }, {
             id: 'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE'
+        }, {
+            id: 'advisor:corosync_enable_rt_schedule|COROSYNC_NOT_ENABLE_RT'
         }],
         systems: this.state.allHosts
     });
