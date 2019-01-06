@@ -15,6 +15,16 @@ function json (r) {
     return r.json();
 }
 
+function patch (uri, body) {
+    return fetch(uri, {
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8'
+        },
+        method: 'PATCH',
+        body: JSON.stringify(body)
+    });
+}
+
 export function getRemediations () {
     const uri = urijs(API_BASE).segment('remediations').toString();
 
@@ -23,7 +33,6 @@ export function getRemediations () {
 
 export function getRemediation (id) {
     const uri = urijs(API_BASE).segment('remediations').segment(id).toString();
-
     return fetch(uri).then(json);
 }
 
@@ -47,15 +56,16 @@ export function createRemediation (data) {
 export function patchRemediation (id, data) {
     const uri = urijs(API_BASE).segment('remediations').segment(id).toString();
 
-    return fetch(uri, {
-        headers: {
-            'Content-Type': 'application/json; charset=utf-8'
-        },
-        method: 'PATCH',
-        body: JSON.stringify(data)
-    })
+    return patch(uri, data)
     .then(checkResponse)
     .then(() => data);
+}
+
+export function patchRemediationIssue (id, issue, resolution) {
+    const uri = urijs(API_BASE).segment('remediations').segment(id).segment('issues').segment(issue).toString();
+
+    return patch(uri, { resolution })
+    .then(checkResponse);
 }
 
 // this is here for demo purposes only
@@ -69,4 +79,9 @@ export function deleteRemediation (id) {
     return fetch(uri, {
         method: 'DELETE'
     });
+}
+
+export function getResolutions (issue) {
+    const uri = urijs(API_BASE).segment('resolutions').segment(issue).toString();
+    return fetch(uri).then(json);
 }
