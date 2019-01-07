@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import asyncComponent from '../Utilities/asyncComponent';
 import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
+import { ConnectedDeleteButton } from '../containers/ConnectedComponents';
 
 import {
     Main,
@@ -42,11 +43,6 @@ class RemediationDetails extends Component {
         this.props.switchAutoReboot(this.id, autoReboot);
     };
 
-    deleteRemediation = () => {
-        this.props.deleteRemediation(this.id);
-        this.props.history.push('/');
-    }
-
     async componentDidMount () {
         await window.insights.chrome.auth.getUser();
         await this.loadRemediation();
@@ -77,7 +73,7 @@ class RemediationDetails extends Component {
                         <LevelItem>
                             <Split gutter="md">
                                 <SplitItem><Button onClick={ () => downloadPlaybook(remediation.id) }> Download Playbook </Button></SplitItem>
-                                <SplitItem><Button onClick={ this.deleteRemediation }>Delete</Button></SplitItem>
+                                <SplitItem><ConnectedDeleteButton remediation={ remediation }/></SplitItem>
                             </Split>
                         </LevelItem>
                     </Level>

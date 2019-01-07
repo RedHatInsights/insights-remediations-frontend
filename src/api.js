@@ -68,5 +68,5 @@ export function deleteRemediation (id) {
 
     return fetch(uri, {
         method: 'DELETE'
-    }).then(json);
+    });
 }
