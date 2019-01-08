@@ -3,11 +3,10 @@ import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import asyncComponent from '../Utilities/asyncComponent';
 import { formatUser } from '../Utilities/model';
 import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
-import { ConnectedDeleteButton } from '../containers/ConnectedComponents';
+import { ConnectedDeleteButton, ConnectedRemediationDetailsTable } from '../containers/ConnectedComponents';
 
 import {
     Main,
@@ -26,7 +25,6 @@ import {
     Split, SplitItem
 } from '@patternfly/react-core';
 
-const RemediationDetailsTable = asyncComponent(() => import('../components/RemediationDetailsTable'));
 import './RemediationDetails.scss';
 
 class RemediationDetails extends Component {
@@ -162,7 +160,7 @@ class RemediationDetails extends Component {
                             </Grid>
                         </StackItem>
                         <StackItem>
-                            <RemediationDetailsTable remediation={ remediation }/>
+                            <ConnectedRemediationDetailsTable remediation={ remediation }/>
                         </StackItem>
                     </Stack>
                 </Main>

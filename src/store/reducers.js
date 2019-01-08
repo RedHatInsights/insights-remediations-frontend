@@ -70,6 +70,19 @@ const reducers = {
             }
 
             return { status, remediation };
+        },
+        [ACTION_TYPES.DELETE_REMEDIATION_ISSUE_FULFILLED]: (state, action) => {
+            if (action.payload.id === state.remediation.id) {
+                return {
+                    status: 'fulfilled',
+                    remediation: computeRebootStats({
+                        ...state.remediation,
+                        issues: state.remediation.issues.filter(issue => issue.id !== action.payload.issueId)
+                    })
+                };
+            }
+
+            return state;
         }
     }, {
         status: 'initial'

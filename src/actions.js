@@ -35,6 +35,11 @@ export const deleteRemediation = (id) => ({
     payload: api.deleteRemediation(id)
 });
 
+export const deleteRemediationIssue = (id, issueId) => ({
+    type: ACTION_TYPES.DELETE_REMEDIATION_ISSUE,
+    payload: api.deleteRemediationIssue(id, issueId).then(() => ({ id, issueId }))
+});
+
 export const patchRemediationIssue = (id, issue, resolution) => ({
     type: ACTION_TYPES.PATCH_REMEDIATION_ISSUE,
     payload: api.patchRemediationIssue(id, issue, resolution)
