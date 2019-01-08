@@ -78,7 +78,15 @@ export function deleteRemediation (id) {
 
     return fetch(uri, {
         method: 'DELETE'
-    });
+    }).then(checkResponse);
+}
+
+export function deleteRemediationIssue (remediation, issue) {
+    const uri = urijs(API_BASE).segment('remediations').segment(remediation).segment('issues').segment(issue).toString();
+
+    return fetch(uri, {
+        method: 'DELETE'
+    }).then(checkResponse);
 }
 
 export function getResolutions (issue) {

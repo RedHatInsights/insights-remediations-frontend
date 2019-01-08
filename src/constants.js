@@ -8,6 +8,7 @@ const asyncActions = flatMap([
     'REFRESH_REMEDIATION',
     'PATCH_REMEDIATION',
     'DELETE_REMEDIATION',
+    'DELETE_REMEDIATION_ISSUE',
     'PATCH_REMEDIATION_ISSUE'
 ], a => [ a, `${a}_PENDING`, `${a}_FULFILLED`, `${a}_REJECTED` ]);
 

@@ -1,9 +1,10 @@
-import { deleteRemediation, refreshRemediation, patchRemediationIssue } from '../actions';
+import { deleteRemediation, deleteRemediationIssue, refreshRemediation, patchRemediationIssue } from '../actions';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 import DeleteButton from '../components/DeleteButton';
 import ResolutionEditButton from '../components/ResolutionEditButton';
+import RemediationDetailsTable from '../components/RemediationDetailsTable';
 
 export const ConnectedDeleteButton = withRouter(connect(
     f => f,
@@ -24,3 +25,12 @@ export const ConnectResolutionEditButton = connect(
         }
     })
 )(ResolutionEditButton);
+
+export const ConnectedRemediationDetailsTable = connect(
+    f => f,
+    (dispatch, { remediation }) => ({
+        onDeleteActions: async (issues) => {
+            issues.map(issue => dispatch(deleteRemediationIssue(remediation.id, issue)));
+        }
+    })
+)(RemediationDetailsTable);
