@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import transform from 'lodash/transform';
 
 import { Table } from '@red-hat-insights/insights-frontend-components';
 
@@ -50,7 +51,8 @@ class RemediationDetailsTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            expandedRow: false
+            expandedRow: false,
+            selected: {}
         };
     }
 
@@ -58,11 +60,37 @@ class RemediationDetailsTable extends React.Component {
         this.setState({ expandedRow: this.state.expandedRow === rowKey ? false : rowKey });
     }
 
+    onSelected = (event, rowKey, selected) => {
+        rowKey = Math.floor(rowKey / 2); // TODO: remove once a new table component is used
+
+        this.setState(state => ({
+            selected: {
+                ...state.selected,
+                [rowKey]: selected
+            }
+        }));
+    }
+
+    getSelectedIssues = () => transform(
+        this.state.selected,
+        (result, value, key) => {
+            value && result.push(this.props.remediation.issues[parseInt(key)]);
+        },
+        []
+    );
+
+    onRemoveActions = () => {
+        const selected = this.getSelectedIssues();
+        this.props.onDeleteActions(selected.map(issue => issue.id));
+        this.setState({ selected: {}});
+    }
+
     buildRows = remediation => {
         return remediation.issues.flatMap((issue, issueIndex) => ([
             {
                 children: [ 1 ],
                 isActive: false,
+                selected: this.state.selected[issueIndex] || false,
                 cells: [
                     issue.description,
                     resolutionDescriptionCell(remediation, issue),
@@ -120,8 +148,14 @@ class RemediationDetailsTable extends React.Component {
                             </LevelItem>
                             <LevelItem>
                                 <Split gutter="md">
-                                    <SplitItem><Button isDisabled ={ true }> Add Action </Button></SplitItem>
-                                    <SplitItem><Button> Remove Action </Button></SplitItem>
+                                    <SplitItem><Button isDisabled={ true }> Add Action </Button></SplitItem>
+                                    <SplitItem>
+                                        <Button
+                                            isDisabled={ !this.getSelectedIssues().length }
+                                            onClick={ this.onRemoveActions }>
+                                            Remove Action
+                                        </Button>
+                                    </SplitItem>
                                 </Split>
                             </LevelItem>
                         </Level>
@@ -149,6 +183,7 @@ class RemediationDetailsTable extends React.Component {
                             }
                             expandable
                             onExpandClick={ (event, row, rowKey) => this.onExpandClicked(event, row, rowKey) }
+                            onItemSelect={ this.onSelected }
                             hasCheckbox={ true }
                             rows= { rows }
                         />
@@ -161,7 +196,8 @@ class RemediationDetailsTable extends React.Component {
 }
 
 RemediationDetailsTable.propTypes = {
-    remediation: PropTypes.object
+    remediation: PropTypes.object,
+    onDeleteActions: PropTypes.func.isRequired
 };
 
 export default RemediationDetailsTable;
