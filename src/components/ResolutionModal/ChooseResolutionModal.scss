@@ -1,0 +1,18 @@
+@import '@red-hat-insights/insights-frontend-components/Utilities/_mixins.scss';
+
+.ins-c-resolution-modal {
+
+    .ins-c-resolution-choice__details {
+        .pf-l-stack__item:not(:first-child) {
+            @include rem('margin-left', 15px);
+        }
+    }
+
+    .ins-c-reboot {
+        span {
+            @include rem('margin-left', 4px);
+            color: red;
+        }
+        svg { fill: red; }
+    }
+}
