@@ -3,15 +3,20 @@ import PropTypes from 'prop-types';
 
 import {
     Form,
-    Radio
+    Radio,
+    Stack,
+    StackItem
 } from '@patternfly/react-core';
 
+import { RebootingIcon } from '@patternfly/react-icons';
+
 import {
-    Ansible,
     Battery
 } from '@red-hat-insights/insights-frontend-components';
 
 import { getResolutions } from '../../api';
+
+import './ChooseResolutionModal.scss';
 
 class ResolutionStep extends Component {
 
@@ -46,33 +51,41 @@ class ResolutionStep extends Component {
         }
 
         return (
-            <React.Fragment>
-                <h1>{ this.issue.description }</h1>
-                <h2>Would you like to:</h2>
-                <Form>
-                    {
-                        resolutions.resolutions.map(resolution => (
-                            <div className="ins-c-resolution-option" key={ resolution.id }>
-                                <Radio
-                                    label={
-                                        <div>
-                                            { resolution.description }
-                                            <Battery label="Resolution risk" severity={ resolution.resolution_risk } />
-                                            TODO: reboot indication goes here instead of Ansible icon
-                                            <Ansible unsupported={ !resolution.needs_reboot } />
-                                        </div>
-                                    }
-                                    aria-label={ resolution.description }
-                                    id={ resolution.id }
-                                    name="radio"
-                                    defaultChecked={ resolution.id === selected.id }
-                                    onChange={ () => this.onRadioChange(resolution) }
-                                />
-                            </div>
-                        ))
-                    }
-                </Form>
-            </React.Fragment>
+            <Stack gutter='sm'>
+                <StackItem><h1>{ this.issue.description }</h1></StackItem>
+                <StackItem><h2>Would you like to:</h2></StackItem>
+                <StackItem>
+                    <Form>
+                        {
+                            resolutions.resolutions.map(resolution => (
+                                <div className="ins-c-resolution-option" key={ resolution.id }>
+                                    <Radio
+                                        label={
+                                            <Stack className='ins-c-resolution-choice__details'>
+                                                <StackItem>{ resolution.description }</StackItem>
+                                                <StackItem>
+                                                    <Battery label="Resolution risk" severity={ resolution.resolution_risk } />
+                                                </StackItem>
+                                                { resolution.needs_reboot &&
+                                                    <StackItem className='ins-c-reboot'>
+                                                        <RebootingIcon/>
+                                                        <span>Needs Reboot</span>
+                                                    </StackItem>
+                                                }
+                                            </Stack>
+                                        }
+                                        aria-label={ resolution.description }
+                                        id={ resolution.id }
+                                        name="radio"
+                                        defaultChecked={ resolution.id === selected.id }
+                                        onChange={ () => this.onRadioChange(resolution) }
+                                    />
+                                </div>
+                            ))
+                        }
+                    </Form>
+                </StackItem>
+            </Stack>
         );
     }
 };
