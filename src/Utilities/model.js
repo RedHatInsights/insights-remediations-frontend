@@ -19,3 +19,7 @@ export function getSystemName ({ display_name, hostname, id }) {
 
     return id;
 }
+
+export function formatUser (user) {
+    return `${user.first_name} ${user.last_name}`;
+}

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Table } from '@red-hat-insights/insights-frontend-components';
 import { SyncAltIcon } from '@patternfly/react-icons';
+import { formatUser } from '../Utilities/model';
 import './RemediationTable.scss';
 
 import moment from 'moment';
@@ -37,7 +38,7 @@ const RemediationTable = function ({ value, status }) {
             buildName(remediation.name, remediation.id),
             remediation.system_count,
             remediation.issue_count,
-            String(remediation.updated_by),
+            formatUser(remediation.updated_by),
             formatDate(remediation.updated_at)
         ]
     }));
