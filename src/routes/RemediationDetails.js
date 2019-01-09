@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import asyncComponent from '../Utilities/asyncComponent';
+import { formatUser } from '../Utilities/model';
 import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
 import { ConnectedDeleteButton } from '../containers/ConnectedComponents';
@@ -151,7 +152,7 @@ class RemediationDetails extends Component {
                                         </CardHeader>
                                         <CardBody>
                                             <Stack>
-                                                <StackItem>Created By: { remediation.created_by }</StackItem>
+                                                <StackItem>Created By: { formatUser(remediation.created_by) }</StackItem>
                                                 <StackItem>Date: { moment(remediation.created_at).format('lll') }</StackItem>
                                                 <StackItem> Shared with: unknown </StackItem>
                                             </Stack>
