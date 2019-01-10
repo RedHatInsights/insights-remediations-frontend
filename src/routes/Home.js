@@ -7,9 +7,7 @@ import * as actions from '../actions';
 import { getHosts } from '../api';
 
 import { Main, PageHeader, PageHeaderTitle, Wizard, RemediationButton } from '@red-hat-insights/insights-frontend-components';
-import { Button } from '@patternfly/react-core';
 import RemediationTable from '../components/RemediationTable';
-import NewRemediationButton from '../components/NewRemediationButton';
 
 import { addNotification } from '@red-hat-insights/insights-frontend-components/components/Notifications';
 
@@ -62,16 +60,25 @@ class Home extends Component {
         this.store.dispatch(addNotification(data));
     }
 
-    dataProvider = () => ({
-        issues: [{
-            id: 'vulnerabilities:CVE_2017_6074_kernel|KERNEL_CVE_2017_6074'
-        }, {
-            id: 'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE'
-        }, {
-            id: 'advisor:corosync_enable_rt_schedule|COROSYNC_NOT_ENABLE_RT'
-        }],
-        systems: this.state.allHosts
-    });
+    dataProvider = (count = 3) => {
+        const data = {
+            issues: [{
+                id: 'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
+                description: 'Bonding will not fail over to the backup link when bonding options are partially read'
+            }, {
+                id: 'vulnerabilities:CVE_2017_6074_kernel|KERNEL_CVE_2017_6074',
+                description: 'Kernel vulnerable to local privilege escalation via DCCP module (CVE-2017-6074)'
+            }, {
+                id: 'advisor:corosync_enable_rt_schedule|COROSYNC_NOT_ENABLE_RT',
+                description: 'Cluster nodes are frequently fenced as realtime is not enabled in corosync'
+            }],
+            systems: this.state.allHosts
+        };
+
+        data.issues = data.issues.slice(0, count);
+
+        return data;
+    }
 
     onRemediationCreated = result => {
         this.sendNotification(result.getNotification());
@@ -92,14 +99,17 @@ class Home extends Component {
             <React.Fragment>
                 <PageHeader>
                     <PageHeaderTitle title='Remediations'></PageHeaderTitle>
-                    <Button variant='primary' onClick={ this.openModal }>Create Remediation</Button>
-                    <NewRemediationButton onCreated = { this.loadRemediations } />
-                    <RemediationButton
-                        dataProvider={ this.dataProvider }
-                        isDisabled={ !allHosts || !allHosts.length }
-                        onRemediationCreated={ this.onRemediationCreated } >
-                        Hot-loaded Wizard
-                    </RemediationButton>
+                    {
+                        [ 1, 2, 3 ].map(i =>
+                            <RemediationButton
+                                key={ i }
+                                dataProvider={ this.dataProvider.bind(this, i) }
+                                isDisabled={ !allHosts || !allHosts.length }
+                                onRemediationCreated={ this.onRemediationCreated } >
+                                Hot-loaded Wizard ({ i })
+                            </RemediationButton>
+                        )
+                    }
                 </PageHeader>
                 <Main>
                     <ConnectedRemediationTable />
