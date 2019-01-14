@@ -8,10 +8,9 @@ import {
     StackItem
 } from '@patternfly/react-core';
 
-import { RebootingIcon } from '@patternfly/react-icons';
-
 import {
-    Battery
+    Battery,
+    Reboot
 } from '@red-hat-insights/insights-frontend-components';
 
 import { getResolutions } from '../../api';
@@ -67,10 +66,7 @@ class ResolutionStep extends Component {
                                                     <Battery label="Resolution risk" severity={ resolution.resolution_risk } />
                                                 </StackItem>
                                                 { resolution.needs_reboot &&
-                                                    <StackItem className='ins-c-reboot'>
-                                                        <RebootingIcon/>
-                                                        <span>Needs Reboot</span>
-                                                    </StackItem>
+                                                    <StackItem> <Reboot red/> </StackItem>
                                                 }
                                             </Stack>
                                         }
