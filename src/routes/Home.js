@@ -100,15 +100,15 @@ class Home extends Component {
                 <PageHeader>
                     <PageHeaderTitle title='Remediations'></PageHeaderTitle>
                     { !window.insights.chrome.isProd &&
-                            [ 1, 2, 3 ].map(i =>
-                                <RemediationButton
-                                    key={ i }
-                                    dataProvider={ this.dataProvider.bind(this, i) }
-                                    isDisabled={ !allHosts || !allHosts.length }
-                                    onRemediationCreated={ this.onRemediationCreated } >
-                                    Hot-loaded Wizard ({ i })
-                                </RemediationButton>
-                            )
+                        [ 1, 2, 3 ].map(i =>
+                            <RemediationButton
+                                key={ i }
+                                dataProvider={ this.dataProvider.bind(this, i) }
+                                isDisabled={ !allHosts || !allHosts.length }
+                                onRemediationCreated={ this.onRemediationCreated } >
+                                Hot-loaded Wizard ({ i })
+                            </RemediationButton>
+                        )
                     }
                 </PageHeader>
                 <Main>
