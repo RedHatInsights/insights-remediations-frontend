@@ -99,16 +99,16 @@ class Home extends Component {
             <React.Fragment>
                 <PageHeader>
                     <PageHeaderTitle title='Remediations'></PageHeaderTitle>
-                    {
-                        [ 1, 2, 3 ].map(i =>
-                            <RemediationButton
-                                key={ i }
-                                dataProvider={ this.dataProvider.bind(this, i) }
-                                isDisabled={ !allHosts || !allHosts.length }
-                                onRemediationCreated={ this.onRemediationCreated } >
-                                Hot-loaded Wizard ({ i })
-                            </RemediationButton>
-                        )
+                    { !window.insights.chrome.isProd &&
+                            [ 1, 2, 3 ].map(i =>
+                                <RemediationButton
+                                    key={ i }
+                                    dataProvider={ this.dataProvider.bind(this, i) }
+                                    isDisabled={ !allHosts || !allHosts.length }
+                                    onRemediationCreated={ this.onRemediationCreated } >
+                                    Hot-loaded Wizard ({ i })
+                                </RemediationButton>
+                            )
                     }
                 </PageHeader>
                 <Main>
