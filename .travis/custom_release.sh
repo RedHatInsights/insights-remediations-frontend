@@ -1,20 +1,18 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -e
 set -x
 
-function release {
-    .travis/release.sh prod-$1
-    cd dist
-    git push --force --set-upstream travis-build HEAD:ci-$1
-    git push --force --set-upstream travis-build HEAD:qa-$1
-}
-
-# If current dev branch is master, push to beta branches
-if [[ "${TRAVIS_BRANCH}" = "master" ]]; then
-    release "beta"
-fi
-
-# If current dev branch is deployment branch, push to stable branches
-if [[ "${TRAVIS_BRANCH}" = "stable" ]]; then
-    release ${TRAVIS_BRANCH}
+# for now ... push everywhere when master updates
+if [ "${TRAVIS_BRANCH}" = "master" ]; then
+    for env in ci qa prod
+    do
+        for release in stable beta
+        do
+            echo
+            echo
+            echo "PUSHING ${env}-${release}"
+	        rm -rf dist/.git
+            .travis/release.sh "${env}-${release}"
+        done
+    done
 fi
