@@ -4,10 +4,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import * as actions from '../actions';
-import { getHosts } from '../api';
 
-import { Main, PageHeader, PageHeaderTitle, Wizard, RemediationButton } from '@red-hat-insights/insights-frontend-components';
+import { Main, PageHeader, PageHeaderTitle, Wizard } from '@red-hat-insights/insights-frontend-components';
 import RemediationTable from '../components/RemediationTable';
+import TestButtons from '../components/TestButtons';
 
 import { addNotification } from '@red-hat-insights/insights-frontend-components/components/Notifications';
 
@@ -26,8 +26,7 @@ class Home extends Component {
         this.store = ctx.store;
         this.loadRemediations = () => ctx.store.dispatch(actions.loadRemediations());
         this.state = {
-            isModalOpen: false,
-            allHosts: false
+            isModalOpen: false
         };
     };
 
@@ -51,33 +50,10 @@ class Home extends Component {
         await window.insights.chrome.auth.getUser();
 
         this.loadRemediations();
-        getHosts().then(hosts => this.setState({
-            allHosts: hosts.results.map(result => result.id)
-        }));
     }
 
     sendNotification = data => {
         this.store.dispatch(addNotification(data));
-    }
-
-    dataProvider = (count = 3) => {
-        const data = {
-            issues: [{
-                id: 'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
-                description: 'Bonding will not fail over to the backup link when bonding options are partially read'
-            }, {
-                id: 'vulnerabilities:CVE_2017_6074_kernel|KERNEL_CVE_2017_6074',
-                description: 'Kernel vulnerable to local privilege escalation via DCCP module (CVE-2017-6074)'
-            }, {
-                id: 'advisor:corosync_enable_rt_schedule|COROSYNC_NOT_ENABLE_RT',
-                description: 'Cluster nodes are frequently fenced as realtime is not enabled in corosync'
-            }],
-            systems: this.state.allHosts
-        };
-
-        data.issues = data.issues.slice(0, count);
-
-        return data;
     }
 
     onRemediationCreated = result => {
@@ -87,7 +63,7 @@ class Home extends Component {
 
     render() {
 
-        const { isModalOpen, allHosts } = this.state;
+        const { isModalOpen } = this.state;
 
         // Wizard Content
         const ModalStepContent = [
@@ -99,17 +75,7 @@ class Home extends Component {
             <React.Fragment>
                 <PageHeader>
                     <PageHeaderTitle title='Remediations'></PageHeaderTitle>
-                    {
-                        [ 1, 2, 3 ].map(i =>
-                            <RemediationButton
-                                key={ i }
-                                dataProvider={ this.dataProvider.bind(this, i) }
-                                isDisabled={ !allHosts || !allHosts.length }
-                                onRemediationCreated={ this.onRemediationCreated } >
-                                Hot-loaded Wizard ({ i })
-                            </RemediationButton>
-                        )
-                    }
+                    <TestButtons onRemediationCreated={ this.onRemediationCreated } />
                 </PageHeader>
                 <Main>
                     <ConnectedRemediationTable />
