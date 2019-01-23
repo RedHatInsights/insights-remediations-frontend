@@ -28,3 +28,5 @@ SPANDX_CONFIG="$(pwd)/insights-remediations-frontend/config/spandx.config.local.
 ### Testing
 
 Run `npm run verify` to run build, linters and tests
+
+Use `remediations:debug` localStorage entry to unlock testing utilities in the UI (`localStorage.setItem('remediations:debug', true)`)
