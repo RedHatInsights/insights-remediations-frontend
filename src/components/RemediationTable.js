@@ -2,17 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Link } from 'react-router-dom';
-import { Table } from '@red-hat-insights/insights-frontend-components';
-import { SyncAltIcon } from '@patternfly/react-icons';
+import { Table, TableHeader, TableBody } from '@patternfly/react-table';
 import { formatUser } from '../Utilities/model';
 import './RemediationTable.scss';
 
 import moment from 'moment';
+import SkeletonTable from './SkeletonTable';
 
 function buildName (name, id) {
-    return (
-        <Link to={ `/${id}` }>{ name }</Link>
-    );
+    return ({
+        title: <Link to={ `/${id}` }>{ name }</Link>
+    });
 }
 
 function formatDate (date) {
@@ -21,11 +21,10 @@ function formatDate (date) {
 
 const RemediationTable = function ({ value, status }) {
 
+    // Skeleton Loading
     if (status !== 'fulfilled') {
         return (
-            <p className='ins-c-remediations-table--loading'>
-                <SyncAltIcon/>
-            </p>
+            <SkeletonTable/>
         );
     }
 
@@ -44,27 +43,26 @@ const RemediationTable = function ({ value, status }) {
     }));
 
     return (
-        <Table
-            header={ [
-                {
-                    title: 'Remediation',
-                    hasSort: true
-                }, {
-                    title: 'Systems',
-                    hasSort: true
-                }, {
-                    title: 'Actions',
-                    hasSort: true
-                }, {
-                    title: 'Last Modified By',
-                    hasSort: true
-                }, {
-                    title: 'Last Modified On',
-                    hasSort: true
-                }]
-            }
-            rows={ rows }
-        />
+        <React.Fragment>
+            <Table
+                cells={ [
+                    {
+                        title: 'Remediation'
+                    }, {
+                        title: 'Systems'
+                    }, {
+                        title: 'Actions'
+                    }, {
+                        title: 'Last Modified By'
+                    }, {
+                        title: 'Last Modified On'
+                    }]
+                }
+                rows={ rows }>
+                <TableHeader/>
+                <TableBody/>
+            </Table>
+        </React.Fragment>
     );
 };
 
