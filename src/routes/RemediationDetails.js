@@ -26,6 +26,7 @@ import {
 } from '@patternfly/react-core';
 
 import './RemediationDetails.scss';
+import RemediationDetailsSkeleton from '../skeletons/RemediationDetailsSkeleton';
 
 class RemediationDetails extends Component {
 
@@ -51,7 +52,7 @@ class RemediationDetails extends Component {
         const { status, remediation } = this.props;
 
         if (status !== 'fulfilled') {
-            return <div>Loading</div>;
+            return <RemediationDetailsSkeleton/>;
         }
 
         const { stats } = remediation;
