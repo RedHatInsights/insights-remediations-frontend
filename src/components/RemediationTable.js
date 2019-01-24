@@ -43,26 +43,24 @@ const RemediationTable = function ({ value, status }) {
     }));
 
     return (
-        <React.Fragment>
-            <Table
-                cells={ [
-                    {
-                        title: 'Remediation'
-                    }, {
-                        title: 'Systems'
-                    }, {
-                        title: 'Actions'
-                    }, {
-                        title: 'Last Modified By'
-                    }, {
-                        title: 'Last Modified On'
-                    }]
-                }
-                rows={ rows }>
-                <TableHeader/>
-                <TableBody/>
-            </Table>
-        </React.Fragment>
+        <Table
+            cells={ [
+                {
+                    title: 'Remediation'
+                }, {
+                    title: 'Systems'
+                }, {
+                    title: 'Actions'
+                }, {
+                    title: 'Last Modified By'
+                }, {
+                    title: 'Last Modified On'
+                }]
+            }
+            rows={ rows }>
+            <TableHeader/>
+            <TableBody/>
+        </Table>
     );
 };
 
