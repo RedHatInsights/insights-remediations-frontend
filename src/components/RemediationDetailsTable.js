@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import transform from 'lodash/transform';
 
-import { Table } from '@red-hat-insights/insights-frontend-components';
-
 import { Level, LevelItem,
     TextInput,
     Button,
@@ -11,6 +9,9 @@ import { Level, LevelItem,
     Stack, StackItem,
     Grid, GridItem,
     Split, SplitItem } from '@patternfly/react-core';
+
+import { Table, TableHeader, TableBody } from '@patternfly/react-table';
+
 import { getIssueApplication, getSystemName } from '../Utilities/model';
 import './RemediationTable.scss';
 
@@ -88,19 +89,21 @@ class RemediationDetailsTable extends React.Component {
     buildRows = remediation => {
         return remediation.issues.flatMap((issue, issueIndex) => ([
             {
-                children: [ 1 ],
-                isActive: false,
-                selected: this.state.selected[issueIndex] || false,
+                isOpen: false,
+                // selected: this.state.selected[issueIndex] || false,
                 cells: [
                     issue.description,
                     resolutionDescriptionCell(remediation, issue),
                     issue.resolution.needs_reboot === true ? 'Yes' : 'No',
                     issue.systems.length,
-                    getIssueApplication(issue)
+                    { 
+                        title: getIssueApplication(issue),
+                        props: { className: 'ins-m-nowrap' }
+                    }
                 ]
             },
             {
-                isOpen: false,
+                parent: 0,
                 cells: [{
                     title:
                         <React.Fragment>
@@ -122,8 +125,7 @@ class RemediationDetailsTable extends React.Component {
                                     </CardBody>
                                 </Card>
                             ])) }
-                        </React.Fragment>,
-                    colSpan: 4
+                        </React.Fragment>
                 }]
             }
         ]));
@@ -163,30 +165,27 @@ class RemediationDetailsTable extends React.Component {
                     <StackItem>
                         <Table
                             className='ins-c-remediations-details-table'
-                            header={ [
+                            cells={ [
                                 {
-                                    title: 'Actions',
-                                    hasSort: true
+                                    title: 'Actions'
                                 }, {
-                                    title: 'Resolution',
-                                    hasSort: true
+                                    title: 'Resolution'
                                 }, {
-                                    title: 'Reboot Required',
-                                    hasSort: true
+                                    title: 'Reboot Required'
                                 }, {
-                                    title: '# of systems',
-                                    hasSort: true
+                                    title: '# of systems'
                                 }, {
-                                    title: 'Type',
-                                    hasSort: true
+                                    title: 'Type'
                                 }]
                             }
-                            expandable
-                            onExpandClick={ (event, row, rowKey) => this.onExpandClicked(event, row, rowKey) }
-                            onItemSelect={ this.onSelected }
-                            hasCheckbox={ true }
+                            onCollapse={ (event, row, rowKey) => this.onExpandClicked(event, row, rowKey) }
+                            // onItemSelect={ this.onSelected }
+                            // hasCheckbox={ true }
                             rows= { rows }
-                        />
+                        >
+                            <TableHeader/>
+                            <TableBody/>
+                        </Table>
                     </StackItem>
                 </Stack>
             </React.Fragment>

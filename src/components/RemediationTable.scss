@@ -4,6 +4,8 @@
     text-align: center;
 }
 
+.ins-m-nowrap { white-space: nowrap; }
+
 // TODO Fix when pf releases new version of progress that fixes title
 .pf-c-progress.remediationProgress{
     --pf-c-progress--GridGap: 0;
