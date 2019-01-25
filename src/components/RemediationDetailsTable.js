@@ -33,17 +33,12 @@ function resolutionDescriptionCell (remediation, issue) {
 }
 
 function expandRow (rows, expandedRow) {
-    if (!expandedRow) {
-        return rows;
-    }
-
     const row = rows[expandedRow];
     if (!row) {
         return rows;
     }
 
-    row.isActive = !row.isActive;
-    row.children.forEach(childKey => rows[childKey].isOpen = !rows[childKey].isOpen);
+    row.isOpen = !row.isOpen;
     return rows;
 }
 
@@ -57,7 +52,7 @@ class RemediationDetailsTable extends React.Component {
         };
     }
 
-    onExpandClicked = (event, row, rowKey) => {
+    onExpandClicked = (event, rowKey) => {
         this.setState({ expandedRow: this.state.expandedRow === rowKey ? false : rowKey });
     }
 
