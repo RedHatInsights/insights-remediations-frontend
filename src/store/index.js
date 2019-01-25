@@ -1,4 +1,5 @@
 import { getRegistry } from '@red-hat-insights/insights-frontend-components/';
+import { notificationsMiddleware } from '@red-hat-insights/insights-frontend-components/components/Notifications';
 import promiseMiddleware from 'redux-promise-middleware';
 import reducers from './reducers';
 
@@ -11,6 +12,9 @@ export function init (...middleware) {
 
     registry = getRegistry({}, [
         promiseMiddleware(),
+        notificationsMiddleware({
+            errorTitleKey: 'message'
+        }),
         ...middleware
     ]);
 
