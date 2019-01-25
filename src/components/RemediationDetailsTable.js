@@ -96,7 +96,7 @@ class RemediationDetailsTable extends React.Component {
                     resolutionDescriptionCell(remediation, issue),
                     issue.resolution.needs_reboot === true ? 'Yes' : 'No',
                     issue.systems.length,
-                    { 
+                    {
                         title: getIssueApplication(issue),
                         props: { className: 'ins-m-nowrap' }
                     }
