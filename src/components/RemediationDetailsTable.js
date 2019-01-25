@@ -98,7 +98,7 @@ class RemediationDetailsTable extends React.Component {
                 ]
             },
             {
-                parent: 0,
+                parent: issueIndex * 2,
                 cells: [{
                     title:
                         <React.Fragment>
