@@ -61,7 +61,7 @@ class RemediationDetails extends Component {
                 <PageHeader>
                     <Breadcrumb>
                         <BreadcrumbItem>
-                            <Link to='/'> Home </Link>
+                            <Link to='/'> Remediations </Link>
                         </BreadcrumbItem>
                         <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
                     </Breadcrumb>
