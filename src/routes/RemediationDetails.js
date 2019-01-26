@@ -6,7 +6,8 @@ import { connect } from 'react-redux';
 import { formatUser } from '../Utilities/model';
 import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
-import { ConnectedDeleteButton, ConnectedRemediationDetailsTable } from '../containers/ConnectedComponents';
+import { ConnectedRemediationDetailsTable } from '../containers/ConnectedComponents';
+import { DeleteRemediationButton } from '../containers/DeleteButtons';
 
 import {
     Main,
@@ -73,7 +74,7 @@ class RemediationDetails extends Component {
                         <LevelItem>
                             <Split gutter="md">
                                 <SplitItem><Button onClick={ () => downloadPlaybook(remediation.id) }> Download Playbook </Button></SplitItem>
-                                <SplitItem><ConnectedDeleteButton remediation={ remediation }/></SplitItem>
+                                <SplitItem><DeleteRemediationButton remediation={ remediation }/></SplitItem>
                             </Split>
                         </LevelItem>
                     </Level>

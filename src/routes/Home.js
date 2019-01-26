@@ -26,7 +26,8 @@ class Home extends Component {
         this.store = ctx.store;
         this.loadRemediations = () => ctx.store.dispatch(actions.loadRemediations());
         this.state = {
-            isModalOpen: false
+            isModalOpen: false,
+            selected: []
         };
     };
 
@@ -60,6 +61,8 @@ class Home extends Component {
         this.sendNotification(result.getNotification());
         this.loadRemediations();
     };
+
+    onSelect = selected => this.setState({ selected });
 
     render() {
 

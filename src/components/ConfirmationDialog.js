@@ -18,9 +18,9 @@ export default function ConfirmationDialog ({
             className="ins-c-dialog"
             title={ title }
             isOpen={ isOpen }
-            onClose={ onClose }
+            onClose={ () => onClose(false) }
             actions={ [
-                <Button key="cancel" variant="secondary" onClick={ onClose }>Cancel</Button>,
+                <Button key="cancel" variant="secondary" onClick={ () => onClose(false) }>Cancel</Button>,
                 <Button key="confirm" variant="primary" onClick={ () => onClose(true) }>Confirm</Button>
             ] }
         >

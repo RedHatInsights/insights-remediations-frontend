@@ -6,32 +6,34 @@ import ConfirmationDialog from './ConfirmationDialog';
 
 class DeleteButton extends Component {
 
-    constructor (props) {
-        super(props);
-        this.state = {
-            modalOpen: false
-        };
+    state = {
+        dialogOpen: false
     };
 
     onButtonClicked = () => {
-        this.setState({ modalOpen: true });
+        this.setState({ dialogOpen: true });
     }
 
-    onModalClose = (result) => {
-        this.setState({ modalOpen: false });
-        result && this.props.onDelete(this.props.remediation);
+    onDialogClose = (result) => {
+        this.setState({ dialogOpen: false });
+        result && this.props.onDelete();
     }
 
     render() {
 
-        const { modalOpen } = this.state;
+        const { dialogOpen } = this.state;
 
         return (
             <React.Fragment>
-                <Button onClick={ this.onButtonClicked }>Delete</Button>
+                <Button
+                    onClick={ this.onButtonClicked }
+                    isDisabled={ this.props.isDisabled }
+                    variant="danger">
+                    Delete
+                </Button>
                 {
-                    modalOpen &&
-                    <ConfirmationDialog text="You will not be able to recover this remediation" onClose={ this.onModalClose } />
+                    dialogOpen &&
+                    <ConfirmationDialog text={ this.props.dialogMessage } onClose={ this.onDialogClose } />
                 }
             </React.Fragment>
         );
@@ -39,7 +41,8 @@ class DeleteButton extends Component {
 };
 
 DeleteButton.propTypes = {
-    remediation: PropTypes.object.isRequired,
+    dialogMessage: PropTypes.string,
+    isDisabled: PropTypes.bool,
     onDelete: PropTypes.func.isRequired
 };
 
