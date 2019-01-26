@@ -1,13 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import keyBy from 'lodash/keyBy';
+import mapValues from 'lodash/mapValues';
+
 import { Link } from 'react-router-dom';
+import {
+    Level, LevelItem,
+    Split, SplitItem,
+    Stack, StackItem,
+    TextInput
+} from '@patternfly/react-core';
 import { Table, TableHeader, TableBody } from '@patternfly/react-table';
 import { formatUser } from '../Utilities/model';
 import './RemediationTable.scss';
 
 import moment from 'moment';
 import SkeletonTable from './SkeletonTable';
+
+import { DeleteRemediationsButton } from '../containers/DeleteButtons';
 
 function buildName (name, id) {
     return ({
@@ -19,50 +30,101 @@ function formatDate (date) {
     return moment(date).format('lll');
 }
 
-const RemediationTable = function ({ value, status }) {
+class RemediationTable extends React.Component {
+    state = {
+        selected: {}
+    }
 
-    // Skeleton Loading
-    if (status !== 'fulfilled') {
+    onSelect = (isSelected, unused, index) => {
+        this.setState(state => {
+            const selected = (index === -1) ?
+                mapValues(keyBy(this.props.value.remediations.map(r => r.id), f => f), () => isSelected) :
+                {
+                    ...state.selected,
+                    [this.props.value.remediations[index].id]: isSelected
+                };
+
+            return { selected };
+        });
+    }
+
+    getSelectedItems = (selected = this.state.selected) => this.props.value.remediations.filter(r => selected[r.id]);
+
+    render () {
+        const { value, status } = this.props;
+
+        // Skeleton Loading
+        if (status !== 'fulfilled') {
+            return (
+                <SkeletonTable/>
+            );
+        }
+
+        if (status === 'fulfilled' && !value.remediations.length) {
+            return <p className='ins-c-remediations-table--empty'>No Remediations</p>;
+        }
+
+        const rows = value.remediations.map(remediation => ({
+            selected: this.state.selected[remediation.id] || false,
+            cells: [
+                buildName(remediation.name, remediation.id),
+                remediation.system_count,
+                remediation.issue_count,
+                formatUser(remediation.updated_by),
+                formatDate(remediation.updated_at)
+            ]
+        }));
+
         return (
-            <SkeletonTable/>
+            <Stack gutter="md">
+                <StackItem>
+                    <Level>
+                        <LevelItem>
+                            <TextInput
+                                isDisabled={ true }
+                                type="text"
+                                value=' '
+                                placeholder="Filter"
+                                aria-label='Filter'
+                            />
+                        </LevelItem>
+                        <LevelItem>
+                            <Split gutter="md">
+                                <SplitItem>
+                                    <DeleteRemediationsButton
+                                        isDisabled={ !this.getSelectedItems().length }
+                                        remediations={ this.getSelectedItems() }
+                                    />
+                                </SplitItem>
+                            </Split>
+                        </LevelItem>
+                    </Level>
+                </StackItem>
+                <StackItem>
+                    <Table
+                        cells={ [
+                            {
+                                title: 'Remediation'
+                            }, {
+                                title: 'Systems'
+                            }, {
+                                title: 'Actions'
+                            }, {
+                                title: 'Last Modified By'
+                            }, {
+                                title: 'Last Modified On'
+                            }]
+                        }
+                        onSelect={ this.onSelect }
+                        rows={ rows }>
+                        <TableHeader/>
+                        <TableBody/>
+                    </Table>
+                </StackItem>
+            </Stack>
         );
     }
-
-    if (status === 'fulfilled' && !value.remediations.length) {
-        return <p className='ins-c-remediations-table--empty'>No Remediations</p>;
-    }
-
-    const rows = value.remediations.map(remediation => ({
-        cells: [
-            buildName(remediation.name, remediation.id),
-            remediation.system_count,
-            remediation.issue_count,
-            formatUser(remediation.updated_by),
-            formatDate(remediation.updated_at)
-        ]
-    }));
-
-    return (
-        <Table
-            cells={ [
-                {
-                    title: 'Remediation'
-                }, {
-                    title: 'Systems'
-                }, {
-                    title: 'Actions'
-                }, {
-                    title: 'Last Modified By'
-                }, {
-                    title: 'Last Modified On'
-                }]
-            }
-            rows={ rows }>
-            <TableHeader/>
-            <TableBody/>
-        </Table>
-    );
-};
+}
 
 RemediationTable.propTypes = {
     value: PropTypes.object,
