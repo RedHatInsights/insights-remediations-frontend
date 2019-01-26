@@ -35,7 +35,7 @@ const RemediationDetailsSkeleton = () => {
                     <LevelItem>
                         <PageHeaderTitle className='ins-s-page-header' title={
                             <React.Fragment>
-                                <span>Remediation: </span>
+                                <span>Playbook: </span>
                                 <Skeleton size='md'/>
                             </React.Fragment>
                         }/>
@@ -106,7 +106,7 @@ const RemediationDetailsSkeleton = () => {
                                     <CardHeader>
                                         <Level>
                                             <LevelItem className='ins-m-card__header-bold'>
-                                                Remediation Details
+                                                Playbook Details
                                             </LevelItem>
                                             <LevelItem className='ins-c-subheader-small'>
                                                 <Skeleton size='xs'/>

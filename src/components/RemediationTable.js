@@ -142,7 +142,7 @@ class RemediationTable extends React.Component {
                     <Table
                         cells={ [
                             {
-                                title: 'Remediation'
+                                title: 'Playbook'
                             }, {
                                 title: 'Systems'
                             }, {
