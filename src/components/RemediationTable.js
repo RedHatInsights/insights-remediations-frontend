@@ -76,8 +76,8 @@ class RemediationTable extends React.Component {
                 <Card>
                     <CardBody>
                         <Bullseye>
-                            <EmptyState>
-                                <EmptyStateIcon icon={ InfoCircleIcon } />
+                            <EmptyState className='ins-c-no-remediations'>
+                                <EmptyStateIcon icon={ InfoCircleIcon } size='lg' />
                                 <Title size="lg">No Remediations</Title>
                                 <EmptyStateBody>
                                     <p>You haven&#39;t created any remediations yet.</p>
