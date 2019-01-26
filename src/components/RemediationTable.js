@@ -1,3 +1,5 @@
+/*global RELEASE:true*/
+
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -12,6 +14,13 @@ import {
     TextInput
 } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody } from '@patternfly/react-table';
+
+import { Title,
+    EmptyState, EmptyStateIcon, EmptyStateBody,
+    Card, CardBody, Bullseye } from '@patternfly/react-core';
+
+import { CubesIcon } from '@patternfly/react-icons';
+
 import { formatUser } from '../Utilities/model';
 import './RemediationTable.scss';
 
@@ -46,7 +55,7 @@ class RemediationTable extends React.Component {
 
             return { selected };
         });
-    }
+    };
 
     getSelectedItems = (selected = this.state.selected) => this.props.value.remediations.filter(r => selected[r.id]);
 
@@ -57,6 +66,35 @@ class RemediationTable extends React.Component {
         if (status !== 'fulfilled') {
             return (
                 <SkeletonTable/>
+            );
+        }
+
+        if (status === 'fulfilled' && !value.remediations.length) {
+            const basePath = `/${RELEASE}/platform`;
+
+            return (
+                <Card>
+                    <CardBody>
+                        <Bullseye>
+                            <EmptyState>
+                                <EmptyStateIcon icon={ CubesIcon } />
+                                <Title size="lg">No Remediations</Title>
+                                <EmptyStateBody>
+                                    <p>You haven&#39;t created any remediations yet.</p>
+                                    <p>
+                                        To create a remediation, please visit&nbsp;
+                                        <a href={ `${basePath}/advisor` }>Insights</a>,&nbsp;
+                                        <a href={ `${basePath}/vulnerability` }>Vulnerability</a> or&nbsp;
+                                        <a href={ `${basePath}/compliance` }>Compliance</a>&nbsp;
+                                        applications and look for the&nbsp;
+                                        <strong>Remediate with Ansible</strong>
+                                        &nbsp;button.
+                                    </p>
+                                </EmptyStateBody>
+                            </EmptyState>
+                        </Bullseye>
+                    </CardBody>
+                </Card>
             );
         }
 
