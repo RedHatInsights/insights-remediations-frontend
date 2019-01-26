@@ -69,7 +69,7 @@ class RemediationDetails extends Component {
                     </Breadcrumb>
                     <Level className="ins-c-level">
                         <LevelItem>
-                            <PageHeaderTitle title={ `Remediation: ${ remediation.name }` }/>
+                            <PageHeaderTitle title={ `Playbook: ${ remediation.name }` }/>
                         </LevelItem>
                         <LevelItem>
                             <Split gutter="md">
@@ -143,7 +143,7 @@ class RemediationDetails extends Component {
                                         <CardHeader>
                                             <Level>
                                                 <LevelItem className='ins-m-card__header-bold'>
-                                                    Remediation Details
+                                                    Playbook Details
                                                 </LevelItem>
                                                 <LevelItem className='ins-c-subheader-small'>
                                                     Last Updated: { moment(remediation.updated_at).format('lll') }
