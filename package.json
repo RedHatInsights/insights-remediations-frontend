@@ -5,7 +5,7 @@
   "repository": "https://github.com/RedHatInsights/insights-remediations-frontend",
   "dependencies": {
     "@patternfly/patternfly-next": "^1.0.101",
-    "@patternfly/react-core": "1.39.1",
+    "@patternfly/react-core": "1.49.6",
     "@patternfly/react-icons": "^2.9.5",
     "@patternfly/react-table": "^0.4.4",
     "@patternfly/react-tokens": "^1.9.1",
