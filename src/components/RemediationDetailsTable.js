@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import transform from 'lodash/transform';
+
+import keyBy from 'lodash/keyBy';
+import mapValues from 'lodash/mapValues';
 
 import { Level, LevelItem,
     TextInput,
@@ -16,6 +18,7 @@ import { getIssueApplication, getSystemName } from '../Utilities/model';
 import './RemediationTable.scss';
 
 import { ConnectResolutionEditButton } from '../containers/ConnectedComponents';
+import { DeleteActionsButton } from '../containers/DeleteButtons';
 
 function resolutionDescriptionCell (remediation, issue) {
     return (
@@ -56,24 +59,22 @@ class RemediationDetailsTable extends React.Component {
         this.setState({ expandedRow: this.state.expandedRow === rowKey ? false : rowKey });
     }
 
-    onSelected = (event, rowKey, selected) => {
-        rowKey = Math.floor(rowKey / 2); // TODO: remove once a new table component is used
+    onSelect = (isSelected, unused, index) => {
+        index = Math.floor(index / 2);
 
-        this.setState(state => ({
-            selected: {
-                ...state.selected,
-                [rowKey]: selected
-            }
-        }));
-    }
+        this.setState(state => {
+            const selected = (index === -1) ?
+                mapValues(keyBy(this.props.remediation.issues, r => r.id), () => isSelected) :
+                {
+                    ...state.selected,
+                    [this.props.remediation.issues[index].id]: isSelected
+                };
 
-    getSelectedIssues = () => transform(
-        this.state.selected,
-        (result, value, key) => {
-            value && result.push(this.props.remediation.issues[parseInt(key)]);
-        },
-        []
-    );
+            return { selected };
+        });
+    };
+
+    getSelectedIssues = () => this.props.remediation.issues.filter(i => this.state.selected[i.id]);
 
     onRemoveActions = () => {
         const selected = this.getSelectedIssues();
@@ -85,7 +86,7 @@ class RemediationDetailsTable extends React.Component {
         return remediation.issues.flatMap((issue, issueIndex) => ([
             {
                 isOpen: false,
-                // selected: this.state.selected[issueIndex] || false,
+                selected: this.state.selected[issue.id] || false,
                 cells: [
                     issue.description,
                     resolutionDescriptionCell(remediation, issue),
@@ -147,11 +148,12 @@ class RemediationDetailsTable extends React.Component {
                                 <Split gutter="md">
                                     <SplitItem><Button isDisabled={ true }> Add Action </Button></SplitItem>
                                     <SplitItem>
-                                        <Button
+
+                                        <DeleteActionsButton
                                             isDisabled={ !this.getSelectedIssues().length }
-                                            onClick={ this.onRemoveActions }>
-                                            Remove Action
-                                        </Button>
+                                            remediation={ this.props.remediation }
+                                            issues={ this.getSelectedIssues() }
+                                        />
                                     </SplitItem>
                                 </Split>
                             </LevelItem>
@@ -174,8 +176,7 @@ class RemediationDetailsTable extends React.Component {
                                 }]
                             }
                             onCollapse={ (event, row, rowKey) => this.onExpandClicked(event, row, rowKey) }
-                            // onItemSelect={ this.onSelected }
-                            // hasCheckbox={ true }
+                            onSelect={ this.onSelect }
                             rows= { rows }
                         >
                             <TableHeader/>

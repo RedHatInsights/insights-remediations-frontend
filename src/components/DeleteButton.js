@@ -29,7 +29,7 @@ class DeleteButton extends Component {
                     onClick={ this.onButtonClicked }
                     isDisabled={ this.props.isDisabled }
                     variant="danger">
-                    Delete
+                    { this.props.label }
                 </Button>
                 {
                     dialogOpen &&
@@ -41,9 +41,14 @@ class DeleteButton extends Component {
 };
 
 DeleteButton.propTypes = {
+    label: PropTypes.string,
     dialogMessage: PropTypes.string,
     isDisabled: PropTypes.bool,
     onDelete: PropTypes.func.isRequired
+};
+
+DeleteButton.defaultProps = {
+    label: 'Delete'
 };
 
 export default DeleteButton;
