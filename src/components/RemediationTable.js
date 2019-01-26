@@ -19,7 +19,7 @@ import { Title,
     EmptyState, EmptyStateIcon, EmptyStateBody,
     Card, CardBody, Bullseye } from '@patternfly/react-core';
 
-import { CubesIcon } from '@patternfly/react-icons';
+import { InfoCircleIcon } from '@patternfly/react-icons';
 
 import { formatUser } from '../Utilities/model';
 import './RemediationTable.scss';
@@ -77,7 +77,7 @@ class RemediationTable extends React.Component {
                     <CardBody>
                         <Bullseye>
                             <EmptyState>
-                                <EmptyStateIcon icon={ CubesIcon } />
+                                <EmptyStateIcon icon={ InfoCircleIcon } />
                                 <Title size="lg">No Remediations</Title>
                                 <EmptyStateBody>
                                     <p>You haven&#39;t created any remediations yet.</p>

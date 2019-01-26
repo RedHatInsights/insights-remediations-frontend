@@ -23,3 +23,10 @@
     .ins-c-system-card .pf-c-card__body { padding: 5px 10px !important; }
     .ins-c-system-card + .ins-c-system-card { @include rem('margin-top', 5px); }
 }
+
+// No remediations
+.ins-c-no-remediations {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
