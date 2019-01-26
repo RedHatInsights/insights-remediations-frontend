@@ -39,8 +39,11 @@
             @include rem('margin-bottom', 10px);
         }
     }
-    // Plan Details Card
+    // Remediations Details Card
     .ins-c-card__plan-details {
+        .pf-l-stack__item:first-of-type { 
+            @include rem('margin-bottom', 5px);
+        }
         .pf-l-stack__item:last-of-type {
             @include rem('margin-top', 7.5px);
             @include rem('padding-top', 7.5px);

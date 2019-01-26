@@ -8,6 +8,8 @@ import {
     Skeleton
 } from '@red-hat-insights/insights-frontend-components';
 
+import SkeletonTable from '../components/SkeletonTable';
+
 import {
     Grid, GridItem,
     Card, CardHeader, CardBody,
@@ -15,7 +17,8 @@ import {
     Stack, StackItem,
     Level, LevelItem,
     Breadcrumb, BreadcrumbItem,
-    Split, SplitItem
+    Split, SplitItem,
+    Button, TextInput
 } from '@patternfly/react-core';
 
 import './RemediationDetailsSkeleton.scss';
@@ -25,15 +28,25 @@ const RemediationDetailsSkeleton = () => {
         <React.Fragment>
             <PageHeader className='ins-s-remediation-detail__header'>
                 <Breadcrumb>
-                    <BreadcrumbItem><Link to='/'> Home </Link></BreadcrumbItem>
+                    <BreadcrumbItem><Link to='/'> Remediations </Link></BreadcrumbItem>
                     <BreadcrumbItem isActive><Skeleton size='lg'/></BreadcrumbItem>
                 </Breadcrumb>
-                <PageHeaderTitle title={
-                    <React.Fragment>
-                        <span>Remediation: </span>
-                        <Skeleton className='ins-s-inline' size='xs'/>
-                    </React.Fragment>
-                }/>
+                <Level className="ins-c-level">
+                    <LevelItem>
+                        <PageHeaderTitle className='ins-s-page-header' title={
+                            <React.Fragment>
+                                <span>Remediation: </span>
+                                <Skeleton size='md'/>
+                            </React.Fragment>
+                        }/>
+                    </LevelItem>
+                    <LevelItem>
+                        <Split gutter="md">
+                            <SplitItem><Button isDisabled> Download Playbook </Button></SplitItem>
+                            <SplitItem><Button isDisabled> Delete </Button></SplitItem>
+                        </Split>
+                    </LevelItem>
+                </Level>
             </PageHeader>
             <Main>
                 <Stack gutter="md">
@@ -112,7 +125,31 @@ const RemediationDetailsSkeleton = () => {
                         </Grid>
                     </StackItem>
                     <StackItem>
-                        <Skeleton size='md'/>
+                        <Stack gutter="md">
+                            <StackItem className='ins-c-remediations-details-table__toolbar'>
+                                <Level>
+                                    <LevelItem>
+                                        { /* TODO: Fix filtering */ }
+                                        <TextInput
+                                            isDisabled
+                                            type="text"
+                                            value= ' '
+                                            placeholder="Filter"
+                                            aria-label='Filter'
+                                        />
+                                    </LevelItem>
+                                    <LevelItem>
+                                        <Split gutter="md">
+                                            <SplitItem><Button isDisabled> Add Action </Button></SplitItem>
+                                            <SplitItem><Button isDisabled> Remove Action </Button></SplitItem>
+                                        </Split>
+                                    </LevelItem>
+                                </Level>
+                            </StackItem>
+                            <StackItem>
+                                <SkeletonTable/>
+                            </StackItem>
+                        </Stack>
                     </StackItem>
                 </Stack>
             </Main>
