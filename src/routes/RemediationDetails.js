@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { formatUser } from '../Utilities/model';
 import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
-import { ConnectedRemediationDetailsTable } from '../containers/ConnectedComponents';
+import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import { DeleteRemediationButton } from '../containers/DeleteButtons';
 
 import {
@@ -162,7 +162,7 @@ class RemediationDetails extends Component {
                             </Grid>
                         </StackItem>
                         <StackItem>
-                            <ConnectedRemediationDetailsTable remediation={ remediation }/>
+                            <RemediationDetailsTable remediation={ remediation }/>
                         </StackItem>
                     </Stack>
                 </Main>
