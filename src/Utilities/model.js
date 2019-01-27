@@ -23,3 +23,7 @@ export function getSystemName ({ display_name, hostname, id }) {
 export function formatUser (user) {
     return `${user.first_name} ${user.last_name}`;
 }
+
+export function includesIgnoreCase(text, included) {
+    return text.toLowerCase().includes(included.toLowerCase());
+}

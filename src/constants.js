@@ -13,3 +13,5 @@ const asyncActions = flatMap([
 ], a => [ a, `${a}_PENDING`, `${a}_FULFILLED`, `${a}_REJECTED` ]);
 
 export const ACTION_TYPES = keyBy([ ...asyncActions ], k => k);
+
+export const SEARCH_DEBOUNCE_DELAY = 500;
