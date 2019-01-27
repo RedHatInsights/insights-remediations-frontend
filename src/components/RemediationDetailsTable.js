@@ -82,6 +82,19 @@ class RemediationDetailsTable extends React.Component {
         this.setState({ selected: {}});
     }
 
+    getIssueUrl = (issue) => {
+        switch (getIssueApplication(issue)) {
+            case 'Advisor':
+                return 'configuration_assessment';
+            case 'Vulnerability':
+                return 'configuration_assessment';
+            case 'Compliance':
+                return 'compliance';
+            default:
+                return 'general_information';
+        }
+    };
+
     buildRows = remediation => {
         return remediation.issues.flatMap((issue, issueIndex) => ([
             {
@@ -115,7 +128,11 @@ class RemediationDetailsTable extends React.Component {
                                 <Card key={ systemIndex } className='ins-c-system-card'>
                                     <CardBody>
                                         <Grid>
-                                            <GridItem span={ 9 }> { getSystemName(system) } </GridItem>
+                                            <GridItem span={ 9 }>
+                                                <a href={ `${document.baseURI}platform/inventory/entity/${system.id}/${this.getIssueUrl(issue)}` }>
+                                                    { getSystemName(system) }
+                                                </a>
+                                            </GridItem>
                                             <GridItem span={ 3 }> unknown </GridItem>
                                         </Grid>
                                     </CardBody>
