@@ -5,29 +5,29 @@ import PropTypes from 'prop-types';
 
 import keyBy from 'lodash/keyBy';
 import mapValues from 'lodash/mapValues';
+import debounce from 'lodash/debounce';
+import moment from 'moment';
 
 import { Link } from 'react-router-dom';
 import {
+    Bullseye,
+    Card, CardBody,
+    EmptyState, EmptyStateIcon, EmptyStateBody,
     Level, LevelItem,
     Split, SplitItem,
     Stack, StackItem,
-    TextInput
+    Title
 } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody } from '@patternfly/react-table';
-
-import { Title,
-    EmptyState, EmptyStateIcon, EmptyStateBody,
-    Card, CardBody, Bullseye } from '@patternfly/react-core';
-
+import { SimpleTableFilter } from '@red-hat-insights/insights-frontend-components';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 
-import { formatUser } from '../Utilities/model';
+import { formatUser, includesIgnoreCase } from '../Utilities/model';
 import './RemediationTable.scss';
 
-import moment from 'moment';
 import SkeletonTable from './SkeletonTable';
-
 import { DeleteRemediationsButton } from '../containers/DeleteButtons';
+import { SEARCH_DEBOUNCE_DELAY } from '../constants';
 
 function buildName (name, id) {
     return ({
@@ -41,7 +41,8 @@ function formatDate (date) {
 
 class RemediationTable extends React.Component {
     state = {
-        selected: {}
+        selected: {},
+        filter: ''
     }
 
     onSelect = (isSelected, unused, index) => {
@@ -56,6 +57,8 @@ class RemediationTable extends React.Component {
             return { selected };
         });
     };
+
+    onFilterChange = debounce(filter => this.setState({ filter }), SEARCH_DEBOUNCE_DELAY);
 
     getSelectedItems = (selected = this.state.selected) => this.props.value.remediations.filter(r => selected[r.id]);
 
@@ -98,11 +101,9 @@ class RemediationTable extends React.Component {
             );
         }
 
-        if (status === 'fulfilled' && !value.remediations.length) {
-            return <p className='ins-c-remediations-table--empty'>No Remediations</p>;
-        }
+        const filtered = value.remediations.filter(r => includesIgnoreCase(r.name, this.state.filter.trim()));
 
-        const rows = value.remediations.map(remediation => ({
+        const rows = filtered.map(remediation => ({
             selected: this.state.selected[remediation.id] || false,
             cells: [
                 buildName(remediation.name, remediation.id),
@@ -118,13 +119,7 @@ class RemediationTable extends React.Component {
                 <StackItem>
                     <Level>
                         <LevelItem>
-                            <TextInput
-                                isDisabled={ true }
-                                type="text"
-                                value=' '
-                                placeholder="Filter"
-                                aria-label='Filter'
-                            />
+                            <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" onFilterChange={ this.onFilterChange } />
                         </LevelItem>
                         <LevelItem>
                             <Split gutter="md">
@@ -139,25 +134,29 @@ class RemediationTable extends React.Component {
                     </Level>
                 </StackItem>
                 <StackItem>
-                    <Table
-                        cells={ [
-                            {
-                                title: 'Playbook'
-                            }, {
-                                title: 'Systems'
-                            }, {
-                                title: 'Actions'
-                            }, {
-                                title: 'Last Modified By'
-                            }, {
-                                title: 'Last Modified On'
-                            }]
-                        }
-                        onSelect={ this.onSelect }
-                        rows={ rows }>
-                        <TableHeader/>
-                        <TableBody/>
-                    </Table>
+                    {
+                        filtered.length ?
+                            <Table
+                                cells={ [
+                                    {
+                                        title: 'Playbook'
+                                    }, {
+                                        title: 'Systems'
+                                    }, {
+                                        title: 'Actions'
+                                    }, {
+                                        title: 'Last Modified By'
+                                    }, {
+                                        title: 'Last Modified On'
+                                    }]
+                                }
+                                onSelect={ this.onSelect }
+                                rows={ rows }>
+                                <TableHeader/>
+                                <TableBody/>
+                            </Table> :
+                            <p className='ins-c-remediations-table--empty'>No Playbooks found</p>
+                    }
                 </StackItem>
             </Stack>
         );
