@@ -97,7 +97,7 @@ class RemediationDetailsTable extends React.Component {
             case 'Advisor':
                 return 'configuration_assessment';
             case 'Vulnerability':
-                return 'configuration_assessment';
+                return 'vulnerability';
             case 'Compliance':
                 return 'compliance';
             default:
