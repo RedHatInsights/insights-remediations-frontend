@@ -19,7 +19,7 @@ import { TableHeader, TableBody } from '@patternfly/react-table';
 import { SimpleTableFilter } from '@red-hat-insights/insights-frontend-components';
 
 import { getIssueApplication, getSystemName, includesIgnoreCase } from '../Utilities/model';
-import { buildInventoryUrl, getInventoryTabForIssue } from '../Utilities/urls';
+import { buildInventoryUrl, getInventoryTabForIssue, buildIssueUrl } from '../Utilities/urls';
 import './RemediationTable.scss';
 
 import { ConnectResolutionEditButton } from '../containers/ConnectedComponents';
@@ -42,6 +42,16 @@ function resolutionDescriptionCell (remediation, issue) {
             }
         </span>
     );
+}
+
+function issueDescriptionCell (issue) {
+    const url = buildIssueUrl(issue.id);
+
+    if (url) {
+        return <a href={ url }>{ issue.description }</a>;
+    }
+
+    return issue.description;
 }
 
 function expandRow (rows, expandedRow) {
@@ -81,7 +91,9 @@ class RemediationDetailsTable extends React.Component {
                 isOpen: false,
                 id: issue.id,
                 cells: [
-                    issue.description,
+                    {
+                        title: issueDescriptionCell(issue)
+                    },
                     resolutionDescriptionCell(remediation, issue),
                     issue.resolution.needs_reboot === true ? 'Yes' : 'No',
                     issue.systems.length,
