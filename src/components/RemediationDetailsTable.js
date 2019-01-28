@@ -19,6 +19,7 @@ import { Table, TableHeader, TableBody } from '@patternfly/react-table';
 import { SimpleTableFilter } from '@red-hat-insights/insights-frontend-components';
 
 import { getIssueApplication, getSystemName, includesIgnoreCase } from '../Utilities/model';
+import { buildInventoryUrl, getInventoryTabForIssue } from '../Utilities/urls';
 import './RemediationTable.scss';
 
 import { ConnectResolutionEditButton } from '../containers/ConnectedComponents';
@@ -92,19 +93,6 @@ class RemediationDetailsTable extends React.Component {
         this.setState({ selected: {}});
     }
 
-    getIssueUrl = (issue) => {
-        switch (getIssueApplication(issue)) {
-            case 'Advisor':
-                return 'configuration_assessment';
-            case 'Vulnerability':
-                return 'vulnerability';
-            case 'Compliance':
-                return 'compliance';
-            default:
-                return 'general_information';
-        }
-    };
-
     buildRows = remediation => {
         const filtered = remediation.issues.filter(i => includesIgnoreCase(i.description, this.state.filter.trim()));
 
@@ -141,7 +129,7 @@ class RemediationDetailsTable extends React.Component {
                                     <CardBody>
                                         <Grid>
                                             <GridItem span={ 9 }>
-                                                <a href={ `${document.baseURI}platform/inventory/entity/${system.id}/${this.getIssueUrl(issue)}` }>
+                                                <a href={ buildInventoryUrl(system.id, getInventoryTabForIssue(issue)) }>
                                                     { getSystemName(system) }
                                                 </a>
                                             </GridItem>
