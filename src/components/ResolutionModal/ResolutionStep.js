@@ -9,7 +9,6 @@ import {
 } from '@patternfly/react-core';
 
 import {
-    Battery,
     Reboot
 } from '@red-hat-insights/insights-frontend-components';
 
@@ -62,9 +61,11 @@ class ResolutionStep extends Component {
                                         label={
                                             <Stack className='ins-c-resolution-choice__details'>
                                                 <StackItem>{ resolution.description }</StackItem>
+                                                { /*
                                                 <StackItem>
                                                     <Battery label="Resolution risk" severity={ resolution.resolution_risk } />
                                                 </StackItem>
+                                                */ }
                                                 { resolution.needs_reboot &&
                                                     <StackItem> <Reboot red/> </StackItem>
                                                 }
