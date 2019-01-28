@@ -1,5 +1,9 @@
+export function getIssuePrefix (id) {
+    return id.split(':')[0];
+}
+
 export function getIssueApplication ({ id }) {
-    switch (id.split(':')[0]) {
+    switch (getIssuePrefix(id)) {
         case 'advisor': return 'Advisor';
         case 'compliance': return 'Compliance';
         case 'vulnerabilities': return 'Vulnerability';
