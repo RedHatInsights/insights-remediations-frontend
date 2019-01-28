@@ -5,7 +5,6 @@ export function buildInventoryUrl (systemId, tab) {
     return urijs(document.baseURI)
     .segment('platform')
     .segment('inventory')
-    .segment('entity')
     .segment(systemId)
     .segment(tab)
     .toString();
