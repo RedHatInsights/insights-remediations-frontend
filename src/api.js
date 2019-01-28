@@ -9,7 +9,11 @@ function url (...args) {
     return url;
 }
 
-export const getRemediations = () => doGet(url());
+export const getRemediations = (sortBy = 'updated_at', sortAsc = false) => {
+    const sort = `${sortAsc ? '' : '-'}${sortBy}`;
+    doGet(url().query({ sort }));
+};
+
 export const getRemediation = id => doGet(url(id));
 export const createRemediation = data => doPost(url(), data);
 export const patchRemediation = (id, data) => doPatch(url(id), data).then(() => data);

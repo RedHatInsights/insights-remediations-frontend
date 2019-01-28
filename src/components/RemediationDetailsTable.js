@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import debounce from 'lodash/debounce';
 import flatMap from 'lodash/flatMap';
-import sortBy from 'lodash/sortBy';
+import orderBy from 'lodash/orderBy';
 
 import {
     Button,
@@ -69,7 +69,9 @@ class RemediationDetailsTable extends React.Component {
         this.state = {
             expandedRow: false,
             selected: [],
-            filter: ''
+            filter: '',
+            sortBy: i => i.description,
+            sortAsc: true
         };
     }
 
@@ -83,8 +85,9 @@ class RemediationDetailsTable extends React.Component {
 
     buildRows = remediation => {
         const filtered = remediation.issues.filter(i => includesIgnoreCase(i.description, this.state.filter.trim()));
+        const sorted = orderBy(filtered, [ this.state.sortBy ], [ this.state.sortAsc ? 'asc' : 'desc' ]);
 
-        return flatMap(filtered, (issue, issueIndex) => ([
+        return flatMap(sorted, (issue, issueIndex) => ([
             {
                 isOpen: false,
                 id: issue.id,
@@ -119,7 +122,7 @@ class RemediationDetailsTable extends React.Component {
                                     </Grid>
                                 </CardBody>
                             </Card>
-                            { sortBy(issue.systems, [ s => getSystemName(s), s => s.id ]).map(system => (
+                            { orderBy(issue.systems, [ s => getSystemName(s), s => s.id ]).map(system => (
                                 <Card key={ system.id } className='ins-c-system-card'>
                                     <CardBody>
                                         <Grid>
@@ -189,7 +192,7 @@ class RemediationDetailsTable extends React.Component {
                                         }, {
                                             title: 'Reboot Required'
                                         }, {
-                                            title: '# of systems'
+                                            title: 'Systems'
                                         }, {
                                             title: 'Type'
                                         }]
