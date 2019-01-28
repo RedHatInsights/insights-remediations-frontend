@@ -35,3 +35,7 @@ export function buildIssueUrl (id) {
             return null;
     }
 }
+
+export function appUrl (app) {
+    return urijs(document.baseURI).segment('platform').segment(app).toString();
+}
