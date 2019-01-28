@@ -5,6 +5,7 @@ import keyBy from 'lodash/keyBy';
 import mapValues from 'lodash/mapValues';
 import debounce from 'lodash/debounce';
 import flatMap from 'lodash/flatMap';
+import sortBy from 'lodash/sortBy';
 
 import {
     Button,
@@ -128,7 +129,7 @@ class RemediationDetailsTable extends React.Component {
                                     </Grid>
                                 </CardBody>
                             </Card>
-                            { issue.systems.flatMap((system, systemIndex) => ([
+                            { sortBy(issue.systems, [ s => getSystemName(s), s => s.id ]).map((system, systemIndex) => (
                                 <Card key={ systemIndex } className='ins-c-system-card'>
                                     <CardBody>
                                         <Grid>
@@ -145,7 +146,7 @@ class RemediationDetailsTable extends React.Component {
                                         </Grid>
                                     </CardBody>
                                 </Card>
-                            ])) }
+                            )) }
                         </React.Fragment>
                 }]
             }
