@@ -1,5 +1,3 @@
-/*global RELEASE:true*/
-
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -21,6 +19,7 @@ import { SimpleTableFilter } from '@red-hat-insights/insights-frontend-component
 import { InfoCircleIcon } from '@patternfly/react-icons';
 
 import { formatUser, includesIgnoreCase } from '../Utilities/model';
+import { appUrl } from '../Utilities/urls';
 import './RemediationTable.scss';
 
 import SelectableTable from '../containers/SelectableTable';
@@ -59,8 +58,6 @@ class RemediationTable extends React.Component {
         }
 
         if (status === 'fulfilled' && !value.remediations.length) {
-            const basePath = `/${RELEASE}/platform`;
-
             return (
                 <Card>
                     <CardBody>
@@ -72,9 +69,9 @@ class RemediationTable extends React.Component {
                                     <p>You haven&#39;t created any remediations yet.</p>
                                     <p>
                                         To create a remediation, please visit&nbsp;
-                                        <a href={ `${basePath}/advisor` }>Insights</a>,&nbsp;
-                                        <a href={ `${basePath}/vulnerability` }>Vulnerability</a> or&nbsp;
-                                        <a href={ `${basePath}/compliance` }>Compliance</a>&nbsp;
+                                        <a href={ appUrl('advisor') }>Insights</a>,&nbsp;
+                                        <a href={ appUrl('vulnerability') }>Vulnerability</a> or&nbsp;
+                                        <a href={ appUrl('compliance') }>Compliance</a>&nbsp;
                                         applications and look for the&nbsp;
                                         <strong>Remediate with Ansible</strong>
                                         &nbsp;button.
