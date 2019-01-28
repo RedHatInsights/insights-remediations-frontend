@@ -13,7 +13,8 @@ export function init (...middleware) {
     registry = getRegistry({}, [
         promiseMiddleware(),
         notificationsMiddleware({
-            errorTitleKey: 'message'
+            errorTitleKey: 'message',
+            errorDescriptionKey: 'description'
         }),
         ...middleware
     ]);

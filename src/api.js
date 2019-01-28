@@ -1,17 +1,50 @@
 import { API_BASE } from './config';
+import get from 'lodash/get';
 
 import urijs from 'urijs';
 
-function checkResponse (r) {
-    if (!r.ok) {
-        throw new Error(`Unexpected response code ${r.status}`);
+class ApiError extends Error {
+    constructor(description) {
+        super('Error communicating with the server');
+        this.description = description;
     }
-
-    return r;
 }
 
-function json (r) {
-    checkResponse(r);
+async function checkResponse (r) {
+    if (r.ok) {
+        return r;
+    }
+
+    if (r.status === 401) {
+        window.insights.chrome.auth.logout();
+    }
+
+    if (r.headers.get('content-type').includes('application/json')) {
+        // let's try to extract some more info
+        const data = await r.json();
+
+        const error = get(data, 'errors[0]');
+
+        if (error) {
+            if (get(error, 'details.name')) {
+                throw new ApiError(`${error.title} (${error.details.name})`);
+            }
+
+            throw new ApiError(error.title);
+        }
+    }
+
+    throw new ApiError(`Unexpected response code ${r.status}`);
+}
+
+async function json (r) {
+    await checkResponse(r);
+
+    const type = r.headers.get('content-type');
+    if (!type.includes('application/json')) {
+        throw new ApiError(`Unexpected response type (${type}) returned`);
+    }
+
     return r.json();
 }
 
