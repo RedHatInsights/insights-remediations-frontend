@@ -3,22 +3,29 @@ import PropTypes from 'prop-types';
 
 import keyBy from 'lodash/keyBy';
 import mapValues from 'lodash/mapValues';
+import debounce from 'lodash/debounce';
+import flatMap from 'lodash/flatMap';
 
-import { Level, LevelItem,
-    TextInput,
+import {
     Button,
     Card, CardBody,
-    Stack, StackItem,
     Grid, GridItem,
-    Split, SplitItem } from '@patternfly/react-core';
+    Level, LevelItem,
+    Split, SplitItem,
+    Stack, StackItem
+} from '@patternfly/react-core';
 
 import { Table, TableHeader, TableBody } from '@patternfly/react-table';
+import { SimpleTableFilter } from '@red-hat-insights/insights-frontend-components';
 
-import { getIssueApplication, getSystemName } from '../Utilities/model';
+import { getIssueApplication, getSystemName, includesIgnoreCase } from '../Utilities/model';
 import './RemediationTable.scss';
 
 import { ConnectResolutionEditButton } from '../containers/ConnectedComponents';
 import { DeleteActionsButton } from '../containers/DeleteButtons';
+import { SEARCH_DEBOUNCE_DELAY } from '../constants';
+
+import './RemediationDetailsTable.scss';
 
 function resolutionDescriptionCell (remediation, issue) {
     return (
@@ -51,7 +58,8 @@ class RemediationDetailsTable extends React.Component {
         super(props);
         this.state = {
             expandedRow: false,
-            selected: {}
+            selected: {},
+            filter: ''
         };
     }
 
@@ -76,6 +84,8 @@ class RemediationDetailsTable extends React.Component {
 
     getSelectedIssues = () => this.props.remediation.issues.filter(i => this.state.selected[i.id]);
 
+    onFilterChange = debounce(filter => this.setState({ filter }), SEARCH_DEBOUNCE_DELAY);
+
     onRemoveActions = () => {
         const selected = this.getSelectedIssues();
         this.props.onDeleteActions(selected.map(issue => issue.id));
@@ -96,7 +106,9 @@ class RemediationDetailsTable extends React.Component {
     };
 
     buildRows = remediation => {
-        return remediation.issues.flatMap((issue, issueIndex) => ([
+        const filtered = remediation.issues.filter(i => includesIgnoreCase(i.description, this.state.filter.trim()));
+
+        return flatMap(filtered, (issue, issueIndex) => ([
             {
                 isOpen: false,
                 selected: this.state.selected[issue.id] || false,
@@ -153,13 +165,7 @@ class RemediationDetailsTable extends React.Component {
                     <StackItem className='ins-c-remediations-details-table__toolbar'>
                         <Level>
                             <LevelItem>
-                                { /* TODO: Fix filtering */ }
-                                <TextInput
-                                    type="text"
-                                    value= ' '
-                                    placeholder="Filter"
-                                    aria-label='Filter'
-                                />
+                                <SimpleTableFilter buttonTitle="" placeholder="Search Actions" onFilterChange={ this.onFilterChange } />
                             </LevelItem>
                             <LevelItem>
                                 <Split gutter="md">
@@ -177,28 +183,35 @@ class RemediationDetailsTable extends React.Component {
                         </Level>
                     </StackItem>
                     <StackItem>
-                        <Table
-                            className='ins-c-remediations-details-table'
-                            cells={ [
-                                {
-                                    title: 'Actions'
-                                }, {
-                                    title: 'Resolution'
-                                }, {
-                                    title: 'Reboot Required'
-                                }, {
-                                    title: '# of systems'
-                                }, {
-                                    title: 'Type'
-                                }]
-                            }
-                            onCollapse={ (event, row, rowKey) => this.onExpandClicked(event, row, rowKey) }
-                            onSelect={ this.onSelect }
-                            rows= { rows }
-                        >
-                            <TableHeader/>
-                            <TableBody/>
-                        </Table>
+                        {
+                            rows.length ?
+                                <Table
+                                    className='ins-c-remediations-details-table'
+                                    cells={ [
+                                        {
+                                            title: 'Actions'
+                                        }, {
+                                            title: 'Resolution'
+                                        }, {
+                                            title: 'Reboot Required'
+                                        }, {
+                                            title: '# of systems'
+                                        }, {
+                                            title: 'Type'
+                                        }]
+                                    }
+                                    onCollapse={ (event, row, rowKey) => this.onExpandClicked(event, row, rowKey) }
+                                    onSelect={ this.onSelect }
+                                    rows= { rows }
+                                >
+                                    <TableHeader/>
+                                    <TableBody/>
+                                </Table> :
+                                this.state.filter ?
+                                    <p className='ins-c-remediation-details-table--empty'>No Actions found</p> :
+                                    <p className='ins-c-remediation-details-table--empty'>This Playbook is empty</p>
+                        }
+
                     </StackItem>
                 </Stack>
             </React.Fragment>
