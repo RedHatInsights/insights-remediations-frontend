@@ -24,7 +24,7 @@ export const DeleteRemediationsButton = withRouter(connect(
     }),
     (dispatch, { remediations }) => ({
         onDelete: async () => {
-            await Promise.all(remediations.map(r => dispatch(deleteRemediation(r.id))));
+            await Promise.all(remediations.map(r => dispatch(deleteRemediation(r))));
             dispatch(loadRemediations());
         }
     })
@@ -36,7 +36,7 @@ export const DeleteActionsButton = withRouter(connect(
     }),
     (dispatch, { remediation, issues }) => ({
         onDelete: async () => {
-            issues.map(issue => dispatch(deleteRemediationIssue(remediation.id, issue.id)));
+            issues.map(issueId => dispatch(deleteRemediationIssue(remediation.id, issueId)));
         }
     })
 )(DeleteButton));
