@@ -22,3 +22,16 @@ export function getInventoryTabForIssue ({ id }) {
             return 'general_information';
     }
 }
+
+export function buildIssueUrl (id) {
+    const parts = id.split(':');
+
+    switch (getIssuePrefix(id)) {
+        case 'advisor':
+            return urijs(document.baseURI).segment('platform').segment('advisor').segment('actions').segment(parts[1]).toString();
+        case 'vulnerabilities':
+            return urijs(document.baseURI).segment('platform').segment('vulnerability').segment('cves').segment(parts[1]).toString();
+        default:
+            return null;
+    }
+}
