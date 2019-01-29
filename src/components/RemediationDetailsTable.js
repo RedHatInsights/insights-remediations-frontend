@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import keyBy from 'lodash/keyBy';
-import mapValues from 'lodash/mapValues';
 import debounce from 'lodash/debounce';
 import flatMap from 'lodash/flatMap';
 import sortBy from 'lodash/sortBy';
@@ -16,7 +14,8 @@ import {
     Stack, StackItem
 } from '@patternfly/react-core';
 
-import { Table, TableHeader, TableBody } from '@patternfly/react-table';
+import SelectableTable from '../containers/SelectableTable';
+import { TableHeader, TableBody } from '@patternfly/react-table';
 import { SimpleTableFilter } from '@red-hat-insights/insights-frontend-components';
 
 import { getIssueApplication, getSystemName, includesIgnoreCase } from '../Utilities/model';
@@ -61,7 +60,7 @@ class RemediationDetailsTable extends React.Component {
         super(props);
         this.state = {
             expandedRow: false,
-            selected: {},
+            selected: [],
             filter: ''
         };
     }
@@ -70,30 +69,9 @@ class RemediationDetailsTable extends React.Component {
         this.setState({ expandedRow: this.state.expandedRow === rowKey ? false : rowKey });
     }
 
-    onSelect = (isSelected, unused, index) => {
-        index = Math.floor(index / 2);
-
-        this.setState(state => {
-            const selected = (index === -1) ?
-                mapValues(keyBy(this.props.remediation.issues, r => r.id), () => isSelected) :
-                {
-                    ...state.selected,
-                    [this.props.remediation.issues[index].id]: isSelected
-                };
-
-            return { selected };
-        });
-    };
-
-    getSelectedIssues = () => this.props.remediation.issues.filter(i => this.state.selected[i.id]);
+    onSelect = selected => this.setState({ selected });
 
     onFilterChange = debounce(filter => this.setState({ filter }), SEARCH_DEBOUNCE_DELAY);
-
-    onRemoveActions = () => {
-        const selected = this.getSelectedIssues();
-        this.props.onDeleteActions(selected.map(issue => issue.id));
-        this.setState({ selected: {}});
-    }
 
     buildRows = remediation => {
         const filtered = remediation.issues.filter(i => includesIgnoreCase(i.description, this.state.filter.trim()));
@@ -101,7 +79,7 @@ class RemediationDetailsTable extends React.Component {
         return flatMap(filtered, (issue, issueIndex) => ([
             {
                 isOpen: false,
-                selected: this.state.selected[issue.id] || false,
+                id: issue.id,
                 cells: [
                     issue.description,
                     resolutionDescriptionCell(remediation, issue),
@@ -176,9 +154,9 @@ class RemediationDetailsTable extends React.Component {
                                     <SplitItem>
 
                                         <DeleteActionsButton
-                                            isDisabled={ !this.getSelectedIssues().length }
+                                            isDisabled={ !this.state.selected.length }
                                             remediation={ this.props.remediation }
-                                            issues={ this.getSelectedIssues() }
+                                            issues={ this.state.selected }
                                         />
                                     </SplitItem>
                                 </Split>
@@ -188,7 +166,7 @@ class RemediationDetailsTable extends React.Component {
                     <StackItem>
                         {
                             rows.length ?
-                                <Table
+                                <SelectableTable
                                     className='ins-c-remediations-details-table'
                                     cells={ [
                                         {
@@ -209,7 +187,7 @@ class RemediationDetailsTable extends React.Component {
                                 >
                                     <TableHeader/>
                                     <TableBody/>
-                                </Table> :
+                                </SelectableTable> :
                                 this.state.filter ?
                                     <p className='ins-c-remediation-details-table--empty'>No Actions found</p> :
                                     <p className='ins-c-remediation-details-table--empty'>This Playbook is empty</p>
@@ -224,8 +202,7 @@ class RemediationDetailsTable extends React.Component {
 }
 
 RemediationDetailsTable.propTypes = {
-    remediation: PropTypes.object,
-    onDeleteActions: PropTypes.func.isRequired
+    remediation: PropTypes.object
 };
 
 export default RemediationDetailsTable;

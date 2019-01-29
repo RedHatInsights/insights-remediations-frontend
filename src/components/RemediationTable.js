@@ -3,8 +3,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import keyBy from 'lodash/keyBy';
-import mapValues from 'lodash/mapValues';
 import debounce from 'lodash/debounce';
 import moment from 'moment';
 
@@ -18,13 +16,14 @@ import {
     Stack, StackItem,
     Title
 } from '@patternfly/react-core';
-import { Table, TableHeader, TableBody } from '@patternfly/react-table';
+import { TableHeader, TableBody } from '@patternfly/react-table';
 import { SimpleTableFilter } from '@red-hat-insights/insights-frontend-components';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 
 import { formatUser, includesIgnoreCase } from '../Utilities/model';
 import './RemediationTable.scss';
 
+import SelectableTable from '../containers/SelectableTable';
 import SkeletonTable from './SkeletonTable';
 import { DeleteRemediationsButton } from '../containers/DeleteButtons';
 import { SEARCH_DEBOUNCE_DELAY } from '../constants';
@@ -41,26 +40,13 @@ function formatDate (date) {
 
 class RemediationTable extends React.Component {
     state = {
-        selected: {},
-        filter: ''
+        filter: '',
+        selected: []
     }
-
-    onSelect = (isSelected, unused, index) => {
-        this.setState(state => {
-            const selected = (index === -1) ?
-                mapValues(keyBy(this.props.value.remediations.map(r => r.id), f => f), () => isSelected) :
-                {
-                    ...state.selected,
-                    [this.props.value.remediations[index].id]: isSelected
-                };
-
-            return { selected };
-        });
-    };
 
     onFilterChange = debounce(filter => this.setState({ filter }), SEARCH_DEBOUNCE_DELAY);
 
-    getSelectedItems = (selected = this.state.selected) => this.props.value.remediations.filter(r => selected[r.id]);
+    onSelect = selected => this.setState({ selected });
 
     render () {
         const { value, status } = this.props;
@@ -104,7 +90,7 @@ class RemediationTable extends React.Component {
         const filtered = value.remediations.filter(r => includesIgnoreCase(r.name, this.state.filter.trim()));
 
         const rows = filtered.map(remediation => ({
-            selected: this.state.selected[remediation.id] || false,
+            id: remediation.id,
             cells: [
                 buildName(remediation.name, remediation.id),
                 remediation.system_count,
@@ -125,8 +111,8 @@ class RemediationTable extends React.Component {
                             <Split gutter="md">
                                 <SplitItem>
                                     <DeleteRemediationsButton
-                                        isDisabled={ !this.getSelectedItems().length }
-                                        remediations={ this.getSelectedItems() }
+                                        isDisabled={ !this.state.selected.length }
+                                        remediations={ this.state.selected }
                                     />
                                 </SplitItem>
                             </Split>
@@ -136,7 +122,7 @@ class RemediationTable extends React.Component {
                 <StackItem>
                     {
                         filtered.length ?
-                            <Table
+                            <SelectableTable
                                 cells={ [
                                     {
                                         title: 'Playbook'
@@ -154,7 +140,7 @@ class RemediationTable extends React.Component {
                                 rows={ rows }>
                                 <TableHeader/>
                                 <TableBody/>
-                            </Table> :
+                            </SelectableTable> :
                             <p className='ins-c-remediations-table--empty'>No Playbooks found</p>
                     }
                 </StackItem>
