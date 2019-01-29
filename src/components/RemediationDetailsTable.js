@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import debounce from 'lodash/debounce';
 import flatMap from 'lodash/flatMap';
+import sortBy from 'lodash/sortBy';
 
 import {
     Button,
@@ -24,6 +25,7 @@ import './RemediationTable.scss';
 import { ConnectResolutionEditButton } from '../containers/ConnectedComponents';
 import { DeleteActionsButton } from '../containers/DeleteButtons';
 import { SEARCH_DEBOUNCE_DELAY } from '../constants';
+import { isBeta } from '../config';
 
 import './RemediationDetailsTable.scss';
 
@@ -97,25 +99,32 @@ class RemediationDetailsTable extends React.Component {
                             <Card key={ issueIndex } className='ins-c-system-card'>
                                 <CardBody>
                                     <Grid>
-                                        <GridItem span={ 9 }> System </GridItem>
-                                        <GridItem span={ 3 }> Status </GridItem>
+                                        <GridItem span={ isBeta ? 9 : 12 }> System </GridItem>
+                                        {
+                                            isBeta &&
+                                            <GridItem span={ 3 }> Status </GridItem>
+                                        }
                                     </Grid>
                                 </CardBody>
                             </Card>
-                            { issue.systems.flatMap((system, systemIndex) => ([
+                            { sortBy(issue.systems, [ s => getSystemName(s), s => s.id ]).map((system, systemIndex) => (
                                 <Card key={ systemIndex } className='ins-c-system-card'>
                                     <CardBody>
                                         <Grid>
-                                            <GridItem span={ 9 }>
+                                            <GridItem span={ isBeta ? 9 : 12 }>
                                                 <a href={ buildInventoryUrl(system.id, getInventoryTabForIssue(issue)) }>
                                                     { getSystemName(system) }
                                                 </a>
                                             </GridItem>
-                                            <GridItem span={ 3 }> unknown </GridItem>
+                                            {
+                                                isBeta &&
+                                                <GridItem span={ 3 }> unknown </GridItem>
+                                            }
+
                                         </Grid>
                                     </CardBody>
                                 </Card>
-                            ])) }
+                            )) }
                         </React.Fragment>
                 }]
             }
@@ -135,7 +144,13 @@ class RemediationDetailsTable extends React.Component {
                             </LevelItem>
                             <LevelItem>
                                 <Split gutter="md">
-                                    <SplitItem><Button isDisabled={ true }> Add Action </Button></SplitItem>
+                                    <SplitItem>
+                                        {
+                                            isBeta &&
+                                            <Button isDisabled={ true }> Add Action </Button>
+                                        }
+
+                                    </SplitItem>
                                     <SplitItem>
 
                                         <DeleteActionsButton

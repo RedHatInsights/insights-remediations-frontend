@@ -8,6 +8,7 @@ import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import { DeleteRemediationButton } from '../containers/DeleteButtons';
+import { isBeta } from '../config';
 
 import {
     Main,
@@ -82,27 +83,30 @@ class RemediationDetails extends Component {
                 <Main>
                     <Stack gutter="md">
                         <StackItem>
-                            <Grid gutter="md" sm={ 12 } md={ 4 } className='ins-c-summary-cards'>
-                                <GridItem>
-                                    <Card className='ins-c-card__actions-resolved'>
-                                        <CardHeader>
-                                            <Level>
-                                                <LevelItem className='ins-m-card__header-bold'>
-                                                    Actions Resolved
-                                                </LevelItem>
-                                            </Level>
-                                        </CardHeader>
-                                        <CardBody>
-                                            { /*
-                                            <Progress
-                                                value={ 19 }
-                                                label='16 of 62'
-                                                measureLocation={ ProgressMeasureLocation.outside } />
-                                            */ }
-                                            <p>Progress unknown</p>
-                                        </CardBody>
-                                    </Card>
-                                </GridItem>
+                            <Grid gutter="md" sm={ 12 } md={ isBeta ? 4 : 6 } className='ins-c-summary-cards'>
+                                {
+                                    isBeta &&
+                                    <GridItem>
+                                        <Card className='ins-c-card__actions-resolved'>
+                                            <CardHeader>
+                                                <Level>
+                                                    <LevelItem className='ins-m-card__header-bold'>
+                                                        Actions Resolved
+                                                    </LevelItem>
+                                                </Level>
+                                            </CardHeader>
+                                            <CardBody>
+                                                { /*
+                                                <Progress
+                                                    value={ 19 }
+                                                    label='16 of 62'
+                                                    measureLocation={ ProgressMeasureLocation.outside } />
+                                                */ }
+                                                <p>Progress unknown</p>
+                                            </CardBody>
+                                        </Card>
+                                    </GridItem>
+                                }
                                 <GridItem>
                                     <Card className='ins-c-card__system-reboot'>
                                         <CardHeader className='ins-m-card__header-bold'> Systems Reboot </CardHeader>
@@ -154,7 +158,10 @@ class RemediationDetails extends Component {
                                             <Stack>
                                                 <StackItem>Created By: { formatUser(remediation.created_by) }</StackItem>
                                                 <StackItem>Date: { moment(remediation.created_at).format('lll') }</StackItem>
-                                                <StackItem> Shared with: unknown </StackItem>
+                                                {
+                                                    isBeta &&
+                                                    <StackItem> Shared with: unknown </StackItem>
+                                                }
                                             </Stack>
                                         </CardBody>
                                     </Card>
