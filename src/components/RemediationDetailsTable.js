@@ -30,17 +30,15 @@ import { isBeta } from '../config';
 import './RemediationDetailsTable.scss';
 
 function resolutionDescriptionCell (remediation, issue) {
+    if (issue.resolutions_available <= 1) {
+        return issue.resolution.description;
+    }
+
     return (
-        <span> { issue.resolution.description }
-            {
-                issue.resolutions_available > 1 && (
-                    <React.Fragment>
-                        &nbsp;
-                        <ConnectResolutionEditButton issue={ issue } remediation={ remediation } />
-                    </React.Fragment>
-                )
-            }
-        </span>
+        <React.Fragment>
+            { issue.resolution.description }&nbsp;
+            <ConnectResolutionEditButton issue={ issue } remediation={ remediation } />
+        </React.Fragment>
     );
 }
 
@@ -94,7 +92,9 @@ class RemediationDetailsTable extends React.Component {
                     {
                         title: issueDescriptionCell(issue)
                     },
-                    resolutionDescriptionCell(remediation, issue),
+                    {
+                        title: resolutionDescriptionCell(remediation, issue)
+                    },
                     issue.resolution.needs_reboot === true ? 'Yes' : 'No',
                     issue.systems.length,
                     {
@@ -119,8 +119,8 @@ class RemediationDetailsTable extends React.Component {
                                     </Grid>
                                 </CardBody>
                             </Card>
-                            { sortBy(issue.systems, [ s => getSystemName(s), s => s.id ]).map((system, systemIndex) => (
-                                <Card key={ systemIndex } className='ins-c-system-card'>
+                            { sortBy(issue.systems, [ s => getSystemName(s), s => s.id ]).map(system => (
+                                <Card key={ system.id } className='ins-c-system-card'>
                                     <CardBody>
                                         <Grid>
                                             <GridItem span={ isBeta ? 9 : 12 }>
