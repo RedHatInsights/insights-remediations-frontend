@@ -120,6 +120,7 @@ class RemediationTable extends React.Component {
                     {
                         filtered.length ?
                             <SelectableTable
+                                aria-label="Playbooks"
                                 cells={ [
                                     {
                                         title: 'Playbook'
