@@ -29,7 +29,7 @@ class SkeletonTable extends React.Component {
         const { columns, rows } = this.state;
 
         return (
-            <Table cells={ columns } rows={ rows }>
+            <Table cells={ columns } rows={ rows } aria-label="Loading">
                 <TableHeader />
                 <TableBody />
             </Table>

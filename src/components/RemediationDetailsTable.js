@@ -179,6 +179,7 @@ class RemediationDetailsTable extends React.Component {
                         {
                             rows.length ?
                                 <SelectableTable
+                                    aria-label="Actions"
                                     className='ins-c-remediations-details-table'
                                     cells={ [
                                         {
