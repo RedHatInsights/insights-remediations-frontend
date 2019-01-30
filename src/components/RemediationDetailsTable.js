@@ -15,7 +15,7 @@ import {
 } from '@patternfly/react-core';
 
 import SelectableTable from '../containers/SelectableTable';
-import { TableHeader, TableBody } from '@patternfly/react-table';
+import { sortable, TableHeader, TableBody } from '@patternfly/react-table';
 import { SimpleTableFilter } from '@red-hat-insights/insights-frontend-components';
 
 import { getIssueApplication, getSystemName, includesIgnoreCase } from '../Utilities/model';
@@ -62,6 +62,16 @@ function expandRow (rows, expandedRow) {
     return rows;
 }
 
+const SORTING_ITERATEES = [
+    null, // expand toggle
+    null, // checkboxes
+    i => i.description,
+    null, // resolution steps
+    i => i.resolution.needs_reboot,
+    i => i.systems.length,
+    i => getIssueApplication(i)
+];
+
 class RemediationDetailsTable extends React.Component {
 
     constructor(props) {
@@ -70,8 +80,8 @@ class RemediationDetailsTable extends React.Component {
             expandedRow: false,
             selected: [],
             filter: '',
-            sortBy: i => i.description,
-            sortAsc: true
+            sortBy: 2,
+            sortDir: 'asc'
         };
     }
 
@@ -80,12 +90,12 @@ class RemediationDetailsTable extends React.Component {
     }
 
     onSelect = selected => this.setState({ selected });
-
     onFilterChange = debounce(filter => this.setState({ filter }), SEARCH_DEBOUNCE_DELAY);
+    onSort = (event, sortBy, sortDir) => this.setState({ sortBy, sortDir });
 
     buildRows = remediation => {
         const filtered = remediation.issues.filter(i => includesIgnoreCase(i.description, this.state.filter.trim()));
-        const sorted = orderBy(filtered, [ this.state.sortBy ], [ this.state.sortAsc ? 'asc' : 'desc' ]);
+        const sorted = orderBy(filtered, [ SORTING_ITERATEES[this.state.sortBy] ], [ this.state.sortDir ]);
 
         return flatMap(sorted, (issue, issueIndex) => ([
             {
@@ -148,6 +158,7 @@ class RemediationDetailsTable extends React.Component {
 
     render() {
         const rows = expandRow(this.buildRows(this.props.remediation), this.state.expandedRow);
+        const { filter, selected, sortBy, sortDir } = this.state;
 
         return (
             <React.Fragment>
@@ -169,9 +180,9 @@ class RemediationDetailsTable extends React.Component {
                                     <SplitItem>
 
                                         <DeleteActionsButton
-                                            isDisabled={ !this.state.selected.length }
+                                            isDisabled={ !selected.length }
                                             remediation={ this.props.remediation }
-                                            issues={ this.state.selected }
+                                            issues={ selected }
                                         />
                                     </SplitItem>
                                 </Split>
@@ -186,25 +197,31 @@ class RemediationDetailsTable extends React.Component {
                                     className='ins-c-remediations-details-table'
                                     cells={ [
                                         {
-                                            title: 'Actions'
+                                            title: 'Actions',
+                                            transforms: [ sortable ]
                                         }, {
                                             title: 'Resolution'
                                         }, {
-                                            title: 'Reboot Required'
+                                            title: 'Reboot Required',
+                                            transforms: [ sortable ]
                                         }, {
-                                            title: 'Systems'
+                                            title: 'Systems',
+                                            transforms: [ sortable ]
                                         }, {
-                                            title: 'Type'
+                                            title: 'Type',
+                                            transforms: [ sortable ]
                                         }]
                                     }
                                     onCollapse={ (event, row, rowKey) => this.onExpandClicked(event, row, rowKey) }
                                     onSelect={ this.onSelect }
+                                    onSort={ this.onSort }
+                                    sortBy={ { index: sortBy, direction: sortDir } }
                                     rows= { rows }
                                 >
                                     <TableHeader/>
                                     <TableBody/>
                                 </SelectableTable> :
-                                this.state.filter ?
+                                filter ?
                                     <p className='ins-c-remediation-details-table--empty'>No Actions found</p> :
                                     <p className='ins-c-remediation-details-table--empty'>This Playbook is empty</p>
                         }

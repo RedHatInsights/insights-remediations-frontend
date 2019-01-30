@@ -9,9 +9,9 @@ function url (...args) {
     return url;
 }
 
-export const getRemediations = (sortBy = 'updated_at', sortAsc = false) => {
-    const sort = `${sortAsc ? '' : '-'}${sortBy}`;
-    doGet(url().query({ sort }));
+export const getRemediations = (sortBy = 'updated_at', sortDir = 'desc') => {
+    const sort = `${sortDir === 'desc' ? '-' : ''}${sortBy}`;
+    return doGet(url().query({ sort }));
 };
 
 export const getRemediation = id => doGet(url(id));

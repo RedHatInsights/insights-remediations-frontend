@@ -1,9 +1,9 @@
 import { ACTION_TYPES } from './constants';
 import * as api from './api';
 
-export const loadRemediations = () => ({
+export const loadRemediations = (sortBy, sortDir) => ({
     type: ACTION_TYPES.LOAD_REMEDIATIONS,
-    payload: api.getRemediations()
+    payload: api.getRemediations(sortBy, sortDir)
 });
 
 export const loadRemediation = (id) => ({
