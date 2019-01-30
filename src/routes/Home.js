@@ -24,7 +24,7 @@ class Home extends Component {
     constructor (props, ctx) {
         super(props, ctx);
         this.store = ctx.store;
-        this.loadRemediations = () => ctx.store.dispatch(actions.loadRemediations());
+        this.loadRemediations = (...args) => ctx.store.dispatch(actions.loadRemediations(...args));
         this.state = {
             isModalOpen: false,
             selected: []
@@ -81,7 +81,7 @@ class Home extends Component {
                     <TestButtons onRemediationCreated={ this.onRemediationCreated } />
                 </PageHeader>
                 <Main>
-                    <ConnectedRemediationTable />
+                    <ConnectedRemediationTable loadRemediations={ this.loadRemediations } />
                 </Main>
 
                 <Wizard

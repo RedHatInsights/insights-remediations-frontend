@@ -14,7 +14,7 @@ import {
     Stack, StackItem,
     Title
 } from '@patternfly/react-core';
-import { TableHeader, TableBody } from '@patternfly/react-table';
+import { sortable, TableHeader, TableBody } from '@patternfly/react-table';
 import { SimpleTableFilter } from '@red-hat-insights/insights-frontend-components';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 
@@ -37,18 +37,29 @@ function formatDate (date) {
     return moment(date).format('lll');
 }
 
+const SORTING_ITERATEES = [ null, 'name', 'system_count', 'issue_count', null, 'updated_at' ];
+
 class RemediationTable extends React.Component {
     state = {
         filter: '',
-        selected: []
+        selected: [],
+        sortBy: 5,
+        sortDir: 'desc'
     }
 
     onFilterChange = debounce(filter => this.setState({ filter }), SEARCH_DEBOUNCE_DELAY);
 
     onSelect = selected => this.setState({ selected });
 
+    onSort = async (event, sortBy, sortDir) => {
+        const column = SORTING_ITERATEES[sortBy];
+        await this.props.loadRemediations(column, sortDir);
+        this.setState({ sortBy, sortDir });
+    }
+
     render () {
         const { value, status } = this.props;
+        const { filter, selected, sortBy, sortDir } = this.state;
 
         // Skeleton Loading
         if (status !== 'fulfilled') {
@@ -84,7 +95,7 @@ class RemediationTable extends React.Component {
             );
         }
 
-        const filtered = value.remediations.filter(r => includesIgnoreCase(r.name, this.state.filter.trim()));
+        const filtered = value.remediations.filter(r => includesIgnoreCase(r.name, filter.trim()));
 
         const rows = filtered.map(remediation => ({
             id: remediation.id,
@@ -108,8 +119,8 @@ class RemediationTable extends React.Component {
                             <Split gutter="md">
                                 <SplitItem>
                                     <DeleteRemediationsButton
-                                        isDisabled={ !this.state.selected.length }
-                                        remediations={ this.state.selected }
+                                        isDisabled={ !selected.length }
+                                        remediations={ selected }
                                     />
                                 </SplitItem>
                             </Split>
@@ -123,18 +134,24 @@ class RemediationTable extends React.Component {
                                 aria-label="Playbooks"
                                 cells={ [
                                     {
-                                        title: 'Playbook'
+                                        title: 'Playbook',
+                                        transforms: [ sortable ]
                                     }, {
-                                        title: 'Systems'
+                                        title: 'Systems',
+                                        transforms: [ sortable ]
                                     }, {
-                                        title: 'Actions'
+                                        title: 'Actions',
+                                        transforms: [ sortable ]
                                     }, {
                                         title: 'Last Modified By'
                                     }, {
-                                        title: 'Last Modified On'
+                                        title: 'Last Modified On',
+                                        transforms: [ sortable ]
                                     }]
                                 }
                                 onSelect={ this.onSelect }
+                                onSort={ this.onSort }
+                                sortBy={ { index: sortBy, direction: sortDir } }
                                 rows={ rows }>
                                 <TableHeader/>
                                 <TableBody/>
@@ -149,7 +166,8 @@ class RemediationTable extends React.Component {
 
 RemediationTable.propTypes = {
     value: PropTypes.object,
-    status: PropTypes.string.isRequired
+    status: PropTypes.string.isRequired,
+    loadRemediations: PropTypes.func.isRequired
 };
 
 export default RemediationTable;
