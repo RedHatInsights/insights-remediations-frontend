@@ -150,7 +150,7 @@ class RemediationDetails extends Component {
                                                     Playbook Details
                                                 </LevelItem>
                                                 <LevelItem className='ins-c-subheader-small'>
-                                                    Last Modified: { moment(remediation.updated_at).format('lll') }
+                                                    Created: { moment(remediation.created_at).format('lll') }
                                                 </LevelItem>
                                             </Level>
                                         </CardHeader>
@@ -158,7 +158,7 @@ class RemediationDetails extends Component {
                                             <Stack>
                                                 <StackItem>Created By: { formatUser(remediation.created_by) }</StackItem>
                                                 <StackItem>Last Modified By: { formatUser(remediation.updated_by) }</StackItem>
-                                                <StackItem>Date: { moment(remediation.created_at).format('lll') }</StackItem>
+                                                <StackItem>Last Modified On: { moment(remediation.updated_at).format('lll') }</StackItem>
                                                 {
                                                     isBeta &&
                                                     <StackItem className='ins-m-border-top'> Shared with: unknown </StackItem>
