@@ -41,10 +41,10 @@
     }
     // Remediations Details Card
     .ins-c-card__plan-details {
-        .pf-l-stack__item:first-of-type { 
+        .pf-l-stack__item:not(.ins-m-border-top){ 
             @include rem('margin-bottom', 5px);
         }
-        .pf-l-stack__item:last-of-type {
+        .pf-l-stack__item .ins-m-border-top{
             @include rem('margin-top', 7.5px);
             @include rem('padding-top', 7.5px);
             border-top: 1px solid #efefef;
