@@ -10,13 +10,12 @@ import {
     Card, CardBody,
     Grid, GridItem,
     Level, LevelItem,
-    Split, SplitItem,
-    Stack, StackItem
+    Split, SplitItem
 } from '@patternfly/react-core';
 
 import SelectableTable from '../containers/SelectableTable';
 import { sortable, TableHeader, TableBody } from '@patternfly/react-table';
-import { SimpleTableFilter } from '@red-hat-insights/insights-frontend-components';
+import { SimpleTableFilter, TableToolbar } from '@red-hat-insights/insights-frontend-components';
 
 import { getIssueApplication, getSystemName, includesIgnoreCase } from '../Utilities/model';
 import { buildInventoryUrl, getInventoryTabForIssue, buildIssueUrl } from '../Utilities/urls';
@@ -162,72 +161,67 @@ class RemediationDetailsTable extends React.Component {
 
         return (
             <React.Fragment>
-                <Stack gutter="md">
-                    <StackItem className='ins-c-remediations-details-table__toolbar'>
-                        <Level>
-                            <LevelItem>
-                                <SimpleTableFilter buttonTitle="" placeholder="Search Actions" onFilterChange={ this.onFilterChange } />
-                            </LevelItem>
-                            <LevelItem>
-                                <Split gutter="md">
-                                    <SplitItem>
-                                        {
-                                            isBeta &&
-                                            <Button isDisabled={ true }> Add Action </Button>
-                                        }
-
-                                    </SplitItem>
-                                    <SplitItem>
-
-                                        <DeleteActionsButton
-                                            isDisabled={ !selected.length }
-                                            remediation={ this.props.remediation }
-                                            issues={ selected }
-                                        />
-                                    </SplitItem>
-                                </Split>
-                            </LevelItem>
-                        </Level>
-                    </StackItem>
-                    <StackItem>
-                        {
-                            rows.length ?
-                                <SelectableTable
-                                    aria-label="Actions"
-                                    className='ins-c-remediations-details-table'
-                                    cells={ [
-                                        {
-                                            title: 'Actions',
-                                            transforms: [ sortable ]
-                                        }, {
-                                            title: 'Resolution'
-                                        }, {
-                                            title: 'Reboot Required',
-                                            transforms: [ sortable ]
-                                        }, {
-                                            title: 'Systems',
-                                            transforms: [ sortable ]
-                                        }, {
-                                            title: 'Type',
-                                            transforms: [ sortable ]
-                                        }]
+                <TableToolbar className='ins-c-remediations-details-table__toolbar'>
+                    <Level>
+                        <LevelItem>
+                            <SimpleTableFilter buttonTitle="" placeholder="Search Actions" onFilterChange={ this.onFilterChange } />
+                        </LevelItem>
+                        <LevelItem>
+                            <Split gutter="md">
+                                <SplitItem>
+                                    {
+                                        isBeta &&
+                                        <Button isDisabled={ true }> Add Action </Button>
                                     }
-                                    onCollapse={ (event, row, rowKey) => this.onExpandClicked(event, row, rowKey) }
-                                    onSelect={ this.onSelect }
-                                    onSort={ this.onSort }
-                                    sortBy={ { index: sortBy, direction: sortDir } }
-                                    rows= { rows }
-                                >
-                                    <TableHeader/>
-                                    <TableBody/>
-                                </SelectableTable> :
-                                filter ?
-                                    <p className='ins-c-remediation-details-table--empty'>No Actions found</p> :
-                                    <p className='ins-c-remediation-details-table--empty'>This Playbook is empty</p>
-                        }
 
-                    </StackItem>
-                </Stack>
+                                </SplitItem>
+                                <SplitItem>
+
+                                    <DeleteActionsButton
+                                        isDisabled={ !selected.length }
+                                        remediation={ this.props.remediation }
+                                        issues={ selected }
+                                    />
+                                </SplitItem>
+                            </Split>
+                        </LevelItem>
+                    </Level>
+                </TableToolbar>
+                {
+                    rows.length ?
+                        <SelectableTable
+                            aria-label="Actions"
+                            className='ins-c-remediations-details-table'
+                            cells={ [
+                                {
+                                    title: 'Actions',
+                                    transforms: [ sortable ]
+                                }, {
+                                    title: 'Resolution'
+                                }, {
+                                    title: 'Reboot Required',
+                                    transforms: [ sortable ]
+                                }, {
+                                    title: 'Systems',
+                                    transforms: [ sortable ]
+                                }, {
+                                    title: 'Type',
+                                    transforms: [ sortable ]
+                                }]
+                            }
+                            onCollapse={ (event, row, rowKey) => this.onExpandClicked(event, row, rowKey) }
+                            onSelect={ this.onSelect }
+                            onSort={ this.onSort }
+                            sortBy={ { index: sortBy, direction: sortDir } }
+                            rows= { rows }
+                        >
+                            <TableHeader/>
+                            <TableBody/>
+                        </SelectableTable> :
+                        filter ?
+                            <p className='ins-c-remediation-details-table--empty'>No Actions found</p> :
+                            <p className='ins-c-remediation-details-table--empty'>This Playbook is empty</p>
+                }
             </React.Fragment>
 
         );

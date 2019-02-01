@@ -11,11 +11,10 @@ import {
     EmptyState, EmptyStateIcon, EmptyStateBody,
     Level, LevelItem,
     Split, SplitItem,
-    Stack, StackItem,
-    Title
+    Title, Button, TextInput
 } from '@patternfly/react-core';
 import { sortable, TableHeader, TableBody } from '@patternfly/react-table';
-import { SimpleTableFilter } from '@red-hat-insights/insights-frontend-components';
+import { SimpleTableFilter, TableToolbar } from '@red-hat-insights/insights-frontend-components';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 
 import { formatUser, includesIgnoreCase } from '../Utilities/model';
@@ -64,7 +63,26 @@ class RemediationTable extends React.Component {
         // Skeleton Loading
         if (status !== 'fulfilled') {
             return (
-                <SkeletonTable/>
+                <React.Fragment>
+                    <TableToolbar className='ins-c-remediations-details-table__toolbar'>
+                        <Level>
+                            <LevelItem>
+                                <TextInput
+                                    type="text"
+                                    value='Search Playbooks'
+                                    aria-label="Search Playbooks Loading"
+                                    isDisabled
+                                />
+                            </LevelItem>
+                            <LevelItem>
+                                <Split gutter="md">
+                                    <SplitItem><Button isDisabled> Delete </Button></SplitItem>
+                                </Split>
+                            </LevelItem>
+                        </Level>
+                    </TableToolbar>
+                    <SkeletonTable/>
+                </React.Fragment>
             );
         }
 
@@ -109,8 +127,8 @@ class RemediationTable extends React.Component {
         }));
 
         return (
-            <Stack gutter="md">
-                <StackItem>
+            <React.Fragment>
+                <TableToolbar>
                     <Level>
                         <LevelItem>
                             <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" onFilterChange={ this.onFilterChange } />
@@ -126,40 +144,38 @@ class RemediationTable extends React.Component {
                             </Split>
                         </LevelItem>
                     </Level>
-                </StackItem>
-                <StackItem>
-                    {
-                        filtered.length ?
-                            <SelectableTable
-                                aria-label="Playbooks"
-                                cells={ [
-                                    {
-                                        title: 'Playbook',
-                                        transforms: [ sortable ]
-                                    }, {
-                                        title: 'Systems',
-                                        transforms: [ sortable ]
-                                    }, {
-                                        title: 'Actions',
-                                        transforms: [ sortable ]
-                                    }, {
-                                        title: 'Last Modified By'
-                                    }, {
-                                        title: 'Last Modified On',
-                                        transforms: [ sortable ]
-                                    }]
-                                }
-                                onSelect={ this.onSelect }
-                                onSort={ this.onSort }
-                                sortBy={ { index: sortBy, direction: sortDir } }
-                                rows={ rows }>
-                                <TableHeader/>
-                                <TableBody/>
-                            </SelectableTable> :
-                            <p className='ins-c-remediations-table--empty'>No Playbooks found</p>
-                    }
-                </StackItem>
-            </Stack>
+                </TableToolbar>
+                {
+                    filtered.length ?
+                        <SelectableTable
+                            aria-label="Playbooks"
+                            cells={ [
+                                {
+                                    title: 'Playbook',
+                                    transforms: [ sortable ]
+                                }, {
+                                    title: 'Systems',
+                                    transforms: [ sortable ]
+                                }, {
+                                    title: 'Actions',
+                                    transforms: [ sortable ]
+                                }, {
+                                    title: 'Last Modified By'
+                                }, {
+                                    title: 'Last Modified On',
+                                    transforms: [ sortable ]
+                                }]
+                            }
+                            onSelect={ this.onSelect }
+                            onSort={ this.onSort }
+                            sortBy={ { index: sortBy, direction: sortDir } }
+                            rows={ rows }>
+                            <TableHeader/>
+                            <TableBody/>
+                        </SelectableTable> :
+                        <p className='ins-c-remediations-table--empty'>No Playbooks found</p>
+                }
+            </React.Fragment>
         );
     }
 }

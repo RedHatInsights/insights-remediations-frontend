@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom';
 import {
     Main,
     PageHeader, PageHeaderTitle,
-    Skeleton
+    Skeleton,
+    TableToolbar
 } from '@red-hat-insights/insights-frontend-components';
 
 import SkeletonTable from '../components/SkeletonTable';
@@ -125,31 +126,24 @@ const RemediationDetailsSkeleton = () => {
                         </Grid>
                     </StackItem>
                     <StackItem>
-                        <Stack gutter="md">
-                            <StackItem className='ins-c-remediations-details-table__toolbar'>
-                                <Level>
-                                    <LevelItem>
-                                        { /* TODO: Fix filtering */ }
-                                        <TextInput
-                                            isDisabled
-                                            type="text"
-                                            value= ' '
-                                            placeholder="Filter"
-                                            aria-label='Filter'
-                                        />
-                                    </LevelItem>
-                                    <LevelItem>
-                                        <Split gutter="md">
-                                            <SplitItem><Button isDisabled> Add Action </Button></SplitItem>
-                                            <SplitItem><Button isDisabled> Remove Action </Button></SplitItem>
-                                        </Split>
-                                    </LevelItem>
-                                </Level>
-                            </StackItem>
-                            <StackItem>
-                                <SkeletonTable/>
-                            </StackItem>
-                        </Stack>
+                        <TableToolbar className='ins-c-remediations-details-table__toolbar'>
+                            <Level>
+                                <LevelItem>
+                                    <TextInput
+                                        type="text"
+                                        value='Search Actions'
+                                        aria-label="disabled text input example"
+                                        isDisabled
+                                    />
+                                </LevelItem>
+                                <LevelItem>
+                                    <Split gutter="md">
+                                        <SplitItem><Button isDisabled> Remove Action </Button></SplitItem>
+                                    </Split>
+                                </LevelItem>
+                            </Level>
+                        </TableToolbar>
+                        <SkeletonTable/>
                     </StackItem>
                 </Stack>
             </Main>
