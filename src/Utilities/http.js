@@ -43,6 +43,10 @@ async function checkResponse (r) {
 }
 
 async function json (r) {
+    if (!r) {
+        return;
+    }
+
     const type = r.headers.get('content-type');
     if (!type.includes('application/json')) {
         throw new HttpError(`Unexpected response type (${type}) returned`);
