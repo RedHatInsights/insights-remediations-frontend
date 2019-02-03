@@ -1,5 +1,3 @@
-import get from 'lodash/get';
-
 const HEADERS = {
     'Content-Type': 'application/json; charset=utf-8'
 };
@@ -28,10 +26,10 @@ async function checkResponse (r) {
             data = await r.json();
         } catch (e) {} // eslint-disable-line no-empty
 
-        const error = get(data, 'errors[0]');
+        if (data.errors && data.errors.length) {
+            const error = data.errors[0];
 
-        if (error) {
-            if (get(error, 'details.name')) {
+            if (error.details && error.details.name) {
                 throw new HttpError(`${error.title} (${error.details.name})`);
             }
 
