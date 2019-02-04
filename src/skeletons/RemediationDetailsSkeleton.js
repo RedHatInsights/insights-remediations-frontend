@@ -22,6 +22,8 @@ import {
     Button, TextInput
 } from '@patternfly/react-core';
 
+import { isBeta } from '../config';
+
 import './RemediationDetailsSkeleton.scss';
 
 const RemediationDetailsSkeleton = () => {
@@ -52,27 +54,30 @@ const RemediationDetailsSkeleton = () => {
             <Main>
                 <Stack gutter="md">
                     <StackItem>
-                        <Grid gutter="md" sm={ 12 } md={ 4 } className='ins-c-summary-cards'>
-                            <GridItem>
-                                <Card className='ins-c-card__actions-resolved'>
-                                    <CardHeader>
-                                        <Level>
-                                            <LevelItem className='ins-m-card__header-bold'>
-                                                Actions Resolved
-                                            </LevelItem>
-                                        </Level>
-                                    </CardHeader>
-                                    <CardBody>
-                                        { /*
-                                        <Progress
-                                            value={ 19 }
-                                            label='16 of 62'
-                                            measureLocation={ ProgressMeasureLocation.outside } />
-                                        */ }
-                                        <Skeleton size='xs'/>
-                                    </CardBody>
-                                </Card>
-                            </GridItem>
+                        <Grid gutter="md" sm={ 12 } md={ isBeta ? 4 : 6 } className='ins-c-summary-cards'>
+                            {
+                                isBeta &&
+                                <GridItem>
+                                    <Card className='ins-c-card__actions-resolved'>
+                                        <CardHeader>
+                                            <Level>
+                                                <LevelItem className='ins-m-card__header-bold'>
+                                                    Actions Resolved
+                                                </LevelItem>
+                                            </Level>
+                                        </CardHeader>
+                                        <CardBody>
+                                            { /*
+                                            <Progress
+                                                value={ 19 }
+                                                label='16 of 62'
+                                                measureLocation={ ProgressMeasureLocation.outside } />
+                                            */ }
+                                            <Skeleton size='xs'/>
+                                        </CardBody>
+                                    </Card>
+                                </GridItem>
+                            }
                             <GridItem>
                                 <Card className='ins-c-card__system-reboot'>
                                     <CardHeader className='ins-m-card__header-bold'> Systems Reboot </CardHeader>
