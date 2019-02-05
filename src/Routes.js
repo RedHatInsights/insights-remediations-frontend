@@ -8,6 +8,7 @@ const InsightsRoute = ({ component: Component, rootClass, ...rest }) => {
     const root = document.getElementById('root');
     root.removeAttribute('class');
     root.classList.add(`page__${rootClass}`, 'pf-l-page__main');
+    root.classList.add(`page__${rootClass}`, 'pf-c-page__main');
 
     return (<Component { ...rest } />);
 };
