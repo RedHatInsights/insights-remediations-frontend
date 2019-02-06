@@ -74,7 +74,7 @@ class NewRemediationButton extends Component {
                 <Button variant='primary' onClick={ () => this.openModal() }>Demo Remediation</Button>
                 <Wizard
                     isLarge = { true }
-                    title="Create Remediation"
+                    title="Create remediation"
                     className='ins-c-plan-modal'
                     onClose = { this.closeModal }
                     isOpen= { this.state.open }
