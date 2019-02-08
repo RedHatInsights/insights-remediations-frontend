@@ -128,7 +128,7 @@ class RemediationTable extends React.Component {
 
         return (
             <React.Fragment>
-                <TableToolbar>
+                <TableToolbar results={ value.remediations.length }>
                     <Level>
                         <LevelItem>
                             <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" onFilterChange={ this.onFilterChange } />

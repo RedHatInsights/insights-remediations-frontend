@@ -161,7 +161,7 @@ class RemediationDetailsTable extends React.Component {
 
         return (
             <React.Fragment>
-                <TableToolbar className='ins-c-remediations-details-table__toolbar'>
+                <TableToolbar className='ins-c-remediations-details-table__toolbar' results={ this.props.remediation.issues.length }>
                     <Level>
                         <LevelItem>
                             <SimpleTableFilter buttonTitle="" placeholder="Search Actions" onFilterChange={ this.onFilterChange } />
