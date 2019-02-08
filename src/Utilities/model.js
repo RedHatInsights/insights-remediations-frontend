@@ -13,11 +13,11 @@ export function getIssueApplication ({ id }) {
 
 /* eslint-disable camelcase */
 export function getSystemName ({ display_name, hostname, id }) {
-    if (display_name && display_name !== 'null') {
+    if (display_name) {
         return display_name;
     }
 
-    if (hostname && hostname !== 'null') {
+    if (hostname) {
         return hostname;
     }
 
