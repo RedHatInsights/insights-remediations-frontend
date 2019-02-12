@@ -67,13 +67,7 @@ const RemediationDetailsSkeleton = () => {
                                             </Level>
                                         </CardHeader>
                                         <CardBody>
-                                            { /*
-                                            <Progress
-                                                value={ 19 }
-                                                label='16 of 62'
-                                                measureLocation={ ProgressMeasureLocation.outside } />
-                                            */ }
-                                            <Skeleton size='xs'/>
+                                            <Skeleton size='md'/>
                                         </CardBody>
                                     </Card>
                                 </GridItem>

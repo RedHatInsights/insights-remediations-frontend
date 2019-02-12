@@ -11,6 +11,11 @@ export const loadRemediation = (id) => ({
     payload: api.getRemediation(id)
 });
 
+export const loadRemediationStatus = (id) => ({
+    type: ACTION_TYPES.LOAD_REMEDIATION_STATUS,
+    payload: api.getRemediationStatus(id)
+});
+
 export const refreshRemediation = (id) => ({
     type: ACTION_TYPES.REFRESH_REMEDIATION,
     payload: api.getRemediation(id)

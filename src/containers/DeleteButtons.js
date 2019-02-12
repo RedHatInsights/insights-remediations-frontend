@@ -1,4 +1,4 @@
-import { deleteRemediation } from '../actions';
+import { deleteRemediation, loadRemediationStatus } from '../actions';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
@@ -36,7 +36,8 @@ export const DeleteActionsButton = withRouter(connect(
     }),
     (dispatch, { remediation, issues }) => ({
         onDelete: async () => {
-            issues.map(issueId => dispatch(deleteRemediationIssue(remediation.id, issueId)));
+            await Promise.all(issues.map(issueId => dispatch(deleteRemediationIssue(remediation.id, issueId))));
+            dispatch(loadRemediationStatus(remediation.id));
         }
     })
 )(DeleteButton));

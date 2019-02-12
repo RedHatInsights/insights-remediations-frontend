@@ -15,6 +15,7 @@ export const getRemediations = (sortBy = 'updated_at', sortDir = 'desc') => {
 };
 
 export const getRemediation = id => doGet(url(id));
+export const getRemediationStatus = id => doGet(url(id, 'status'));
 export const createRemediation = data => doPost(url(), data);
 export const patchRemediation = (id, data) => doPatch(url(id), data).then(() => data);
 export const patchRemediationIssue = (id, issue, resolution) => doPatch(url(id, 'issues', issue), { resolution });
