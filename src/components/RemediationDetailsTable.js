@@ -15,7 +15,7 @@ import {
 
 import SelectableTable from '../containers/SelectableTable';
 import { sortable, TableHeader, TableBody } from '@patternfly/react-table';
-import { SimpleTableFilter, TableToolbar } from '@red-hat-insights/insights-frontend-components';
+import { SimpleTableFilter, TableToolbar, Skeleton } from '@red-hat-insights/insights-frontend-components';
 
 import { getIssueApplication, getSystemName, includesIgnoreCase } from '../Utilities/model';
 import { buildInventoryUrl, getInventoryTabForIssue, buildIssueUrl } from '../Utilities/urls';
@@ -70,6 +70,18 @@ const SORTING_ITERATEES = [
     i => i.systems.length,
     i => getIssueApplication(i)
 ];
+
+function statusCell (status, issue, system) {
+    if (status.status !== 'fulfilled') {
+        return <Skeleton size='sm' />;
+    }
+
+    switch (status.data.data[issue][system]) {
+        case true: return 'Resolved';
+        case false: return 'Unresolved';
+        default: return 'Unknown';
+    }
+}
 
 class RemediationDetailsTable extends React.Component {
 
@@ -142,7 +154,9 @@ class RemediationDetailsTable extends React.Component {
                                             </GridItem>
                                             {
                                                 isBeta &&
-                                                <GridItem span={ 3 }> unknown </GridItem>
+                                                <GridItem span={ 3 }>
+                                                    { statusCell(this.props.status, issue.id, system.id) }
+                                                </GridItem>
                                             }
 
                                         </Grid>
@@ -229,7 +243,8 @@ class RemediationDetailsTable extends React.Component {
 }
 
 RemediationDetailsTable.propTypes = {
-    remediation: PropTypes.object
+    remediation: PropTypes.object.isRequired,
+    status: PropTypes.object.isRequired
 };
 
 export default RemediationDetailsTable;

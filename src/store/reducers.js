@@ -86,6 +86,21 @@ const reducers = {
         }
     }, {
         status: 'initial'
+    }),
+
+    selectedRemediationStatus: applyReducerHash({
+        [ACTION_TYPES.LOAD_REMEDIATION_STATUS_PENDING]: () => ({
+            status: 'pending'
+        }),
+        [ACTION_TYPES.LOAD_REMEDIATION_STATUS_FULFILLED]: (state, action) => ({
+            status: 'fulfilled',
+            data: action.payload
+        }),
+        [ACTION_TYPES.LOAD_REMEDIATION_STATUS_REJECTED]: () => ({
+            status: 'rejected'
+        })
+    }, {
+        status: 'initial'
     })
 };
 

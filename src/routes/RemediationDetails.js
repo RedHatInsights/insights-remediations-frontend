@@ -9,6 +9,7 @@ import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import { DeleteRemediationButton } from '../containers/DeleteButtons';
 import { isBeta } from '../config';
+import ActionsResolvedCard from '../components/ActionsResolvedCard';
 
 import {
     Main,
@@ -18,7 +19,6 @@ import {
 import {
     Grid, GridItem,
     Card, CardHeader, CardBody,
-    // Progress, ProgressMeasureLocation,
     Stack, StackItem,
     Switch,
     Level, LevelItem,
@@ -39,6 +39,7 @@ class RemediationDetails extends Component {
         };
         this.id = this.props.computedMatch.params.id;
         this.loadRemediation = this.props.loadRemediation.bind(this, this.id);
+        this.loadRemediationStatus = this.props.loadRemediationStatus.bind(this, this.id);
     };
 
     handleRebootChange = autoReboot => {
@@ -47,11 +48,14 @@ class RemediationDetails extends Component {
 
     async componentDidMount () {
         await window.insights.chrome.auth.getUser();
-        await this.loadRemediation();
+        await Promise.all([
+            this.loadRemediation(),
+            this.loadRemediationStatus()
+        ]);
     }
 
     render() {
-        const { status, remediation } = this.props;
+        const { status, remediation } = this.props.selectedRemediation;
 
         if (status !== 'fulfilled') {
             return <RemediationDetailsSkeleton/>;
@@ -93,24 +97,7 @@ class RemediationDetails extends Component {
                                 {
                                     isBeta &&
                                     <GridItem>
-                                        <Card className='ins-c-card__actions-resolved'>
-                                            <CardHeader>
-                                                <Level>
-                                                    <LevelItem className='ins-m-card__header-bold'>
-                                                        Actions Resolved
-                                                    </LevelItem>
-                                                </Level>
-                                            </CardHeader>
-                                            <CardBody>
-                                                { /*
-                                                <Progress
-                                                    value={ 19 }
-                                                    label='16 of 62'
-                                                    measureLocation={ ProgressMeasureLocation.outside } />
-                                                */ }
-                                                <p>Progress unknown</p>
-                                            </CardBody>
-                                        </Card>
+                                        <ActionsResolvedCard status={ this.props.selectedRemediationStatus } />
                                     </GridItem>
                                 }
                                 <GridItem>
@@ -176,7 +163,7 @@ class RemediationDetails extends Component {
                             </Grid>
                         </StackItem>
                         <StackItem>
-                            <RemediationDetailsTable remediation={ remediation }/>
+                            <RemediationDetailsTable remediation={ remediation } status={ this.props.selectedRemediationStatus }/>
                         </StackItem>
                     </Stack>
                 </Main>
@@ -191,19 +178,21 @@ RemediationDetails.propTypes = {
             id: PropTypes.string.isRequired
         })
     }),
-    status: PropTypes.string.isRequired,
-    remediation: PropTypes.object,
+    selectedRemediation: PropTypes.object,
+    selectedRemediationStatus: PropTypes.object,
     history: PropTypes.object.isRequired,
     loadRemediation: PropTypes.func.isRequired,
+    loadRemediationStatus: PropTypes.func.isRequired,
     switchAutoReboot: PropTypes.func.isRequired,
     deleteRemediation: PropTypes.func.isRequired
 };
 
 export default withRouter(
     connect(
-        ({ selectedRemediation }) => ({ ...selectedRemediation }),
+        ({ selectedRemediation, selectedRemediationStatus }) => ({ selectedRemediation, selectedRemediationStatus }),
         dispatch => ({
             loadRemediation: id => dispatch(actions.loadRemediation(id)),
+            loadRemediationStatus: id => dispatch(actions.loadRemediationStatus(id)),
             // eslint-disable-next-line camelcase
             switchAutoReboot: (id, auto_reboot) => dispatch(actions.patchRemediation(id, { auto_reboot })),
             deleteRemediation: id => dispatch(actions.deleteRemediation(id))
