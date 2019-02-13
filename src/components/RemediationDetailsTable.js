@@ -25,6 +25,7 @@ import { ConnectResolutionEditButton } from '../containers/ConnectedComponents';
 import { DeleteActionsButton } from '../containers/DeleteButtons';
 import { SEARCH_DEBOUNCE_DELAY } from '../constants';
 import { isBeta } from '../config';
+import ResolutionStatusIcon from './ResolutionStatusIcon';
 
 import './RemediationDetailsTable.scss';
 
@@ -71,18 +72,6 @@ const SORTING_ITERATEES = [
     i => getIssueApplication(i)
 ];
 
-function statusCell (status, issue, system) {
-    if (status.status !== 'fulfilled') {
-        return <Skeleton size='sm' />;
-    }
-
-    switch (status.data.data[issue][system]) {
-        case true: return 'Resolved';
-        case false: return 'Unresolved';
-        default: return 'Unknown';
-    }
-}
-
 class RemediationDetailsTable extends React.Component {
 
     constructor(props) {
@@ -107,6 +96,7 @@ class RemediationDetailsTable extends React.Component {
     buildRows = remediation => {
         const filtered = remediation.issues.filter(i => includesIgnoreCase(i.description, this.state.filter.trim()));
         const sorted = orderBy(filtered, [ SORTING_ITERATEES[this.state.sortBy] ], [ this.state.sortDir ]);
+        const status = this.props.status;
 
         return flatMap(sorted, (issue, issueIndex) => ([
             {
@@ -155,7 +145,11 @@ class RemediationDetailsTable extends React.Component {
                                             {
                                                 isBeta &&
                                                 <GridItem span={ 3 }>
-                                                    { statusCell(this.props.status, issue.id, system.id) }
+                                                    {
+                                                        status.status !== 'fulfilled' ?
+                                                            <Skeleton size='xs' /> :
+                                                            <ResolutionStatusIcon status={ status.data.data[issue.id][system.id] } />
+                                                    }
                                                 </GridItem>
                                             }
 
