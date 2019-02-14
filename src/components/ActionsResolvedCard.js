@@ -7,13 +7,12 @@ import {
 
 import {
     Card, CardHeader, CardBody,
-    Progress, ProgressMeasureLocation,
-    Level, LevelItem
+    Progress, ProgressMeasureLocation
 } from '@patternfly/react-core';
 
 function buildBody (status) {
     if (status.status !== 'fulfilled') {
-        return <Skeleton size='md' />;
+        return <Skeleton size='lg' />;
     }
 
     const { resolved, total } = status.data.summary;
@@ -27,13 +26,7 @@ function buildBody (status) {
 
 const ActionsResolvedCard = ({ status }) => (
     <Card className='ins-c-card__actions-resolved'>
-        <CardHeader>
-            <Level>
-                <LevelItem className='ins-m-card__header-bold'>
-                    Actions Resolved
-                </LevelItem>
-            </Level>
-        </CardHeader>
+        <CardHeader className='ins-m-card__header-bold'>Actions Resolved</CardHeader>
         <CardBody>
             { buildBody(status) }
         </CardBody>
