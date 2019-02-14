@@ -14,28 +14,110 @@ class TestButtons extends React.Component {
         };
     }
 
-    dataProvider = (count = 4) => {
-        const data = {
-            issues: [{
-                id: 'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
-                description: 'Bonding will not fail over to the backup link when bonding options are partially read'
-            }, {
-                id: 'vulnerabilities:CVE_2017_6074_kernel|KERNEL_CVE_2017_6074',
-                description: 'Kernel vulnerable to local privilege escalation via DCCP module (CVE-2017-6074)'
-            }, {
-                id: 'advisor:corosync_enable_rt_schedule|COROSYNC_NOT_ENABLE_RT',
-                description: 'Cluster nodes are frequently fenced as realtime is not enabled in corosync'
-            }, {
-                id: 'compliance:xccdf_org.ssgproject.content_rule_no_empty_passwords',
-                description: 'Disallow empty passwords'
-            }],
-            systems: this.state.allHosts
-        };
+    dataProviderA1 = () => ({
+        issues: [{
+            id: 'vulnerabilities:CVE-2019-3815',
+            description: 'CVE-2019-3815'
+        }],
+        systems: this.state.allHosts
+    });
 
-        data.issues = data.issues.slice(0, count);
+    dataProviderA2 = () => ({
+        issues: [{
+            id: 'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
+            description: 'Bonding will not fail over to the backup link when bonding options are partially read',
+            systems: this.state.allHosts.slice(0, 5)
+        }]
+    });
 
-        return data;
-    }
+    dataProviderC1 = () => ({
+        issues: [{
+            id: 'vulnerabilities:CVE-2019-3815',
+            description: 'CVE-2019-3815'
+        }, {
+            id: 'vulnerabilities:CVE-2018-16865',
+            description: 'CVE-2018-16865'
+        }, {
+            id: 'vulnerabilities:CVE-2017-17713',
+            description: 'CVE-2017-17713'
+        }],
+        systems: this.state.allHosts.slice(-1)
+    });
+
+    dataProviderC2 = () => ({
+        issues: [{
+            id: 'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
+            description: 'Bonding will not fail over to the backup link when bonding options are partially read'
+        }, {
+            id: 'advisor:rhnsd_pid_world_write|RHNSD_PID_WORLD_WRITABLE',
+            description: 'Code injection risk or wrong pid altering when rhnsd daemon file rhnsd.pid is world writable, due to a bug in rhnsd'
+        }],
+        systems: this.state.allHosts.slice(-1)
+    });
+
+    dataProviderC3 = () => ({
+        issues: [
+            ...this.dataProviderC1().issues,
+            ...this.dataProviderC2().issues
+        ],
+        systems: this.state.allHosts.slice(-1)
+    });
+
+    dataProviderC4 = () => ({
+        issues: [{
+            id: 'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
+            description: 'Bonding will not fail over to the backup link when bonding options are partially read'
+        }, {
+            id: 'advisor:corosync_enable_rt_schedule|COROSYNC_NOT_ENABLE_RT',
+            description: 'Cluster nodes are frequently fenced as realtime is not enabled in corosync'
+        }, {
+            id: 'advisor:CVE_2017_6074_kernel|KERNEL_CVE_2017_6074',
+            description: 'Kernel vulnerable to local privilege escalation via DCCP module (CVE-2017-6074)'
+        }],
+        systems: this.state.allHosts.slice(-1)
+    });
+
+    dataProviderC5 = () => ({
+        issues: [{
+            id: 'advisor:unsupported',
+            description: 'Unsupported issue'
+        }, {
+            id: 'vulnerabilities:CVE-2019-999999',
+            description: 'Unsupported issue'
+        }, {
+            id: 'advisor:CVE_2017_6074_kernel|KERNEL_CVE_2017_6074',
+            description: 'Kernel vulnerable to local privilege escalation via DCCP module (CVE-2017-6074)'
+        }],
+        systems: this.state.allHosts.slice(-1)
+    });
+
+    dataProviderD1 = () => ({
+        issues: [{
+            id: 'vulnerabilities:CVE-2019-3815',
+            description: 'CVE-2019-3815',
+            systems: this.state.allHosts.slice(0, 1)
+        }, {
+            id: 'vulnerabilities:CVE-2018-16865',
+            description: 'CVE-2018-16865',
+            systems: this.state.allHosts.length > 1 ? this.state.allHosts.slice(1, 2) : this.state.allHosts.slice(0, 1)
+        }, {
+            id: 'vulnerabilities:CVE-2017-17713',
+            description: 'CVE-2017-17713'
+        }],
+        systems: this.state.allHosts
+    });
+
+    dataProviderD2 = () => ({
+        issues: [{
+            id: 'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
+            description: 'Bonding will not fail over to the backup link when bonding options are partially read',
+            systems: this.state.allHosts.slice(0, 1)
+        }, {
+            id: 'advisor:rhnsd_pid_world_write|RHNSD_PID_WORLD_WRITABLE',
+            description: 'Code injection risk or wrong pid altering when rhnsd daemon file rhnsd.pid is world writable, due to a bug in rhnsd',
+            systems: this.state.allHosts.slice(1)
+        }]
+    });
 
     async componentDidMount () {
         await window.insights.chrome.auth.getUser();
@@ -52,19 +134,29 @@ class TestButtons extends React.Component {
             return null;
         }
 
+        const RemediationBtn = ({ dataProvider, children, ...props }) =>
+            <RemediationButton
+                dataProvider={ dataProvider }
+                isDisabled={ !allHosts || !allHosts.length }
+                onRemediationCreated={ this.props.onRemediationCreated }
+                { ...props }
+            >
+                { children }
+            </RemediationButton>;
+
         return (
             <React.Fragment>
-                {
-                    [ 1, 2, 3, 4 ].map(i =>
-                        <RemediationButton
-                            key={ i }
-                            dataProvider={ this.dataProvider.bind(this, i) }
-                            isDisabled={ !allHosts || !allHosts.length }
-                            onRemediationCreated={ this.props.onRemediationCreated } >
-                            Test Wizard ({ i })
-                        </RemediationButton>
-                    )
-                }
+                <RemediationBtn dataProvider={ this.dataProviderA1 }>A1</RemediationBtn>
+                <RemediationBtn dataProvider={ this.dataProviderA2 }>A2</RemediationBtn>
+
+                <RemediationBtn dataProvider={ this.dataProviderC1 }>C1</RemediationBtn>
+                <RemediationBtn dataProvider={ this.dataProviderC2 }>C2</RemediationBtn>
+                <RemediationBtn dataProvider={ this.dataProviderC3 }>C3</RemediationBtn>
+                <RemediationBtn dataProvider={ this.dataProviderC4 }>C4 (multires)</RemediationBtn>
+                <RemediationBtn dataProvider={ this.dataProviderC5 }>C5 (unsupported)</RemediationBtn>
+
+                <RemediationBtn dataProvider={ this.dataProviderD1 }>D1</RemediationBtn>
+                <RemediationBtn dataProvider={ this.dataProviderD2 }>D2</RemediationBtn>
             </React.Fragment>
         );
     }
