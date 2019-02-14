@@ -15,7 +15,7 @@ import {
 
 import SelectableTable from '../containers/SelectableTable';
 import { sortable, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
-import { SimpleTableFilter, TableToolbar, Skeleton } from '@red-hat-insights/insights-frontend-components';
+import { SimpleTableFilter, TableToolbar, EmptyTable, Skeleton } from '@red-hat-insights/insights-frontend-components';
 
 import { getIssueApplication, getSystemName, includesIgnoreCase } from '../Utilities/model';
 import { buildInventoryUrl, getInventoryTabForIssue, buildIssueUrl } from '../Utilities/urls';
@@ -228,8 +228,8 @@ class RemediationDetailsTable extends React.Component {
                             <TableBody/>
                         </SelectableTable> :
                         filter ?
-                            <p className='ins-c-remediation-details-table--empty'>No Actions found</p> :
-                            <p className='ins-c-remediation-details-table--empty'>This Playbook is empty</p>
+                            <EmptyTable centered className='ins-c-remediation-details-table--empty'>No Actions found</EmptyTable> :
+                            <EmptyTable centered className='ins-c-remediation-details-table--empty'>This Playbook is empty</EmptyTable>
                 }
             </React.Fragment>
 
