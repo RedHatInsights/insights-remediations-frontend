@@ -178,7 +178,7 @@ class RemediationDetailsTable extends React.Component {
                                 <SplitItem>
 
                                     <DeleteActionsButton
-                                        isDisabled={ !selected.length }
+                                        isDisabled={ !selected.length || !this.props.remediation.issues.length }
                                         remediation={ this.props.remediation }
                                         issues={ selected }
                                     />
