@@ -14,7 +14,7 @@ import {
 } from '@patternfly/react-core';
 
 import SelectableTable from '../containers/SelectableTable';
-import { sortable, TableHeader, TableBody } from '@patternfly/react-table';
+import { sortable, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
 import { SimpleTableFilter, TableToolbar, Skeleton } from '@red-hat-insights/insights-frontend-components';
 
 import { getIssueApplication, getSystemName, includesIgnoreCase } from '../Utilities/model';
@@ -198,6 +198,7 @@ class RemediationDetailsTable extends React.Component {
                 {
                     rows.length ?
                         <SelectableTable
+                            variant={ TableVariant.compact }
                             aria-label="Actions"
                             className='ins-c-remediations-details-table'
                             cells={ [
