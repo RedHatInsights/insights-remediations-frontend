@@ -9,7 +9,7 @@
     "@patternfly/react-icons": "^2.10.3",
     "@patternfly/react-table": "^0.4.13",
     "@patternfly/react-tokens": "^1.10.1",
-    "@red-hat-insights/insights-frontend-components": "^3.33.63",
+    "@red-hat-insights/insights-frontend-components": "^3.34.5",
     "classnames": "^2.2.5",
     "create-react-class": "^15.6.3",
     "urijs": "^1.19.1"
