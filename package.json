@@ -7,7 +7,7 @@
     "@patternfly/patternfly": "^1.0.219",
     "@patternfly/react-core": "^2.1.4",
     "@patternfly/react-icons": "^3.1.1",
-    "@patternfly/react-table": "^0.4.13",
+    "@patternfly/react-table": "^1.0.24",
     "@patternfly/react-tokens": "^1.10.1",
     "@red-hat-insights/insights-frontend-components": "^3.38.0",
     "classnames": "^2.2.5",
