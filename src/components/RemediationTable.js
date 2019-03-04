@@ -26,6 +26,8 @@ import SkeletonTable from './SkeletonTable';
 import { DeleteRemediationsButton } from '../containers/DeleteButtons';
 import { SEARCH_DEBOUNCE_DELAY } from '../constants';
 
+import { downloadPlaybook } from '../api';
+
 function buildName (name, id) {
     return ({
         title: <Link to={ `/${id}` }>{ name }</Link>
@@ -150,7 +152,12 @@ class RemediationTable extends React.Component {
                     <ToolbarGroup>
                         <ToolbarItem><Button> Create Remediation </Button></ToolbarItem>
                         <ToolbarItem>
-                            <Button variant='link'> Generate Playbook </Button>
+                            <Button
+                                variant='link'
+                                isDisabled={ !selected.length }
+                            >
+                                Generate Playbook
+                            </Button>
                         </ToolbarItem>
                         <ToolbarItem>
                             <Dropdown
