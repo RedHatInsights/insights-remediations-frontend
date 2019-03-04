@@ -74,15 +74,23 @@ class RemediationTable extends React.Component {
         if (status !== 'fulfilled') {
             return (
                 <React.Fragment>
-                    <TableToolbar className='ins-c-remediations-details-table__toolbar'>
+                    <TableToolbar className='ins-c-remediations-details-table__toolbar' results={ 0 }>
                         <ToolbarGroup>
                             <ToolbarItem>
                                 <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" aria-label="Search Playbooks Loading" isDisabled />
                             </ToolbarItem>
                         </ToolbarGroup>
                         <ToolbarGroup>
+                            <ToolbarItem><Button isDisabled> Create Remediation </Button></ToolbarItem>
                             <ToolbarItem>
-                                <Button isDisabled> Delete </Button>
+                                <Button variant='link' isDisabled> Generate Playbook </Button>
+                            </ToolbarItem>
+                            <ToolbarItem>
+                                <Dropdown
+                                    toggle={ <KebabToggle/> }
+                                    isDisabled
+                                >
+                                </Dropdown>
                             </ToolbarItem>
                         </ToolbarGroup>
                     </TableToolbar>
