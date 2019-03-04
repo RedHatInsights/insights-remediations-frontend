@@ -3,7 +3,7 @@
 @import '~@red-hat-insights/insights-frontend-components/index.css';
 
 // Overwrite page header danger button until PF merges
-.pf-l-page-header .pf-c-content .pf-c-button.pf-m-danger {
+.pf-c-button.pf-m-danger.ins-c-button__danger-link {
     background: none;
     color: var(--pf-c-button--m-danger--BackgroundColor);
     &:hover { color: var(--pf-c-button--m-danger--hover--BackgroundColor) }

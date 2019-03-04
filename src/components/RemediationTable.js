@@ -9,9 +9,9 @@ import {
     Bullseye,
     Card, CardBody,
     EmptyState, EmptyStateIcon, EmptyStateBody,
-    Level, LevelItem,
-    Split, SplitItem,
-    Title, Button, TextInput
+    Dropdown, KebabToggle, DropdownPosition,
+    Title, Button,
+    ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
 import { sortable, TableHeader, TableBody } from '@patternfly/react-table';
 import { SimpleTableFilter, TableToolbar } from '@red-hat-insights/insights-frontend-components';
@@ -39,12 +39,22 @@ function formatDate (date) {
 const SORTING_ITERATEES = [ null, 'name', 'system_count', 'issue_count', null, 'updated_at' ];
 
 class RemediationTable extends React.Component {
-    state = {
-        filter: '',
-        selected: [],
-        sortBy: 5,
-        sortDir: 'desc'
+    constructor(props) {
+        super(props);
+        this.state = {
+            filter: '',
+            selected: [],
+            sortBy: 5,
+            sortDir: 'desc',
+            isOpen: false
+        };
     }
+
+    onToggle = isOpen => {
+        this.setState({
+            isOpen
+        });
+    };
 
     onFilterChange = debounce(filter => this.setState({ filter }), SEARCH_DEBOUNCE_DELAY);
 
@@ -58,28 +68,23 @@ class RemediationTable extends React.Component {
 
     render () {
         const { value, status } = this.props;
-        const { filter, selected, sortBy, sortDir } = this.state;
+        const { filter, selected, sortBy, sortDir, isOpen } = this.state;
 
         // Skeleton Loading
         if (status !== 'fulfilled') {
             return (
                 <React.Fragment>
                     <TableToolbar className='ins-c-remediations-details-table__toolbar'>
-                        <Level>
-                            <LevelItem>
-                                <TextInput
-                                    type="text"
-                                    value='Search Playbooks'
-                                    aria-label="Search Playbooks Loading"
-                                    isDisabled
-                                />
-                            </LevelItem>
-                            <LevelItem>
-                                <Split gutter="md">
-                                    <SplitItem><Button isDisabled> Delete </Button></SplitItem>
-                                </Split>
-                            </LevelItem>
-                        </Level>
+                        <ToolbarGroup>
+                            <ToolbarItem>
+                                <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" aria-label="Search Playbooks Loading" isDisabled />
+                            </ToolbarItem>
+                        </ToolbarGroup>
+                        <ToolbarGroup>
+                            <ToolbarItem>
+                                <Button isDisabled> Delete </Button>
+                            </ToolbarItem>
+                        </ToolbarGroup>
                     </TableToolbar>
                     <SkeletonTable/>
                 </React.Fragment>
@@ -129,21 +134,31 @@ class RemediationTable extends React.Component {
         return (
             <React.Fragment>
                 <TableToolbar results={ value.remediations.length }>
-                    <Level>
-                        <LevelItem>
+                    <ToolbarGroup>
+                        <ToolbarItem>
                             <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" onFilterChange={ this.onFilterChange } />
-                        </LevelItem>
-                        <LevelItem>
-                            <Split gutter="md">
-                                <SplitItem>
-                                    <DeleteRemediationsButton
-                                        isDisabled={ !selected.length }
-                                        remediations={ selected }
-                                    />
-                                </SplitItem>
-                            </Split>
-                        </LevelItem>
-                    </Level>
+                        </ToolbarItem>
+                    </ToolbarGroup>
+                    <ToolbarGroup>
+                        <ToolbarItem><Button> Create Remediation </Button></ToolbarItem>
+                        <ToolbarItem>
+                            <Button variant='link'> Generate Playbook </Button>
+                        </ToolbarItem>
+                        <ToolbarItem>
+                            <Dropdown
+                                position={ DropdownPosition.right }
+                                toggle={ <KebabToggle onToggle={ this.onToggle } /> }
+                                isOpen={ isOpen }
+                                isPlain
+                                className='ins-c-remediations-table__actions'
+                            >
+                                <DeleteRemediationsButton
+                                    isDisabled={ !selected.length }
+                                    remediations={ selected }
+                                />
+                            </Dropdown>
+                        </ToolbarItem>
+                    </ToolbarGroup>
                 </TableToolbar>
                 {
                     filtered.length ?
