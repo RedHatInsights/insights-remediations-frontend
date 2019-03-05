@@ -85,7 +85,7 @@ class RemediationTable extends React.Component {
                         <ToolbarGroup>
                             <ToolbarItem><Button isDisabled> Create Remediation </Button></ToolbarItem>
                             <ToolbarItem>
-                                <Button variant='link' isDisabled> Generate Playbook </Button>
+                                <Button variant='link' isDisabled> Download Playbook </Button>
                             </ToolbarItem>
                             <ToolbarItem>
                                 <Dropdown
@@ -158,7 +158,7 @@ class RemediationTable extends React.Component {
                                 // If a user has a popup blocker, they may only get the last one selected
                                 onClick= { () => selected.forEach(r => downloadPlaybook(r)) }
                             >
-                                Generate Playbook
+                                Download Playbook
                             </Button>
                         </ToolbarItem>
                         <ToolbarItem>
