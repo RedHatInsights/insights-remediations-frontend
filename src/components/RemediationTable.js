@@ -23,6 +23,7 @@ import './RemediationTable.scss';
 import SkeletonTable from './SkeletonTable';
 import { DeleteRemediationsButton } from '../containers/DeleteButtons';
 import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
+import * as debug from '../Utilities/debug';
 
 function buildName (name, id) {
     return ({
@@ -186,6 +187,7 @@ function RemediationTable (props) {
                         numberOfItems={ filtered.length }
                         useNext={ true }
                         { ...pagination.props }
+                        { ...debug.pagination }
                     />
                 </TableToolbar>
             }

@@ -25,6 +25,7 @@ import { isBeta } from '../config';
 import ResolutionStatusIcon from './ResolutionStatusIcon';
 
 import { useExpander, useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
+import * as debug from '../Utilities/debug';
 
 import './RemediationDetailsTable.scss';
 
@@ -218,6 +219,7 @@ function RemediationDetailsTable (props) {
                         numberOfItems={ filtered.length }
                         useNext={ true }
                         { ...pagination.props }
+                        { ...debug.pagination }
                     />
                 </TableToolbar>
             }
