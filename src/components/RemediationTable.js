@@ -155,6 +155,8 @@ class RemediationTable extends React.Component {
                             <Button
                                 variant='link'
                                 isDisabled={ !selected.length }
+                                // If a user has a popup blocker, they may only get the last one selected
+                                onClick= { () => selected.forEach(r => downloadPlaybook(r)) }
                             >
                                 Generate Playbook
                             </Button>
