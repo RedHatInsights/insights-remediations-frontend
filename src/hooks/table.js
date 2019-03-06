@@ -22,6 +22,12 @@ function callbacks () {
     return fn;
 }
 
+function assertId (id) {
+    if (id === undefined) {
+        throw new Error('row does not define id!');
+    }
+}
+
 export function useSorter (defaultSortBy = 2, defaultSortDir = 'asc') {
     const [ sortBy, setSortBy ] = useState(defaultSortBy);
     const [ sortDir, setSortDir ] = useState(defaultSortDir);
@@ -87,9 +93,7 @@ export function useExpander (rowToId = row => row.id) {
                 }
 
                 const id = rowToId(rows[index]);
-                if (id === undefined) {
-                    throw new Error(`row ${index} does not define id!`);
-                }
+                assertId(id);
 
                 setValue(value ? id : false);
             }
@@ -128,9 +132,7 @@ export function usePagination () {
 }
 
 function onSelectOne (selected, isSelected, id) {
-    if (id === undefined) {
-        return selected;
-    }
+    assertId(id);
 
     return {
         ...selected,
