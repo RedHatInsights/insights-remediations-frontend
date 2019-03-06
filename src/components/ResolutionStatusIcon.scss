@@ -1,9 +1,7 @@
-@import '@patternfly/patternfly-next/sass-utilities/colors.scss';
-
 .ins-c-resolution-status-icon--resolved {
-    color: $pf-color-green-100;
+    color: var(--pf-global--success-color--200);
 }
 
 .ins-c-resolution-status-icon--unresolved {
-    color: $pf-color-red-100;
+    color: var(--pf-global--danger-color--100);
 }
