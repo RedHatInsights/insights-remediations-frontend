@@ -13,7 +13,7 @@ import {
     Title, Button, TextInput
 } from '@patternfly/react-core';
 import { sortable, Table, TableHeader, TableBody } from '@patternfly/react-table';
-import { Pagination, SimpleTableFilter, TableToolbar } from '@red-hat-insights/insights-frontend-components';
+import { EmptyTable, Pagination, SimpleTableFilter, TableToolbar } from '@red-hat-insights/insights-frontend-components';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 
 import { formatUser, includesIgnoreCase } from '../Utilities/model';
@@ -178,7 +178,7 @@ function RemediationTable (props) {
                         <TableHeader/>
                         <TableBody/>
                     </Table> :
-                    <p className='ins-c-remediations-table--empty'>No Playbooks found</p>
+                    <EmptyTable centered className='ins-c-remediations-table--empty'>No Playbooks found</EmptyTable>
             }
             {
                 rows.length > 0 &&
