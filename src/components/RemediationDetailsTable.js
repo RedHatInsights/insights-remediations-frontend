@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import debounce from 'lodash/debounce';
 import flatMap from 'lodash/flatMap';
 import orderBy from 'lodash/orderBy';
 
@@ -13,9 +12,8 @@ import {
     Split, SplitItem
 } from '@patternfly/react-core';
 
-import SelectableTable from '../containers/SelectableTable';
-import { sortable, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
-import { SimpleTableFilter, TableToolbar, EmptyTable, Skeleton } from '@red-hat-insights/insights-frontend-components';
+import { sortable, TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
+import { SimpleTableFilter, TableToolbar, EmptyTable, Skeleton, Pagination } from '@red-hat-insights/insights-frontend-components';
 
 import { getIssueApplication, getSystemName, includesIgnoreCase } from '../Utilities/model';
 import { buildInventoryUrl, getInventoryTabForIssue, buildIssueUrl } from '../Utilities/urls';
@@ -23,9 +21,11 @@ import './RemediationTable.scss';
 
 import { ConnectResolutionEditButton } from '../containers/ConnectedComponents';
 import { DeleteActionsButton } from '../containers/DeleteButtons';
-import { SEARCH_DEBOUNCE_DELAY } from '../constants';
 import { isBeta } from '../config';
 import ResolutionStatusIcon from './ResolutionStatusIcon';
+
+import { useExpander, useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
+import * as debug from '../Utilities/debug';
 
 import './RemediationDetailsTable.scss';
 
@@ -52,16 +52,6 @@ function issueDescriptionCell (issue) {
     return issue.description;
 }
 
-function expandRow (rows, expandedRow) {
-    const row = rows[expandedRow];
-    if (!row) {
-        return rows;
-    }
-
-    row.isOpen = !row.isOpen;
-    return rows;
-}
-
 const SORTING_ITERATEES = [
     null, // expand toggle
     null, // checkboxes
@@ -72,169 +62,170 @@ const SORTING_ITERATEES = [
     i => getIssueApplication(i)
 ];
 
-class RemediationDetailsTable extends React.Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            expandedRow: false,
-            selected: [],
-            filter: '',
-            sortBy: 2,
-            sortDir: 'asc'
-        };
-    }
-
-    onExpandClicked = (event, rowKey) => {
-        this.setState({ expandedRow: this.state.expandedRow === rowKey ? false : rowKey });
-    }
-
-    onSelect = selected => this.setState({ selected });
-    onFilterChange = debounce(filter => this.setState({ filter }), SEARCH_DEBOUNCE_DELAY);
-    onSort = (event, sortBy, sortDir) => this.setState({ sortBy, sortDir });
-
-    buildRows = remediation => {
-        const filtered = remediation.issues.filter(i => includesIgnoreCase(i.description, this.state.filter.trim()));
-        const sorted = orderBy(filtered, [ SORTING_ITERATEES[this.state.sortBy] ], [ this.state.sortDir ]);
-        const status = this.props.status;
-
-        return flatMap(sorted, (issue, issueIndex) => ([
-            {
-                isOpen: false,
-                id: issue.id,
-                cells: [
-                    {
-                        title: issueDescriptionCell(issue)
-                    },
-                    {
-                        title: resolutionDescriptionCell(remediation, issue)
-                    },
-                    issue.resolution.needs_reboot === true ? 'Yes' : 'No',
-                    issue.systems.length,
-                    {
-                        title: getIssueApplication(issue),
-                        props: { className: 'ins-m-nowrap' }
-                    }
-                ]
-            },
-            {
-                parent: issueIndex * 2,
-                cells: [{
-                    title:
-                        <React.Fragment>
-                            <Card key={ issueIndex } className='ins-c-system-card'>
+const buildRow = (remediation, status) => (issue, index) => {
+    return [
+        {
+            isOpen: false,
+            id: issue.id,
+            cells: [
+                {
+                    title: issueDescriptionCell(issue)
+                },
+                {
+                    title: resolutionDescriptionCell(remediation, issue)
+                },
+                issue.resolution.needs_reboot === true ? 'Yes' : 'No',
+                issue.systems.length,
+                {
+                    title: getIssueApplication(issue),
+                    props: { className: 'ins-m-nowrap' }
+                }
+            ]
+        },
+        {
+            parent: index * 2,
+            cells: [{
+                title:
+                    <React.Fragment>
+                        <Card key={ index } className='ins-c-system-card'>
+                            <CardBody>
+                                <Grid>
+                                    <GridItem span={ isBeta ? 9 : 12 }> System </GridItem>
+                                    {
+                                        isBeta &&
+                                        <GridItem span={ 3 }> Status </GridItem>
+                                    }
+                                </Grid>
+                            </CardBody>
+                        </Card>
+                        { orderBy(issue.systems, [ s => getSystemName(s), s => s.id ]).map(system => (
+                            <Card key={ system.id } className='ins-c-system-card'>
                                 <CardBody>
                                     <Grid>
-                                        <GridItem span={ isBeta ? 9 : 12 }> System </GridItem>
+                                        <GridItem span={ isBeta ? 9 : 12 }>
+                                            <a href={ buildInventoryUrl(system.id, getInventoryTabForIssue(issue)) }>
+                                                { getSystemName(system) }
+                                            </a>
+                                        </GridItem>
                                         {
                                             isBeta &&
-                                            <GridItem span={ 3 }> Status </GridItem>
+                                            <GridItem span={ 3 }>
+                                                {
+                                                    status.status !== 'fulfilled' ?
+                                                        <Skeleton size='xs' /> :
+                                                        <ResolutionStatusIcon status={ status.data.data[issue.id][system.id] } />
+                                                }
+                                            </GridItem>
                                         }
+
                                     </Grid>
                                 </CardBody>
                             </Card>
-                            { orderBy(issue.systems, [ s => getSystemName(s), s => s.id ]).map(system => (
-                                <Card key={ system.id } className='ins-c-system-card'>
-                                    <CardBody>
-                                        <Grid>
-                                            <GridItem span={ isBeta ? 9 : 12 }>
-                                                <a href={ buildInventoryUrl(system.id, getInventoryTabForIssue(issue)) }>
-                                                    { getSystemName(system) }
-                                                </a>
-                                            </GridItem>
-                                            {
-                                                isBeta &&
-                                                <GridItem span={ 3 }>
-                                                    {
-                                                        status.status !== 'fulfilled' ?
-                                                            <Skeleton size='xs' /> :
-                                                            <ResolutionStatusIcon status={ status.data.data[issue.id][system.id] } />
-                                                    }
-                                                </GridItem>
-                                            }
+                        )) }
+                    </React.Fragment>
+            }]
+        }
+    ];
+};
 
-                                        </Grid>
-                                    </CardBody>
-                                </Card>
-                            )) }
-                        </React.Fragment>
-                }]
-            }
-        ]));
-    }
+function RemediationDetailsTable (props) {
+    const pagination = usePagination();
+    const sorter = useSorter(2, 'asc');
+    const filter = useFilter();
+    const expander = useExpander();
+    const selector = useSelector();
 
-    render() {
-        const rows = expandRow(this.buildRows(this.props.remediation), this.state.expandedRow);
-        const { filter, selected, sortBy, sortDir } = this.state;
+    sorter.onChange(pagination.reset);
+    filter.onChange(pagination.reset);
 
-        return (
-            <React.Fragment>
-                <TableToolbar className='ins-c-remediations-details-table__toolbar' results={ this.props.remediation.issues.length }>
-                    <Level>
-                        <LevelItem>
-                            <SimpleTableFilter buttonTitle="" placeholder="Search Actions" onFilterChange={ this.onFilterChange } />
-                        </LevelItem>
-                        <LevelItem>
-                            <Split gutter="md">
-                                <SplitItem>
-                                    {
-                                        isBeta &&
-                                        <Button isDisabled={ true }> Add Action </Button>
-                                    }
+    const filtered = props.remediation.issues.filter(i => includesIgnoreCase(i.description, filter.value.trim()));
+    const sorted = orderBy(filtered, [ SORTING_ITERATEES[ sorter.sortBy] ], [ sorter.sortDir ]);
+    const paged = sorted.slice(pagination.offset, pagination.offset + pagination.pageSize);
 
-                                </SplitItem>
-                                <SplitItem>
+    const rows = flatMap(paged, buildRow(props.remediation, props.status));
 
-                                    <DeleteActionsButton
-                                        isDisabled={ !selected.length || !this.props.remediation.issues.length }
-                                        remediation={ this.props.remediation }
-                                        issues={ selected }
-                                    />
-                                </SplitItem>
-                            </Split>
-                        </LevelItem>
-                    </Level>
-                </TableToolbar>
-                {
-                    rows.length ?
-                        <SelectableTable
-                            variant={ TableVariant.compact }
-                            aria-label="Actions"
-                            className='ins-c-remediations-details-table'
-                            cells={ [
+    expander.register(rows);
+    selector.register(rows);
+
+    const issueIds = props.remediation.issues.map(issue => issue.id);
+
+    return (
+        <React.Fragment>
+            <TableToolbar className='ins-c-remediations-details-table__toolbar' results={ filtered.length }>
+                <Level>
+                    <LevelItem>
+                        <SimpleTableFilter buttonTitle="" placeholder="Search Actions" { ...filter.props } />
+                    </LevelItem>
+                    <LevelItem>
+                        <Split gutter="md">
+                            <SplitItem>
                                 {
-                                    title: 'Actions',
-                                    transforms: [ sortable ]
-                                }, {
-                                    title: 'Resolution'
-                                }, {
-                                    title: 'Reboot Required',
-                                    transforms: [ sortable ]
-                                }, {
-                                    title: 'Systems',
-                                    transforms: [ sortable ]
-                                }, {
-                                    title: 'Type',
-                                    transforms: [ sortable ]
-                                }]
-                            }
-                            onCollapse={ (event, row, rowKey) => this.onExpandClicked(event, row, rowKey) }
-                            onSelect={ this.onSelect }
-                            onSort={ this.onSort }
-                            sortBy={ { index: sortBy, direction: sortDir } }
-                            rows= { rows }
-                        >
-                            <TableHeader/>
-                            <TableBody/>
-                        </SelectableTable> :
-                        filter ?
-                            <EmptyTable centered className='ins-c-remediation-details-table--empty'>No Actions found</EmptyTable> :
-                            <EmptyTable centered className='ins-c-remediation-details-table--empty'>This Playbook is empty</EmptyTable>
-                }
-            </React.Fragment>
+                                    isBeta &&
+                                    <Button isDisabled={ true }> Add Action </Button>
+                                }
 
-        );
-    };
+                            </SplitItem>
+                            <SplitItem>
+
+                                <DeleteActionsButton
+                                    isDisabled={ !selector.getSelectedIds(issueIds).length }
+                                    remediation={ props.remediation }
+                                    issues={ selector.getSelectedIds(issueIds) }
+                                />
+                            </SplitItem>
+                        </Split>
+                    </LevelItem>
+                </Level>
+            </TableToolbar>
+            {
+                rows.length > 0 ?
+                    <Table
+                        variant={ TableVariant.compact }
+                        aria-label="Actions"
+                        className='ins-c-remediations-details-table'
+                        cells={ [
+                            {
+                                title: 'Actions',
+                                transforms: [ sortable ]
+                            }, {
+                                title: 'Resolution'
+                            }, {
+                                title: 'Reboot Required',
+                                transforms: [ sortable ]
+                            }, {
+                                title: 'Systems',
+                                transforms: [ sortable ]
+                            }, {
+                                title: 'Type',
+                                transforms: [ sortable ]
+                            }]
+                        }
+                        rows={ rows }
+                        { ...sorter.props }
+                        { ...expander.props }
+                        { ...selector.props }
+                    >
+                        <TableHeader />
+                        <TableBody />
+                    </Table> :
+                    filter.value ?
+                        <EmptyTable centered className='ins-c-remediation-details-table--empty'>No Actions found</EmptyTable> :
+                        <EmptyTable centered className='ins-c-remediation-details-table--empty'>This Playbook is empty</EmptyTable>
+            }
+            {
+                rows.length > 0 &&
+                <TableToolbar>
+                    <Pagination
+                        numberOfItems={ filtered.length }
+                        useNext={ true }
+                        { ...pagination.props }
+                        { ...debug.pagination }
+                    />
+                </TableToolbar>
+            }
+        </React.Fragment>
+
+    );
 }
 
 RemediationDetailsTable.propTypes = {

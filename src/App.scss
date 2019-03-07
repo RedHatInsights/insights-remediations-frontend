@@ -1,3 +1,14 @@
 // Importing Global Variables
 @import '~@red-hat-insights/insights-frontend-components/Utilities/_all';
+<<<<<<< HEAD
 @import '~@red-hat-insights/insights-frontend-components/index.css';
+=======
+@import '~@red-hat-insights/insights-frontend-components/index.css';
+
+// Overwrite page header danger button until PF merges
+.pf-c-button.pf-m-danger.ins-c-button__danger-link {
+    background: none;
+    color: var(--pf-c-button--m-danger--BackgroundColor);
+    &:hover { color: var(--pf-c-button--m-danger--hover--BackgroundColor) }
+}
+>>>>>>> 03cab7910385dbf2e4f8899cee7f2346af81f04a
