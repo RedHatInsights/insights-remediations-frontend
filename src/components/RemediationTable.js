@@ -12,7 +12,7 @@ import {
     Title, Button,
     ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
-import { sortable, Table, TableHeader, TableBody } from '@patternfly/react-table';
+import { sortable, Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
 import { EmptyTable, Pagination, SimpleTableFilter, TableToolbar } from '@red-hat-insights/insights-frontend-components';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 
@@ -177,6 +177,7 @@ function RemediationTable (props) {
             {
                 rows.length > 0 ?
                     <Table
+                        variant={ TableVariant.compact }
                         aria-label="Playbooks"
                         cells={ [
                             {

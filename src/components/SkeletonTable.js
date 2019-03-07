@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, TableHeader, TableBody } from '@patternfly/react-table';
+import { Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
 import { Skeleton } from '@red-hat-insights/insights-frontend-components';
 
 class SkeletonTable extends React.Component {
@@ -29,7 +29,7 @@ class SkeletonTable extends React.Component {
         const { columns, rows } = this.state;
 
         return (
-            <Table cells={ columns } rows={ rows } aria-label="Loading">
+            <Table cells={ columns } rows={ rows } aria-label="Loading" variant={ TableVariant.compact }>
                 <TableHeader />
                 <TableBody />
             </Table>
