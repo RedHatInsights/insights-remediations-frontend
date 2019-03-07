@@ -20,7 +20,7 @@ import { formatUser, includesIgnoreCase } from '../Utilities/model';
 import { appUrl } from '../Utilities/urls';
 import './RemediationTable.scss';
 
-import SkeletonTable from './SkeletonTable';
+import SkeletonTable from '../skeletons/SkeletonTable';
 import { DeleteRemediationsButton } from '../containers/DeleteButtons';
 import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
 import * as debug from '../Utilities/debug';

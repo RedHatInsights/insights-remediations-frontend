@@ -1,0 +1,5 @@
+@import '@red-hat-insights/insights-frontend-components/Utilities/_mixins.scss';
+
+.ins-c-skeleton-table__footer > * {
+    @include rem('margin', 5px);
+}

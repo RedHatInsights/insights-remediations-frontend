@@ -10,7 +10,7 @@ import {
     SimpleTableFilter
 } from '@red-hat-insights/insights-frontend-components';
 
-import SkeletonTable from '../components/SkeletonTable';
+import SkeletonTable from './SkeletonTable';
 
 import {
     Grid, GridItem,
