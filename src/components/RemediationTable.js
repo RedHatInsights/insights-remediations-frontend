@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import moment from 'moment';
@@ -21,7 +21,7 @@ import { appUrl } from '../Utilities/urls';
 import './RemediationTable.scss';
 
 import SkeletonTable from '../skeletons/SkeletonTable';
-import { DeleteRemediationsButton } from '../containers/DeleteButtons';
+import { DeleteRemediationsDropdown } from '../containers/DeleteButtons';
 import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
 import * as debug from '../Utilities/debug';
 
@@ -97,8 +97,6 @@ const SORTING_ITERATEES = [ null, 'name', 'system_count', 'issue_count', null, '
 
 function RemediationTable (props) {
 
-    const [ isOpen, setIsOpen ] = useState(false);
-
     const { value, status } = props;
 
     const sorter = useSorter(5, 'desc');
@@ -161,16 +159,10 @@ function RemediationTable (props) {
                         </Button>
                     </ToolbarItem>
                     <ToolbarItem>
-                        <Dropdown
-                            toggle={ <KebabToggle onToggle={ () => setIsOpen(!isOpen) } /> }
-                            isOpen={ isOpen }
-                            isPlain
-                        >
-                            <DeleteRemediationsButton
-                                isDisabled={ !selector.getSelectedIds(remediationIds).length }
-                                remediations={ selector.getSelectedIds(remediationIds) }
-                            />
-                        </Dropdown>
+                        <DeleteRemediationsDropdown
+                            isDisabled={ !selector.getSelectedIds(remediationIds).length }
+                            remediations={ selector.getSelectedIds(remediationIds) }
+                        />
                     </ToolbarItem>
                 </ToolbarGroup>
             </TableToolbar>
