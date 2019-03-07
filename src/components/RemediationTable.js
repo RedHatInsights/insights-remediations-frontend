@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import moment from 'moment';
@@ -55,6 +55,7 @@ function skeleton () {
                         <Dropdown
                             toggle={ <KebabToggle/> }
                             isDisabled
+                            isPlain
                         >
                         </Dropdown>
                     </ToolbarItem>
@@ -95,6 +96,9 @@ function empty () {
 const SORTING_ITERATEES = [ null, 'name', 'system_count', 'issue_count', null, 'updated_at' ];
 
 function RemediationTable (props) {
+
+    const [ isOpen, setIsOpen ] = useState(false);
+
     const { value, status } = props;
 
     const sorter = useSorter(5, 'desc');
@@ -157,10 +161,16 @@ function RemediationTable (props) {
                         </Button>
                     </ToolbarItem>
                     <ToolbarItem>
-                        <DeleteRemediationsButton
-                            isDisabled={ !selector.getSelectedIds(remediationIds).length }
-                            remediations={ selector.getSelectedIds(remediationIds) }
-                        />
+                        <Dropdown
+                            toggle={ <KebabToggle onToggle={ () => setIsOpen(!isOpen) } /> }
+                            isOpen={ isOpen }
+                            isPlain
+                        >
+                            <DeleteRemediationsButton
+                                isDisabled={ !selector.getSelectedIds(remediationIds).length }
+                                remediations={ selector.getSelectedIds(remediationIds) }
+                            />
+                        </Dropdown>
                     </ToolbarItem>
                 </ToolbarGroup>
             </TableToolbar>
@@ -196,7 +206,7 @@ function RemediationTable (props) {
             }
             {
                 rows.length > 0 &&
-                <TableToolbar>
+                <TableToolbar isFooter>
                     <Pagination
                         numberOfItems={ filtered.length }
                         useNext={ true }
