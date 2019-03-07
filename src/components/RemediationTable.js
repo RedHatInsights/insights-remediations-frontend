@@ -8,9 +8,9 @@ import {
     Bullseye,
     Card, CardBody,
     EmptyState, EmptyStateIcon, EmptyStateBody,
-    Level, LevelItem,
-    Split, SplitItem,
-    Title, Button, TextInput
+    Dropdown, KebabToggle,
+    Title, Button,
+    ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
 import { sortable, Table, TableHeader, TableBody } from '@patternfly/react-table';
 import { EmptyTable, Pagination, SimpleTableFilter, TableToolbar } from '@red-hat-insights/insights-frontend-components';
@@ -25,6 +25,8 @@ import { DeleteRemediationsButton } from '../containers/DeleteButtons';
 import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
 import * as debug from '../Utilities/debug';
 
+import { downloadPlaybook } from '../api';
+
 function buildName (name, id) {
     return ({
         title: <Link to={ `/${id}` }>{ name }</Link>
@@ -38,22 +40,25 @@ function formatDate (date) {
 function skeleton () {
     return (
         <React.Fragment>
-            <TableToolbar className='ins-c-remediations-details-table__toolbar'>
-                <Level>
-                    <LevelItem>
-                        <TextInput
-                            type="text"
-                            value='Search Playbooks'
-                            aria-label="Search Playbooks Loading"
+            <TableToolbar className='ins-c-remediations-details-table__toolbar' results={ 0 }>
+                <ToolbarGroup>
+                    <ToolbarItem>
+                        <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" aria-label="Search Playbooks Loading" isDisabled />
+                    </ToolbarItem>
+                </ToolbarGroup>
+                <ToolbarGroup>
+                    <ToolbarItem><Button isDisabled> Create Remediation </Button></ToolbarItem>
+                    <ToolbarItem>
+                        <Button variant='link' isDisabled> Download Playbook </Button>
+                    </ToolbarItem>
+                    <ToolbarItem>
+                        <Dropdown
+                            toggle={ <KebabToggle/> }
                             isDisabled
-                        />
-                    </LevelItem>
-                    <LevelItem>
-                        <Split gutter="md">
-                            <SplitItem><Button isDisabled> Delete </Button></SplitItem>
-                        </Split>
-                    </LevelItem>
-                </Level>
+                        >
+                        </Dropdown>
+                    </ToolbarItem>
+                </ToolbarGroup>
             </TableToolbar>
             <SkeletonTable/>
         </React.Fragment>
@@ -134,21 +139,30 @@ function RemediationTable (props) {
     return (
         <React.Fragment>
             <TableToolbar results={ filtered.length }>
-                <Level>
-                    <LevelItem>
+                <ToolbarGroup>
+                    <ToolbarItem>
                         <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" { ...filter.props } />
-                    </LevelItem>
-                    <LevelItem>
-                        <Split gutter="md">
-                            <SplitItem>
-                                <DeleteRemediationsButton
-                                    isDisabled={ !selector.getSelectedIds(remediationIds).length }
-                                    remediations={ selector.getSelectedIds(remediationIds) }
-                                />
-                            </SplitItem>
-                        </Split>
-                    </LevelItem>
-                </Level>
+                    </ToolbarItem>
+                </ToolbarGroup>
+                <ToolbarGroup>
+                    <ToolbarItem><Button> Create Remediation </Button></ToolbarItem>
+                    <ToolbarItem>
+                        <Button
+                            variant='link'
+                            isDisabled={ !selector.getSelectedIds(remediationIds).length }
+                            // If a user has a popup blocker, they may only get the last one selected
+                            onClick= { () => selector.getSelectedIds(remediationIds).forEach(r => downloadPlaybook(r)) }
+                        >
+                            Download Playbook
+                        </Button>
+                    </ToolbarItem>
+                    <ToolbarItem>
+                        <DeleteRemediationsButton
+                            isDisabled={ !selector.getSelectedIds(remediationIds).length }
+                            remediations={ selector.getSelectedIds(remediationIds) }
+                        />
+                    </ToolbarItem>
+                </ToolbarGroup>
             </TableToolbar>
             {
                 rows.length > 0 ?
