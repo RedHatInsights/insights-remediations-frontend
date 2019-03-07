@@ -15,6 +15,24 @@ const chain = (f1, f2) => (...args) => {
     f2(...args);
 };
 
+/**
+ * Returns a function f that, when called, invokes a sequence of callback functions.
+ *
+ * By default, this sequence only contains the identity function.
+ * Additional callback functions can be added to the sequence by calling f.add().
+ * When the function is called with parameters, e.g. f(1, 2), these parameters are passed to callback functions.
+ * Callback functions may return a promise however these will *not* be awaited.
+ * If a callback function throws an exception any following callback functions will *not* be invoked.
+ *
+ * Usage:
+ * const f = callbacks();
+ *
+ * f.add(value => console.log(value));
+ * f.add(value => console.log(value + 1));
+ * f.add(value => console.log(value + 2));
+ *
+ * f(5); // prints 5 6 7
+ */
 function callbacks () {
     let cb = identity;
     const fn = (...args) => cb(...args);
