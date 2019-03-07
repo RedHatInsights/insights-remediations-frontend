@@ -1,9 +1,5 @@
 @import '@red-hat-insights/insights-frontend-components/Utilities/_mixins.scss';
 
-.ins-c-remediations-table--loading, .ins-c-remediations-table--empty {
-    text-align: center;
-}
-
 .ins-m-nowrap { white-space: nowrap; }
 
 // TODO Fix when pf releases new version of progress that fixes title
