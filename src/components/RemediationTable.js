@@ -27,8 +27,6 @@ import * as debug from '../Utilities/debug';
 
 import { downloadPlaybook } from '../api';
 
-import { downloadPlaybook } from '../api';
-
 function buildName (name, id) {
     return ({
         title: <Link to={ `/${id}` }>{ name }</Link>
