@@ -150,7 +150,9 @@ function RemediationDetailsTable (props) {
 
     return (
         <React.Fragment>
-            <TableToolbar className='ins-c-remediations-details-table__toolbar' results={ filtered.length }>
+            <TableToolbar className='ins-c-remediations-details-table__toolbar'
+                results={ filtered.length }
+                selected={ selector.getSelectedIds(issueIds).length }>
                 <ToolbarGroup>
                     <ToolbarItem>
                         <SimpleTableFilter buttonTitle="" placeholder="Search Actions" { ...filter.props } />

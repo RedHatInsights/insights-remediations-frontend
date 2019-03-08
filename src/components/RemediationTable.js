@@ -40,7 +40,10 @@ function formatDate (date) {
 function skeleton () {
     return (
         <React.Fragment>
-            <TableToolbar className='ins-c-remediations-details-table__toolbar' results={ 0 }>
+            <TableToolbar
+                className='ins-c-remediations-details-table__toolbar'
+                results={ 0 }
+                selected={ 0 }>
                 <ToolbarGroup>
                     <ToolbarItem>
                         <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" aria-label="Search Playbooks Loading" isDisabled />
@@ -140,7 +143,10 @@ function RemediationTable (props) {
 
     return (
         <React.Fragment>
-            <TableToolbar className='ins-c-remediations-table__actions' results={ filtered.length }>
+            <TableToolbar
+                className='ins-c-remediations-table__actions'
+                results={ filtered.length }
+                selected={ selector.getSelectedIds(remediationIds).length }>
                 <ToolbarGroup>
                     <ToolbarItem>
                         <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" { ...filter.props } />

@@ -131,7 +131,10 @@ const RemediationDetailsSkeleton = () => {
                         </Grid>
                     </StackItem>
                     <StackItem>
-                        <TableToolbar className='ins-c-remediations-details-table__toolbar' results={ 0 }>
+                        <TableToolbar
+                            className='ins-c-remediations-details-table__toolbar'
+                            results={ 0 }
+                            selected={ 0 }>
                             <ToolbarGroup>
                                 <ToolbarItem>
                                     <SimpleTableFilter
