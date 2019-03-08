@@ -32,7 +32,13 @@ class SkeletonTable extends React.Component {
 
         return (
             <Fragment>
-                <Table cells={ columns } rows={ rows } aria-label="Loading" variant={ TableVariant.compact }>
+                <Table
+                    cells={ columns }
+                    onSelect
+                    rows={ rows }
+                    aria-label="Loading"
+                    variant={ TableVariant.compact }
+                    { ...this.props }>
                     <TableHeader />
                     <TableBody />
                 </Table>
