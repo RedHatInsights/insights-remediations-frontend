@@ -5,8 +5,9 @@ import { Button, Dropdown, KebabToggle } from '@patternfly/react-core';
 import ConfirmationDialog from './ConfirmationDialog';
 
 import './DeleteButton.scss';
+import './ToolbarActionsDropdown.scss';
 
-class DropdownDelete extends Component {
+class ToolbarActionsDropdown extends Component {
 
     state = {
         dialogOpen: false,
@@ -28,7 +29,7 @@ class DropdownDelete extends Component {
         });
     };
 
-    onDropdownSelect = event => {
+    onDropdownSelect = () => {
         this.setState({
             isDropdownOpen: !this.state.isDropdownOpen
         });
@@ -53,6 +54,7 @@ class DropdownDelete extends Component {
                         variant="link">
                         { this.props.label }
                     </Button>
+                    <p> test </p>
                 </Dropdown>
                 {
                     dialogOpen &&
@@ -63,15 +65,15 @@ class DropdownDelete extends Component {
     }
 };
 
-DropdownDelete.propTypes = {
+ToolbarActionsDropdown.propTypes = {
     label: PropTypes.string,
     dialogMessage: PropTypes.string,
     isDisabled: PropTypes.bool,
     onDelete: PropTypes.func.isRequired
 };
 
-DropdownDelete.defaultProps = {
+ToolbarActionsDropdown.defaultProps = {
     label: 'Delete'
 };
 
-export default DropdownDelete;
+export default ToolbarActionsDropdown;

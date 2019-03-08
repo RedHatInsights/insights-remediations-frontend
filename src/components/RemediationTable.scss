@@ -10,8 +10,6 @@
     .pf-c-progress__bar { grid-column: 1 !important; }
 }
 
-.ins-c-remediations-table__actions ul div { cursor: pointer; }
-
 .ins-c-remediations-details-table {
     .pf-c-table__expandable-row-content { @include rem('padding', 5px); }
     .ins-c-system-card .pf-c-card__body { padding: 5px 10px !important; }

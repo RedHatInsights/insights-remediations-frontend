@@ -21,7 +21,7 @@ import { appUrl } from '../Utilities/urls';
 import './RemediationTable.scss';
 
 import SkeletonTable from '../skeletons/SkeletonTable';
-import { DeleteRemediationsDropdown } from '../containers/DeleteButtons';
+import { ToolbarActions } from '../containers/ToolbarActions';
 import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
 import * as debug from '../Utilities/debug';
 
@@ -140,7 +140,7 @@ function RemediationTable (props) {
 
     return (
         <React.Fragment>
-            <TableToolbar results={ filtered.length }>
+            <TableToolbar className='ins-c-remediations-table__actions' results={ filtered.length }>
                 <ToolbarGroup>
                     <ToolbarItem>
                         <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" { ...filter.props } />
@@ -159,7 +159,7 @@ function RemediationTable (props) {
                         </Button>
                     </ToolbarItem>
                     <ToolbarItem>
-                        <DeleteRemediationsDropdown
+                        <ToolbarActions
                             isDisabled={ !selector.getSelectedIds(remediationIds).length }
                             remediations={ selector.getSelectedIds(remediationIds) }
                         />
