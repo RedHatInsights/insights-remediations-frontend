@@ -54,7 +54,6 @@ class ToolbarActionsDropdown extends Component {
                         variant="link">
                         { this.props.label }
                     </Button>
-                    <p> test </p>
                 </Dropdown>
                 {
                     dialogOpen &&
