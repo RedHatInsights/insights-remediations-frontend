@@ -139,14 +139,14 @@ function RemediationTable (props) {
 
     selector.register(rows);
 
-    const remediationIds = value.remediations.map(remediation => remediation.id);
+    const selectedIds = selector.getSelectedIds(value.remediations.map(remediation => remediation.id));
 
     return (
         <React.Fragment>
             <TableToolbar
                 className='ins-c-remediations-table__actions'
                 results={ filtered.length }
-                selected={ selector.getSelectedIds(remediationIds).length }>
+                selected={ selectedIds.length }>
                 <ToolbarGroup>
                     <ToolbarItem>
                         <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" { ...filter.props } />
@@ -157,17 +157,17 @@ function RemediationTable (props) {
                     <ToolbarItem>
                         <Button
                             variant='link'
-                            isDisabled={ !selector.getSelectedIds(remediationIds).length }
+                            isDisabled={ !selectedIds.length }
                             // If a user has a popup blocker, they may only get the last one selected
-                            onClick= { () => selector.getSelectedIds(remediationIds).forEach(r => downloadPlaybook(r)) }
+                            onClick= { () => selectedIds.forEach(r => downloadPlaybook(r)) }
                         >
                             Download Playbook
                         </Button>
                     </ToolbarItem>
                     <ToolbarItem>
                         <ToolbarActions
-                            isDisabled={ !selector.getSelectedIds(remediationIds).length }
-                            remediations={ selector.getSelectedIds(remediationIds) }
+                            isDisabled={ !selectedIds.length }
+                            remediations={ selectedIds }
                         />
                     </ToolbarItem>
                 </ToolbarGroup>
