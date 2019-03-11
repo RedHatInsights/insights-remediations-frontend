@@ -203,7 +203,7 @@ function RemediationTable (props) {
                         { ...selector.props }
                     >
                         <TableHeader/>
-                        <TableBody/>
+                        <TableBody { ...selector.tbodyProps } />
                     </Table> :
                     <EmptyTable centered className='ins-c-remediations-table--empty'>No Playbooks found</EmptyTable>
             }
