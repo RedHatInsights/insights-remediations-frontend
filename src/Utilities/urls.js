@@ -28,7 +28,7 @@ export function buildIssueUrl (id) {
 
     switch (getIssuePrefix(id)) {
         case 'advisor':
-            return urijs(document.baseURI).segment('platform').segment('advisor').segment('actions').segment(parts[1]).toString();
+            return urijs(document.baseURI).segment('platform').segment('advisor').segment('actions').segment('by_id').segment(parts[1]).toString();
         case 'vulnerabilities':
             return urijs(document.baseURI).segment('platform').segment('vulnerability').segment('cves').segment(parts[1]).toString();
         default:
