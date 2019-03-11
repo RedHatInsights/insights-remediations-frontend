@@ -205,7 +205,7 @@ function RemediationDetailsTable (props) {
                         { ...selector.props }
                     >
                         <TableHeader />
-                        <TableBody />
+                        <TableBody { ...selector.tbodyProps } />
                     </Table> :
                     filter.value ?
                         <EmptyTable centered className='ins-c-remediation-details-table--empty'>No Actions found</EmptyTable> :

@@ -167,6 +167,10 @@ function onSelectAll (rows, value, isSelected, rowToId) {
     };
 }
 
+function isSelected (value, id) {
+    return value.hasOwnProperty(id) ? value[id] : false;
+}
+
 export function useSelector (rowToId = row => row.id) {
     const [ value, setValue ] = useState({});
     let rows = false;
@@ -194,6 +198,20 @@ export function useSelector (rowToId = row => row.id) {
                     onSelectAll(rows, value, isSelected, rowToId) :
                     onSelectOne(value, isSelected, rowToId(rows[index]))
                 );
+            }
+        },
+        tbodyProps: {
+            onRowClick (event, row) {
+                if (event.target.tagName === 'A' || event.target.tagName === 'BUTTON') {
+                    return;
+                }
+
+                const id = rowToId(row);
+                assertId(id);
+                setValue({
+                    ...value,
+                    [id]: !isSelected(value, id)
+                });
             }
         }
     };
