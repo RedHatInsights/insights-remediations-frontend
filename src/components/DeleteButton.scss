@@ -1,0 +1,25 @@
+// Overwrite page header danger button until PF merges
+.pf-c-button.pf-m-link.ins-c-button__danger-link {
+
+    --pf-c-button--m-link--Color: var(--pf-c-button--m-danger--BackgroundColor);
+
+    &:hover,
+    &.pf-m-hover {
+      --pf-c-button--m-link--Color: var(--pf-c-button--m-danger--hover--BackgroundColor);
+    }
+
+    &:active,
+    &.pf-m-active {
+      --pf-c-button--m-link--Color: var(--pf-c-button--m-danger--active--BackgroundColor)
+    }
+
+    &:focus,
+    &.pf-m-focus {
+      --pf-c-button--m-link--Color: var(--pf-c-button--m-danger--focus--BackgroundColor);
+    }
+
+    &:disabled,
+    &.pf-m-disabled {
+      background-color: var(--pf-c-button--m-link--disabled--BackgroundColor);
+    }
+}

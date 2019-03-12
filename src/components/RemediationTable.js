@@ -8,11 +8,11 @@ import {
     Bullseye,
     Card, CardBody,
     EmptyState, EmptyStateIcon, EmptyStateBody,
-    Level, LevelItem,
-    Split, SplitItem,
-    Title, Button, TextInput
+    Dropdown, KebabToggle,
+    Title, Button,
+    ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
-import { sortable, Table, TableHeader, TableBody } from '@patternfly/react-table';
+import { sortable, Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
 import { EmptyTable, Pagination, SimpleTableFilter, TableToolbar } from '@red-hat-insights/insights-frontend-components';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 
@@ -20,10 +20,12 @@ import { formatUser, includesIgnoreCase } from '../Utilities/model';
 import { appUrl } from '../Utilities/urls';
 import './RemediationTable.scss';
 
-import SkeletonTable from './SkeletonTable';
-import { DeleteRemediationsButton } from '../containers/DeleteButtons';
+import SkeletonTable from '../skeletons/SkeletonTable';
+import { ToolbarActions } from '../containers/ToolbarActions';
 import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
 import * as debug from '../Utilities/debug';
+
+import { downloadPlaybook } from '../api';
 
 function buildName (name, id) {
     return ({
@@ -38,22 +40,31 @@ function formatDate (date) {
 function skeleton () {
     return (
         <React.Fragment>
-            <TableToolbar className='ins-c-remediations-details-table__toolbar'>
-                <Level>
-                    <LevelItem>
-                        <TextInput
-                            type="text"
-                            value='Search Playbooks'
-                            aria-label="Search Playbooks Loading"
+            <TableToolbar
+                className='ins-c-remediations-details-table__toolbar'
+                results={ 0 }
+                selected={ 0 }>
+                <ToolbarGroup>
+                    <ToolbarItem>
+                        <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" aria-label="Search Playbooks Loading" isDisabled />
+                    </ToolbarItem>
+                </ToolbarGroup>
+                <ToolbarGroup>
+                    {
+                        // <ToolbarItem><Button isDisabled> Create Remediation </Button></ToolbarItem>
+                    }
+                    <ToolbarItem>
+                        <Button variant='link' isDisabled> Download Playbook </Button>
+                    </ToolbarItem>
+                    <ToolbarItem>
+                        <Dropdown
+                            toggle={ <KebabToggle/> }
                             isDisabled
-                        />
-                    </LevelItem>
-                    <LevelItem>
-                        <Split gutter="md">
-                            <SplitItem><Button isDisabled> Delete </Button></SplitItem>
-                        </Split>
-                    </LevelItem>
-                </Level>
+                            isPlain
+                        >
+                        </Dropdown>
+                    </ToolbarItem>
+                </ToolbarGroup>
             </TableToolbar>
             <SkeletonTable/>
         </React.Fragment>
@@ -90,6 +101,7 @@ function empty () {
 const SORTING_ITERATEES = [ null, 'name', 'system_count', 'issue_count', null, 'updated_at' ];
 
 function RemediationTable (props) {
+
     const { value, status } = props;
 
     const sorter = useSorter(5, 'desc');
@@ -129,30 +141,45 @@ function RemediationTable (props) {
 
     selector.register(rows);
 
-    const remediationIds = value.remediations.map(remediation => remediation.id);
+    const selectedIds = selector.getSelectedIds(value.remediations.map(remediation => remediation.id));
 
     return (
         <React.Fragment>
-            <TableToolbar results={ filtered.length }>
-                <Level>
-                    <LevelItem>
+            <TableToolbar
+                className='ins-c-remediations-table__actions'
+                results={ filtered.length }
+                selected={ selectedIds.length }>
+                <ToolbarGroup>
+                    <ToolbarItem>
                         <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" { ...filter.props } />
-                    </LevelItem>
-                    <LevelItem>
-                        <Split gutter="md">
-                            <SplitItem>
-                                <DeleteRemediationsButton
-                                    isDisabled={ !selector.getSelectedIds(remediationIds).length }
-                                    remediations={ selector.getSelectedIds(remediationIds) }
-                                />
-                            </SplitItem>
-                        </Split>
-                    </LevelItem>
-                </Level>
+                    </ToolbarItem>
+                </ToolbarGroup>
+                <ToolbarGroup>
+                    {
+                        // <ToolbarItem><Button> Create Remediation </Button></ToolbarItem>
+                    }
+                    <ToolbarItem>
+                        <Button
+                            variant='link'
+                            isDisabled={ !selectedIds.length }
+                            // If a user has a popup blocker, they may only get the last one selected
+                            onClick= { () => selectedIds.forEach(r => downloadPlaybook(r)) }
+                        >
+                            Download Playbook
+                        </Button>
+                    </ToolbarItem>
+                    <ToolbarItem>
+                        <ToolbarActions
+                            isDisabled={ !selectedIds.length }
+                            remediations={ selectedIds }
+                        />
+                    </ToolbarItem>
+                </ToolbarGroup>
             </TableToolbar>
             {
                 rows.length > 0 ?
                     <Table
+                        variant={ TableVariant.compact }
                         aria-label="Playbooks"
                         cells={ [
                             {
@@ -182,7 +209,7 @@ function RemediationTable (props) {
             }
             {
                 rows.length > 0 &&
-                <TableToolbar>
+                <TableToolbar isFooter>
                     <Pagination
                         numberOfItems={ filtered.length }
                         useNext={ true }

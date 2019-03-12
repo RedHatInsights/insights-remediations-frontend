@@ -1,6 +1,8 @@
-import React from 'react';
-import { Table, TableHeader, TableBody } from '@patternfly/react-table';
-import { Skeleton } from '@red-hat-insights/insights-frontend-components';
+import React, { Fragment } from 'react';
+import { Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
+import { Skeleton, TableToolbar } from '@red-hat-insights/insights-frontend-components';
+
+import './SkeletonTable.scss';
 
 class SkeletonTable extends React.Component {
     constructor(props) {
@@ -29,10 +31,21 @@ class SkeletonTable extends React.Component {
         const { columns, rows } = this.state;
 
         return (
-            <Table cells={ columns } rows={ rows } aria-label="Loading">
-                <TableHeader />
-                <TableBody />
-            </Table>
+            <Fragment>
+                <Table
+                    cells={ columns }
+                    onSelect
+                    rows={ rows }
+                    aria-label="Loading"
+                    variant={ TableVariant.compact }
+                    { ...this.props }>
+                    <TableHeader />
+                    <TableBody />
+                </Table>
+                <TableToolbar isFooter className='ins-c-skeleton-table__footer'>
+                    <Skeleton size='sm'/>
+                </TableToolbar>
+            </Fragment>
         );
     }
 }

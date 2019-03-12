@@ -6,10 +6,11 @@ import {
     Main,
     PageHeader, PageHeaderTitle,
     Skeleton,
-    TableToolbar
+    TableToolbar,
+    SimpleTableFilter
 } from '@red-hat-insights/insights-frontend-components';
 
-import SkeletonTable from '../components/SkeletonTable';
+import SkeletonTable from './SkeletonTable';
 
 import {
     Grid, GridItem,
@@ -19,7 +20,8 @@ import {
     Level, LevelItem,
     Breadcrumb, BreadcrumbItem,
     Split, SplitItem,
-    Button, TextInput
+    Button,
+    ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
 
 import { isBeta } from '../config';
@@ -129,22 +131,32 @@ const RemediationDetailsSkeleton = () => {
                         </Grid>
                     </StackItem>
                     <StackItem>
-                        <TableToolbar className='ins-c-remediations-details-table__toolbar'>
-                            <Level>
-                                <LevelItem>
-                                    <TextInput
-                                        type="text"
-                                        value='Search Actions'
-                                        aria-label="disabled text input example"
-                                        isDisabled
-                                    />
-                                </LevelItem>
-                                <LevelItem>
-                                    <Split gutter="md">
-                                        <SplitItem><Button isDisabled> Remove Action </Button></SplitItem>
-                                    </Split>
-                                </LevelItem>
-                            </Level>
+                        <TableToolbar
+                            className='ins-c-remediations-details-table__toolbar'
+                            results={ 0 }
+                            selected={ 0 }>
+                            <ToolbarGroup>
+                                <ToolbarItem>
+                                    <SimpleTableFilter
+                                        buttonTitle=""
+                                        placeholder="Search Actions"
+                                        aria-label="Search Actions Loading"
+                                        isDisabled />
+                                </ToolbarItem>
+                            </ToolbarGroup>
+                            {
+                                isBeta &&
+                                <ToolbarGroup>
+                                    <ToolbarItem>
+                                        <Button isDisabled={ true }> Add Action </Button>
+                                    </ToolbarItem>
+                                </ToolbarGroup>
+                            }
+                            <ToolbarGroup>
+                                <ToolbarItem>
+                                    <Button variant='link' isDisabled> Remove Action </Button>
+                                </ToolbarItem>
+                            </ToolbarGroup>
                         </TableToolbar>
                         <SkeletonTable/>
                     </StackItem>

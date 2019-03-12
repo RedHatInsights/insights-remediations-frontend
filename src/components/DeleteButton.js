@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import { Button } from '@patternfly/react-core';
 import ConfirmationDialog from './ConfirmationDialog';
 
+import './DeleteButton.scss';
+
 class DeleteButton extends Component {
 
     state = {
@@ -26,9 +28,10 @@ class DeleteButton extends Component {
         return (
             <React.Fragment>
                 <Button
+                    className='ins-c-button__danger-link'
                     onClick={ this.onButtonClicked }
                     isDisabled={ this.props.isDisabled }
-                    variant="danger">
+                    variant="link">
                     { this.props.label }
                 </Button>
                 {

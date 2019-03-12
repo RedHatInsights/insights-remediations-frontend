@@ -8,8 +8,7 @@ import {
     Button,
     Card, CardBody,
     Grid, GridItem,
-    Level, LevelItem,
-    Split, SplitItem
+    ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
 
 import { sortable, TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
@@ -147,35 +146,35 @@ function RemediationDetailsTable (props) {
     expander.register(rows);
     selector.register(rows);
 
-    const issueIds = props.remediation.issues.map(issue => issue.id);
+    const selectedIds = selector.getSelectedIds(props.remediation.issues.map(issue => issue.id));
 
     return (
         <React.Fragment>
-            <TableToolbar className='ins-c-remediations-details-table__toolbar' results={ filtered.length }>
-                <Level>
-                    <LevelItem>
+            <TableToolbar className='ins-c-remediations-details-table__toolbar'
+                results={ filtered.length }
+                selected={ selectedIds.length }>
+                <ToolbarGroup>
+                    <ToolbarItem>
                         <SimpleTableFilter buttonTitle="" placeholder="Search Actions" { ...filter.props } />
-                    </LevelItem>
-                    <LevelItem>
-                        <Split gutter="md">
-                            <SplitItem>
-                                {
-                                    isBeta &&
-                                    <Button isDisabled={ true }> Add Action </Button>
-                                }
-
-                            </SplitItem>
-                            <SplitItem>
-
-                                <DeleteActionsButton
-                                    isDisabled={ !selector.getSelectedIds(issueIds).length }
-                                    remediation={ props.remediation }
-                                    issues={ selector.getSelectedIds(issueIds) }
-                                />
-                            </SplitItem>
-                        </Split>
-                    </LevelItem>
-                </Level>
+                    </ToolbarItem>
+                </ToolbarGroup>
+                {
+                    isBeta &&
+                    <ToolbarGroup>
+                        <ToolbarItem>
+                            <Button isDisabled={ true }> Add Action </Button>
+                        </ToolbarItem>
+                    </ToolbarGroup>
+                }
+                <ToolbarGroup>
+                    <ToolbarItem>
+                        <DeleteActionsButton
+                            isDisabled={ !selectedIds.length }
+                            remediation={ props.remediation }
+                            issues={ selectedIds }
+                        />
+                    </ToolbarItem>
+                </ToolbarGroup>
             </TableToolbar>
             {
                 rows.length > 0 ?
@@ -214,7 +213,7 @@ function RemediationDetailsTable (props) {
             }
             {
                 rows.length > 0 &&
-                <TableToolbar>
+                <TableToolbar isFooter>
                     <Pagination
                         numberOfItems={ filtered.length }
                         useNext={ true }
