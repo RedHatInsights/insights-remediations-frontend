@@ -146,13 +146,13 @@ function RemediationDetailsTable (props) {
     expander.register(rows);
     selector.register(rows);
 
-    const issueIds = props.remediation.issues.map(issue => issue.id);
+    const selectedIds = selector.getSelectedIds(props.remediation.issues.map(issue => issue.id));
 
     return (
         <React.Fragment>
             <TableToolbar className='ins-c-remediations-details-table__toolbar'
                 results={ filtered.length }
-                selected={ selector.getSelectedIds(issueIds).length }>
+                selected={ selectedIds.length }>
                 <ToolbarGroup>
                     <ToolbarItem>
                         <SimpleTableFilter buttonTitle="" placeholder="Search Actions" { ...filter.props } />
@@ -169,9 +169,9 @@ function RemediationDetailsTable (props) {
                 <ToolbarGroup>
                     <ToolbarItem>
                         <DeleteActionsButton
-                            isDisabled={ !selector.getSelectedIds(issueIds).length }
+                            isDisabled={ !selectedIds.length }
                             remediation={ props.remediation }
-                            issues={ selector.getSelectedIds(issueIds) }
+                            issues={ selectedIds }
                         />
                     </ToolbarItem>
                 </ToolbarGroup>
