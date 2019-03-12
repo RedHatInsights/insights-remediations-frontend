@@ -50,7 +50,9 @@ function skeleton () {
                     </ToolbarItem>
                 </ToolbarGroup>
                 <ToolbarGroup>
-                    <ToolbarItem><Button isDisabled> Create Remediation </Button></ToolbarItem>
+                    {
+                        // <ToolbarItem><Button isDisabled> Create Remediation </Button></ToolbarItem>
+                    }
                     <ToolbarItem>
                         <Button variant='link' isDisabled> Download Playbook </Button>
                     </ToolbarItem>
@@ -153,7 +155,9 @@ function RemediationTable (props) {
                     </ToolbarItem>
                 </ToolbarGroup>
                 <ToolbarGroup>
-                    <ToolbarItem><Button> Create Remediation </Button></ToolbarItem>
+                    {
+                        // <ToolbarItem><Button> Create Remediation </Button></ToolbarItem>
+                    }
                     <ToolbarItem>
                         <Button
                             variant='link'
