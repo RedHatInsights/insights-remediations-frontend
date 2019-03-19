@@ -1,4 +1,4 @@
-import { Switch, Redirect, matchPath } from 'react-router-dom';
+import { Switch, matchPath, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Home from './routes/Home';
@@ -10,7 +10,7 @@ const InsightsRoute = ({ component: Component, rootClass, ...rest }) => {
     root.classList.add(`page__${rootClass}`, 'pf-l-page__main');
     root.classList.add(`page__${rootClass}`, 'pf-c-page__main');
 
-    return (<Component { ...rest } />);
+    return (<Route component={ Component } { ...rest } />);
 };
 
 InsightsRoute.propTypes = {
@@ -44,8 +44,7 @@ export const Routes = ({ childProps: { history }}) => {
     return (
         <Switch>
             <InsightsRoute exact path={ routes.home } component={ Home } rootClass='remediations' />
-            <InsightsRoute exact path={ routes.details } component={ RemediationDetails } rootClass='remediation-details' />
-            <Redirect to='/' />
+            <InsightsRoute path={ routes.details } component={ RemediationDetails } rootClass='remediation-details' />
         </Switch>
     );
 };
