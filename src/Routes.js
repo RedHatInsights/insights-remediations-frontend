@@ -38,7 +38,7 @@ export const Routes = ({ childProps: { history }}) => {
     const pathName = window.location.pathname.split('/');
 
     if (!checkPaths(pathName[1] === 'beta' ? pathName[2] : pathName[1])) {
-        history.push(routes.table);
+        history.push(routes.home);
     }
 
     return (
