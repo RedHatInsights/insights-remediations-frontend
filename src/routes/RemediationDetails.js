@@ -37,7 +37,7 @@ class RemediationDetails extends Component {
         this.state = {
             autoReboot: true
         };
-        this.id = this.props.computedMatch.params.id;
+        this.id = this.props.match.params.id;
         this.loadRemediation = this.props.loadRemediation.bind(this, this.id);
         this.loadRemediationStatus = this.props.loadRemediationStatus.bind(this, this.id);
     };
@@ -173,11 +173,11 @@ class RemediationDetails extends Component {
 }
 
 RemediationDetails.propTypes = {
-    computedMatch: PropTypes.shape({
+    match: PropTypes.shape({
         params: PropTypes.shape({
             id: PropTypes.string.isRequired
         })
-    }),
+    }).isRequired,
     selectedRemediation: PropTypes.object,
     selectedRemediationStatus: PropTypes.object,
     history: PropTypes.object.isRequired,
