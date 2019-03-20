@@ -216,7 +216,6 @@ function RemediationDetailsTable (props) {
                 <TableToolbar isFooter>
                     <Pagination
                         numberOfItems={ filtered.length }
-                        useNext={ true }
                         { ...pagination.props }
                         { ...debug.pagination }
                     />

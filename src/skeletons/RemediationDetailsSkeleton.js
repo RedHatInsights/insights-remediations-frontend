@@ -141,7 +141,7 @@ const RemediationDetailsSkeleton = () => {
                                         buttonTitle=""
                                         placeholder="Search Actions"
                                         aria-label="Search Actions Loading"
-                                        isDisabled />
+                                    />
                                 </ToolbarItem>
                             </ToolbarGroup>
                             {

@@ -34,7 +34,6 @@ class SkeletonTable extends React.Component {
             <Fragment>
                 <Table
                     cells={ columns }
-                    onSelect
                     rows={ rows }
                     aria-label="Loading"
                     variant={ TableVariant.compact }
