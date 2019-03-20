@@ -48,8 +48,6 @@ class Home extends Component {
     };
 
     async componentDidMount () {
-        await window.insights.chrome.auth.getUser();
-
         this.loadRemediations();
     }
 

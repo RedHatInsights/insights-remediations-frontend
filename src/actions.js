@@ -1,51 +1,52 @@
 import { ACTION_TYPES } from './constants';
-import * as api from './api';
+import { remediations, resolutions, getRemediationStatus } from './api';
 
-export const loadRemediations = (sortBy, sortDir) => ({
+export const loadRemediations = (sortBy = 'updated_at', sortDir = 'desc') => ({
     type: ACTION_TYPES.LOAD_REMEDIATIONS,
-    payload: api.getRemediations(sortBy, sortDir)
+    payload: remediations.getRemediations(`${sortDir === 'desc' ? '-' : ''}${sortBy}`)
 });
 
 export const loadRemediation = (id) => ({
     type: ACTION_TYPES.LOAD_REMEDIATION,
-    payload: api.getRemediation(id)
+    payload: remediations.getRemediation(id)
 });
 
 export const loadRemediationStatus = (id) => ({
     type: ACTION_TYPES.LOAD_REMEDIATION_STATUS,
-    payload: api.getRemediationStatus(id)
+    payload: getRemediationStatus(id) // TODO
 });
 
 export const refreshRemediation = (id) => ({
     type: ACTION_TYPES.REFRESH_REMEDIATION,
-    payload: api.getRemediation(id)
+    payload: remediations.getRemediation(id)
 });
 
-export const createRemediation = (data) => {
-    return {
-        type: ACTION_TYPES.CREATE_REMEDIATIONS,
-        payload: api.createRemediation(data)
-    };
-};
+export const createRemediation = (data) => ({
+    type: ACTION_TYPES.CREATE_REMEDIATIONS,
+    payload: remediations.createRemediation(data)
+});
 
-export const patchRemediation = (id, data) => {
-    return {
-        type: ACTION_TYPES.PATCH_REMEDIATION,
-        payload: api.patchRemediation(id, data)
-    };
-};
+export const patchRemediation = (id, data) => ({
+    type: ACTION_TYPES.PATCH_REMEDIATION,
+    payload: remediations.updateRemediation(id, data).then(() => data)
+});
 
 export const deleteRemediation = (id) => ({
     type: ACTION_TYPES.DELETE_REMEDIATION,
-    payload: api.deleteRemediation(id)
+    payload: remediations.deleteRemediation(id)
 });
 
 export const deleteRemediationIssue = (id, issueId) => ({
     type: ACTION_TYPES.DELETE_REMEDIATION_ISSUE,
-    payload: api.deleteRemediationIssue(id, issueId).then(() => ({ id, issueId }))
+    payload: remediations.deleteRemediationIssue(id, issueId).then(() => ({ id, issueId }))
 });
 
 export const patchRemediationIssue = (id, issue, resolution) => ({
     type: ACTION_TYPES.PATCH_REMEDIATION_ISSUE,
-    payload: api.patchRemediationIssue(id, issue, resolution)
+    payload: remediations.updateRemediationIssue(id, issue, { resolution })
+});
+
+export const getResolutions = (ruleId) => ({
+    type: ACTION_TYPES.GET_RESOLUTIONS,
+    payload: resolutions.getResolutionsForIssue(ruleId)
 });
