@@ -46,7 +46,7 @@ function skeleton () {
                 selected={ 0 }>
                 <ToolbarGroup>
                     <ToolbarItem>
-                        <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" aria-label="Search Playbooks Loading" isDisabled />
+                        <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" aria-label="Search Playbooks Loading" />
                     </ToolbarItem>
                 </ToolbarGroup>
                 <ToolbarGroup>
@@ -59,7 +59,6 @@ function skeleton () {
                     <ToolbarItem>
                         <Dropdown
                             toggle={ <KebabToggle/> }
-                            isDisabled
                             isPlain
                         >
                         </Dropdown>
@@ -80,16 +79,14 @@ function empty () {
                         <EmptyStateIcon icon={ InfoCircleIcon } size='lg' />
                         <Title size="lg">No Remediations</Title>
                         <EmptyStateBody>
-                            <p>You haven&#39;t created any remediations yet.</p>
-                            <p>
-                                To create a remediation, please visit&nbsp;
-                                <a href={ appUrl('advisor') }>Insights</a>,&nbsp;
-                                <a href={ appUrl('vulnerability') }>Vulnerability</a> or&nbsp;
-                                <a href={ appUrl('compliance') }>Compliance</a>&nbsp;
-                                applications and look for the&nbsp;
-                                <strong>Remediate with Ansible</strong>
-                                &nbsp;button.
-                            </p>
+                            You haven&#39;t created any remediations yet.<br/>
+                            To create a remediation, please visit&nbsp;
+                            <a href={ appUrl('advisor') }>Insights</a>,&nbsp;
+                            <a href={ appUrl('vulnerability') }>Vulnerability</a> or&nbsp;
+                            <a href={ appUrl('compliance') }>Compliance</a>&nbsp;
+                            applications and look for the&nbsp;
+                            <strong>Remediate with Ansible</strong>
+                            &nbsp;button.
                         </EmptyStateBody>
                     </EmptyState>
                 </Bullseye>
@@ -212,7 +209,6 @@ function RemediationTable (props) {
                 <TableToolbar isFooter>
                     <Pagination
                         numberOfItems={ filtered.length }
-                        useNext={ true }
                         { ...pagination.props }
                         { ...debug.pagination }
                     />
