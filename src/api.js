@@ -30,5 +30,5 @@ export function downloadPlaybook (id) {
 
 // this is here for demo purposes only
 export function getHosts () {
-    return doGet('/r/insights/platform/inventory/api/v1/hosts');
+    return doGet('/api/inventory/v1/hosts');
 }
