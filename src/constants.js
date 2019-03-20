@@ -10,7 +10,8 @@ const asyncActions = flatMap([
     'PATCH_REMEDIATION',
     'DELETE_REMEDIATION',
     'DELETE_REMEDIATION_ISSUE',
-    'PATCH_REMEDIATION_ISSUE'
+    'PATCH_REMEDIATION_ISSUE',
+    'GET_RESOLUTIONS'
 ], a => [ a, `${a}_PENDING`, `${a}_FULFILLED`, `${a}_REJECTED` ]);
 
 export const ACTION_TYPES = keyBy([ ...asyncActions ], k => k);

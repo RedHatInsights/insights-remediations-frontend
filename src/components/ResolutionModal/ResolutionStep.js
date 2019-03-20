@@ -13,8 +13,6 @@ import {
     Skeleton
 } from '@red-hat-insights/insights-frontend-components';
 
-import { getResolutions } from '../../api';
-
 import './ChooseResolutionModal.scss';
 
 class ResolutionStep extends Component {
@@ -33,8 +31,8 @@ class ResolutionStep extends Component {
     };
 
     async componentDidMount () {
-        const resolutions = await getResolutions(this.issue.id);
-        this.setState({ resolutions });
+        const resolutions = await this.props.getResolutions(this.issue.id);
+        this.setState({ resolutions: resolutions.value });
     }
 
     getSelectedResolution = () => {
@@ -107,7 +105,8 @@ class ResolutionStep extends Component {
 };
 
 ResolutionStep.propTypes = {
-    issue: PropTypes.object.isRequired
+    issue: PropTypes.object.isRequired,
+    getResolutions: PropTypes.func.isRequired
 };
 
 export default ResolutionStep;

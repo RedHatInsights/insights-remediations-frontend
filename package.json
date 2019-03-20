@@ -10,6 +10,8 @@
     "@patternfly/react-table": "^1.0.36",
     "@patternfly/react-tokens": "^1.10.1",
     "@red-hat-insights/insights-frontend-components": "^3.39.3",
+    "@redhat-cloud-services/remediations-client": "^0.1.2",
+    "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
     "classnames": "^2.2.5",
     "create-react-class": "^15.6.3",

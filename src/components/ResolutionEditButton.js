@@ -43,7 +43,12 @@ class ResolutionEditButton extends Component {
                         onClose = { this.onModalClose }
                         isOpen= { true }
                         content = { [
-                            <ResolutionStep key="ResolutionStep" issue={ this.props.issue } ref={ ref => this.resolutionStep = ref } />
+                            <ResolutionStep
+                                key="ResolutionStep"
+                                issue={ this.props.issue }
+                                ref={ ref => this.resolutionStep = ref }
+                                getResolutions={ this.props.getResolutions }
+                            />
                         ] }
                     />
                 }
@@ -55,7 +60,8 @@ class ResolutionEditButton extends Component {
 ResolutionEditButton.propTypes = {
     remediation: PropTypes.object.isRequired,
     issue: PropTypes.object.isRequired,
-    onResolutionSelected: PropTypes.func.isRequired
+    onResolutionSelected: PropTypes.func.isRequired,
+    getResolutions: PropTypes.func.isRequired
 };
 
 export default ResolutionEditButton;

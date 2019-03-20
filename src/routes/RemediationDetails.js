@@ -47,7 +47,6 @@ class RemediationDetails extends Component {
     };
 
     async componentDidMount () {
-        await window.insights.chrome.auth.getUser();
         await Promise.all([
             this.loadRemediation(),
             this.loadRemediationStatus()
