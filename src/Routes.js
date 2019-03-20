@@ -23,7 +23,7 @@ export const routes = {
     details: '/:id'
 };
 
-function checkPaths(app, group) {
+function checkPaths(group, app) {
     return Object
     .values(routes)
     .some(
