@@ -23,21 +23,25 @@ export const routes = {
     details: '/:id'
 };
 
-function checkPaths(app) {
+function checkPaths(app, group) {
     return Object
     .values(routes)
     .some(
         route => {
-            return matchPath(location.href, { path: `${document.baseURI}${app}/remediations${route}` });
+            return matchPath(location.href, { path: `${document.baseURI}${group}/${app}${route}` });
         }
     );
 }
 
 export const Routes = ({ childProps: { history }}) => {
-
     const pathName = window.location.pathname.split('/');
+    pathName.shift();
 
-    if (!checkPaths(pathName[1] === 'beta' ? pathName[2] : pathName[1])) {
+    if (pathName[0] === 'beta') {
+        pathName.shift();
+    }
+
+    if (!checkPaths(pathName[0], pathName[1])) {
         history.push(routes.home);
     }
 
