@@ -27,6 +27,7 @@ import { useExpander, useFilter, usePagination, useSelector, useSorter } from '.
 import * as debug from '../Utilities/debug';
 
 import './RemediationDetailsTable.scss';
+import { CheckIcon } from '@patternfly/react-icons';
 
 function resolutionDescriptionCell (remediation, issue) {
     if (issue.resolutions_available <= 1) {
@@ -73,7 +74,9 @@ const buildRow = (remediation, status) => (issue, index) => {
                 {
                     title: resolutionDescriptionCell(remediation, issue)
                 },
-                issue.resolution.needs_reboot === true ? 'Yes' : 'No',
+                { 
+                    title: issue.resolution.needs_reboot === true ? <CheckIcon/> : '',
+                },
                 issue.systems.length,
                 {
                     title: getIssueApplication(issue),

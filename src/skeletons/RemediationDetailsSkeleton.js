@@ -120,6 +120,7 @@ const RemediationDetailsSkeleton = () => {
                                             <StackItem><Skeleton size='md'/></StackItem>
                                             <StackItem><Skeleton size='md'/></StackItem>
                                             <StackItem><Skeleton size='md'/></StackItem>
+                                            <StackItem><Skeleton size='md'/></StackItem>
                                             {
                                                 isBeta &&
                                                 <StackItem className='ins-m-border-top'><Skeleton size='md'/></StackItem>

@@ -41,7 +41,7 @@ class SkeletonTable extends React.Component {
                     <TableHeader />
                     <TableBody />
                 </Table>
-                <TableToolbar isFooter className='ins-c-skeleton-table__footer'>
+                <TableToolbar isFooter className='ins-c-skeleton-table__footer ins-m-align-right'>
                     <Skeleton size='sm'/>
                 </TableToolbar>
             </Fragment>
