@@ -74,8 +74,8 @@ const buildRow = (remediation, status) => (issue, index) => {
                 {
                     title: resolutionDescriptionCell(remediation, issue)
                 },
-                { 
-                    title: issue.resolution.needs_reboot === true ? <CheckIcon/> : '',
+                {
+                    title: issue.resolution.needs_reboot === true ? <CheckIcon/> : ''
                 },
                 issue.systems.length,
                 {
