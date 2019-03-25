@@ -8,3 +8,7 @@
     margin-left: auto;
     margin-right: 0;
 }
+
+.ins-c-table__empty + .ins-c-table__toolbar {
+    border-top: none;
+}

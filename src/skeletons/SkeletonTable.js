@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
-import { Skeleton, TableToolbar } from '@red-hat-insights/insights-frontend-components';
+import { Skeleton, TableToolbar, Spinner, EmptyTable } from '@red-hat-insights/insights-frontend-components';
 
 import './SkeletonTable.scss';
 
@@ -39,8 +39,10 @@ class SkeletonTable extends React.Component {
                     variant={ TableVariant.compact }
                     { ...this.props }>
                     <TableHeader />
-                    <TableBody />
                 </Table>
+                <EmptyTable centered>
+                    <Spinner/>
+                </EmptyTable>
                 <TableToolbar isFooter className='ins-c-skeleton-table__footer ins-m-align-right'>
                     <Skeleton size='sm'/>
                 </TableToolbar>
