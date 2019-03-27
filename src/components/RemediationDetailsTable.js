@@ -52,6 +52,14 @@ function issueDescriptionCell (issue) {
     return issue.description;
 }
 
+function needsRebootCell (needsReboot) {
+    if(needsReboot) {
+        return <CheckIcon/>;
+    }
+
+    return (' ');
+}
+
 const SORTING_ITERATEES = [
     null, // expand toggle
     null, // checkboxes
@@ -75,7 +83,7 @@ const buildRow = (remediation, status) => (issue, index) => {
                     title: resolutionDescriptionCell(remediation, issue)
                 },
                 {
-                    title: issue.resolution.needs_reboot === true ? <CheckIcon/> : ''
+                    title: needsRebootCell(issue.resolution.needs_reboot)
                 },
                 issue.systems.length,
                 {
