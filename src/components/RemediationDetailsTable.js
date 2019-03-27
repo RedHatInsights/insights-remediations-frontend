@@ -53,7 +53,7 @@ function issueDescriptionCell (issue) {
 }
 
 function needsRebootCell (needsReboot) {
-    if(needsReboot) {
+    if (needsReboot) {
         return <CheckIcon/>;
     }
 
