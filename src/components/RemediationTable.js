@@ -34,7 +34,7 @@ function buildName (name, id) {
 }
 
 function formatDate (date) {
-    return moment(date).format('lll');
+    return moment(date).fromNow();
 }
 
 function skeleton () {

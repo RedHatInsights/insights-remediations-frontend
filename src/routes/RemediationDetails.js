@@ -136,21 +136,15 @@ class RemediationDetails extends Component {
                                 </GridItem>
                                 <GridItem>
                                     <Card className='ins-c-card__plan-details'>
-                                        <CardHeader>
-                                            <Level>
-                                                <LevelItem className='ins-m-card__header-bold'>
-                                                    Playbook Details
-                                                </LevelItem>
-                                                <LevelItem className='ins-c-subheader-small'>
-                                                    Created: { moment(remediation.created_at).format('lll') }
-                                                </LevelItem>
-                                            </Level>
+                                        <CardHeader className='ins-m-card__header-bold'>
+                                            Playbook Details
                                         </CardHeader>
                                         <CardBody>
                                             <Stack>
                                                 <StackItem>Created By: { formatUser(remediation.created_by) }</StackItem>
+                                                <StackItem>Created: { moment(remediation.created_at).fromNow() }</StackItem>
                                                 <StackItem>Last Modified By: { formatUser(remediation.updated_by) }</StackItem>
-                                                <StackItem>Last Modified On: { moment(remediation.updated_at).format('lll') }</StackItem>
+                                                <StackItem>Last Modified: { moment(remediation.updated_at).fromNow() }</StackItem>
                                                 {
                                                     isBeta &&
                                                     <StackItem className='ins-m-border-top'> Shared with: unknown </StackItem>

@@ -27,6 +27,7 @@ import { useExpander, useFilter, usePagination, useSelector, useSorter } from '.
 import * as debug from '../Utilities/debug';
 
 import './RemediationDetailsTable.scss';
+import { CheckIcon } from '@patternfly/react-icons';
 
 function resolutionDescriptionCell (remediation, issue) {
     if (issue.resolutions_available <= 1) {
@@ -51,6 +52,14 @@ function issueDescriptionCell (issue) {
     return issue.description;
 }
 
+function needsRebootCell (needsReboot) {
+    if (needsReboot) {
+        return <CheckIcon/>;
+    }
+
+    return (' ');
+}
+
 const SORTING_ITERATEES = [
     null, // expand toggle
     null, // checkboxes
@@ -73,7 +82,9 @@ const buildRow = (remediation, status) => (issue, index) => {
                 {
                     title: resolutionDescriptionCell(remediation, issue)
                 },
-                issue.resolution.needs_reboot === true ? 'Yes' : 'No',
+                {
+                    title: needsRebootCell(issue.resolution.needs_reboot)
+                },
                 issue.systems.length,
                 {
                     title: getIssueApplication(issue),
