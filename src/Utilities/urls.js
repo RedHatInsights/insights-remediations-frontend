@@ -1,9 +1,35 @@
 import urijs from 'urijs';
 import { getIssuePrefix } from './model';
 
+// Conditionally apply beta
+export function isBeta () {
+
+    const pathName = window.location.pathname.split('/');
+    pathName.shift();
+
+    if (pathName[0] === 'beta') {
+        return ('beta/');
+    }
+
+    return ('');
+}
+
+// Get the current group since we can be mounted at two urls, then add beta conditionally
+export function getGroup () {
+    const pathName = window.location.pathname.split('/');
+    pathName.shift();
+
+    if (pathName[0] === 'beta') {
+        return (`${pathName[0]}/${pathName[1]}`);
+    }
+
+    return (pathName[0]);
+}
+
 export function buildInventoryUrl (systemId, tab) {
+
     return urijs(document.baseURI)
-    .segment('platform')
+    .segment(getGroup())
     .segment('inventory')
     .segment(systemId)
     .segment(tab)
@@ -28,9 +54,9 @@ export function buildIssueUrl (id) {
 
     switch (getIssuePrefix(id)) {
         case 'advisor':
-            return urijs(document.baseURI).segment('platform').segment('advisor').segment('actions').segment('by_id').segment(parts[1]).toString();
+            return urijs(document.baseURI).segment(`${isBeta()}insights`).segment('actions').segment('by_id').segment(parts[1]).toString();
         case 'vulnerabilities':
-            return urijs(document.baseURI).segment('platform').segment('vulnerability').segment('cves').segment(parts[1]).toString();
+            return urijs(document.baseURI).segment(`${isBeta()}rhcs`).segment('vulnerability').segment('cves').segment(parts[1]).toString();
         default:
             return null;
     }
