@@ -111,7 +111,7 @@ function RemediationTable (props) {
         return skeleton();
     }
 
-    if (!value.remediations.length) {
+    if (!value.data.length) {
         return empty();
     }
 
@@ -122,7 +122,7 @@ function RemediationTable (props) {
         pagination.reset();
     });
 
-    const filtered = value.remediations.filter(r => includesIgnoreCase(r.name, filter.value.trim()));
+    const filtered = value.data.filter(r => includesIgnoreCase(r.name, filter.value.trim()));
     const paged = filtered.slice(pagination.offset, pagination.offset + pagination.pageSize);
 
     const rows = paged.map(remediation => ({
@@ -138,7 +138,7 @@ function RemediationTable (props) {
 
     selector.register(rows);
 
-    const selectedIds = selector.getSelectedIds(value.remediations.map(remediation => remediation.id));
+    const selectedIds = selector.getSelectedIds(value.data.map(remediation => remediation.id));
 
     return (
         <React.Fragment>
