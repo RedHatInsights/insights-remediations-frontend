@@ -18,7 +18,7 @@ const betaBranch =
 let deploymentEnv = 'apps';
 let release = '';
 
-if (process.env.NODE_ENV === 'production' && betaBranch) {
+if ((process.env.NODE_ENV === 'production' && betaBranch) || process.env.BUILD_BETA === 'true') {
     deploymentEnv = 'beta/apps';
     release = 'beta';
 }
