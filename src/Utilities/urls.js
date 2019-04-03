@@ -39,7 +39,7 @@ export function buildInventoryUrl (systemId, tab) {
 export function getInventoryTabForIssue ({ id }) {
     switch (getIssuePrefix(id)) {
         case 'advisor':
-            return 'configuration_assessment';
+            return 'insights';
         case 'vulnerabilities':
             return 'vulnerabilities';
         case 'compliance':
@@ -56,7 +56,7 @@ export function buildIssueUrl (id) {
         case 'advisor':
             return urijs(document.baseURI).segment(`${isBeta()}insights`).segment('actions').segment('by_id').segment(parts[1]).toString();
         case 'vulnerabilities':
-            return urijs(document.baseURI).segment(`${isBeta()}rhcs`).segment('vulnerability').segment('cves').segment(parts[1]).toString();
+            return urijs(document.baseURI).segment(`${isBeta()}rhel`).segment('vulnerability').segment('cves').segment(parts[1]).toString();
         default:
             return null;
     }
