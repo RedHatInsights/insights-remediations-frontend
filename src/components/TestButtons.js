@@ -38,8 +38,8 @@ class TestButtons extends React.Component {
             id: 'vulnerabilities:CVE-2018-16865',
             description: 'CVE-2018-16865'
         }, {
-            id: 'vulnerabilities:CVE-2017-17713',
-            description: 'CVE-2017-17713'
+            id: 'vulnerabilities:CVE-2017-17712',
+            description: 'CVE-2017-17712'
         }],
         systems: this.state.allHosts.slice(-1)
     });
@@ -101,8 +101,8 @@ class TestButtons extends React.Component {
             description: 'CVE-2018-16865',
             systems: this.state.allHosts.length > 1 ? this.state.allHosts.slice(1, 2) : this.state.allHosts.slice(0, 1)
         }, {
-            id: 'vulnerabilities:CVE-2017-17713',
-            description: 'CVE-2017-17713'
+            id: 'vulnerabilities:CVE-2017-17712',
+            description: 'CVE-2017-17712'
         }],
         systems: this.state.allHosts
     });

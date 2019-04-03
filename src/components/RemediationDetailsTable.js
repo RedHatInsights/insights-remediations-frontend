@@ -157,7 +157,7 @@ function RemediationDetailsTable (props) {
     expander.register(rows);
     selector.register(rows);
 
-    const selectedIds = selector.getSelectedIds(props.remediation.issues.map(issue => issue.id));
+    const selectedIds = selector.getSelectedIds();
 
     return (
         <React.Fragment>
@@ -183,6 +183,7 @@ function RemediationDetailsTable (props) {
                             isDisabled={ !selectedIds.length }
                             remediation={ props.remediation }
                             issues={ selectedIds }
+                            afterDelete={ selector.reset }
                         />
                     </ToolbarItem>
                 </ToolbarGroup>

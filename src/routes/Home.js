@@ -47,10 +47,6 @@ class Home extends Component {
         }
     };
 
-    async componentDidMount () {
-        this.loadRemediations();
-    }
-
     sendNotification = data => {
         this.store.dispatch(addNotification(data));
     }
