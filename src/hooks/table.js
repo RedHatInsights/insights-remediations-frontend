@@ -62,9 +62,9 @@ export function useSorter (defaultSortBy = 2, defaultSortDir = 'asc') {
                 direction: sortDir
             },
             onSort (event, sortBy, sortDir) {
+                cb(sortBy, sortDir);
                 setSortBy(sortBy);
                 setSortDir(sortDir);
-                cb(sortBy, sortDir);
             }
         }
     };
@@ -76,8 +76,8 @@ export function useFilter () {
     const cb = callbacks();
 
     const onValueChange = debounce(value => {
-        setValue(value);
         cb(value);
+        setValue(value);
     }, SEARCH_DEBOUNCE_DELAY);
 
     return {
@@ -137,13 +137,13 @@ export function usePagination () {
             page,
             itemsPerPage: pageSize,
             onSetPage (value) {
-                setPage(value);
                 cb(value, pageSize);
+                setPage(value);
             },
             onPerPageSelect (value) {
-                setPageSize(value);
-                reset();
                 cb(page, value);
+                reset();
+                setPageSize(value);
             }
         }
     };
@@ -188,6 +188,7 @@ export function useSelector (rowToId = row => row.id) {
             rows = r;
             rows.forEach(row => row.selected = value[rowToId(row)] === true);
         },
+        reset: () => setValue({}),
         props: {
             onSelect: (unused, isSelected, index) => {
                 if (!rows) {

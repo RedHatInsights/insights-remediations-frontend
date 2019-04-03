@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import moment from 'moment';
@@ -16,7 +16,7 @@ import { sortable, Table, TableHeader, TableBody, TableVariant } from '@patternf
 import { EmptyTable, Pagination, SimpleTableFilter, TableToolbar } from '@red-hat-insights/insights-frontend-components';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 
-import { formatUser, includesIgnoreCase } from '../Utilities/model';
+import { formatUser } from '../Utilities/model';
 import { appUrl } from '../Utilities/urls';
 import './RemediationTable.scss';
 
@@ -106,26 +106,26 @@ function RemediationTable (props) {
     const selector = useSelector();
     const pagination = usePagination();
 
+    function loadRemediations () {
+        const column = SORTING_ITERATEES[sorter.sortBy];
+        props.loadRemediations(column, sorter.sortDir, filter.value, pagination.pageSize, pagination.offset);
+    }
+
+    useEffect(loadRemediations, [ sorter.sortBy, sorter.sortDir, filter.value, pagination.pageSize, pagination.offset ]);
+
     // Skeleton Loading
     if (status !== 'fulfilled') {
         return skeleton();
     }
 
-    if (!value.data.length) {
+    if (!value.data.length && !filter.value) {
         return empty();
     }
 
     filter.onChange(pagination.reset);
-    sorter.onChange((sortBy, sortDir) => {
-        const column = SORTING_ITERATEES[sortBy];
-        props.loadRemediations(column, sortDir);
-        pagination.reset();
-    });
+    sorter.onChange(pagination.reset);
 
-    const filtered = value.data.filter(r => includesIgnoreCase(r.name, filter.value.trim()));
-    const paged = filtered.slice(pagination.offset, pagination.offset + pagination.pageSize);
-
-    const rows = paged.map(remediation => ({
+    const rows = value.data.map(remediation => ({
         id: remediation.id,
         cells: [
             buildName(remediation.name, remediation.id),
@@ -137,14 +137,13 @@ function RemediationTable (props) {
     }));
 
     selector.register(rows);
-
-    const selectedIds = selector.getSelectedIds(value.data.map(remediation => remediation.id));
+    const selectedIds = selector.getSelectedIds();
 
     return (
         <React.Fragment>
             <TableToolbar
                 className='ins-c-remediations-table__actions'
-                results={ filtered.length }
+                results={ value.meta.total }
                 selected={ selectedIds.length }>
                 <ToolbarGroup>
                     <ToolbarItem>
@@ -169,6 +168,7 @@ function RemediationTable (props) {
                         <ToolbarActions
                             isDisabled={ !selectedIds.length }
                             remediations={ selectedIds }
+                            afterDelete={ () => { selector.reset(); loadRemediations(); } }
                         />
                     </ToolbarItem>
                 </ToolbarGroup>
@@ -208,7 +208,7 @@ function RemediationTable (props) {
                 rows.length > 0 &&
                 <TableToolbar isFooter>
                     <Pagination
-                        numberOfItems={ filtered.length }
+                        numberOfItems={ value.meta.total }
                         { ...pagination.props }
                         { ...debug.pagination }
                     />
