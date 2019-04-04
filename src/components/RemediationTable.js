@@ -81,9 +81,9 @@ function empty () {
                         <EmptyStateBody>
                             You haven&#39;t created any remediations yet.<br/>
                             To create a remediation, please visit&nbsp;
-                            <a href={ appUrl('advisor') }>Insights</a>,&nbsp;
-                            <a href={ appUrl('vulnerability') }>Vulnerability</a> or&nbsp;
-                            <a href={ appUrl('compliance') }>Compliance</a>&nbsp;
+                            <a href={ appUrl('advisor').toString() }>Insights</a>,&nbsp;
+                            <a href={ appUrl('vulnerabilities').toString() }>Vulnerability</a> or&nbsp;
+                            <a href={ appUrl('compliance').toString() }>Compliance</a>&nbsp;
                             applications and look for the&nbsp;
                             <strong>Remediate with Ansible</strong>
                             &nbsp;button.
