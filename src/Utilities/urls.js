@@ -1,36 +1,19 @@
 import urijs from 'urijs';
 import { getIssuePrefix } from './model';
 
-// Conditionally apply beta
-export function isBeta () {
-
-    const pathName = window.location.pathname.split('/');
-    pathName.shift();
-
-    if (pathName[0] === 'beta') {
-        return ('beta/');
-    }
-
-    return ('');
-}
-
-// Get the current group since we can be mounted at two urls, then add beta conditionally
+// Get the current group since we can be mounted at two urls
 export function getGroup () {
     const pathName = window.location.pathname.split('/');
-    pathName.shift();
 
-    if (pathName[0] === 'beta') {
-        return (`${pathName[0]}/${pathName[1]}`);
+    if (pathName[1] === 'beta') {
+        return pathName[2];
     }
 
-    return (pathName[0]);
+    return pathName[1];
 }
 
 export function buildInventoryUrl (systemId, tab) {
-
-    return urijs(document.baseURI)
-    .segment(getGroup())
-    .segment('inventory')
+    return appUrl('inventory')
     .segment(systemId)
     .segment(tab)
     .toString();
@@ -39,7 +22,7 @@ export function buildInventoryUrl (systemId, tab) {
 export function getInventoryTabForIssue ({ id }) {
     switch (getIssuePrefix(id)) {
         case 'advisor':
-            return 'insights';
+            return 'rules';
         case 'vulnerabilities':
             return 'vulnerabilities';
         case 'compliance':
@@ -52,16 +35,27 @@ export function getInventoryTabForIssue ({ id }) {
 export function buildIssueUrl (id) {
     const parts = id.split(':');
 
-    switch (getIssuePrefix(id)) {
+    switch (parts[0]) {
         case 'advisor':
-            return urijs(document.baseURI).segment(`${isBeta()}insights`).segment('actions').segment('by_id').segment(parts[1]).toString();
+            return appUrl(parts[0]).segment('actions').segment('by_id').segment(parts[1]).toString();
         case 'vulnerabilities':
-            return urijs(document.baseURI).segment(`${isBeta()}rhel`).segment('vulnerability').segment('cves').segment(parts[1]).toString();
+            return appUrl(parts[0]).segment('cves').segment(parts[1]).toString();
         default:
-            return null;
+            throw new Error(`Unsupported issue id: ${id}`);
     }
 }
 
 export function appUrl (app) {
-    return urijs(document.baseURI).segment('platform').segment(app).toString();
+    switch (app) {
+        case 'advisor':
+            return urijs(document.baseURI).segment('insights');
+        case 'vulnerabilities':
+            return urijs(document.baseURI).segment('rhel').segment('vulnerability');
+        case 'compliance':
+            return urijs(document.baseURI).segment('rhel').segment('compliance');
+        case 'inventory':
+            return urijs(document.baseURI).segment(getGroup()).segment('inventory');
+        default:
+            throw new Error(`Unknown app: ${app}`);
+    }
 }
