@@ -2,6 +2,7 @@ import { Switch, matchPath, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Home from './routes/Home';
+import FindItFixIt from './routes/FindItFixIt';
 import RemediationDetails from './routes/RemediationDetails';
 
 const InsightsRoute = ({ component: Component, rootClass, ...rest }) => {
@@ -20,7 +21,8 @@ InsightsRoute.propTypes = {
 
 export const routes = {
     home: '/',
-    details: '/:id'
+    details: '/:id',
+    finditfixit: '/fixit'
 };
 
 function checkPaths(group, app) {
@@ -48,6 +50,7 @@ export const Routes = ({ childProps: { history }}) => {
     return (
         <Switch>
             <InsightsRoute exact path={ routes.home } component={ Home } rootClass='remediations' />
+            <InsightsRoute exact path={ routes.finditfixit } component={ FindItFixIt } rootClass='finditfixit' />
             <InsightsRoute path={ routes.details } component={ RemediationDetails } rootClass='remediation-details' />
         </Switch>
     );
