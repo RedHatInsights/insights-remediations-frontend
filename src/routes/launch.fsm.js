@@ -82,8 +82,8 @@ _Starting.prototype.start = function (controller) {
 
   controller.scope.launch_enabled = false;
   controller.scope.cancel_enabled = true;
-  controller.scope.status_poller = setInterval(controller.scope.poll_status, 10000);
-  controller.scope.log_poller = setInterval(controller.scope.poll_log, 10000);
+  controller.scope.status_poller = setInterval(controller.scope.poll_status, 1000);
+  controller.scope.log_poller = setInterval(controller.scope.poll_log, 1000);
 };
 
 

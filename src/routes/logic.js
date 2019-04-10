@@ -67,6 +67,7 @@ class Controller {
     for(i = 0; i < this.hosts.length; i++) {
       this.tasks_by_host[this.hosts[i].host_id] = [];
     }
+    await this.launch();
   }
 
   send_trace_message(message) {
