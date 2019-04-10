@@ -78,6 +78,11 @@ class RemediationDetails extends Component {
                         <LevelItem>
                             <Split gutter="md">
                                 <SplitItem>
+                                    <Link to='/fixit'>
+                                        <Button>Execute Playbook</Button>
+                                    </Link>
+                                </SplitItem>
+                                <SplitItem>
                                     <Button
                                         isDisabled={ !remediation.issues.length }
                                         variant='link'onClick={ () => downloadPlaybook(remediation.id) }>
