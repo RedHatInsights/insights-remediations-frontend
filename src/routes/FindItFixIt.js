@@ -4,10 +4,11 @@ import ReactDOM from 'react-dom';
 import { withRouter } from 'react-router-dom';
 import './FindItFixIt.scss';
 import Controller from './logic.js';
+import { isBeta } from '../config';
 
 import yaml from 'js-yaml'
 
-import { Main, PageHeader, PageHeaderTitle } from '@red-hat-insights/insights-frontend-components';
+import { Main, PageHeader, PageHeaderTitle, Spinner } from '@red-hat-insights/insights-frontend-components';
 import { DownloadIcon,
          ExclamationCircleIcon,
          CircleIcon,
@@ -39,7 +40,8 @@ class FindItFixIt extends Component {
         this.state = {
             alertDangerVisible: false,
             alertSuccessVisible: false,
-          isModalOpen: false
+          isModalOpen: false,
+            authorized: false
         };
         this.controller = new Controller(this);
         window.controller = this.controller;
@@ -69,16 +71,32 @@ class FindItFixIt extends Component {
     shouldComponentUpdate (nextProps, nextState) {
         return true;
     }
-    componentDidMount() {
-        this.controller.init();
+
+    async componentDidMount() {
+        if (isBeta) {
+            const user = await window.insights.chrome.auth.getUser();
+            if (user.identity.user.is_internal) {
+                this.setState({ authorized: true });
+                this.controller.init();
+                return;
+            }
+        }
+
+        // nothing to see here
+        this.props.history.push('/');
     }
 
     render() {
         const {
             alertDangerVisible,
             alertSuccessVisible,
-            isModalOpen
+            isModalOpen,
+            authorized
         } = this.state;
+
+        if (!authorized) {
+            return (<Spinner/>);
+        }
 
         const dataListCellStyle = {
             color: '#aeaeae',
@@ -254,7 +272,7 @@ class FindItFixIt extends Component {
                                      border: '1px solid #b7b7b7',
                                      textAlign: 'right',
                                      borderRight: '0px'}}>{[...Array(this.controller.playbook.contents.split('\n').length+1).keys()].slice(1).join('\n')}</pre>
-                        <pre className="playbookDisplay" 
+                        <pre className="playbookDisplay"
                                      style={{fontFamily: 'monospace',
                                      backgroundColor: '#f6f6f6',
                                      padding: '10px',
