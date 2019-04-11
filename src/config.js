@@ -2,4 +2,4 @@
 
 export const API_BASE = '/api/remediations/v1';
 
-export const isBeta = RELEASE === 'insightsbeta';
+export const isBeta = RELEASE === 'beta/apps';
