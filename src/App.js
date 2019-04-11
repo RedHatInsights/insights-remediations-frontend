@@ -18,11 +18,6 @@ class App extends Component {
         insights.chrome.identifyApp('remediations');
     }
 
-    componentWillUnmount () {
-        this.appNav();
-        this.buildNav();
-    }
-
     render () {
         return (
             <Fragment>

@@ -35,7 +35,8 @@ class RemediationDetails extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            autoReboot: true
+            autoReboot: true,
+            executeSupported: false
         };
         this.id = this.props.match.params.id;
         this.loadRemediation = this.props.loadRemediation.bind(this, this.id);
@@ -47,10 +48,15 @@ class RemediationDetails extends Component {
     };
 
     async componentDidMount () {
-        await Promise.all([
-            this.loadRemediation(),
-            this.loadRemediationStatus()
-        ]);
+        this.loadRemediation();
+        this.loadRemediationStatus();
+
+        if (isBeta) {
+            const user = await window.insights.chrome.auth.getUser();
+            if (user.identity.user.is_internal) {
+                this.setState({ executeSupported: true });
+            }
+        }
     }
 
     render() {
@@ -77,6 +83,14 @@ class RemediationDetails extends Component {
                         </LevelItem>
                         <LevelItem>
                             <Split gutter="md">
+                                {
+                                    this.state.executeSupported &&
+                                    <SplitItem>
+                                        <Link to='/fixit'>
+                                            <Button variant='secondary'>Execute Playbook</Button>
+                                        </Link>
+                                    </SplitItem>
+                                }
                                 <SplitItem>
                                     <Button
                                         isDisabled={ !remediation.issues.length }
