@@ -8,7 +8,7 @@ import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import { DeleteRemediationButton } from '../containers/DeleteButtons';
-import { isBeta } from '../config';
+import { isBeta, isDemo } from '../config';
 import ActionsResolvedCard from '../components/ActionsResolvedCard';
 
 import {
@@ -36,7 +36,7 @@ class RemediationDetails extends Component {
         super(props);
         this.state = {
             autoReboot: true,
-            executeSupported: false
+            demo: false
         };
         this.id = this.props.match.params.id;
         this.loadRemediation = this.props.loadRemediation.bind(this, this.id);
@@ -51,12 +51,8 @@ class RemediationDetails extends Component {
         this.loadRemediation();
         this.loadRemediationStatus();
 
-        if (isBeta) {
-            const user = await window.insights.chrome.auth.getUser();
-            if (user.identity.user.is_internal) {
-                this.setState({ executeSupported: true });
-            }
-        }
+        const demo = await isDemo();
+        demo && this.setState({ demo });
     }
 
     render() {
@@ -84,7 +80,7 @@ class RemediationDetails extends Component {
                         <LevelItem>
                             <Split gutter="md">
                                 {
-                                    this.state.executeSupported &&
+                                    this.state.demo &&
                                     <SplitItem>
                                         <Link to='/fixit'>
                                             <Button variant='secondary'>Execute Playbook</Button>

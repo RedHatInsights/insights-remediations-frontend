@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { withRouter } from 'react-router-dom';
 import './FindItFixIt.scss';
 import Controller from './logic.js';
-import { isBeta } from '../config';
+import { isBeta, isDemo } from '../config';
 
 import yaml from 'js-yaml'
 
@@ -41,7 +41,7 @@ class FindItFixIt extends Component {
             alertDangerVisible: false,
             alertSuccessVisible: false,
           isModalOpen: false,
-            authorized: false
+            demo: false
         };
         this.controller = new Controller(this);
         window.controller = this.controller;
@@ -73,13 +73,11 @@ class FindItFixIt extends Component {
     }
 
     async componentDidMount() {
-        if (isBeta) {
-            const user = await window.insights.chrome.auth.getUser();
-            if (user.identity.user.is_internal) {
-                this.setState({ authorized: true });
-                this.controller.init();
-                return;
-            }
+        const demo = await isDemo();
+        if (demo) {
+            this.setState({ demo });
+            this.controller.init();
+            return;
         }
 
         // nothing to see here
@@ -91,10 +89,10 @@ class FindItFixIt extends Component {
             alertDangerVisible,
             alertSuccessVisible,
             isModalOpen,
-            authorized
+            demo
         } = this.state;
 
-        if (!authorized) {
+        if (!demo) {
             return (<Spinner/>);
         }
 
