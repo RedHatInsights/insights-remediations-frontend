@@ -197,24 +197,24 @@ export function useSelector (rowToId = row => row.id) {
                     throw new Error('register() not called on useSelector()');
                 }
 
-                const newValue = (index === -1) ?
+                setValue(value => (index === -1) ?
                     onSelectAll(rows, value, isSelected, rowToId) :
-                    onSelectOne(value, isSelected, rowToId(rows[index]));
-                setValue(newValue);
+                    onSelectOne(value, isSelected, rowToId(rows[index]))
+                );
             }
         },
         tbodyProps: {
             onRowClick (event, row) {
-                if (event.target.tagName === 'A' || event.target.tagName === 'BUTTON') {
+                if ([ 'A', 'BUTTON', 'INPUT' ].includes(event.target.tagName)) {
                     return;
                 }
 
                 const id = rowToId(row);
                 assertId(id);
-                setValue({
+                setValue(value => ({
                     ...value,
                     [id]: !isSelected(value, id)
-                });
+                }));
             }
         }
     };
