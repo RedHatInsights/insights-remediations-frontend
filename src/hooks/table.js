@@ -197,10 +197,10 @@ export function useSelector (rowToId = row => row.id) {
                     throw new Error('register() not called on useSelector()');
                 }
 
-                setValue((index === -1) ?
+                const newValue = (index === -1) ?
                     onSelectAll(rows, value, isSelected, rowToId) :
-                    onSelectOne(value, isSelected, rowToId(rows[index]))
-                );
+                    onSelectOne(value, isSelected, rowToId(rows[index]));
+                setValue(newValue);
             }
         },
         tbodyProps: {
