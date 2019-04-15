@@ -43,16 +43,24 @@ function responseDataInterceptor (response) {
     return response;
 }
 
-function interceptor401 (error) {
-    if (error.response && error.response.status === 401) {
+function interceptor401 (err) {
+    if (!err) {
+        return;
+    }
+
+    if (err.response && err.response.status === 401) {
         window.insights.chrome.auth.logout();
         return false;
     }
 
-    throw error;
+    throw err;
 }
 
 function errorInterceptor (err) {
+    if (!err) {
+        return;
+    }
+
     if (err.response && err.response.data && err.response.data.errors && err.response.data.errors.length) {
         const error = err.response.data.errors[0];
 
