@@ -152,10 +152,12 @@ export function usePagination () {
 function onSelectOne (selected, isSelected, id) {
     assertId(id);
 
-    return {
+    const result = {
         ...selected,
         [id]: isSelected
     };
+
+    return result;
 }
 
 function onSelectAll (rows, value, isSelected, rowToId) {
