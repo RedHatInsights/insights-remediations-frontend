@@ -48,7 +48,15 @@ class RemediationDetails extends Component {
     };
 
     async componentDidMount () {
-        this.loadRemediation();
+        this.loadRemediation().catch(e => {
+            if (e && e.response && e.response.status === 404) {
+                this.props.history.push('/');
+                return;
+            }
+
+            throw e;
+        });
+
         if (isBeta) {
             this.loadRemediationStatus();
         }
