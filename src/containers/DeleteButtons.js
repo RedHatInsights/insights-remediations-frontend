@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 import { loadRemediations, deleteRemediationIssue } from '../actions';
+import { isBeta } from '../config';
 
 import DeleteButton from '../components/DeleteButton';
 
@@ -37,7 +38,10 @@ export const DeleteActionsButton = withRouter(connect(
     (dispatch, { remediation, issues, afterDelete }) => ({
         onDelete: async () => {
             await Promise.all(issues.map(issueId => dispatch(deleteRemediationIssue(remediation.id, issueId))));
-            dispatch(loadRemediationStatus(remediation.id));
+            if (isBeta) {
+                dispatch(loadRemediationStatus(remediation.id));
+            }
+
             afterDelete();
         }
     })

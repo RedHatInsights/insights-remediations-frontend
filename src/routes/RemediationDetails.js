@@ -49,7 +49,9 @@ class RemediationDetails extends Component {
 
     async componentDidMount () {
         this.loadRemediation();
-        this.loadRemediationStatus();
+        if (isBeta) {
+            this.loadRemediationStatus();
+        }
 
         const demo = await isDemo();
         demo && this.setState({ demo });
