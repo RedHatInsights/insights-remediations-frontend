@@ -14,6 +14,8 @@ class TestButtons extends React.Component {
         };
     }
 
+    isEnabled = () => localStorage.getItem('remediations:debug') === 'true';
+
     dataProviderA1 = () => ({
         issues: [{
             id: 'vulnerabilities:CVE-2019-3815',
@@ -120,19 +122,20 @@ class TestButtons extends React.Component {
     });
 
     async componentDidMount () {
-        await window.insights.chrome.auth.getUser();
-        getHosts().then(hosts => this.setState({
-            allHosts: hosts.results.map(result => result.id)
-        }));
+        if (this.isEnabled()) {
+            await window.insights.chrome.auth.getUser();
+            getHosts().then(hosts => this.setState({
+                allHosts: hosts.results.map(result => result.id)
+            }));
+        }
     }
 
     render () {
-        const { allHosts } = this.state;
-        const debug = localStorage.getItem('remediations:debug');
-
-        if (debug !== 'true') {
+        if (!this.isEnabled()) {
             return null;
         }
+
+        const { allHosts } = this.state;
 
         const RemediationBtn = ({ dataProvider, children, ...props }) =>
             <RemediationButton
