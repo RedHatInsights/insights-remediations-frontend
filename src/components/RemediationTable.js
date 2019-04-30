@@ -1,22 +1,20 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import moment from 'moment';
-
 import { Link } from 'react-router-dom';
 import {
     Bullseye,
     EmptyState, EmptyStateIcon, EmptyStateBody,
     Dropdown, KebabToggle,
     Title, Button,
-    ToolbarItem, ToolbarGroup,
-    Tooltip
+    ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
 import { sortable, Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
 import { EmptyTable, Pagination, SimpleTableFilter, TableToolbar } from '@red-hat-insights/insights-frontend-components';
 import { WrenchIcon } from '@patternfly/react-icons';
 
 import { appUrl } from '../Utilities/urls';
+import { formatDate } from '../Utilities/model';
 import './RemediationTable.scss';
 
 import SkeletonTable from '../skeletons/SkeletonTable';
@@ -29,16 +27,6 @@ import { downloadPlaybook } from '../api';
 function buildName (name, id) {
     return ({
         title: <Link to={ `/${id}` }>{ name }</Link>
-    });
-}
-
-function formatDate (date) {
-    return ({
-        title: <Tooltip content={ moment(date).format('LLL') } >
-            <span>
-                { moment(date).fromNow() }
-            </span>
-        </Tooltip>
     });
 }
 
@@ -135,7 +123,7 @@ function RemediationTable (props) {
             buildName(remediation.name, remediation.id),
             remediation.system_count,
             remediation.issue_count,
-            formatDate(remediation.updated_at)
+            { title: formatDate(remediation.updated_at) }
         ]
     }));
 
