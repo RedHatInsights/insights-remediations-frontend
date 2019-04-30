@@ -6,7 +6,6 @@ import moment from 'moment';
 import { Link } from 'react-router-dom';
 import {
     Bullseye,
-    Card, CardBody,
     EmptyState, EmptyStateIcon, EmptyStateBody,
     Dropdown, KebabToggle,
     Title, Button,
@@ -14,7 +13,7 @@ import {
 } from '@patternfly/react-core';
 import { sortable, Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
 import { EmptyTable, Pagination, SimpleTableFilter, TableToolbar } from '@red-hat-insights/insights-frontend-components';
-import { InfoCircleIcon } from '@patternfly/react-icons';
+import { WrenchIcon } from '@patternfly/react-icons';
 
 import { formatUser } from '../Utilities/model';
 import { appUrl } from '../Utilities/urls';
@@ -72,26 +71,25 @@ function skeleton () {
 
 function empty () {
     return (
-        <Card>
-            <CardBody>
-                <Bullseye>
-                    <EmptyState className='ins-c-no-remediations'>
-                        <EmptyStateIcon icon={ InfoCircleIcon } size='lg' />
-                        <Title size="lg">No Remediations</Title>
-                        <EmptyStateBody>
-                            You haven&#39;t created any remediations yet.<br/>
-                            To create a remediation, please visit&nbsp;
-                            <a href={ appUrl('advisor').toString() }>Insights</a>,&nbsp;
-                            <a href={ appUrl('vulnerabilities').toString() }>Vulnerability</a> or&nbsp;
-                            <a href={ appUrl('compliance').toString() }>Compliance</a>&nbsp;
-                            applications and look for the&nbsp;
-                            <strong>Remediate with Ansible</strong>
-                            &nbsp;button.
-                        </EmptyStateBody>
-                    </EmptyState>
-                </Bullseye>
-            </CardBody>
-        </Card>
+        <Bullseye>
+            <EmptyState className='ins-c-no-remediations'>
+                <EmptyStateIcon icon={ WrenchIcon } size='sm' />
+                <Title size="lg">You haven&apos;t created any remediation Playbooks yet</Title>
+                <EmptyStateBody>
+                    Create an Ansible Playbook to remediate or mitigate vulnerabilities or configuration issues.
+                    <br />
+                    <br />
+                    To create a new remediation Playbook, select issues identified in
+                    <br />
+                    <a href={ appUrl('advisor').toString() }>Red Hat Insights</a>,&nbsp;
+                    <a href={ appUrl('compliance').toString() }>Compliance</a> or&nbsp;
+                    <a href={ appUrl('vulnerabilities').toString() }>Vulnerability</a>&nbsp;
+                    and select
+                    <br />
+                    <strong>Remediate with Ansible.</strong>
+                </EmptyStateBody>
+            </EmptyState>
+        </Bullseye>
     );
 }
 
