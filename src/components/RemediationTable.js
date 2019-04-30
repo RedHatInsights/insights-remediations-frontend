@@ -9,13 +9,13 @@ import {
     EmptyState, EmptyStateIcon, EmptyStateBody,
     Dropdown, KebabToggle,
     Title, Button,
-    ToolbarItem, ToolbarGroup
+    ToolbarItem, ToolbarGroup,
+    Tooltip
 } from '@patternfly/react-core';
 import { sortable, Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
 import { EmptyTable, Pagination, SimpleTableFilter, TableToolbar } from '@red-hat-insights/insights-frontend-components';
 import { WrenchIcon } from '@patternfly/react-icons';
 
-import { formatUser } from '../Utilities/model';
 import { appUrl } from '../Utilities/urls';
 import './RemediationTable.scss';
 
@@ -33,7 +33,13 @@ function buildName (name, id) {
 }
 
 function formatDate (date) {
-    return moment(date).fromNow();
+    return ({
+        title: <Tooltip content={ moment(date).format('LLL') } >
+            <span>
+                { moment(date).fromNow() }
+            </span>
+        </Tooltip>
+    });
 }
 
 function skeleton () {
@@ -93,13 +99,13 @@ function empty () {
     );
 }
 
-const SORTING_ITERATEES = [ null, 'name', 'system_count', 'issue_count', null, 'updated_at' ];
+const SORTING_ITERATEES = [ null, 'name', 'system_count', 'issue_count', 'updated_at' ];
 
 function RemediationTable (props) {
 
     const { value, status } = props;
 
-    const sorter = useSorter(5, 'desc');
+    const sorter = useSorter(4, 'desc');
     const filter = useFilter();
     const selector = useSelector();
     const pagination = usePagination();
@@ -129,7 +135,6 @@ function RemediationTable (props) {
             buildName(remediation.name, remediation.id),
             remediation.system_count,
             remediation.issue_count,
-            formatUser(remediation.updated_by),
             formatDate(remediation.updated_at)
         ]
     }));
@@ -187,9 +192,7 @@ function RemediationTable (props) {
                                 title: 'Actions',
                                 transforms: [ sortable ]
                             }, {
-                                title: 'Last Modified By'
-                            }, {
-                                title: 'Last Modified On',
+                                title: 'Last modified',
                                 transforms: [ sortable ]
                             }]
                         }
