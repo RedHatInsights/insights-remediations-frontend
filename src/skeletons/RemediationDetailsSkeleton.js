@@ -40,7 +40,6 @@ const RemediationDetailsSkeleton = () => {
                     <LevelItem>
                         <PageHeaderTitle className='ins-s-page-header' title={
                             <React.Fragment>
-                                <span>Playbook: </span>
                                 <Skeleton size='md'/>
                             </React.Fragment>
                         }/>
@@ -76,7 +75,7 @@ const RemediationDetailsSkeleton = () => {
                             }
                             <GridItem>
                                 <Card className='ins-c-card__system-reboot'>
-                                    <CardHeader className='ins-m-card__header-bold'> Systems Reboot </CardHeader>
+                                    <CardHeader className='ins-m-card__header-bold'> Systems reboot </CardHeader>
                                     <CardBody>
                                         <Grid gutter="md" md={ 4 } sm={ 4 }>
                                             <GridItem>
@@ -88,7 +87,7 @@ const RemediationDetailsSkeleton = () => {
                                             <GridItem>
                                                 <Stack>
                                                     <StackItem className='ins-m-text-emphesis'><Skeleton size='xs'/></StackItem>
-                                                    <StackItem>Reboot Required</StackItem>
+                                                    <StackItem>Reboot required</StackItem>
                                                 </Stack>
                                             </GridItem>
                                             <GridItem>
@@ -96,7 +95,7 @@ const RemediationDetailsSkeleton = () => {
                                                     <StackItem className='ins-c-reboot-switch'>
                                                         <Skeleton size='xs'/>
                                                     </StackItem>
-                                                    <StackItem>Auto Reboot</StackItem>
+                                                    <StackItem>Auto reboot</StackItem>
                                                 </Stack>
                                             </GridItem>
                                         </Grid>
@@ -108,7 +107,7 @@ const RemediationDetailsSkeleton = () => {
                                     <CardHeader>
                                         <Level>
                                             <LevelItem className='ins-m-card__header-bold'>
-                                                Playbook Details
+                                                Playbook details
                                             </LevelItem>
                                             <LevelItem className='ins-c-subheader-small'>
                                                 <Skeleton size='xs'/>
@@ -155,7 +154,7 @@ const RemediationDetailsSkeleton = () => {
                             }
                             <ToolbarGroup>
                                 <ToolbarItem>
-                                    <Button variant='link' isDisabled> Remove Action </Button>
+                                    <Button variant='link' isDisabled> Remove action </Button>
                                 </ToolbarItem>
                             </ToolbarGroup>
                         </TableToolbar>

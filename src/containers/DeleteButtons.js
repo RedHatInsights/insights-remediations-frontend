@@ -33,7 +33,7 @@ export const DeleteRemediationsButton = withRouter(connect(
 
 export const DeleteActionsButton = withRouter(connect(
     (state, { issues }) => ({
-        label: `Remove Action${ issues.length > 1 ? 's' : '' }`
+        label: `Remove action${ issues.length > 1 ? 's' : '' }`
     }),
     (dispatch, { remediation, issues, afterDelete }) => ({
         onDelete: async () => {

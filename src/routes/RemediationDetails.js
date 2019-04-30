@@ -85,7 +85,7 @@ class RemediationDetails extends Component {
                     </Breadcrumb>
                     <Level className="ins-c-level">
                         <LevelItem>
-                            <PageHeaderTitle title={ `Playbook: ${ remediation.name }` }/>
+                            <PageHeaderTitle title={ remediation.name }/>
                         </LevelItem>
                         <LevelItem>
                             <Split gutter="md">
@@ -121,7 +121,7 @@ class RemediationDetails extends Component {
                                 }
                                 <GridItem>
                                     <Card className='ins-c-card__system-reboot'>
-                                        <CardHeader className='ins-m-card__header-bold'> Systems Reboot </CardHeader>
+                                        <CardHeader className='ins-m-card__header-bold'> Systems reboot </CardHeader>
                                         <CardBody>
                                             <Grid gutter="md" md={ 4 } sm={ 4 }>
                                                 <GridItem>
@@ -133,7 +133,7 @@ class RemediationDetails extends Component {
                                                 <GridItem>
                                                     <Stack>
                                                         <StackItem className='ins-m-text-emphesis'>{ stats.systemsWithReboot }</StackItem>
-                                                        <StackItem>Reboot Required</StackItem>
+                                                        <StackItem>Reboot required</StackItem>
                                                     </Stack>
                                                 </GridItem>
                                                 <GridItem>
@@ -141,13 +141,13 @@ class RemediationDetails extends Component {
                                                         <StackItem className='ins-c-reboot-switch'>
                                                             <Switch
                                                                 id="autoReboot"
-                                                                aria-label="Auto Reboot"
+                                                                aria-label="Auto reboot"
                                                                 isChecked={ remediation.needs_reboot ? remediation.auto_reboot : false }
                                                                 isDisabled={ !remediation.needs_reboot }
                                                                 onChange={ this.handleRebootChange }
                                                             />
                                                         </StackItem>
-                                                        <StackItem>Auto Reboot</StackItem>
+                                                        <StackItem>Auto reboot</StackItem>
                                                     </Stack>
                                                 </GridItem>
                                             </Grid>
@@ -157,14 +157,14 @@ class RemediationDetails extends Component {
                                 <GridItem>
                                     <Card className='ins-c-card__plan-details'>
                                         <CardHeader className='ins-m-card__header-bold'>
-                                            Playbook Details
+                                            Playbook details
                                         </CardHeader>
                                         <CardBody>
                                             <Stack>
-                                                <StackItem>Created By: { formatUser(remediation.created_by) }</StackItem>
+                                                <StackItem>Created by: { formatUser(remediation.created_by) }</StackItem>
                                                 <StackItem>Created: { moment(remediation.created_at).fromNow() }</StackItem>
-                                                <StackItem>Last Modified By: { formatUser(remediation.updated_by) }</StackItem>
-                                                <StackItem>Last Modified: { moment(remediation.updated_at).fromNow() }</StackItem>
+                                                <StackItem>Last modified by: { formatUser(remediation.updated_by) }</StackItem>
+                                                <StackItem>Last modified: { moment(remediation.updated_at).fromNow() }</StackItem>
                                                 {
                                                     isBeta &&
                                                     <StackItem className='ins-m-border-top'> Shared with: unknown </StackItem>
