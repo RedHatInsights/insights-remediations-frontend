@@ -166,7 +166,7 @@ function RemediationDetailsTable (props) {
                 selected={ selectedIds.length }>
                 <ToolbarGroup>
                     <ToolbarItem>
-                        <SimpleTableFilter buttonTitle="" placeholder="Search Actions" { ...filter.props } />
+                        <SimpleTableFilter buttonTitle="" placeholder="Search actions" { ...filter.props } />
                     </ToolbarItem>
                 </ToolbarGroup>
                 {
@@ -201,7 +201,7 @@ function RemediationDetailsTable (props) {
                             }, {
                                 title: 'Resolution'
                             }, {
-                                title: 'Reboot Required',
+                                title: 'Reboot required',
                                 transforms: [ sortable ]
                             }, {
                                 title: 'Systems',
