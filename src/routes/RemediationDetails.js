@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import { connect } from 'react-redux';
-import { formatUser } from '../Utilities/model';
+import { formatUser, formatDate } from '../Utilities/model';
 import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
@@ -162,9 +161,9 @@ class RemediationDetails extends Component {
                                         <CardBody>
                                             <Stack>
                                                 <StackItem>Created by: { formatUser(remediation.created_by) }</StackItem>
-                                                <StackItem>Created: { moment(remediation.created_at).fromNow() }</StackItem>
+                                                <StackItem>Created: { formatDate(remediation.created_at) }</StackItem>
                                                 <StackItem>Last modified by: { formatUser(remediation.updated_by) }</StackItem>
-                                                <StackItem>Last modified: { moment(remediation.updated_at).fromNow() }</StackItem>
+                                                <StackItem>Last modified: { formatDate(remediation.updated_at) }</StackItem>
                                                 {
                                                     isBeta &&
                                                     <StackItem className='ins-m-border-top'> Shared with: unknown </StackItem>

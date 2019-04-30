@@ -1,3 +1,7 @@
+import React from 'react';
+import moment from 'moment';
+import { Tooltip } from '@patternfly/react-core';
+
 export function getIssuePrefix (id) {
     return id.split(':')[0];
 }
@@ -30,4 +34,14 @@ export function formatUser (user) {
 
 export function includesIgnoreCase(text, included) {
     return text.toLowerCase().includes(included.toLowerCase());
+}
+
+export function formatDate (date) {
+    return (
+        <Tooltip content={ moment(date).format('LLL') } >
+            <span>
+                { moment(date).fromNow() }
+            </span>
+        </Tooltip>
+    );
 }
