@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 
 import {
     Form,
+    Label,
     Radio,
+    Split, SplitItem,
     Stack,
     StackItem
 } from '@patternfly/react-core';
@@ -96,8 +98,18 @@ class ResolutionStep extends Component {
 
         return (
             <Stack gutter='sm'>
-                <StackItem><h1>{ this.issue.description }</h1></StackItem>
-                <StackItem><h2>Would you like to:</h2></StackItem>
+                <StackItem><div>Select resolution for this action.</div></StackItem>
+                <StackItem>
+                    <Split gutter='sm'>
+                        <SplitItem>
+                            <Label>Action</Label>
+                        </SplitItem>
+                        <SplitItem isFilled>
+                            <h1 className='ins-m-text__bold'>{ this.issue.description }</h1>
+                        </SplitItem>
+                    </Split>
+                </StackItem>
+
                 { resolutionsDisplay }
             </Stack>
         );
