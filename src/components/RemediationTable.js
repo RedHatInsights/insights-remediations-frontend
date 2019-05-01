@@ -132,10 +132,7 @@ function RemediationTable (props) {
 
     return (
         <React.Fragment>
-            <TableToolbar
-                className='ins-c-remediations-table__actions'
-                results={ value.meta.total }
-                selected={ selectedIds.length }>
+            <TableToolbar className='ins-c-remediations-table__actions'>
                 <ToolbarGroup>
                     <ToolbarItem>
                         <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" { ...filter.props } />
@@ -163,6 +160,12 @@ function RemediationTable (props) {
                         />
                     </ToolbarItem>
                 </ToolbarGroup>
+                <Pagination
+                    numberOfItems={ value.meta.total }
+                    { ...pagination.props }
+                    { ...debug.pagination }
+                    direction='down'
+                />
             </TableToolbar>
             {
                 rows.length > 0 ?
