@@ -37,7 +37,7 @@ class ResolutionEditButton extends Component {
                     open &&
                     <Wizard
                         isLarge
-                        title="Choose resolution"
+                        title="Edit resolution"
                         className='ins-c-resolution-modal'
                         confirmAction='Save'
                         onClose = { this.onModalClose }
