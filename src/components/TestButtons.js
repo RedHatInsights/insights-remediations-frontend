@@ -1,4 +1,6 @@
 import React from 'react';
+
+import { Split, SplitItem } from '@patternfly/react-core';
 import { RemediationButton } from '@red-hat-insights/insights-frontend-components';
 
 import propTypes from 'prop-types';
@@ -138,17 +140,19 @@ class TestButtons extends React.Component {
         const { allHosts } = this.state;
 
         const RemediationBtn = ({ dataProvider, children, ...props }) =>
-            <RemediationButton
-                dataProvider={ dataProvider }
-                isDisabled={ !allHosts || !allHosts.length }
-                onRemediationCreated={ this.props.onRemediationCreated }
-                { ...props }
-            >
-                { children }
-            </RemediationButton>;
+            <SplitItem>
+                <RemediationButton
+                    dataProvider={ dataProvider }
+                    isDisabled={ !allHosts || !allHosts.length }
+                    onRemediationCreated={ this.props.onRemediationCreated }
+                    { ...props }
+                >
+                    { children }
+                </RemediationButton>
+            </SplitItem>;
 
         return (
-            <React.Fragment>
+            <Split gutter='sm'>
                 <RemediationBtn dataProvider={ this.dataProviderA1 }>A1</RemediationBtn>
                 <RemediationBtn dataProvider={ this.dataProviderA2 }>A2</RemediationBtn>
 
@@ -160,7 +164,7 @@ class TestButtons extends React.Component {
 
                 <RemediationBtn dataProvider={ this.dataProviderD1 }>D1</RemediationBtn>
                 <RemediationBtn dataProvider={ this.dataProviderD2 }>D2</RemediationBtn>
-            </React.Fragment>
+            </Split>
         );
     }
 }

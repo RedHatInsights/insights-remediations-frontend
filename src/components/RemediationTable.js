@@ -10,7 +10,7 @@ import {
     ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
 import { sortable, Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
-import { EmptyTable, Pagination, SimpleTableFilter, TableToolbar } from '@red-hat-insights/insights-frontend-components';
+import { EmptyTable, Pagination, SimpleTableFilter, Skeleton, TableToolbar } from '@red-hat-insights/insights-frontend-components';
 import { WrenchIcon } from '@patternfly/react-icons';
 
 import { appUrl } from '../Utilities/urls';
@@ -33,10 +33,7 @@ function buildName (name, id) {
 function skeleton () {
     return (
         <React.Fragment>
-            <TableToolbar
-                className='ins-c-remediations-details-table__toolbar'
-                results={ 0 }
-                selected={ 0 }>
+            <TableToolbar className='ins-c-remediations-details-table__toolbar'>
                 <ToolbarGroup>
                     <ToolbarItem>
                         <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" aria-label="Search Playbooks Loading" />
@@ -57,6 +54,7 @@ function skeleton () {
                         </Dropdown>
                     </ToolbarItem>
                 </ToolbarGroup>
+                <Skeleton size='sm'/>
             </TableToolbar>
             <SkeletonTable/>
         </React.Fragment>

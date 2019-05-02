@@ -71,7 +71,7 @@ class Home extends Component {
         return (
             <React.Fragment>
                 <PageHeader>
-                    <PageHeaderTitle title='Remediations'></PageHeaderTitle>
+                    <PageHeaderTitle title='Remediations'/>
                     <TestButtons onRemediationCreated={ this.onRemediationCreated } />
                 </PageHeader>
                 <Main>

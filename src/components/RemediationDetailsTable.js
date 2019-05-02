@@ -6,13 +6,11 @@ import orderBy from 'lodash/orderBy';
 
 import {
     Button,
-    Card, CardBody,
-    Grid, GridItem,
     ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
 
 import { sortable, TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
-import { SimpleTableFilter, TableToolbar, EmptyTable, Skeleton, Pagination } from '@red-hat-insights/insights-frontend-components';
+import { SimpleTableFilter, TableToolbar, EmptyTable, Pagination } from '@red-hat-insights/insights-frontend-components';
 
 import { getIssueApplication, getSystemName, includesIgnoreCase } from '../Utilities/model';
 import { buildInventoryUrl, getInventoryTabForIssue, buildIssueUrl } from '../Utilities/urls';
@@ -21,7 +19,6 @@ import './RemediationTable.scss';
 import { ConnectResolutionEditButton } from '../containers/ConnectedComponents';
 import { DeleteActionsButton } from '../containers/DeleteButtons';
 import { isBeta } from '../config';
-import ResolutionStatusIcon from './ResolutionStatusIcon';
 
 import { useExpander, useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
 import * as debug from '../Utilities/debug';
@@ -70,7 +67,7 @@ const SORTING_ITERATEES = [
     i => getIssueApplication(i)
 ];
 
-const buildRow = (remediation, status) => (issue, index) => {
+const buildRow = (remediation) => (issue, index) => {
     return [
         {
             isOpen: false,
@@ -97,41 +94,25 @@ const buildRow = (remediation, status) => (issue, index) => {
             cells: [{
                 title:
                     <React.Fragment>
-                        <Card key={ index } className='ins-c-system-card'>
-                            <CardBody>
-                                <Grid>
-                                    <GridItem span={ isBeta ? 9 : 12 }> System </GridItem>
-                                    {
-                                        isBeta &&
-                                        <GridItem span={ 3 }> Status </GridItem>
-                                    }
-                                </Grid>
-                            </CardBody>
-                        </Card>
-                        { orderBy(issue.systems, [ s => getSystemName(s), s => s.id ]).map(system => (
-                            <Card key={ system.id } className='ins-c-system-card'>
-                                <CardBody>
-                                    <Grid>
-                                        <GridItem span={ isBeta ? 9 : 12 }>
-                                            <a href={ buildInventoryUrl(system.id, getInventoryTabForIssue(issue)) }>
-                                                { getSystemName(system) }
-                                            </a>
-                                        </GridItem>
-                                        {
-                                            isBeta &&
-                                            <GridItem span={ 3 }>
-                                                {
-                                                    status.status !== 'fulfilled' ?
-                                                        <Skeleton size='xs' /> :
-                                                        <ResolutionStatusIcon status={ status.data.data[issue.id][system.id] } />
-                                                }
-                                            </GridItem>
-                                        }
-
-                                    </Grid>
-                                </CardBody>
-                            </Card>
-                        )) }
+                        <Table
+                            variant={ TableVariant.compact }
+                            aria-label="Systems"
+                            cells={ [{
+                                title: 'Systems'
+                            }] }
+                            rows={ orderBy(issue.systems, [ s => getSystemName(s), s => s.id ]).map(system => ({
+                                id: system.id,
+                                cells: [{
+                                    title:
+                                        <a href={ buildInventoryUrl(system.id, getInventoryTabForIssue(issue)) }>
+                                            { getSystemName(system) }
+                                        </a>
+                                }]
+                            })) }
+                        >
+                            <TableHeader />
+                            <TableBody />
+                        </Table>
                     </React.Fragment>
             }]
         }

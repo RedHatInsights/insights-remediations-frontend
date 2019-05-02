@@ -46,8 +46,8 @@ const RemediationDetailsSkeleton = () => {
                     </LevelItem>
                     <LevelItem>
                         <Split gutter="md">
-                            <SplitItem><Button isDisabled> Download Playbook </Button></SplitItem>
-                            <SplitItem><Button isDisabled> Delete </Button></SplitItem>
+                            <SplitItem><Button isDisabled variant='link'> Download Playbook </Button></SplitItem>
+                            <SplitItem><Button isDisabled variant='link'> Delete </Button></SplitItem>
                         </Split>
                     </LevelItem>
                 </Level>
@@ -131,10 +131,7 @@ const RemediationDetailsSkeleton = () => {
                         </Grid>
                     </StackItem>
                     <StackItem>
-                        <TableToolbar
-                            className='ins-c-remediations-details-table__toolbar'
-                            results={ 0 }
-                            selected={ 0 }>
+                        <TableToolbar className='ins-c-remediations-details-table__toolbar'>
                             <ToolbarGroup>
                                 <ToolbarItem>
                                     <SimpleTableFilter
@@ -157,6 +154,7 @@ const RemediationDetailsSkeleton = () => {
                                     <Button variant='link' isDisabled> Remove action </Button>
                                 </ToolbarItem>
                             </ToolbarGroup>
+                            <Skeleton size='sm' />
                         </TableToolbar>
                         <SkeletonTable/>
                     </StackItem>

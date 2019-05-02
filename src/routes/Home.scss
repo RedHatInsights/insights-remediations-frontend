@@ -5,6 +5,11 @@
         display: flex;
         justify-content: space-between;
     }
+
+    section.pf-c-page-header.pf-c-page__main-section {
+        display: inline-flex;
+        justify-content: space-between;
+    }
 }
 
 .ins-c-plan-modal {
@@ -12,3 +17,4 @@
         > * + * { @include rem('margin-top', 20px); }
     }
 }
+
