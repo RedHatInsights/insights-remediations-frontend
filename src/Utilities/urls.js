@@ -41,7 +41,7 @@ export function buildIssueUrl (id) {
         case 'vulnerabilities':
             return appUrl(parts[0]).segment('cves').segment(parts[1]).toString();
         default:
-            throw new Error(`Unsupported issue id: ${id}`);
+            return null;
     }
 }
 
