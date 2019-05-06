@@ -21,6 +21,7 @@ import SkeletonTable from '../skeletons/SkeletonTable';
 import { ToolbarActions } from '../containers/ToolbarActions';
 import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
 import * as debug from '../Utilities/debug';
+import keyBy from 'lodash/keyBy';
 
 import { downloadPlaybook } from '../api';
 
@@ -85,6 +86,19 @@ function empty () {
     );
 }
 
+function downloadAll (selectedIds, data) {
+    const byId = keyBy(data, r => r.id);
+    selectedIds.reduce((result, id) => {
+        const remediation = byId[id];
+
+        if (remediation && remediation.issue_count === 0) {
+            return result;
+        }
+
+        return result.then(() => downloadPlaybook(id));
+    }, Promise.resolve());
+}
+
 const SORTING_ITERATEES = [ null, 'name', 'system_count', 'issue_count', 'updated_at' ];
 
 function RemediationTable (props) {
@@ -144,8 +158,7 @@ function RemediationTable (props) {
                         <Button
                             variant='link'
                             isDisabled={ !selectedIds.length }
-                            // If a user has a popup blocker, they may only get the last one selected
-                            onClick= { () => selectedIds.forEach(r => downloadPlaybook(r)) }
+                            onClick= { () => downloadAll(selectedIds, value.data) }
                         >
                             Download Playbook
                         </Button>

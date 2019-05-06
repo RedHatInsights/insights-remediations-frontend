@@ -84,5 +84,17 @@ export const remediations = new RemediationsApi(undefined, API_BASE, instance);
 export const resolutions = new ResolutionsApi(undefined, API_BASE, instance);
 
 export function downloadPlaybook (id) {
-    window.open(API_BASE + new RemediationsApiAxiosParamCreator().getRemediationPlaybook(id).url);
+    return new Promise((resolve, reject) => {
+        const tab = window.open(API_BASE + new RemediationsApiAxiosParamCreator().getRemediationPlaybook(id).url);
+        if (!tab) {
+            return reject();
+        }
+
+        const handle = setInterval(() => {
+            if (tab.closed) {
+                clearInterval(handle);
+                resolve();
+            }
+        }, 500);
+    });
 }
