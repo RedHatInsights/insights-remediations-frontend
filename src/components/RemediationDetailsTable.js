@@ -67,8 +67,8 @@ const SORTING_ITERATEES = [
     i => getIssueApplication(i)
 ];
 
-const buildRow = (remediation) => (issue, index) => {
-    return [
+const buildRow = (remediation, expanded) => (issue, index) => {
+    const row = [
         {
             isOpen: false,
             id: issue.id,
@@ -88,8 +88,11 @@ const buildRow = (remediation) => (issue, index) => {
                     props: { className: 'ins-m-nowrap' }
                 }
             ]
-        },
-        {
+        }
+    ];
+
+    if (issue.id === expanded) {
+        row.push({
             parent: index * 2,
             cells: [{
                 title:
@@ -115,8 +118,17 @@ const buildRow = (remediation) => (issue, index) => {
                         </Table>
                     </React.Fragment>
             }]
-        }
-    ];
+        });
+    } else {
+        row.push({
+            parent: index * 2,
+            cells: [{
+                title: 'Loading'
+            }]
+        });
+    }
+
+    return row;
 };
 
 function RemediationDetailsTable (props) {
@@ -133,7 +145,7 @@ function RemediationDetailsTable (props) {
     const sorted = orderBy(filtered, [ SORTING_ITERATEES[ sorter.sortBy] ], [ sorter.sortDir ]);
     const paged = sorted.slice(pagination.offset, pagination.offset + pagination.pageSize);
 
-    const rows = flatMap(paged, buildRow(props.remediation, props.status));
+    const rows = flatMap(paged, buildRow(props.remediation, expander.value));
 
     expander.register(rows);
     selector.register(rows);
