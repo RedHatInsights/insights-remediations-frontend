@@ -25,7 +25,7 @@ export function getInventoryTabForIssue ({ id }) {
             return 'insights';
         case 'vulnerabilities':
             return 'vulnerabilities';
-        case 'compliance':
+        case 'ssg':
             return 'compliance';
         default:
             return 'general_information';
@@ -52,6 +52,7 @@ export function appUrl (app) {
         case 'vulnerabilities':
             return urijs(document.baseURI).segment('rhel').segment('vulnerability');
         case 'compliance':
+        case 'ssg':
             return urijs(document.baseURI).segment('rhel').segment('compliance');
         case 'inventory':
             return urijs(document.baseURI).segment(getGroup()).segment('inventory');
