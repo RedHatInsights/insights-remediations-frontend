@@ -13,7 +13,7 @@ import { sortable, TableHeader, Table, TableBody, TableVariant } from '@patternf
 import { SimpleTableFilter, TableToolbar, EmptyTable, Pagination } from '@red-hat-insights/insights-frontend-components';
 
 import { getIssueApplication, getSystemName, includesIgnoreCase } from '../Utilities/model';
-import { buildInventoryUrl, getInventoryTabForIssue, buildIssueUrl } from '../Utilities/urls';
+import { inventoryUrlBuilder, buildIssueUrl } from '../Utilities/urls';
 import './RemediationTable.scss';
 
 import { ConnectResolutionEditButton } from '../containers/ConnectedComponents';
@@ -92,6 +92,17 @@ const buildRow = (remediation, expanded) => (issue, index) => {
     ];
 
     if (issue.id === expanded) {
+        const urlBuilder = inventoryUrlBuilder(issue);
+        const rows = orderBy(issue.systems, [ s => getSystemName(s), s => s.id ]).map(system => ({
+            id: system.id,
+            cells: [{
+                title:
+                    <a href={ urlBuilder(system.id) }>
+                        { getSystemName(system) }
+                    </a>
+            }]
+        }));
+
         row.push({
             parent: index * 2,
             cells: [{
@@ -103,15 +114,7 @@ const buildRow = (remediation, expanded) => (issue, index) => {
                             cells={ [{
                                 title: 'Systems'
                             }] }
-                            rows={ orderBy(issue.systems, [ s => getSystemName(s), s => s.id ]).map(system => ({
-                                id: system.id,
-                                cells: [{
-                                    title:
-                                        <a href={ buildInventoryUrl(system.id, getInventoryTabForIssue(issue)) }>
-                                            { getSystemName(system) }
-                                        </a>
-                                }]
-                            })) }
+                            rows={ rows }
                         >
                             <TableHeader />
                             <TableBody />

@@ -32,6 +32,14 @@ export function getInventoryTabForIssue ({ id }) {
     }
 }
 
+export function inventoryUrlBuilder (issue) {
+    const tab = getInventoryTabForIssue(issue);
+    const base = appUrl('inventory').toString();
+
+    // intentionally not using urijs here to optimize for large number of systems
+    return systemId => `${base}/${systemId}/${tab}`;
+}
+
 export function buildIssueUrl (id) {
     const parts = id.split(':');
 
