@@ -13,11 +13,11 @@ function computeRebootStats (remediation) {
     const rebootRequired = issuesToSystemsIds(remediation.issues.filter(issue => issue.resolution.needs_reboot));
 
     return {
+        ...remediation,
         stats: {
             systemsWithReboot: rebootRequired.length,
             systemsWithoutReboot: systems.length - rebootRequired.length
-        },
-        ...remediation
+        }
     };
 }
 
@@ -72,12 +72,14 @@ const reducers = {
             return { status, remediation };
         },
         [ACTION_TYPES.DELETE_REMEDIATION_ISSUE_FULFILLED]: (state, action) => {
+            const issues = state.remediation.issues.filter(issue => issue.id !== action.payload.issueId);
             if (action.payload.id === state.remediation.id) {
                 return {
                     status: 'fulfilled',
                     remediation: computeRebootStats({
                         ...state.remediation,
-                        issues: state.remediation.issues.filter(issue => issue.id !== action.payload.issueId)
+                        issues,
+                        needs_reboot: issues.some(issue => issue.resolution.needs_reboot) // eslint-disable-line camelcase
                     })
                 };
             }
