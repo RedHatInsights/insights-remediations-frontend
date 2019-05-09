@@ -7,7 +7,7 @@ import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
-import { isBeta, isDemo } from '../config';
+import { isBeta } from '../config';
 import ActionsResolvedCard from '../components/ActionsResolvedCard';
 
 import {
@@ -34,8 +34,7 @@ class RemediationDetails extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            autoReboot: true,
-            demo: false
+            autoReboot: true
         };
         this.id = this.props.match.params.id;
         this.loadRemediation = this.props.loadRemediation.bind(this, this.id);
@@ -59,9 +58,6 @@ class RemediationDetails extends Component {
         if (isBeta) {
             this.loadRemediationStatus();
         }
-
-        const demo = await isDemo();
-        demo && this.setState({ demo });
     }
 
     render() {
@@ -88,14 +84,6 @@ class RemediationDetails extends Component {
                         </LevelItem>
                         <LevelItem>
                             <Split gutter="md">
-                                {
-                                    this.state.demo &&
-                                    <SplitItem>
-                                        <Link to='/fixit'>
-                                            <Button variant='secondary'>Execute Playbook</Button>
-                                        </Link>
-                                    </SplitItem>
-                                }
                                 <SplitItem>
                                     <Button
                                         isDisabled={ !remediation.issues.length }

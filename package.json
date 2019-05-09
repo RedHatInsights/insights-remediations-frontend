@@ -15,7 +15,6 @@
     "babel-polyfill": "^6.26.0",
     "classnames": "^2.2.5",
     "create-react-class": "^15.6.3",
-    "message-fsm": "^1.0.1",
     "react-hooks-testing-library": "^0.3.6",
     "urijs": "^1.19.1"
   },
