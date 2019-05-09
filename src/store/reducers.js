@@ -59,17 +59,13 @@ const reducers = {
             status: 'rejected'
         }),
         [ACTION_TYPES.PATCH_REMEDIATION_FULFILLED]: ({ status, remediation }, action) => {
-            if (action.payload.auto_reboot !== undefined) {
-                return {
-                    status,
-                    remediation: {
-                        ...remediation,
-                        auto_reboot: action.payload.auto_reboot // eslint-disable-line camelcase
-                    }
-                };
-            }
-
-            return { status, remediation };
+            return {
+                status,
+                remediation: {
+                    ...remediation,
+                    ...action.payload
+                }
+            };
         },
         [ACTION_TYPES.DELETE_REMEDIATION_ISSUE_FULFILLED]: (state, action) => {
             const issues = state.remediation.issues.filter(issue => issue.id !== action.payload.issueId);
