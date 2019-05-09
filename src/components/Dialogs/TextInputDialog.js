@@ -11,7 +11,7 @@ import {
 export default function TextInputDialog (props) {
     const [ value, setValue ] = useState(props.value || '');
     const [ valid, setValid ] = useState(true);
-    const { title, onCancel, onSubmit, ariaLabel } = props;
+    const { title, onCancel, onSubmit, ariaLabel, className } = props;
 
     function onChange (value) {
         setValue(value);
@@ -34,7 +34,8 @@ export default function TextInputDialog (props) {
                     Save
                 </Button>
             ] }
-            isLarge
+            isSmall
+            className = { className }
         >
             <FormGroup
                 fieldId="remediation-name"
@@ -60,6 +61,7 @@ TextInputDialog.propTypes = {
     onSubmit: PropTypes.func,
     ariaLabel: PropTypes.string,
     value: PropTypes.string,
+    className: PropTypes.string,
     pattern: PropTypes.instanceOf(RegExp)
 };
 
