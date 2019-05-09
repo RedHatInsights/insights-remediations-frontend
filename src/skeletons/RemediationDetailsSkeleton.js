@@ -15,6 +15,7 @@ import SkeletonTable from './SkeletonTable';
 import {
     Grid, GridItem,
     Card, CardHeader, CardBody,
+    Dropdown, KebabToggle,
     // Progress, ProgressMeasureLocation,
     Stack, StackItem,
     Level, LevelItem,
@@ -47,7 +48,13 @@ const RemediationDetailsSkeleton = () => {
                     <LevelItem>
                         <Split gutter="md">
                             <SplitItem><Button isDisabled variant='link'> Download Playbook </Button></SplitItem>
-                            <SplitItem><Button isDisabled variant='link'> Delete </Button></SplitItem>
+                            <SplitItem>
+                                <Dropdown
+                                    toggle={ <KebabToggle isDisabled={ true } /> }
+                                    isOpen={ false }
+                                    isPlain
+                                />
+                            </SplitItem>
                         </Split>
                     </LevelItem>
                 </Level>

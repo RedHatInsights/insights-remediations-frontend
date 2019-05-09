@@ -6,7 +6,7 @@ import { formatUser, formatDate } from '../Utilities/model';
 import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
-import { DeleteRemediationButton } from '../containers/DeleteButtons';
+import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
 import { isBeta, isDemo } from '../config';
 import ActionsResolvedCard from '../components/ActionsResolvedCard';
 
@@ -103,7 +103,9 @@ class RemediationDetails extends Component {
                                         Download Playbook
                                     </Button>
                                 </SplitItem>
-                                <SplitItem><DeleteRemediationButton remediation={ remediation }/></SplitItem>
+                                <SplitItem>
+                                    <RemediationDetailsDropdown remediation={ remediation } />
+                                </SplitItem>
                             </Split>
                         </LevelItem>
                     </Level>
