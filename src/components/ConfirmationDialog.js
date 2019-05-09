@@ -16,7 +16,7 @@ export default function ConfirmationDialog ({
     return (
         <Modal
             className="ins-c-dialog"
-            isLarge={ true }
+            width={ '50%' }
             title={ title }
             isOpen={ isOpen }
             onClose={ () => onClose(false) }
