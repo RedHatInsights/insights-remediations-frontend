@@ -81,6 +81,30 @@ const reducers = {
             }
 
             return state;
+        },
+        [ACTION_TYPES.DELETE_REMEDIATION_ISSUE_SYSTEM_FULFILLED]: (state, action) => {
+            if (action.payload.id !== state.remediation.id) {
+                return state;
+            }
+
+            const issues = state.remediation.issues.filter(issue => {
+                if (issue.id !== action.payload.issue) {
+                    return true;
+                }
+
+                // if the action only had 1 systems, which is now gone, remove the action also
+                issue.systems = issue.systems.filter(system => system.id !== action.payload.system);
+                return issue.systems.length > 0;
+            });
+
+            return {
+                status: 'fulfilled',
+                remediation: computeRebootStats({
+                    ...state.remediation,
+                    issues,
+                    needs_reboot: issues.some(issue => issue.resolution.needs_reboot) // eslint-disable-line camelcase
+                })
+            };
         }
     }, {
         status: 'initial'

@@ -1,3 +1,14 @@
+@import '@red-hat-insights/insights-frontend-components/Utilities/_mixins.scss';
+
 .ins-c-remediation-details-table--empty {
     text-align: center;
+}
+
+.ins-c-remediations-details-table-systems-table {
+
+    table-layout: fixed;
+
+    thead tr th:nth-child(2) {
+        @include rem('width', 72px);
+    }
 }

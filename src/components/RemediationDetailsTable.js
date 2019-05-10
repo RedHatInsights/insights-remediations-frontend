@@ -19,6 +19,7 @@ import './RemediationTable.scss';
 import { ConnectResolutionEditButton } from '../containers/ConnectedComponents';
 import { DeleteActionsButton } from '../containers/DeleteButtons';
 import { isBeta } from '../config';
+import RemediationDetailsSystemDropdown from './RemediationDetailsSystemDropdown';
 
 import { useExpander, useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
 import * as debug from '../Utilities/debug';
@@ -100,6 +101,8 @@ const buildRow = (remediation, expanded) => (issue, index) => {
                     <a href={ urlBuilder(system.id) }>
                         { getSystemName(system) }
                     </a>
+            }, {
+                title: <RemediationDetailsSystemDropdown remediation={ remediation } issue={ issue } system={ system } />
             }]
         }));
 
@@ -110,9 +113,12 @@ const buildRow = (remediation, expanded) => (issue, index) => {
                     <React.Fragment>
                         <Table
                             variant={ TableVariant.compact }
+                            className='ins-c-remediations-details-table-systems-table'
                             aria-label="Systems"
                             cells={ [{
                                 title: 'Systems'
+                            }, {
+                                title: ''
                             }] }
                             rows={ rows }
                         >
