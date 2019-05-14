@@ -36,11 +36,13 @@ export function includesIgnoreCase(text, included) {
     return text.toLowerCase().includes(included.toLowerCase());
 }
 
+const DATE_FORMAT = 'DD MMM YYYY, hh:mm UTC';
+
 export function formatDate (date) {
     return (
-        <Tooltip content={ moment(date).format('LLL') } >
+        <Tooltip content={ moment.utc(date).format(DATE_FORMAT) } >
             <span>
-                { moment(date).fromNow() }
+                { moment.utc(date).fromNow() }
             </span>
         </Tooltip>
     );
