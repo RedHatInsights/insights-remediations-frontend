@@ -135,12 +135,12 @@ export function usePagination () {
         reset,
         props: {
             page,
-            itemsPerPage: pageSize,
-            onSetPage (value) {
+            perPage: pageSize,
+            onSetPage (event, value) {
                 cb(value, pageSize);
                 setPage(value);
             },
-            onPerPageSelect (value) {
+            onPerPageSelect (event, value) {
                 cb(page, value);
                 reset();
                 setPageSize(value);

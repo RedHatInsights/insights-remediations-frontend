@@ -6,11 +6,12 @@ import {
     Bullseye,
     EmptyState, EmptyStateIcon, EmptyStateBody,
     Dropdown, KebabToggle,
+    Pagination,
     Title, Button,
     ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
 import { sortable, Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
-import { EmptyTable, Pagination, SimpleTableFilter, Skeleton, TableToolbar } from '@red-hat-insights/insights-frontend-components';
+import { EmptyTable, SimpleTableFilter, Skeleton, TableToolbar } from '@red-hat-insights/insights-frontend-components';
 import { WrenchIcon } from '@patternfly/react-icons';
 
 import { appUrl } from '../Utilities/urls';
@@ -172,10 +173,11 @@ function RemediationTable (props) {
                     </ToolbarItem>
                 </ToolbarGroup>
                 <Pagination
-                    numberOfItems={ value.meta.total }
+                    variant='top'
+                    dropDirection='down'
+                    itemCount={ value.meta.total }
                     { ...pagination.props }
                     { ...debug.pagination }
-                    direction='down'
                 />
             </TableToolbar>
             {
@@ -211,7 +213,9 @@ function RemediationTable (props) {
                 rows.length > 0 &&
                 <TableToolbar isFooter>
                     <Pagination
-                        numberOfItems={ value.meta.total }
+                        variant='bottom'
+                        dropDirection='up'
+                        itemCount={ value.meta.total }
                         { ...pagination.props }
                         { ...debug.pagination }
                     />
