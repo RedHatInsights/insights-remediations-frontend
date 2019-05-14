@@ -6,11 +6,12 @@ import orderBy from 'lodash/orderBy';
 
 import {
     Button,
+    Pagination,
     ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
 
 import { sortable, TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
-import { SimpleTableFilter, TableToolbar, EmptyTable, Pagination } from '@red-hat-insights/insights-frontend-components';
+import { SimpleTableFilter, TableToolbar, EmptyTable } from '@red-hat-insights/insights-frontend-components';
 
 import { getIssueApplication, getSystemName, includesIgnoreCase } from '../Utilities/model';
 import { inventoryUrlBuilder, buildIssueUrl } from '../Utilities/urls';
@@ -188,10 +189,11 @@ function RemediationDetailsTable (props) {
                     </ToolbarItem>
                 </ToolbarGroup>
                 <Pagination
-                    numberOfItems={ filtered.length }
+                    variant='top'
+                    dropDirection='down'
+                    itemCount={ filtered.length }
                     { ...pagination.props }
                     { ...debug.pagination }
-                    direction='down'
                 />
             </TableToolbar>
             {
@@ -233,7 +235,9 @@ function RemediationDetailsTable (props) {
                 rows.length > 0 &&
                 <TableToolbar isFooter>
                     <Pagination
-                        numberOfItems={ filtered.length }
+                        variant='bottom'
+                        dropDirection='up'
+                        itemCount={ filtered.length }
                         { ...pagination.props }
                         { ...debug.pagination }
                     />
