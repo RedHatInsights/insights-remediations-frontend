@@ -121,6 +121,7 @@ export function useExpander (rowToId = row => row.id) {
 
 export function usePagination () {
     const [ page, setPage ] = useState(1);
+    const [ pageDebounced, setPageDebounced ] = useState(1);
     const [ pageSize, setPageSize ] = useState(10);
 
     const reset = () => setPage(1);
@@ -128,6 +129,7 @@ export function usePagination () {
 
     return {
         page,
+        pageDebounced,
         offset: (page - 1) * pageSize,
         pageSize,
         setPage,
@@ -137,8 +139,11 @@ export function usePagination () {
             page,
             perPage: pageSize,
             onSetPage (event, value) {
-                cb(value, pageSize);
                 setPage(value);
+                event.target.tagName === 'INPUT' ?
+                    debounce(setPageDebounced, SEARCH_DEBOUNCE_DELAY)(value) :
+                    setPageDebounced(value);
+                cb(value, pageSize);
             },
             onPerPageSelect (event, value) {
                 cb(page, value);

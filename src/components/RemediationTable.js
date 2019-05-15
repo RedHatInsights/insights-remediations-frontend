@@ -116,7 +116,7 @@ function RemediationTable (props) {
         props.loadRemediations(column, sorter.sortDir, filter.value, pagination.pageSize, pagination.offset);
     }
 
-    useEffect(loadRemediations, [ sorter.sortBy, sorter.sortDir, filter.value, pagination.pageSize, pagination.offset ]);
+    useEffect(loadRemediations, [ sorter.sortBy, sorter.sortDir, filter.value, pagination.pageSize, pagination.pageDebounced ]);
 
     // Skeleton Loading
     if (status !== 'fulfilled') {

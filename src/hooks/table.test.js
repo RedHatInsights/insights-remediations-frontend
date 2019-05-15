@@ -128,6 +128,12 @@ describe('table hooks', () => {
     });
 
     describe('usePagination', function () {
+        const event = {
+            target: {
+                tagName: 'BUTTON'
+            }
+        };
+
         test('default', () => {
             const { result } = renderHook(() => usePagination());
 
@@ -139,7 +145,7 @@ describe('table hooks', () => {
         test('onSetPage', () => {
             const { result } = renderHook(() => usePagination());
 
-            act(() => result.current.props.onSetPage(null, 3));
+            act(() => result.current.props.onSetPage(event, 3));
 
             expect(result.current.page).toEqual(3);
             expect(result.current.pageSize).toEqual(10);
@@ -149,7 +155,7 @@ describe('table hooks', () => {
         test('reset', () => {
             const { result } = renderHook(() => usePagination());
 
-            act(() => result.current.props.onSetPage(null, 3));
+            act(() => result.current.props.onSetPage(event, 3));
             act(() => result.current.reset());
 
             expect(result.current.page).toEqual(1);
@@ -158,8 +164,8 @@ describe('table hooks', () => {
         test('onSetPerPage', () => {
             const { result } = renderHook(() => usePagination());
 
-            act(() => result.current.props.onPerPageSelect(null, 50));
-            act(() => result.current.props.onSetPage(null, 3));
+            act(() => result.current.props.onPerPageSelect(event, 50));
+            act(() => result.current.props.onSetPage(event, 3));
 
             expect(result.current.page).toEqual(3);
             expect(result.current.pageSize).toEqual(50);
@@ -169,8 +175,8 @@ describe('table hooks', () => {
         test('onSetPerPage resets page', () => {
             const { result } = renderHook(() => usePagination());
 
-            act(() => result.current.props.onSetPage(null, 3));
-            act(() => result.current.props.onPerPageSelect(null, 50));
+            act(() => result.current.props.onSetPage(event, 3));
+            act(() => result.current.props.onPerPageSelect(event, 50));
 
             expect(result.current.page).toEqual(1);
             expect(result.current.pageSize).toEqual(50);
