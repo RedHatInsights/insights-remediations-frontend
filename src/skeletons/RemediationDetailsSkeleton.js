@@ -8,7 +8,7 @@ import {
     Skeleton,
     TableToolbar,
     SimpleTableFilter
-} from '@red-hat-insights/insights-frontend-components';
+} from '@redhat-cloud-services/frontend-components';
 
 import SkeletonTable from './SkeletonTable';
 

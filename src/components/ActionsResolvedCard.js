@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import {
     Skeleton
-} from '@red-hat-insights/insights-frontend-components';
+} from '@redhat-cloud-services/frontend-components';
 
 import {
     Card, CardHeader, CardBody,

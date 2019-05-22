@@ -1,6 +1,6 @@
 
 import { ACTION_TYPES } from '../constants';
-import { applyReducerHash } from '@red-hat-insights/insights-frontend-components/Utilities/ReducerRegistry';
+import { applyReducerHash } from '@redhat-cloud-services/frontend-components-utilities/files/ReducerRegistry';
 import flatMap from 'lodash/flatMap';
 import uniq from 'lodash/uniq';
 

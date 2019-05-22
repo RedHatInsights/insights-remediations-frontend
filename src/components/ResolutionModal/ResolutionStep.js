@@ -13,7 +13,7 @@ import {
 import {
     Reboot,
     Skeleton
-} from '@red-hat-insights/insights-frontend-components';
+} from '@redhat-cloud-services/frontend-components';
 
 import './ChooseResolutionModal.scss';
 

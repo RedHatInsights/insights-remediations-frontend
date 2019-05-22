@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Table, TableHeader, TableVariant } from '@patternfly/react-table';
-import { Skeleton, TableToolbar, Spinner, EmptyTable } from '@red-hat-insights/insights-frontend-components';
+import { Skeleton, TableToolbar, Spinner, EmptyTable } from '@redhat-cloud-services/frontend-components';
 
 import './SkeletonTable.scss';
 
