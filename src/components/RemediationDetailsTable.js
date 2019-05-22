@@ -11,7 +11,7 @@ import {
 } from '@patternfly/react-core';
 
 import { sortable, TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
-import { SimpleTableFilter, TableToolbar, EmptyTable } from '@red-hat-insights/insights-frontend-components';
+import { SimpleTableFilter, TableToolbar, EmptyTable } from '@redhat-cloud-services/frontend-components';
 
 import { getIssueApplication, getSystemName, includesIgnoreCase } from '../Utilities/model';
 import { inventoryUrlBuilder, buildIssueUrl } from '../Utilities/urls';

@@ -5,11 +5,11 @@ import { connect } from 'react-redux';
 
 import * as actions from '../actions';
 
-import { Main, PageHeader, PageHeaderTitle, Wizard } from '@red-hat-insights/insights-frontend-components';
+import { Main, PageHeader, PageHeaderTitle, Wizard } from '@redhat-cloud-services/frontend-components';
 import RemediationTable from '../components/RemediationTable';
 import TestButtons from '../components/TestButtons';
 
-import { addNotification } from '@red-hat-insights/insights-frontend-components/components/Notifications';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
 
 // Wizard Steps
 import PlanName from '../components/CreatePlanModal/ModalSteps/PlanName';

@@ -1,4 +1,4 @@
-@import '@red-hat-insights/insights-frontend-components/Utilities/_mixins.scss';
+@import '@redhat-cloud-services/frontend-components-utilities/files/Utilities/_mixins.scss';
 
 .ins-c-resolution-modal {
     .ins-c-resolution-choice__details { @include rem("margin-left", 5px); }

@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 
 import * as actions from '../actions';
 
-import { Wizard } from '@red-hat-insights/insights-frontend-components';
+import { Wizard } from '@redhat-cloud-services/frontend-components';
 import { Button } from '@patternfly/react-core';
 
-import { addNotification } from '@red-hat-insights/insights-frontend-components/components/Notifications';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
 
 // Wizard Steps
 import PlanName from '../components/CreatePlanModal/ModalSteps/PlanName';

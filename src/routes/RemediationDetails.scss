@@ -1,4 +1,4 @@
-@import '@red-hat-insights/insights-frontend-components/Utilities/_mixins.scss';
+@import '@redhat-cloud-services/frontend-components-utilities/files/Utilities/_mixins.scss';
 
 
 .page__remediation-details {
@@ -41,7 +41,7 @@
     }
     // Remediations Details Card
     .ins-c-card__plan-details {
-        .pf-l-stack__item:not(.ins-m-border-top){ 
+        .pf-l-stack__item:not(.ins-m-border-top){
             @include rem('margin-bottom', 5px);
         }
         .pf-l-stack__item .ins-m-border-top{

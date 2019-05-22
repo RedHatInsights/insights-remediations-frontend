@@ -4,16 +4,13 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Routes } from './Routes';
 import './App.scss';
-import { register } from './store';
 
 // Notifications
-import { NotificationsPortal, notifications } from '@red-hat-insights/insights-frontend-components/components/Notifications';
-import '@red-hat-insights/insights-frontend-components/components/Notifications.css';
+import { NotificationsPortal } from '@redhat-cloud-services/frontend-components-notifications';
 
 class App extends Component {
 
     componentDidMount () {
-        register({ notifications });
         insights.chrome.init();
         insights.chrome.identifyApp('remediations');
     }
