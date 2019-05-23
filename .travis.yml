@@ -2,16 +2,23 @@ language: node_js
 sudo: required
 notifications:
   email: false
+  slack:
+    rooms:
+      - secure: oj1AuFFwUL2qjSMRtgUA7qftSMqbS+od/5mCStkVQ4Miu/byQHXbbtQQg6sgs/Xadwn1Yyw6P2GeQ5ZDAfygv5YJ2LB6FqjhtnRS/qT0R1jZYbYibCcUwWZ3VKByP2z39ufQL4ZSMsCRFnI4tTgR/taR6n82NwFiAGZJvUYBkUGIXIMqUZ0RYJkkZehK+gVTW3qUT4HZnU/bjamZgJu6UVVSQInHBri4o5mCUi1TDGlRzYHFqDpweO5X0UKce/g5brXjFLMkDupq/6maJlueP14hvJUKzfkoRCYjiKy4QdXVsB4eZlSP7yJu+zdVSfi6j+e//BsN94yGGCjasIr4z7rQXEyGdy8QwB16uD/I4yuc4KETm02qXkXcw5xDfIECa6lvoIH2gOQ+UaMX+a7MEP7w+xP5624q2B4CeqxcpJWaJnrFOThDB05p06MezbC20VMq+CCZGg9hBNjudiiwDqU4dScIiI6qGfPV2i1q3A1kmlNRkaWfk8XgNjQGj7gd4T26u9E0M7Nf8++itcydRsHCkdrpbWHxqh8CKiTvKC9SXqWhf/0tCaPYuCRfUqMpmSAFDt2MlVSsZJmIQObCcvSB4kEjBnCP1Zo60zY0eEQdDG/Xnn8k+ywCPVJ/tNw8WTDBbST3SJd6msqaW1LwKYYNGZk9OJd3+5qDliK6788=
 node_js:
 - '10'
 install:
-  - npm ci
-script:
-  - npm run travis:verify
-after_success:
-- curl -sSL https://raw.githubusercontent.com/RedHatInsights/insights-frontend-builder-common/master/src/bootstrap.sh | bash -s
+- npm ci
+jobs:
+  include:
+  - stage: Lint
+    script: npm run lint
+  - stage: Test
+    script: npm run test
+  - stage: Deploy
+    script: npm run build && curl -sSL https://raw.githubusercontent.com/RedHatInsights/insights-frontend-builder-common/master/src/bootstrap.sh | bash -s
 env:
-    global:
-    - REPO="git@github.com:RedHatInsights/insights-remediations-frontend-build"
-    - REPO_DIR="insights-remediations-frontend-build"
-    - BRANCH=${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}
+  global:
+  - REPO="git@github.com:RedHatInsights/insights-remediations-frontend-build"
+  - REPO_DIR="insights-remediations-frontend-build"
+  - BRANCH=${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}
