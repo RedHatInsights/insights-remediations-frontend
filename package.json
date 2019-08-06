@@ -117,7 +117,8 @@
     "start": "NODE_ENV=development webpack-serve --config config/dev.webpack.config.js",
     "travis:build": "NODE_ENV=production webpack --config config/test.webpack.config.js",
     "travis:verify": "npm-run-all build:prod lint test",
-    "verify": "npm-run-all build lint test"
+    "verify": "npm-run-all build lint test",
+    "nightly": "npm run travis:verify"
   },
   "insights": {
     "appname": "remediations"
