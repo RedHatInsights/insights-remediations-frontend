@@ -45,7 +45,7 @@ export function buildIssueUrl (id) {
 
     switch (parts[0]) {
         case 'advisor':
-            return appUrl(parts[0]).segment('overview').segment('by_id').segment(parts[1]).toString();
+            return appUrl(parts[0]).segment('rules').segment('by_id').segment(parts[1]).toString();
         case 'vulnerabilities':
             return appUrl(parts[0]).segment('cves').segment(parts[1]).toString();
         default:
