@@ -26,7 +26,7 @@ import { useExpander, useFilter, usePagination, useSelector, useSorter } from '.
 import * as debug from '../Utilities/debug';
 
 import './RemediationDetailsTable.scss';
-import { CheckIcon } from '@patternfly/react-icons';
+import { CheckCircleIcon } from '@patternfly/react-icons';
 
 function resolutionDescriptionCell (remediation, issue) {
     if (issue.resolutions_available <= 1) {
@@ -53,10 +53,10 @@ function issueDescriptionCell (issue) {
 
 function needsRebootCell (needsReboot) {
     if (needsReboot) {
-        return <CheckIcon/>;
+        return <CheckCircleIcon className="ins-c-remediations-reboot-check-circle"/>;
     }
 
-    return (' ');
+    return ('No');
 }
 
 const SORTING_ITERATEES = [

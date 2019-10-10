@@ -12,3 +12,7 @@
         @include rem('width', 72px);
     }
 }
+
+.ins-c-remediations-reboot-check-circle {
+    fill: var(--pf-global--success-color--100);
+}
