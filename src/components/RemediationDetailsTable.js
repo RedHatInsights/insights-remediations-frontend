@@ -53,7 +53,7 @@ function issueDescriptionCell (issue) {
 
 function needsRebootCell (needsReboot) {
     if (needsReboot) {
-        return <CheckCircleIcon className="ins-c-remediations-reboot-check-circle"/>;
+        return <CheckCircleIcon className="ins-c-remediations-reboot-check-circle" aria-label="reboot required"/>;
     }
 
     return ('No');
