@@ -9,6 +9,7 @@ import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
 import { isBeta } from '../config';
 import ActionsResolvedCard from '../components/ActionsResolvedCard';
+import { ExecutePlaybookButton } from '../containers/ExecuteButtons'
 
 import {
     Main,
@@ -84,6 +85,11 @@ class RemediationDetails extends Component {
                         </LevelItem>
                         <LevelItem>
                             <Split gutter="md">
+                                <SplitItem>
+                                    <ExecutePlaybookButton
+                                        remediationId={ remediation.id }>
+                                    </ExecutePlaybookButton>
+                                </SplitItem>
                                 <SplitItem>
                                     <Button
                                         isDisabled={ !remediation.issues.length }

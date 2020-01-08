@@ -123,6 +123,22 @@ const reducers = {
         })
     }, {
         status: 'initial'
+    }),
+
+    connectionStatus: applyReducerHash({
+        [ACTION_TYPES.GET_CONNECTION_STATUS_PENDING]: () => ({
+            status: 'pending'
+        }),
+        [ACTION_TYPES.GET_CONNECTION_STATUS_FULFILLED]: (state, action) => ({
+            status: 'fulfilled',
+            data: action.payload.data
+        }),
+        [ACTION_TYPES.GET_CONNECTION_STATUS_REJECTED]: () => ({
+            status: 'rejected',
+            data: []
+        })
+    }, {
+        status: 'initial'
     })
 };
 
