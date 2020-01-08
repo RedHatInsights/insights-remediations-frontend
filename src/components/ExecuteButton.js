@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import PropTypes from 'prop-types';
+import { downloadPlaybook } from '../api';
 
 import {
     Button, Modal, TextContent, Text, TextVariants } from '@patternfly/react-core';
@@ -24,7 +25,12 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId }) 
             </div>)
             : status
     );
-    const rows = data.map(con => ({ cells: [ con.executor_name, con.system_count, { title: styledConnectionStatus(con.connection_status) }]}));
+    const relevantData = data.filter(con => con.executor_id);
+    const rows = relevantData.filter(con => con.executor_id).map(con =>
+        ({ cells: [ con.executor_name, con.system_count, { title: styledConnectionStatus(con.connection_status) }]})
+    );
+    const disableExecuteButton = relevantData.filter(con => con.connection_status !== 'connected').count > 0;
+    const systemCount = relevantData.reduce((acc, e) => e.system_count + acc, 0);
 
     return (
         <React.Fragment>
@@ -38,15 +44,26 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId }) 
                 title={ 'Execute playbook' }
                 isOpen={ open }
                 onClose={ () => setOpen(false) }
+                isFooterLeftAligned
                 actions={ [
-                    <Button key="cancel" variant="secondary" onClick={ () => setOpen(false) }>Cancel</Button>,
-                    <Button key="confirm" variant="primary" onClick={ () => setOpen(false) }>Confirm</Button>
+                    <Button
+                        key="confirm"
+                        variant="primary"
+                        disabled={ disableExecuteButton }
+                        onClick={ () => setOpen(false) }>
+                        { `Execute Playbook on ${systemCount} items` }
+                    </Button>,
+                    <Button
+                        key="download"
+                        variant='link' onClick={ () => downloadPlaybook(remediationId) }>
+                        Download Playbook
+                    </Button>
                 ] }
             >
                 <div>
                     <TextContent>
                         <Text component={ TextVariants.p }>
-                            Playbook contains X issues affecting X systems.
+                            { `Playbook contains X issues affecting ${systemCount} systems.` }
                         </Text>
                         <Text component={ TextVariants.p }>
                         Systems connected to a Satelite instance and configured with Receptor can be automatically remediated.
