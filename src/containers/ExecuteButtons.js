@@ -6,9 +6,10 @@ import { getConnectionStatus } from '../actions';
 import ExecuteButton from '../components/ExecuteButton';
 
 export const ExecutePlaybookButton = withRouter(connect(
-    ({ connectionStatus: { data, status }}) => ({
+    ({ connectionStatus: { data, status }, selectedRemediation }) => ({
         data,
-        isLoading: status !== 'fulfilled'
+        isLoading: status !== 'fulfilled',
+        issueCount: selectedRemediation.remediation.issues.length
     }),
     (dispatch) => ({
         getConnectionStatus: (id) => {

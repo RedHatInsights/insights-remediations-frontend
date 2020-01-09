@@ -13,7 +13,7 @@ import { addNotification } from '@redhat-cloud-services/frontend-components-noti
 
 import './ExecuteButton.scss';
 
-const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId }) => {
+const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, issueCount }) => {
     const [ open, setOpen ] = useState(false);
     const styledConnectionStatus = (status) => (
         status === 'connected'
@@ -31,6 +31,7 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId }) 
     );
     const disableExecuteButton = relevantData.filter(con => con.connection_status !== 'connected').count > 0;
     const systemCount = relevantData.reduce((acc, e) => e.system_count + acc, 0);
+    const pluralize = (number, str) => number > 1 ? `number ${str}s` : `${number} ${str}`;
 
     return (
         <React.Fragment>
@@ -63,7 +64,7 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId }) 
                 <div>
                     <TextContent>
                         <Text component={ TextVariants.p }>
-                            { `Playbook contains X issues affecting ${systemCount} systems.` }
+                            { `Playbook contains ${pluralize(issueCount, 'issue')} affecting ${pluralize(systemCount, 'system')}.` }
                         </Text>
                         <Text component={ TextVariants.p }>
                         Systems connected to a Satelite instance and configured with Receptor can be automatically remediated.
@@ -100,7 +101,8 @@ ExecuteButton.propTypes = {
     isLoading: PropTypes.bool,
     data: PropTypes.array,
     getConnectionStatus: PropTypes.func,
-    remediationId: PropTypes.string
+    remediationId: PropTypes.string,
+    issueCount: PropTypes.number
 };
 
 ExecuteButton.defaultProps = {
