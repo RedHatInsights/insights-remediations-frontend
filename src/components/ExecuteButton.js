@@ -8,9 +8,6 @@ import {
 import { TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
 import { CheckCircleIcon } from '@patternfly/react-icons';
 import { Skeleton } from '@redhat-cloud-services/frontend-components';
-
-import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
-
 import './ExecuteButton.scss';
 
 const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, issueCount }) => {

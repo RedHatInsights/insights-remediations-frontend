@@ -9,7 +9,7 @@ import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
 import { isBeta } from '../config';
 import ActionsResolvedCard from '../components/ActionsResolvedCard';
-import { ExecutePlaybookButton } from '../containers/ExecuteButtons'
+import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 
 import {
     Main,
