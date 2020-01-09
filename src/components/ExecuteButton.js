@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 import PropTypes from 'prop-types';
 import { downloadPlaybook } from '../api';
-
 import {
     Button, Modal, TextContent, Text, TextVariants } from '@patternfly/react-core';
 import { TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';

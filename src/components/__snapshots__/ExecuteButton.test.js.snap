@@ -1,0 +1,257 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Execute button fullfiled request 1`] = `
+<ExecuteButton
+  data={
+    Array [
+      Object {
+        "connection_status": "connected",
+        "executor_id": "722ec903-f4b5-4b1f-9c2f-23fc7b0ba390",
+        "executor_name": "Satellite 1 (connected)",
+        "executor_type": "satellite",
+        "system_count": 1,
+      },
+      Object {
+        "connection_status": "no_executor",
+        "executor_id": null,
+        "executor_name": null,
+        "executor_type": null,
+        "system_count": 4,
+      },
+    ]
+  }
+  getConnectionStatus={[Function]}
+  isLoading={true}
+  issueCount={1}
+  remediationId="id"
+  status="fullfiled"
+>
+  <Component
+    onClick={[Function]}
+  >
+    <ComponentWithOuia
+      component={[Function]}
+      componentProps={
+        Object {
+          "children": "Execute playbook",
+          "onClick": [Function],
+        }
+      }
+      consumerContext={null}
+    >
+      <Button
+        onClick={[Function]}
+        ouiaContext={
+          Object {
+            "isOuia": false,
+            "ouiaId": null,
+          }
+        }
+      >
+        <button
+          aria-disabled={null}
+          aria-label={null}
+          className="pf-c-button pf-m-primary"
+          disabled={false}
+          onClick={[Function]}
+          tabIndex={null}
+          type="button"
+        >
+          Execute playbook
+        </button>
+      </Button>
+    </ComponentWithOuia>
+  </Component>
+  <Modal
+    actions={
+      Array [
+        <Unknown
+          disabled={false}
+          onClick={[Function]}
+          variant="primary"
+        >
+          Execute Playbook on 1 items
+        </Unknown>,
+        <Unknown
+          onClick={[Function]}
+          variant="link"
+        >
+          Download Playbook
+        </Unknown>,
+      ]
+    }
+    appendTo={
+      <body>
+        <div />
+      </body>
+    }
+    ariaDescribedById=""
+    className="ins-c-dialog"
+    hideTitle={false}
+    isFooterLeftAligned={true}
+    isLarge={false}
+    isOpen={false}
+    isSmall={false}
+    onClose={[Function]}
+    showClose={true}
+    title="Execute playbook"
+    width="50%"
+  >
+    <Portal
+      containerInfo={<div />}
+    >
+      <ModalContent
+        actions={
+          Array [
+            <Unknown
+              disabled={false}
+              onClick={[Function]}
+              variant="primary"
+            >
+              Execute Playbook on 1 items
+            </Unknown>,
+            <Unknown
+              onClick={[Function]}
+              variant="link"
+            >
+              Download Playbook
+            </Unknown>,
+          ]
+        }
+        ariaDescribedById=""
+        className="ins-c-dialog"
+        hideTitle={false}
+        id="pf-modal-0"
+        isFooterLeftAligned={true}
+        isLarge={false}
+        isOpen={false}
+        isSmall={false}
+        onClose={[Function]}
+        showClose={true}
+        title="Execute playbook"
+        width="50%"
+      />
+    </Portal>
+  </Modal>
+</ExecuteButton>
+`;
+
+exports[`Execute button pending request 1`] = `
+<ExecuteButton
+  data={Array []}
+  getConnectionStatus={[Function]}
+  isLoading={true}
+  issueCount={1}
+  remediationId="id"
+  status="pending"
+>
+  <Component
+    onClick={[Function]}
+  >
+    <ComponentWithOuia
+      component={[Function]}
+      componentProps={
+        Object {
+          "children": "Execute playbook",
+          "onClick": [Function],
+        }
+      }
+      consumerContext={null}
+    >
+      <Button
+        onClick={[Function]}
+        ouiaContext={
+          Object {
+            "isOuia": false,
+            "ouiaId": null,
+          }
+        }
+      >
+        <button
+          aria-disabled={null}
+          aria-label={null}
+          className="pf-c-button pf-m-primary"
+          disabled={false}
+          onClick={[Function]}
+          tabIndex={null}
+          type="button"
+        >
+          Execute playbook
+        </button>
+      </Button>
+    </ComponentWithOuia>
+  </Component>
+  <Modal
+    actions={
+      Array [
+        <Unknown
+          disabled={false}
+          onClick={[Function]}
+          variant="primary"
+        >
+          Execute Playbook on 0 items
+        </Unknown>,
+        <Unknown
+          onClick={[Function]}
+          variant="link"
+        >
+          Download Playbook
+        </Unknown>,
+      ]
+    }
+    appendTo={
+      <body>
+        <div />
+        <div />
+      </body>
+    }
+    ariaDescribedById=""
+    className="ins-c-dialog"
+    hideTitle={false}
+    isFooterLeftAligned={true}
+    isLarge={false}
+    isOpen={false}
+    isSmall={false}
+    onClose={[Function]}
+    showClose={true}
+    title="Execute playbook"
+    width="50%"
+  >
+    <Portal
+      containerInfo={<div />}
+    >
+      <ModalContent
+        actions={
+          Array [
+            <Unknown
+              disabled={false}
+              onClick={[Function]}
+              variant="primary"
+            >
+              Execute Playbook on 0 items
+            </Unknown>,
+            <Unknown
+              onClick={[Function]}
+              variant="link"
+            >
+              Download Playbook
+            </Unknown>,
+          ]
+        }
+        ariaDescribedById=""
+        className="ins-c-dialog"
+        hideTitle={false}
+        id="pf-modal-1"
+        isFooterLeftAligned={true}
+        isLarge={false}
+        isOpen={false}
+        isSmall={false}
+        onClose={[Function]}
+        showClose={true}
+        title="Execute playbook"
+        width="50%"
+      />
+    </Portal>
+  </Modal>
+</ExecuteButton>
+`;
