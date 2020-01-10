@@ -26,12 +26,16 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, is
             </div>)
             : status
     );
-    const relevantData = data.filter(con => con.executor_id);
-    const rows = relevantData.filter(con => con.executor_id).map(con =>
-        ({ cells: [ con.executor_name, con.system_count, { title: styledConnectionStatus(con.connection_status) }]})
+    const [ connected, disconnected ] = data.reduce(
+        ([ pass, fail ], e) => (e.connection_status === 'connected' ? [ [ ...pass, e ], fail ] : [ pass, [ ...fail, e ] ])
+        , [ [], [] ]
     );
-    const disableExecuteButton = relevantData.filter(con => con.connection_status !== 'connected').count > 0;
-    const systemCount = relevantData.reduce((acc, e) => e.system_count + acc, 0);
+
+    const rows = [ ...connected, ...disconnected ].map(con =>
+        ({ cells: [ con.executor_name || 'Direct connection', con.system_count, { title: styledConnectionStatus(con.connection_status) }]})
+    );
+    const systemCount = connected.reduce((acc, e) => e.system_count + acc, 0);
+
     const pluralize = (number, str) => number > 1 ? `number ${str}s` : `${number} ${str}`;
     return (isUserEntitled
         ?  <React.Fragment>
@@ -50,7 +54,7 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, is
                     <Button
                         key="confirm"
                         variant="primary"
-                        disabled={ disableExecuteButton }
+                        disabled={ connected.length > 0 }
                         onClick={ () => setOpen(false) }>
                         { `Execute Playbook on ${systemCount} items` }
                     </Button>,
