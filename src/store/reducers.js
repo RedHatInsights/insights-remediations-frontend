@@ -131,7 +131,8 @@ const reducers = {
         }),
         [ACTION_TYPES.GET_CONNECTION_STATUS_FULFILLED]: (state, action) => ({
             status: 'fulfilled',
-            data: action.payload.data
+            data: action.payload.data,
+            etag: action.payload.etag
         }),
         [ACTION_TYPES.GET_CONNECTION_STATUS_REJECTED]: () => ({
             status: 'rejected',

@@ -37,7 +37,7 @@ async function authInterceptor (config) {
 
 function responseDataInterceptor (response) {
     if (response.data) {
-        return response.data;
+        return { ...response.data, etag: response.headers.etag };
     }
 
     return response;
