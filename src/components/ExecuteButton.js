@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 import { downloadPlaybook } from '../api';
@@ -11,6 +11,11 @@ import './ExecuteButton.scss';
 
 const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, issueCount }) => {
     const [ open, setOpen ] = useState(false);
+    const [ isUserEntitled, setIsUserEntitled ] = useState(false);
+    useEffect(() => {
+        window.insights.chrome.auth.getUser().then(user => setIsUserEntitled(user.entitlements.smart_management.is_entitled));
+    }, []);
+
     const styledConnectionStatus = (status) => (
         status === 'connected'
             ? (<div>
@@ -28,9 +33,8 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, is
     const disableExecuteButton = relevantData.filter(con => con.connection_status !== 'connected').count > 0;
     const systemCount = relevantData.reduce((acc, e) => e.system_count + acc, 0);
     const pluralize = (number, str) => number > 1 ? `number ${str}s` : `${number} ${str}`;
-
-    return (
-        <React.Fragment>
+    return (isUserEntitled
+        ?  <React.Fragment>
             <Button
                 onClick={ () => { setOpen(true); getConnectionStatus(remediationId); } }>
         Execute playbook
@@ -90,6 +94,7 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, is
             </Modal>
 
         </React.Fragment>
+        : null
     );
 };
 
