@@ -6,6 +6,7 @@ import toJson from 'enzyme-to-json';
 import * as api from '../api';
 
 api.downloadPlaybook = jest.fn();
+global.insights = { chrome: { auth: { getUser: () => new Promise(() => ({ entitlements: { smart_management: { isEntitled: true }}})) }}};
 
 const data = [
     { executor_id: '722ec903-f4b5-4b1f-9c2f-23fc7b0ba390', executor_type: 'satellite', executor_name: 'Satellite 1 (connected)',
