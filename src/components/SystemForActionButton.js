@@ -4,22 +4,32 @@ import * as pfReactTable from '@patternfly/react-table';
 import * as reactCore from '@patternfly/react-core';
 import * as reactIcons from '@patternfly/react-icons';
 import * as reactRouterDom from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import PropTypes from 'prop-types';
 import {
-    Button, Modal, TextContent, Text, TextVariants
+    Button, Modal
 } from '@patternfly/react-core';
 import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/Registry';
-import { Skeleton } from '@redhat-cloud-services/frontend-components';
 import reducers from '../store/reducers';
+import RemediationDetailsSystemDropdown from './RemediationDetailsSystemDropdown';
+import ConfirmationDialog from './ConfirmationDialog';
+import { deleteRemediationIssueSystem } from '../actions';
+import { getSystemName } from '../Utilities/model';
 
-let page = 1;
-let pageSize = 50;
-
-const SystemForActionButton = ({ issue }) => {
-    const [ open, setOpen ] = useState(false);
+const SystemForActionButton = ({ issue, remediation, onDelete }) => {
+    const [ deleteDialogOpen, setDeleteDialogOpen ] = useState(false);
     const [ InventoryTable, setInventoryTable ] = useState();
+    const [ open, setOpen ] = useState(false);
+    const [ system, setSystem ] = useState({});
+    const [ page, setPage ] = useState(1);
+    const [ pageSize, setPageSize ] = useState(50);
     const inventory = useRef(null);
+
+    // eslint-disable-next-line react/display-name
+    const detailDropdown = (remediation, issue) => (system) => (
+        <RemediationDetailsSystemDropdown remediation={ remediation } issue={ issue } system={ system } />
+    );
 
     const loadInventory = async () => {
         const {
@@ -35,7 +45,7 @@ const SystemForActionButton = ({ issue }) => {
         });
 
         getRegistry().register({
-            ...mergeWithEntities(reducers.inventoryEntitiesReducer(INVENTORY_ACTION_TYPES))
+            ...mergeWithEntities(reducers.inventoryEntitiesReducer({ INVENTORY_ACTION_TYPES, detailDropdown: detailDropdown(remediation, issue) })())
         });
 
         const { InventoryTable } = inventoryConnector();
@@ -48,8 +58,8 @@ const SystemForActionButton = ({ issue }) => {
 
     const onRefresh = (options) => {
         if (inventory && inventory.current) {
-            page = options.page;
-            pageSize = options.per_page;
+            setPage(options.page);
+            setPageSize(options.per_page);
             inventory.current.onRefreshData(options);
         }
     };
@@ -76,18 +86,48 @@ const SystemForActionButton = ({ issue }) => {
                     total={ issue.systems.length }
                     perPage={ pageSize }
                     tableProps={ { onSelect: undefined } }
-
+                    actions= { [
+                        {
+                            title: (
+                                <Button
+                                    className=' ins-c-button__danger-link'
+                                    onClick={ () => setDeleteDialogOpen(true) }
+                                    variant="link"
+                                >
+                                    Remove system
+                                </Button>
+                            ),
+                            onClick: (event, rowId, rowData) => {
+                                setSystem(rowData);
+                                setDeleteDialogOpen(true);
+                            }
+                        }] }
                 /> }
             </Modal>
+            <ConfirmationDialog
+                isOpen={ deleteDialogOpen }
+                text={ `This playbook will not address ${issue.description} on ${getSystemName(system)}` }
+                onClose={ value => {
+                    setDeleteDialogOpen(false);
+                    value && onDelete(remediation.id, issue.id, system.id);
+                } } />
         </React.Fragment>
     );
 };
 
 SystemForActionButton.propTypes = {
-    issue: PropTypes.object.isRequired
+    issue: PropTypes.object.isRequired,
+    remediation: PropTypes.object.isRequired,
+    onDelete: PropTypes.func
 };
 
 SystemForActionButton.defaultProps = {
 };
 
-export default SystemForActionButton;
+const connected = reactRouterDom.withRouter(connect(
+    null,
+    (dispatch) => ({
+        onDelete: (id, issue, system) => dispatch(deleteRemediationIssueSystem(id, issue, system))
+    })
+)(SystemForActionButton));
+export default connected;

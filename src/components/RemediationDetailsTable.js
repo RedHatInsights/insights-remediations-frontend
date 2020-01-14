@@ -60,8 +60,8 @@ function needsRebootCell (needsReboot) {
     return ('No');
 }
 
-function systemsForAction(issue) {
-    return <SystemForActionButton key={ issue.id } issue={ issue } />;
+function systemsForAction(issue, remediation) {
+    return <SystemForActionButton key={ issue.id } remediation={ remediation } issue={ issue } />;
 }
 
 const SORTING_ITERATEES = [
@@ -90,7 +90,7 @@ const buildRow = (remediation, expanded) => (issue, index) => {
                     title: needsRebootCell(issue.resolution.needs_reboot)
                 },
                 {
-                    title: systemsForAction(issue)
+                    title: systemsForAction(issue, remediation)
                 },
                 {
                     title: getIssueApplication(issue),

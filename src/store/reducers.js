@@ -150,8 +150,8 @@ const reducers = {
         isVisible: false
     }),
 
-    inventoryEntitiesReducer: (props) => applyReducerHash({
-        ['LOAD_ENTITIES_FULFILLED']: (state, action) => {
+    inventoryEntitiesReducer: (props) => () => applyReducerHash({
+        [props.INVENTORY_ACTION_TYPES.LOAD_ENTITIES_FULFILLED]: (state) => {
             return {
                 ...state,
                 columns: [
