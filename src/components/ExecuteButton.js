@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React, { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
@@ -5,9 +6,83 @@ import { downloadPlaybook } from '../api';
 import {
     Button, Modal, TextContent, Text, TextVariants } from '@patternfly/react-core';
 import { TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
-import { CheckCircleIcon } from '@patternfly/react-icons';
+import { CheckCircleIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
 import { Skeleton } from '@redhat-cloud-services/frontend-components';
 import './ExecuteButton.scss';
+
+const styledConnectionStatus = (status) => ({
+    connected: (
+        <TextContent>
+            <Text component={ TextVariants.p }>
+                <CheckCircleIcon
+                    className="ins-c-remediations-reboot-check-circle ins-c-remediations-connection-status"
+                    aria-label="connection status" />
+            Ready
+            </Text>
+        </TextContent>),
+    disconnected: (
+        <TextContent>
+            <Text component={ TextVariants.p }>
+                Connection issue
+            </Text>
+            <Text component={ TextVariants.small }>
+                Receptor not responding
+            </Text>
+            <Button
+                key="troubleshoot"
+                // eslint-disable-next-line no-console
+                variant='link' onClick={ () => console.log('TODO: add link') }>
+                Troubleshoot
+            </Button>
+        </TextContent>),
+    no_executor: (
+        <TextContent>
+            <Text component={ TextVariants.p }>
+
+                Cannot remediate - Direct connection.
+            </Text>
+            <Text component={ TextVariants.small }>
+                 Connect your systems to Satellite to automatically remediate.
+            </Text>
+            <Button
+                key="download"
+                // eslint-disable-next-line no-console
+                variant='link' onClick={ () => console.log('TODO: add link') }>
+               Learn how to connect
+            </Button>
+        </TextContent>),
+    no_source: (<TextContent>
+        <Text component={ TextVariants.p }>
+            Cannot remediate - Satellite not configured
+        </Text>
+        <Text component={ TextVariants.small }>
+           Satellite not registered for Playbook execution
+        </Text>
+        <Button
+            key="register"
+            // eslint-disable-next-line no-console
+            variant='link' onClick={ () => console.log('TODO: add link') }>
+            Learn how to register Satelite
+        </Button>
+    </TextContent>),
+    no_receptor: (<TextContent>
+        <Text component={ TextVariants.p }>
+            <ExclamationCircleIcon
+                className="ins-c-remediations-connection-status-error ins-c-remediations-connection-status"
+                aria-label="connection status" />
+            Cannot remediate - Receptor not configured
+        </Text>
+        <Text component={ TextVariants.small }>
+            Configure Receptor to automatically remediate
+        </Text>
+        <Button
+            key="configure"
+            // eslint-disable-next-line no-console
+            variant='link' onClick={ () => console.log('TODO: add link') }>
+            Learn how to configure
+        </Button>
+    </TextContent>)
+})[status];
 
 const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, issueCount }) => {
     const [ open, setOpen ] = useState(false);
@@ -16,16 +91,6 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, is
         window.insights.chrome.auth.getUser().then(user => setIsUserEntitled(user.entitlements.smart_management.is_entitled));
     }, []);
 
-    const styledConnectionStatus = (status) => (
-        status === 'connected'
-            ? (<div>
-                <CheckCircleIcon
-                    className="ins-c-remediations-reboot-check-circle ins-c-remediations-connection-status"
-                    aria-label="connection status"/>
-                Ready
-            </div>)
-            : status
-    );
     const [ connected, disconnected ] = data.reduce(
         ([ pass, fail ], e) => (e.connection_status === 'connected' ? [ [ ...pass, e ], fail ] : [ pass, [ ...fail, e ] ])
         , [ [], [] ]
@@ -34,9 +99,10 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, is
     const rows = [ ...connected, ...disconnected ].map(con =>
         ({ cells: [ con.executor_name || 'Direct connection', con.system_count, { title: styledConnectionStatus(con.connection_status) }]})
     );
-    const systemCount = connected.reduce((acc, e) => e.system_count + acc, 0);
+    const connectedCount = connected.reduce((acc, e) => e.system_count + acc, 0);
+    const systemCount = data.reduce((acc, e) => e.system_count + acc, 0);
 
-    const pluralize = (number, str) => number > 1 ? `number ${str}s` : `${number} ${str}`;
+    const pluralize = (number, str) => number > 1 ? `${number} ${str}s` : `${number} ${str}`;
     return (isUserEntitled
         ?  <React.Fragment>
             <Button
@@ -56,7 +122,7 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, is
                         variant="primary"
                         disabled={ connected.length > 0 }
                         onClick={ () => setOpen(false) }>
-                        { `Execute Playbook on ${systemCount} items` }
+                        { `Execute Playbook on ${pluralize(connectedCount, 'system')}` }
                     </Button>,
                     <Button
                         key="download"
