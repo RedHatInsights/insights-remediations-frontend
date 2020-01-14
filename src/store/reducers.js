@@ -148,7 +148,22 @@ const reducers = {
         })
     }, {
         isVisible: false
+    }),
+
+    inventoryEntitiesReducer: (props) => applyReducerHash({
+        ['LOAD_ENTITIES_FULFILLED']: (state, action) => {
+            return {
+                ...state,
+                columns: [
+                    { key: 'display_name', title: 'System name', composed: ['display_name'] },
+                    { key: 'satelite_id', title: 'Connection type', composed: ['satelite_id'] }
+                ]
+            };
+        }
+    }, {
+        status: 'initial'
     })
+
 };
 
 export default reducers;

@@ -21,6 +21,7 @@ import { ConnectResolutionEditButton } from '../containers/ConnectedComponents';
 import { DeleteActionsButton } from '../containers/DeleteButtons';
 import { isBeta } from '../config';
 import RemediationDetailsSystemDropdown from './RemediationDetailsSystemDropdown';
+import SystemForActionButton from './SystemForActionButton';
 
 import { useExpander, useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
 import * as debug from '../Utilities/debug';
@@ -59,6 +60,10 @@ function needsRebootCell (needsReboot) {
     return ('No');
 }
 
+function systemsForAction(issue) {
+    return <SystemForActionButton key={ issue.id } issue={ issue } />;
+}
+
 const SORTING_ITERATEES = [
     null, // expand toggle
     null, // checkboxes
@@ -84,7 +89,9 @@ const buildRow = (remediation, expanded) => (issue, index) => {
                 {
                     title: needsRebootCell(issue.resolution.needs_reboot)
                 },
-                issue.systems.length,
+                {
+                    title: systemsForAction(issue)
+                },
                 {
                     title: getIssueApplication(issue),
                     props: { className: 'ins-m-nowrap' }
