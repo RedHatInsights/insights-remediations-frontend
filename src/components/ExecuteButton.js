@@ -62,7 +62,7 @@ const styledConnectionStatus = (status) => ({
             key="register"
             // eslint-disable-next-line no-console
             variant='link' onClick={ () => console.log('TODO: add link') }>
-            Learn how to register Satelite
+            Learn how to register Satellite
         </Button>
     </TextContent>),
     no_receptor: (<TextContent>
@@ -107,12 +107,12 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, is
         ?  <React.Fragment>
             <Button
                 onClick={ () => { setOpen(true); getConnectionStatus(remediationId); } }>
-        Execute playbook
+        Execute Playbook
             </Button>
             <Modal
                 className="ins-c-dialog"
                 width={ '50%' }
-                title={ 'Execute playbook' }
+                title={ 'Execute Playbook' }
                 isOpen={ open }
                 onClose={ () => setOpen(false) }
                 isFooterLeftAligned
@@ -134,14 +134,15 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, is
                 <div>
                     <TextContent>
                         <Text component={ TextVariants.p }>
-                            { `Playbook contains ${pluralize(issueCount, 'issue')} affecting ${pluralize(systemCount, 'system')}.` }
+                            Playbook contains <b>{ `${pluralize(issueCount, 'issue')}` }</b> affecting
+                            <b> { `${pluralize(systemCount, 'system')}.` } </b>
                         </Text>
                         <Text component={ TextVariants.p }>
-                        Systems connected to a Satelite instance and configured with Receptor can be automatically remediated.
-                            To remediate other systems, download the Ansible playbook for this plan.
+                        Systems connected to a Satellite instance and configured with Receptor can be automatically remediated.
+                            To remediate other systems, download the Ansible Playbook for this plan.
 
                         </Text>
-                        <Text component={ TextVariants.h2 }>Connection status of systems</Text>
+                        <Text component={ TextVariants.h4 }>Connection status of systems</Text>
                     </TextContent>
                     { isLoading
                         ? <Skeleton />
