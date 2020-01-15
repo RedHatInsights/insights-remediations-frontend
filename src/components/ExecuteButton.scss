@@ -1,7 +1,2 @@
-.ins-c-remediations-connection-status {
-  margin-right: 5px;
-}
-
-.ins-c-remediations-connection-status-error {
-  color: #E10000;
-}
+.ins-c-remediations-connection-status { margin-right: var(--pf-global--spacer--xs); }
+.ins-c-remediations-connection-status-error { color: var(--pf-chart-global--danger--Color--100); }
