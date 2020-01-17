@@ -55,3 +55,10 @@ export const getResolutions = (ruleId) => ({
     type: ACTION_TYPES.GET_RESOLUTIONS,
     payload: resolutions.getResolutionsForIssue(ruleId)
 });
+
+export const getConnectionStatus = (id) => {
+    return {
+        type: ACTION_TYPES.GET_CONNECTION_STATUS,
+        payload: remediations.getRemediationConnectionStatus(id)
+    };
+};
