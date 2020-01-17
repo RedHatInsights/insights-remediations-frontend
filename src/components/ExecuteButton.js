@@ -87,6 +87,8 @@ const styledConnectionStatus = (status) => ({
 const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, issueCount }) => {
     const [ open, setOpen ] = useState(false);
     const [ isUserEntitled, setIsUserEntitled ] = useState(false);
+    const isEnabled = () => localStorage.getItem('remediations:fifi:debug') === 'true';
+
     useEffect(() => {
         window.insights.chrome.auth.getUser().then(user => setIsUserEntitled(user.entitlements.smart_management.is_entitled));
     }, []);
@@ -103,7 +105,7 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, is
     const systemCount = data.reduce((acc, e) => e.system_count + acc, 0);
 
     const pluralize = (number, str) => number > 1 ? `${number} ${str}s` : `${number} ${str}`;
-    return (isUserEntitled
+    return (isUserEntitled && isEnabled()
         ?  <React.Fragment>
             <Button
                 onClick={ () => { setOpen(true); getConnectionStatus(remediationId); } }>
