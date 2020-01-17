@@ -66,3 +66,11 @@ export const getConnectionStatus = (id) => {
 export const toggleExecutePlaybookBanner = () => ({
     type: ACTION_TYPES.EXECUTE_PLAYBOOK_BANNER
 });
+
+export const runRemediation = (id, etag) => {
+    return {
+        type: ACTION_TYPES.RUN_REMEDIATION,
+        payload: remediations.runRemediation(id, { headers: { 'If-None-Match': etag }})
+    };
+};
+
