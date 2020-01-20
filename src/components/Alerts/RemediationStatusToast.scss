@@ -1,0 +1,9 @@
+.ins-c-remediation-toast__status {
+    position: absolute;
+    right:  var(--pf-c-page__main-section--PaddingRight);
+    top: var(--pf-c-page__header--MinHeight);
+    margin-top: 10px;
+    z-index: 10;
+    max-width: 600px;
+    word-wrap: anywhere;
+}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import propTypes from 'prop-types';
 
 import { Alert } from '@patternfly/react-core';
+import './RemediationStatusToast.scss';
 
 function RemediationStatusToast ({ status, name, ...props }) {
 
@@ -15,6 +16,7 @@ function RemediationStatusToast ({ status, name, ...props }) {
         <React.Fragment>
             { isVisible &&
                 <Alert
+                    className='ins-c-remediation-toast__status'
                     variant={ (status === 'passed' ? 'success' : 'danger') }
                     title={ `Remediation plan ${ name } ${ status === 'passed' ? 'successfully completed' : 'failed' }` }
                     { ...props }
