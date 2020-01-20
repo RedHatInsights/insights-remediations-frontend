@@ -22,7 +22,7 @@ function RemediationStatusToast ({ status, name, ...props }) {
             }
         </React.Fragment>
     );
-};
+}
 
 export default RemediationStatusToast;
 
