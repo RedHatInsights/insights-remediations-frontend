@@ -6,6 +6,7 @@ exports[`ExecuteBanner component should render 1`] = `
   status="passed"
 >
   <Component
+    className="ins-c-remediation-toast__status"
     title="Remediation plan passed remediation successfully completed"
     variant="success"
   >
@@ -13,6 +14,7 @@ exports[`ExecuteBanner component should render 1`] = `
       component={[Function]}
       componentProps={
         Object {
+          "className": "ins-c-remediation-toast__status",
           "title": "Remediation plan passed remediation successfully completed",
           "variant": "success",
         }
@@ -20,6 +22,7 @@ exports[`ExecuteBanner component should render 1`] = `
       consumerContext={null}
     >
       <Alert
+        className="ins-c-remediation-toast__status"
         ouiaContext={
           Object {
             "isOuia": false,
@@ -31,7 +34,7 @@ exports[`ExecuteBanner component should render 1`] = `
       >
         <div
           aria-label="Success Alert"
-          className="pf-c-alert pf-m-success"
+          className="pf-c-alert pf-m-success ins-c-remediation-toast__status"
         >
           <AlertIcon
             variant="success"
@@ -90,6 +93,7 @@ exports[`ExecuteBanner component should render failed 1`] = `
   status="failed"
 >
   <Component
+    className="ins-c-remediation-toast__status"
     title="Remediation plan failed remediation failed"
     variant="danger"
   >
@@ -97,6 +101,7 @@ exports[`ExecuteBanner component should render failed 1`] = `
       component={[Function]}
       componentProps={
         Object {
+          "className": "ins-c-remediation-toast__status",
           "title": "Remediation plan failed remediation failed",
           "variant": "danger",
         }
@@ -104,6 +109,7 @@ exports[`ExecuteBanner component should render failed 1`] = `
       consumerContext={null}
     >
       <Alert
+        className="ins-c-remediation-toast__status"
         ouiaContext={
           Object {
             "isOuia": false,
@@ -115,7 +121,7 @@ exports[`ExecuteBanner component should render failed 1`] = `
       >
         <div
           aria-label="Danger Alert"
-          className="pf-c-alert pf-m-danger"
+          className="pf-c-alert pf-m-danger ins-c-remediation-toast__status"
         >
           <AlertIcon
             variant="danger"
