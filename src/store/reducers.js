@@ -155,8 +155,8 @@ const reducers = {
             return {
                 ...state,
                 columns: [
-                    { key: 'display_name', title: 'System name', composed: ['display_name'] },
-                    { key: 'satelite_id', title: 'Connection type', composed: ['satelite_id'] }
+                    { key: 'display_name', title: 'System name', composed: [ 'display_name' ]},
+                    { key: 'satelite_id', title: 'Connection type', composed: [ 'satelite_id' ]}
                 ]
             };
         }
