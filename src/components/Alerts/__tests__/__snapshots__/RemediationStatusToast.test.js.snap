@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ExecuteBanner component should render 1`] = `
+<Component
+  title="Remediation plan passed remediation successfully completed"
+  variant="success"
+/>
+`;
+
+exports[`ExecuteBanner component should render failed 1`] = `
+<Component
+  title="Remediation plan failed remediation failed"
+  variant="danger"
+/>
+`;
