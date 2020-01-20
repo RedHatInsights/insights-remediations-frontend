@@ -7,8 +7,8 @@ const RemediationStatusToast = ({ status, name, ...props }) => {
     return (
         <Alert
             variant={ (status === 'passed' ? 'success' : 'danger') }
-            title={`Remediation plan ${name} ${status === 'passed' ? 'successfully completed' : 'failed' }`}
-            {...props}
+            title={ `Remediation plan ${ name } ${ status === 'passed' ? 'successfully completed' : 'failed' }` }
+            { ...props }
         />
     );
 };
@@ -16,10 +16,10 @@ const RemediationStatusToast = ({ status, name, ...props }) => {
 export default RemediationStatusToast;
 
 RemediationStatusToast.propTypes = {
-    status: propTypes.oneOf(['passed', 'failed']),
+    status: propTypes.oneOf([ 'passed', 'failed' ]),
     name: propTypes.string.isRequired
 };
 
 RemediationStatusToast.defaultProps = {
     status: 'passed'
-}
+};

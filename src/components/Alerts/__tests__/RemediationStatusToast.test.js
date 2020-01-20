@@ -4,7 +4,7 @@ import toJson from 'enzyme-to-json';
 import RemediationStatusToast from '../RemediationStatusToast';
 
 describe('ExecuteBanner component', () => {
-    
+
     it('should render', () => {
         const wrapper = shallow(<RemediationStatusToast name='passed remediation'/>);
         expect(toJson(wrapper)).toMatchSnapshot();
