@@ -7,7 +7,7 @@ exports[`ExecuteBanner component should render 1`] = `
 >
   <Component
     className="ins-c-remediation-toast__status"
-    title="Remediation plan passed remediation successfully completed"
+    title="Playbook passed remediation successfully completed"
     variant="success"
   >
     <ComponentWithOuia
@@ -15,7 +15,7 @@ exports[`ExecuteBanner component should render 1`] = `
       componentProps={
         Object {
           "className": "ins-c-remediation-toast__status",
-          "title": "Remediation plan passed remediation successfully completed",
+          "title": "Playbook passed remediation successfully completed",
           "variant": "success",
         }
       }
@@ -29,7 +29,7 @@ exports[`ExecuteBanner component should render 1`] = `
             "ouiaId": null,
           }
         }
-        title="Remediation plan passed remediation successfully completed"
+        title="Playbook passed remediation successfully completed"
         variant="success"
       >
         <div
@@ -78,7 +78,7 @@ exports[`ExecuteBanner component should render 1`] = `
             >
               Success alert:
             </span>
-            Remediation plan passed remediation successfully completed
+            Playbook passed remediation successfully completed
           </h4>
         </div>
       </Alert>
@@ -94,7 +94,7 @@ exports[`ExecuteBanner component should render failed 1`] = `
 >
   <Component
     className="ins-c-remediation-toast__status"
-    title="Remediation plan failed remediation failed"
+    title="Playbook failed remediation failed"
     variant="danger"
   >
     <ComponentWithOuia
@@ -102,7 +102,7 @@ exports[`ExecuteBanner component should render failed 1`] = `
       componentProps={
         Object {
           "className": "ins-c-remediation-toast__status",
-          "title": "Remediation plan failed remediation failed",
+          "title": "Playbook failed remediation failed",
           "variant": "danger",
         }
       }
@@ -116,7 +116,7 @@ exports[`ExecuteBanner component should render failed 1`] = `
             "ouiaId": null,
           }
         }
-        title="Remediation plan failed remediation failed"
+        title="Playbook failed remediation failed"
         variant="danger"
       >
         <div
@@ -165,7 +165,7 @@ exports[`ExecuteBanner component should render failed 1`] = `
             >
               Danger alert:
             </span>
-            Remediation plan failed remediation failed
+            Playbook failed remediation failed
           </h4>
         </div>
       </Alert>

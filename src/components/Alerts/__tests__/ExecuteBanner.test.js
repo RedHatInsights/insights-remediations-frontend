@@ -15,7 +15,7 @@ describe('ExecuteBanner component', () => {
         console.log = jest.fn();
         const wrapper = mount(<ExecuteBanner/>);
         wrapper.find('AlertActionLink').simulate('click');
-        expect(console.log.mock.calls[0][0]).toBe('Cancel Remediation');
+        expect(console.log.mock.calls[0][0]).toBe('Cancel Playbook');
     });
     /* eslint-enable no-console */
 

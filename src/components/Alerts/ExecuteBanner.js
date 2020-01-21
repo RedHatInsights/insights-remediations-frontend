@@ -8,7 +8,7 @@ const ExecuteBanner = ({ onCancel, ...props }) => {
         <Alert
             variant="default"
             isInline
-            title="Automatic remediation in progress"
+            title="Playbook in progress"
             action={ <AlertActionLink onClick={ onCancel }>Cancel</AlertActionLink> }
             { ...props }
         />
@@ -23,6 +23,6 @@ ExecuteBanner.propTypes = {
 
 /* eslint-disable no-console */
 ExecuteBanner.defaultProps = {
-    onCancel: () => console.log('Cancel Remediation')
+    onCancel: () => console.log('Cancel Playbook')
 };
 /* eslint-enable no-console */

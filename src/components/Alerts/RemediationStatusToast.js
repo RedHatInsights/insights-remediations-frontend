@@ -18,7 +18,7 @@ function RemediationStatusToast ({ status, name, ...props }) {
                 <Alert
                     className='ins-c-remediation-toast__status'
                     variant={ (status === 'passed' ? 'success' : 'danger') }
-                    title={ `Remediation plan ${ name } ${ status === 'passed' ? 'successfully completed' : 'failed' }` }
+                    title={ `Playbook ${ name } ${ status === 'passed' ? 'successfully completed' : 'failed' }` }
                     { ...props }
                 />
             }

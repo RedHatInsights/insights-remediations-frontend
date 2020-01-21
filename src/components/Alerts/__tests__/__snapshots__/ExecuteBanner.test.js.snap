@@ -10,7 +10,7 @@ exports[`ExecuteBanner component should render 1`] = `
     </AlertActionLink>
   }
   isInline={true}
-  title="Automatic remediation in progress"
+  title="Playbook in progress"
   variant="default"
 />
 `;
