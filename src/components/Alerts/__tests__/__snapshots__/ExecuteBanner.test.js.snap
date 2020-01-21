@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ExecuteBanner component should render 1`] = `
+<Component
+  action={
+    <AlertActionLink
+      onClick={[Function]}
+    >
+      Cancel
+    </AlertActionLink>
+  }
+  isInline={true}
+  title="Playbook in progress"
+  variant="default"
+/>
+`;
