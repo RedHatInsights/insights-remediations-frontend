@@ -70,7 +70,7 @@ export const toggleExecutePlaybookBanner = () => ({
 export const runRemediation = (id, etag) => {
     return {
         type: ACTION_TYPES.RUN_REMEDIATION,
-        payload: remediations.runRemediation(id, { headers: { 'If-None-Match': etag }})
+        payload: remediations.runRemediation(id, { headers: { 'If-Match': etag }})
     };
 };
 
