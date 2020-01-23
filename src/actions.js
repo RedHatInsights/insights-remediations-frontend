@@ -62,3 +62,8 @@ export const getConnectionStatus = (id) => {
         payload: remediations.getRemediationConnectionStatus(id)
     };
 };
+
+export const executeRemediation = (id) => ({
+    type: ACTION_TYPES.EXECUTE_REMEDIATION,
+    payload: remediations.executeRemediation(id)
+});

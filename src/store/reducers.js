@@ -105,7 +105,10 @@ const reducers = {
                     needs_reboot: issues.some(issue => issue.resolution.needs_reboot) // eslint-disable-line camelcase
                 })
             };
-        }
+        },
+        [ACTION_TYPES.EXECUTE_REMEDIATION_FULFILLED]: () => ({
+            status: 'fulfilled'
+        })
     }, {
         status: 'initial'
     }),

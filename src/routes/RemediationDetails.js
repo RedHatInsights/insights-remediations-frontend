@@ -10,6 +10,7 @@ import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown
 import { isBeta } from '../config';
 import ActionsResolvedCard from '../components/ActionsResolvedCard';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
+import ExecuteBanner from '../components/Alerts/ExecuteBanner';
 
 import {
     Main,
@@ -79,6 +80,7 @@ class RemediationDetails extends Component {
                         </BreadcrumbItem>
                         <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
                     </Breadcrumb>
+                    <ExecuteBanner></ExecuteBanner>
                     <Level className="ins-c-level">
                         <LevelItem>
                             <PageHeaderTitle title={ remediation.name }/>
