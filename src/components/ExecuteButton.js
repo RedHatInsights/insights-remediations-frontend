@@ -122,9 +122,9 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, toggleExecutePlay
                     <Button
                         key="confirm"
                         variant="primary"
-                        disabled={ connected.length > 0 }
+                        isDisabled={ connected.length === 0 }
                         onClick={ () => { setOpen(false); toggleExecutePlaybookBanner(); } }>
-                        { `Execute Playbook on ${pluralize(connectedCount, 'system')}` }
+                        { isLoading ? 'Execute Playbook' : `Execute Playbook on ${pluralize(connectedCount, 'system')}` }
                     </Button>,
                     <Button
                         key="download"
@@ -135,10 +135,12 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, toggleExecutePlay
             >
                 <div>
                     <TextContent>
-                        <Text component={ TextVariants.p }>
-                            Playbook contains <b>{ `${pluralize(issueCount, 'issue')}` }</b> affecting
-                            <b> { `${pluralize(systemCount, 'system')}.` } </b>
-                        </Text>
+                        { isLoading
+                            ? <Skeleton size='lg'/>
+                            : <Text component={ TextVariants.p }>
+                                Playbook contains <b>{ `${pluralize(issueCount, 'issue')}` }</b> affecting
+                                <b>  { `${pluralize(systemCount, 'system')}.` } </b>
+                            </Text> }
                         <Text component={ TextVariants.p }>
                         Systems connected to a Satellite instance and configured with Receptor can be automatically remediated.
                             To remediate other systems, download the Ansible Playbook for this plan.
@@ -147,7 +149,7 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, toggleExecutePlay
                         <Text component={ TextVariants.h4 }>Connection status of systems</Text>
                     </TextContent>
                     { isLoading
-                        ? <Skeleton />
+                        ? <Skeleton size='lg'/>
                         : <Table
                             variant={ TableVariant.compact }
                             aria-label="Systems"
