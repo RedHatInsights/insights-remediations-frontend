@@ -74,6 +74,11 @@ class RemediationDetails extends Component {
 
         return (
             <React.Fragment>
+                {
+                    getStore().getState().executePlaybookBanner.isVisible ?
+                        <ExecuteBanner onCancel={ () => this.props.toggleExecutePlaybookBanner() } /> :
+                        null
+                }
                 <PageHeader>
                     <Breadcrumb>
                         <BreadcrumbItem>
@@ -81,11 +86,6 @@ class RemediationDetails extends Component {
                         </BreadcrumbItem>
                         <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
                     </Breadcrumb>
-                    {
-                        getStore().getState().executePlaybookBanner.status === 'show' ?
-                            <ExecuteBanner></ExecuteBanner> :
-                            null
-                    }
                     <Level className="ins-c-level">
                         <LevelItem>
                             <PageHeaderTitle title={ remediation.name }/>
@@ -199,7 +199,8 @@ RemediationDetails.propTypes = {
     loadRemediation: PropTypes.func.isRequired,
     loadRemediationStatus: PropTypes.func.isRequired,
     switchAutoReboot: PropTypes.func.isRequired,
-    deleteRemediation: PropTypes.func.isRequired
+    deleteRemediation: PropTypes.func.isRequired,
+    toggleExecutePlaybookBanner: PropTypes.func.isRequired
 };
 
 export default withRouter(
@@ -211,7 +212,8 @@ export default withRouter(
             loadRemediationStatus: id => dispatch(actions.loadRemediationStatus(id)),
             // eslint-disable-next-line camelcase
             switchAutoReboot: (id, auto_reboot) => dispatch(actions.patchRemediation(id, { auto_reboot })),
-            deleteRemediation: id => dispatch(actions.deleteRemediation(id))
+            deleteRemediation: id => dispatch(actions.deleteRemediation(id)),
+            toggleExecutePlaybookBanner: () => dispatch(actions.toggleExecutePlaybookBanner())
         })
     )(RemediationDetails)
 );

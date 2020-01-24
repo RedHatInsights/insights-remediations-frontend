@@ -63,9 +63,8 @@ export const getConnectionStatus = (id) => {
     };
 };
 
-export const executePlaybookBanner = (id) => {
+export const toggleExecutePlaybookBanner = () => {
     return {
-        type: ACTION_TYPES.EXECUTE_PLAYBOOK_BANNER,
-        payload: id
+        type: ACTION_TYPES.EXECUTE_PLAYBOOK_BANNER
     };
 };

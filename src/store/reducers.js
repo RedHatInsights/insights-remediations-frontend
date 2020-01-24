@@ -143,11 +143,11 @@ const reducers = {
     }),
 
     executePlaybookBanner: applyReducerHash({
-        [ACTION_TYPES.EXECUTE_PLAYBOOK_BANNER]: () => ({
-            status: 'show'
+        [ACTION_TYPES.EXECUTE_PLAYBOOK_BANNER]: (state) => ({
+            isVisible: !state.isVisible
         })
     }, {
-        status: 'hide'
+        isVisible: false
     })
 };
 
