@@ -75,9 +75,8 @@ class RemediationDetails extends Component {
         return (
             <React.Fragment>
                 {
-                    getStore().getState().executePlaybookBanner.isVisible ?
-                        <ExecuteBanner onCancel={ () => this.props.toggleExecutePlaybookBanner() } /> :
-                        null
+                    getStore().getState().executePlaybookBanner.isVisible &&
+                        <ExecuteBanner onCancel={ () => this.props.toggleExecutePlaybookBanner() } />
                 }
                 <PageHeader>
                     <Breadcrumb>
