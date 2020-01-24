@@ -14,7 +14,7 @@ const asyncActions = flatMap([
     'PATCH_REMEDIATION_ISSUE',
     'GET_RESOLUTIONS',
     'GET_CONNECTION_STATUS',
-    'EXECUTE_PLAYBOOK_BANNER',
+    'EXECUTE_PLAYBOOK_BANNER'
 ], a => [ a, `${a}_PENDING`, `${a}_FULFILLED`, `${a}_REJECTED` ]);
 
 export const ACTION_TYPES = keyBy([ ...asyncActions ], k => k);

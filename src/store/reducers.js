@@ -146,7 +146,7 @@ const reducers = {
         [ACTION_TYPES.EXECUTE_PLAYBOOK_BANNER]: () => ({
             status: 'show'
         })
-    },{
+    }, {
         status: 'hide'
     })
 };

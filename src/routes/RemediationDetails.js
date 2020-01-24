@@ -71,6 +71,7 @@ class RemediationDetails extends Component {
         }
 
         const { stats } = remediation;
+
         return (
             <React.Fragment>
                 <PageHeader>
@@ -81,9 +82,9 @@ class RemediationDetails extends Component {
                         <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
                     </Breadcrumb>
                     {
-                        getStore().getState().executePlaybookBanner.status == 'show' ?
-                        <ExecuteBanner></ExecuteBanner> :
-                        null
+                        getStore().getState().executePlaybookBanner.status === 'show' ?
+                            <ExecuteBanner></ExecuteBanner> :
+                            null
                     }
                     <Level className="ins-c-level">
                         <LevelItem>
@@ -203,7 +204,8 @@ RemediationDetails.propTypes = {
 
 export default withRouter(
     connect(
-        ({ selectedRemediation, selectedRemediationStatus, executePlaybookBanner }) => ({ selectedRemediation, selectedRemediationStatus, executePlaybookBanner }),
+        ({ selectedRemediation, selectedRemediationStatus, executePlaybookBanner }) => ({ selectedRemediation, selectedRemediationStatus,
+            executePlaybookBanner }),
         dispatch => ({
             loadRemediation: id => dispatch(actions.loadRemediation(id)),
             loadRemediationStatus: id => dispatch(actions.loadRemediationStatus(id)),
