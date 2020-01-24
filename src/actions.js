@@ -63,7 +63,9 @@ export const getConnectionStatus = (id) => {
     };
 };
 
-export const executeRemediation = (id) => ({
-    type: ACTION_TYPES.EXECUTE_REMEDIATION,
-    payload: remediations.executeRemediation(id)
-});
+export const executePlaybookBanner = (id) => {
+    return {
+        type: ACTION_TYPES.EXECUTE_PLAYBOOK_BANNER,
+        payload: id
+    };
+};

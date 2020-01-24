@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
-import { getConnectionStatus } from '../actions';
+import { getConnectionStatus, executePlaybookBanner } from '../actions';
 
 import ExecuteButton from '../components/ExecuteButton';
 
@@ -14,6 +14,9 @@ export const ExecutePlaybookButton = withRouter(connect(
     (dispatch) => ({
         getConnectionStatus: (id) => {
             dispatch(getConnectionStatus(id));
+        },
+        executePlaybookBanner: (id) => {
+            dispatch(executePlaybookBanner(id));
         }
     })
 )(ExecuteButton));
