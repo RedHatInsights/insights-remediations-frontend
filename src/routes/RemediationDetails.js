@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { formatUser, formatDate } from '../Utilities/model';
 import * as actions from '../actions';
-import { ACTION_TYPES } from '../constants';
+import { getStore } from '../store';
 import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
@@ -42,7 +42,6 @@ class RemediationDetails extends Component {
         this.id = this.props.match.params.id;
         this.loadRemediation = this.props.loadRemediation.bind(this, this.id);
         this.loadRemediationStatus = this.props.loadRemediationStatus.bind(this, this.id);
-        this.executePlaybookBanner = this.props.executePlaybookBanner.bind(this, this.id);
     };
 
     handleRebootChange = autoReboot => {
@@ -72,8 +71,6 @@ class RemediationDetails extends Component {
         }
 
         const { stats } = remediation;
-        // this.executePlaybookBanner();
-        console.log("state: ", this.state)
         return (
             <React.Fragment>
                 <PageHeader>
@@ -83,7 +80,11 @@ class RemediationDetails extends Component {
                         </BreadcrumbItem>
                         <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
                     </Breadcrumb>
-                    <ExecuteBanner></ExecuteBanner>
+                    {
+                        getStore().getState().executePlaybookBanner.status == 'show' ?
+                        <ExecuteBanner></ExecuteBanner> :
+                        null
+                    }
                     <Level className="ins-c-level">
                         <LevelItem>
                             <PageHeaderTitle title={ remediation.name }/>
@@ -197,20 +198,18 @@ RemediationDetails.propTypes = {
     loadRemediation: PropTypes.func.isRequired,
     loadRemediationStatus: PropTypes.func.isRequired,
     switchAutoReboot: PropTypes.func.isRequired,
-    deleteRemediation: PropTypes.func.isRequired,
-    executePlaybookBanner: PropTypes.func.isRequired
+    deleteRemediation: PropTypes.func.isRequired
 };
 
 export default withRouter(
     connect(
-        ({ selectedRemediation, selectedRemediationStatus }) => ({ selectedRemediation, selectedRemediationStatus }),
+        ({ selectedRemediation, selectedRemediationStatus, executePlaybookBanner }) => ({ selectedRemediation, selectedRemediationStatus, executePlaybookBanner }),
         dispatch => ({
             loadRemediation: id => dispatch(actions.loadRemediation(id)),
             loadRemediationStatus: id => dispatch(actions.loadRemediationStatus(id)),
             // eslint-disable-next-line camelcase
             switchAutoReboot: (id, auto_reboot) => dispatch(actions.patchRemediation(id, { auto_reboot })),
-            deleteRemediation: id => dispatch(actions.deleteRemediation(id)),
-            executePlaybookBanner: (id => dispatch(actions.executePlaybookBanner(id)))
+            deleteRemediation: id => dispatch(actions.deleteRemediation(id))
         })
     )(RemediationDetails)
 );

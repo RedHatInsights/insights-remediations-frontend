@@ -140,6 +140,14 @@ const reducers = {
         })
     }, {
         status: 'initial'
+    }),
+
+    executePlaybookBanner: applyReducerHash({
+        [ACTION_TYPES.EXECUTE_PLAYBOOK_BANNER]: () => ({
+            status: 'show'
+        })
+    },{
+        status: 'hide'
     })
 };
 
