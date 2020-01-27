@@ -6,11 +6,12 @@ import { getConnectionStatus, runRemediation, toggleExecutePlaybookBanner } from
 import ExecuteButton from '../components/ExecuteButton';
 
 export const ExecutePlaybookButton = withRouter(connect(
-    ({ connectionStatus: { data, status, etag }, selectedRemediation }) => ({
+    ({ connectionStatus: { data, status, etag }, selectedRemediation, runRemediation }) => ({
         data,
         isLoading: status !== 'fulfilled',
         issueCount: selectedRemediation.remediation.issues.length,
-        etag
+        etag,
+        remediationStatus: runRemediation.status
     }),
     (dispatch) => ({
         getConnectionStatus: (id) => {

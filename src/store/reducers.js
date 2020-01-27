@@ -160,6 +160,19 @@ const reducers = {
                 ]
             };
         }
+    }),
+
+    runRemediation: applyReducerHash({
+        [ACTION_TYPES.RUN_REMEDIATION_PENDING]: () => ({
+            status: 'pending'
+        }),
+        [ACTION_TYPES.RUN_REMEDIATION_FULFILLED]: (state, action) => ({
+            status: 'fulfilled',
+            data: action.payload.data
+        }),
+        [ACTION_TYPES.RUN_REMEDIATION_REJECTED]: (state, action) => ({
+            status: action.payload.response.status === 412 ? 'changed' : 'rejected'
+        })
     }, {
         status: 'initial'
     })
