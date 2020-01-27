@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { formatUser, formatDate } from '../Utilities/model';
 import * as actions from '../actions';
-import { getStore } from '../store';
 import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
@@ -75,7 +74,7 @@ class RemediationDetails extends Component {
         return (
             <React.Fragment>
                 {
-                    getStore().getState().executePlaybookBanner.isVisible &&
+                    this.props.executePlaybookBanner.isVisible &&
                         <ExecuteBanner onCancel={ () => this.props.toggleExecutePlaybookBanner() } />
                 }
                 <PageHeader>
@@ -199,7 +198,10 @@ RemediationDetails.propTypes = {
     loadRemediationStatus: PropTypes.func.isRequired,
     switchAutoReboot: PropTypes.func.isRequired,
     deleteRemediation: PropTypes.func.isRequired,
-    toggleExecutePlaybookBanner: PropTypes.func.isRequired
+    toggleExecutePlaybookBanner: PropTypes.func.isRequired,
+    executePlaybookBanner: PropTypes.shape({
+        isVisible: PropTypes.bool
+    })
 };
 
 export default withRouter(

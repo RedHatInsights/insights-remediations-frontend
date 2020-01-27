@@ -123,7 +123,10 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, toggleExecutePlay
                         key="confirm"
                         variant="primary"
                         isDisabled={ connected.length === 0 }
-                        onClick={ () => { setOpen(false); toggleExecutePlaybookBanner(); } }>
+                        onClick={ () => {
+                            setOpen(false);
+                            toggleExecutePlaybookBanner();
+                        } }>
                         { isLoading ? 'Execute Playbook' : `Execute Playbook on ${pluralize(connectedCount, 'system')}` }
                     </Button>,
                     <Button
