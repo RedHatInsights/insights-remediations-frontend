@@ -84,7 +84,7 @@ const styledConnectionStatus = (status) => ({
     </TextContent>)
 })[status];
 
-const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, issueCount }) => {
+const ExecuteButton = ({ isLoading, data, getConnectionStatus, toggleExecutePlaybookBanner, remediationId, issueCount }) => {
     const [ open, setOpen ] = useState(false);
     const [ isUserEntitled, setIsUserEntitled ] = useState(false);
     const isEnabled = () => localStorage.getItem('remediations:fifi:debug') === 'true';
@@ -123,7 +123,10 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, remediationId, is
                         key="confirm"
                         variant="primary"
                         isDisabled={ connected.length === 0 }
-                        onClick={ () => setOpen(false) }>
+                        onClick={ () => {
+                            setOpen(false);
+                            toggleExecutePlaybookBanner();
+                        } }>
                         { isLoading ? 'Execute Playbook' : `Execute Playbook on ${pluralize(connectedCount, 'system')}` }
                     </Button>,
                     <Button
@@ -177,6 +180,7 @@ ExecuteButton.propTypes = {
     isLoading: PropTypes.bool,
     data: PropTypes.array,
     getConnectionStatus: PropTypes.func,
+    toggleExecutePlaybookBanner: PropTypes.func,
     remediationId: PropTypes.string,
     issueCount: PropTypes.number
 };

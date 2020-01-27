@@ -10,6 +10,7 @@ import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown
 import { isBeta } from '../config';
 import ActionsResolvedCard from '../components/ActionsResolvedCard';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
+import ExecuteBanner from '../components/Alerts/ExecuteBanner';
 
 import {
     Main,
@@ -72,6 +73,10 @@ class RemediationDetails extends Component {
 
         return (
             <React.Fragment>
+                {
+                    this.props.executePlaybookBanner.isVisible &&
+                        <ExecuteBanner onCancel={ () => this.props.toggleExecutePlaybookBanner() } />
+                }
                 <PageHeader>
                     <Breadcrumb>
                         <BreadcrumbItem>
@@ -192,18 +197,24 @@ RemediationDetails.propTypes = {
     loadRemediation: PropTypes.func.isRequired,
     loadRemediationStatus: PropTypes.func.isRequired,
     switchAutoReboot: PropTypes.func.isRequired,
-    deleteRemediation: PropTypes.func.isRequired
+    deleteRemediation: PropTypes.func.isRequired,
+    toggleExecutePlaybookBanner: PropTypes.func.isRequired,
+    executePlaybookBanner: PropTypes.shape({
+        isVisible: PropTypes.bool
+    })
 };
 
 export default withRouter(
     connect(
-        ({ selectedRemediation, selectedRemediationStatus }) => ({ selectedRemediation, selectedRemediationStatus }),
+        ({ selectedRemediation, selectedRemediationStatus, executePlaybookBanner }) => ({ selectedRemediation, selectedRemediationStatus,
+            executePlaybookBanner }),
         dispatch => ({
             loadRemediation: id => dispatch(actions.loadRemediation(id)),
             loadRemediationStatus: id => dispatch(actions.loadRemediationStatus(id)),
             // eslint-disable-next-line camelcase
             switchAutoReboot: (id, auto_reboot) => dispatch(actions.patchRemediation(id, { auto_reboot })),
-            deleteRemediation: id => dispatch(actions.deleteRemediation(id))
+            deleteRemediation: id => dispatch(actions.deleteRemediation(id)),
+            toggleExecutePlaybookBanner: () => dispatch(actions.toggleExecutePlaybookBanner())
         })
     )(RemediationDetails)
 );

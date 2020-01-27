@@ -62,3 +62,7 @@ export const getConnectionStatus = (id) => {
         payload: remediations.getRemediationConnectionStatus(id)
     };
 };
+
+export const toggleExecutePlaybookBanner = () => ({
+    type: ACTION_TYPES.EXECUTE_PLAYBOOK_BANNER
+});
