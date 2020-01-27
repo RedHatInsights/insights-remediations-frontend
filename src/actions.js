@@ -74,3 +74,8 @@ export const runRemediation = (id, etag) => {
     };
 };
 
+export const setEtag = (etag) => ({
+    type: ACTION_TYPES.SET_ETAG,
+    payload: { etag }
+});
+

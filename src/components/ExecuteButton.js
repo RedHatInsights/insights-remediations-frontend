@@ -83,7 +83,7 @@ const styledConnectionStatus = (status) => ({
     </TextContent>)
 })[status];
 
-const ExecuteButton = ({ isLoading, data, getConnectionStatus, toggleExecutePlaybookBanner, remediationId, issueCount, runRemediation, etag, remediationStatus }) => {
+const ExecuteButton = ({ isLoading, data, getConnectionStatus, toggleExecutePlaybookBanner, remediationId, issueCount, runRemediation, etag, remediationStatus, setEtag }) => {
     const [ open, setOpen ] = useState(false);
     const [ isUserEntitled, setIsUserEntitled ] = useState(false);
     const [ showRefreshMessage, setShowRefreshMessage ] = useState(false);
@@ -143,6 +143,12 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, toggleExecutePlay
                         key="download"
                         variant='link' onClick={ () => downloadPlaybook(remediationId) }>
                         Download Playbook
+                    </Button>,
+                    <Button
+                        key="reset-etag"
+                        isDisabled={ !isEnabled }
+                        onClick={ () => setEtag('test') }>
+                        Reset etag
                     </Button>
                 ] }
             >
@@ -199,7 +205,8 @@ ExecuteButton.propTypes = {
     remediationId: PropTypes.string,
     remediationStatus: PropTypes.string,
     issueCount: PropTypes.number,
-    etag: PropTypes.string
+    etag: PropTypes.string,
+    setEtag: PropTypes.func
 };
 
 ExecuteButton.defaultProps = {

@@ -137,6 +137,10 @@ const reducers = {
         [ACTION_TYPES.GET_CONNECTION_STATUS_REJECTED]: () => ({
             status: 'rejected',
             data: []
+        }),
+        [ACTION_TYPES.SET_ETAG]: (state, action) => ({
+            ...state,
+            etag: action.etag
         })
     }, {
         status: 'initial'
