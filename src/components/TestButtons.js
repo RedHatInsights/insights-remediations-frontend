@@ -18,6 +18,14 @@ class TestButtons extends React.Component {
 
     isEnabled = () => localStorage.getItem('remediations:debug') === 'true';
 
+    dataProviderPing = () => ({
+        issues: [{
+            id: 'test:ping',
+            description: 'Ansible ping'
+        }],
+        systems: this.state.allHosts
+    });
+
     dataProviderA1 = () => ({
         issues: [{
             id: 'vulnerabilities:CVE-2019-3815',
@@ -153,6 +161,8 @@ class TestButtons extends React.Component {
 
         return (
             <Split gutter='sm'>
+                <RemediationBtn dataProvider={ this.dataProviderPing }>Ping</RemediationBtn>
+
                 <RemediationBtn dataProvider={ this.dataProviderA1 }>A1</RemediationBtn>
                 <RemediationBtn dataProvider={ this.dataProviderA2 }>A2</RemediationBtn>
 
