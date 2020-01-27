@@ -27,6 +27,8 @@ export function getInventoryTabForIssue ({ id }) {
             return 'vulnerabilities';
         case 'ssg':
             return 'compliance';
+        case 'patch-advisory':
+            return 'patch';
         default:
             return 'general_information';
     }
@@ -48,6 +50,8 @@ export function buildIssueUrl (id) {
             return appUrl(parts[0]).segment('rules').segment(parts[1]).toString();
         case 'vulnerabilities':
             return appUrl(parts[0]).segment('cves').segment(parts[1]).toString();
+        case 'patch-advisory':
+            return appUrl(parts[0]).segment('advisories').segment(parts[1]).toString();
         default:
             return null;
     }
@@ -64,6 +68,8 @@ export function appUrl (app) {
             return urijs(document.baseURI).segment('rhel').segment('compliance');
         case 'inventory':
             return urijs(document.baseURI).segment(getGroup()).segment('inventory');
+        case 'patch-advisory':
+            return urijs(document.baseURI).segment('rhel').segment('patch');
         default:
             throw new Error(`Unknown app: ${app}`);
     }
