@@ -11,6 +11,7 @@ export function getIssueApplication ({ id }) {
         case 'advisor': return 'Insights';
         case 'ssg': return 'Compliance';
         case 'vulnerabilities': return 'Vulnerability';
+        case 'patch-advisory': return 'Patch';
         default: return 'Unknown';
     }
 }
