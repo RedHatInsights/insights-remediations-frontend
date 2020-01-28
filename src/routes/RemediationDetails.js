@@ -90,12 +90,12 @@ class RemediationDetails extends Component {
                         </BreadcrumbItem>
                         <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
                     </Breadcrumb>
-                    <Level className='ins-c-level'>
+                    <Level className="ins-c-level">
                         <LevelItem>
                             <PageHeaderTitle title={ remediation.name }/>
                         </LevelItem>
                         <LevelItem>
-                            <Split gutter='md'>
+                            <Split gutter="md">
                                 <SplitItem>
                                     <ExecutePlaybookButton
                                         remediationId={ remediation.id }>
@@ -116,9 +116,9 @@ class RemediationDetails extends Component {
                     </Level>
                 </PageHeader>
                 <Main>
-                    <Stack gutter='md'>
+                    <Stack gutter="md">
                         <StackItem>
-                            <Grid gutter='md' sm={ 12 } md={ isBeta ? 4 : 6 } className='ins-c-summary-cards'>
+                            <Grid gutter="md" sm={ 12 } md={ isBeta ? 4 : 6 } className='ins-c-summary-cards'>
                                 {
                                     isBeta &&
                                     <GridItem>
@@ -129,7 +129,7 @@ class RemediationDetails extends Component {
                                     <Card className='ins-c-card__system-reboot'>
                                         <CardHeader className='ins-m-card__header-bold'> Systems reboot </CardHeader>
                                         <CardBody>
-                                            <Grid gutter='md' md={ 4 } sm={ 4 }>
+                                            <Grid gutter="md" md={ 4 } sm={ 4 }>
                                                 <GridItem>
                                                     <Stack>
                                                         <StackItem className='ins-m-text-emphesis'>{ stats.systemsWithoutReboot }</StackItem>
@@ -146,8 +146,8 @@ class RemediationDetails extends Component {
                                                     <Stack>
                                                         <StackItem className='ins-c-reboot-switch'>
                                                             <Switch
-                                                                id='autoReboot'
-                                                                aria-label='Auto reboot'
+                                                                id="autoReboot"
+                                                                aria-label="Auto reboot"
                                                                 isChecked={ remediation.needs_reboot ? remediation.auto_reboot : false }
                                                                 isDisabled={ !remediation.needs_reboot }
                                                                 onChange={ this.handleRebootChange }
