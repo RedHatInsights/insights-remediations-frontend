@@ -19,17 +19,19 @@ import {
 
 import {
     Grid, GridItem,
-    Card, CardHeader, CardBody,
+    Card, CardHeader, CardBody, CardHead, CardActions,
     Stack, StackItem,
     Switch,
     Level, LevelItem,
     Breadcrumb, BreadcrumbItem,
     Button,
-    Split, SplitItem
+    Split, SplitItem,
+    Flex, FlexItem, FlexModifiers
 } from '@patternfly/react-core';
 
 import './RemediationDetails.scss';
 import RemediationDetailsSkeleton from '../skeletons/RemediationDetailsSkeleton';
+import DescriptionList from '../components/Layouts/DescriptionList';
 
 class RemediationDetails extends Component {
 
@@ -65,11 +67,15 @@ class RemediationDetails extends Component {
     render() {
         const { status, remediation } = this.props.selectedRemediation;
 
+        const isEnabled = () => localStorage.getItem('remediations:fifi:debug') === 'true';
+
         if (status !== 'fulfilled') {
             return <RemediationDetailsSkeleton/>;
         }
 
         const { stats } = remediation;
+
+        const totalSystems = stats.systemsWithReboot + stats.systemsWithoutReboot;
 
         return (
             <React.Fragment>
@@ -175,6 +181,43 @@ class RemediationDetails extends Component {
                                 </GridItem>
                             </Grid>
                         </StackItem>
+                        { isEnabled &&
+                            <StackItem>
+                                <Card>
+                                    <CardHead>
+                                        <CardActions>
+                                            <Button variant='link'>View Activity</Button>
+                                        </CardActions>
+                                        <CardHeader className='ins-m-card__header-bold'>Plan Summary</CardHeader>
+                                    </CardHead>
+                                    <CardBody>
+                                        <Stack gutter='md'>
+                                            <StackItem className='ins-c-plan-overview'>
+
+                                                <DescriptionList isBold title='Total systems'>{ totalSystems } systems</DescriptionList>
+                                                <DescriptionList isBold title='Plan progress'>TODO actions complete</DescriptionList>
+                                            </StackItem>
+                                            <StackItem className='ins-c-plan-settings'>
+                                                <DescriptionList title='Plan settings'>
+                                                    Autoreboot:
+                                                    <b className='ins-c-reboot-required__status'>{ remediation.auto_reboot && remediation.needs_reboot ? 'Enabled' : 'Disabled' }</b>
+                                                    <span
+                                                        className='ins-c-reboot-required__number'>
+                                                        { stats.systemsWithReboot } systems require reboot
+                                                    </span>
+                                                </DescriptionList>
+                                                <Button
+                                                    isDisabled={ !remediation.needs_reboot }
+                                                    variant='link'
+                                                    onClick={ () => this.handleRebootChange(!remediation.auto_reboot) }>
+                                                    Turn { remediation.auto_reboot && remediation.needs_reboot ? 'off' : 'on' } auto reboot
+                                                </Button>
+                                            </StackItem>
+                                        </Stack>
+                                    </CardBody>
+                                </Card>
+                            </StackItem>
+                        }
                         <StackItem>
                             <RemediationDetailsTable remediation={ remediation } status={ this.props.selectedRemediationStatus }/>
                         </StackItem>
