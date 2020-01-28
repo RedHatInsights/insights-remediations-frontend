@@ -83,11 +83,22 @@ const styledConnectionStatus = (status) => ({
     </TextContent>)
 })[status];
 
-const ExecuteButton = ({ isLoading, data, getConnectionStatus, toggleExecutePlaybookBanner, remediationId, issueCount, runRemediation, etag, remediationStatus, setEtag }) => {
+const ExecuteButton = ({
+    isLoading,
+    data,
+    getConnectionStatus,
+    toggleExecutePlaybookBanner,
+    remediationId,
+    issueCount,
+    runRemediation,
+    etag,
+    remediationStatus,
+    setEtag }) => {
     const [ open, setOpen ] = useState(false);
     const [ isUserEntitled, setIsUserEntitled ] = useState(false);
     const [ showRefreshMessage, setShowRefreshMessage ] = useState(false);
     const isEnabled = () => localStorage.getItem('remediations:fifi:debug') === 'true';
+    const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
     useEffect(() => {
         window.insights.chrome.auth.getUser().then(user => setIsUserEntitled(user.entitlements.smart_management.is_entitled));
@@ -144,17 +155,18 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, toggleExecutePlay
                         variant='link' onClick={ () => downloadPlaybook(remediationId) }>
                         Download Playbook
                     </Button>,
-                    <Button
-                        key="reset-etag"
-                        isDisabled={ !isEnabled }
-                        onClick={ () => setEtag('test') }>
+                    (isDebug()
+                        ? <Button
+                            key="reset-etag"
+                            onClick={ () => setEtag('test') }>
                         Reset etag
-                    </Button>
+                        </Button>
+                        : null)
                 ] }
             >
                 <div>
                     { showRefreshMessage
-                        ? <Alert variant="info" isInline
+                        ? <Alert variant="warning" isInline
                             title="The connection status of systems associated with this Playbook has changed. Please review again." />
                         : null }
                     <TextContent>
