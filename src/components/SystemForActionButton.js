@@ -73,7 +73,7 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
             <Modal
                 className="ins-c-dialog"
                 width={ '50%' }
-                title={ `System for action ${issue.description}` }
+                title={ `System${issue.systems.length > 1 ? 's' : ''} for action ${issue.description}` }
                 isOpen={ open }
                 onClose={ () => setOpen(false) }
                 isFooterLeftAligned
