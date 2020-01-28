@@ -6,7 +6,7 @@ import './DescriptionList.scss';
 
 const DescriptionList = ({ title, className, children, isBold, ...props }) => {
 
-    const DescriptionListClasses = classnames(
+    const descriptionListClasses = classnames(
         'ins-l-description-list__description',
         { ['ins-l-description-list__description--bold']: isBold }
     );
@@ -19,7 +19,7 @@ const DescriptionList = ({ title, className, children, isBold, ...props }) => {
     return (
         <dl className={ mainClasses } { ...props }>
             <dt className='ins-l-description-list__title'><b>{ title }</b></dt>
-            <dd className={ DescriptionListClasses }> { children } </dd>
+            <dd className={ descriptionListClasses }> { children } </dd>
         </dl>
     );
 };

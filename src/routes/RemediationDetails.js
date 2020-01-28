@@ -104,7 +104,7 @@ class RemediationDetails extends Component {
                                 <SplitItem>
                                     <Button
                                         isDisabled={ !remediation.issues.length }
-                                        variant='link'onClick={ () => downloadPlaybook(remediation.id) }>
+                                        variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
                                         Download Playbook
                                     </Button>
                                 </SplitItem>

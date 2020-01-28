@@ -7,7 +7,7 @@
         font-size: var(--pf-global--FontSize--md);
         &--bold {
             font-size: var(--pf-global--FontSize--lg);
-            font-weight: 700;
+            font-weight: var(--pf-global--FontWeight--redhatfont--bold);
         }
     }
 }
