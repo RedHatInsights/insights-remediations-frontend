@@ -51,19 +51,15 @@
         }
     }
 
-    .ins-c-plan-overview {
-        display: flex;
-        flex-wrap: wrap;
-        dl { flex-grow: 1; }
-    }
-
-    .ins-c-plan-settings {
-        .ins-c-reboot-required__number { margin-left: var(--pf-global--spacer--lg); }
-        .ins-c-reboot-required__status { margin-left: var(--pf-global--spacer--sm) }
+    .ins-c-plan {
+        &__overview { margin-bottom: var(--pf-global--spacer--lg); }
+        &__settings {
+            margin-bottom: var(--pf-global--spacer--sm);
+        }
         button {
-            padding-left: 0;
-            padding-right: 0;
-            margin-top: var(--pf-global--spacer--sm);
+            margin: 0;
+            width: min-content;
+            padding: 0;
         }
     }
 }

@@ -77,6 +77,8 @@ class RemediationDetails extends Component {
 
         const totalSystems = stats.systemsWithReboot + stats.systemsWithoutReboot;
 
+        const pluralize = (number, str) => number === 1 ? `${number} ${str}` : `${number} ${str}s`;
+
         return (
             <React.Fragment>
                 {
@@ -90,12 +92,12 @@ class RemediationDetails extends Component {
                         </BreadcrumbItem>
                         <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
                     </Breadcrumb>
-                    <Level className="ins-c-level">
+                    <Level className='ins-c-level'>
                         <LevelItem>
                             <PageHeaderTitle title={ remediation.name }/>
                         </LevelItem>
                         <LevelItem>
-                            <Split gutter="md">
+                            <Split gutter='md'>
                                 <SplitItem>
                                     <ExecutePlaybookButton
                                         remediationId={ remediation.id }>
@@ -116,9 +118,9 @@ class RemediationDetails extends Component {
                     </Level>
                 </PageHeader>
                 <Main>
-                    <Stack gutter="md">
+                    <Stack gutter='md'>
                         <StackItem>
-                            <Grid gutter="md" sm={ 12 } md={ isBeta ? 4 : 6 } className='ins-c-summary-cards'>
+                            <Grid gutter='md' sm={ 12 } md={ isBeta ? 4 : 6 } className='ins-c-summary-cards'>
                                 {
                                     isBeta &&
                                     <GridItem>
@@ -129,7 +131,7 @@ class RemediationDetails extends Component {
                                     <Card className='ins-c-card__system-reboot'>
                                         <CardHeader className='ins-m-card__header-bold'> Systems reboot </CardHeader>
                                         <CardBody>
-                                            <Grid gutter="md" md={ 4 } sm={ 4 }>
+                                            <Grid gutter='md' md={ 4 } sm={ 4 }>
                                                 <GridItem>
                                                     <Stack>
                                                         <StackItem className='ins-m-text-emphesis'>{ stats.systemsWithoutReboot }</StackItem>
@@ -146,8 +148,8 @@ class RemediationDetails extends Component {
                                                     <Stack>
                                                         <StackItem className='ins-c-reboot-switch'>
                                                             <Switch
-                                                                id="autoReboot"
-                                                                aria-label="Auto reboot"
+                                                                id='autoReboot'
+                                                                aria-label='Auto reboot'
                                                                 isChecked={ remediation.needs_reboot ? remediation.auto_reboot : false }
                                                                 isDisabled={ !remediation.needs_reboot }
                                                                 onChange={ this.handleRebootChange }
@@ -191,29 +193,33 @@ class RemediationDetails extends Component {
                                         <CardHeader className='ins-m-card__header-bold'>Plan Summary</CardHeader>
                                     </CardHead>
                                     <CardBody>
-                                        <Stack gutter='md'>
-                                            <StackItem className='ins-c-plan-overview'>
-
-                                                <DescriptionList isBold title='Total systems'>{ totalSystems } systems</DescriptionList>
-                                                <DescriptionList isBold title='Plan progress'>TODO actions complete</DescriptionList>
-                                            </StackItem>
-                                            <StackItem className='ins-c-plan-settings'>
-                                                <DescriptionList title='Plan settings'>
-                                                    Autoreboot:
-                                                    <b className='ins-c-reboot-required__status'>{ remediation.auto_reboot && remediation.needs_reboot ? 'Enabled' : 'Disabled' }</b>
-                                                    <span
-                                                        className='ins-c-reboot-required__number'>
-                                                        { stats.systemsWithReboot } systems require reboot
-                                                    </span>
-                                                </DescriptionList>
-                                                <Button
-                                                    isDisabled={ !remediation.needs_reboot }
-                                                    variant='link'
-                                                    onClick={ () => this.handleRebootChange(!remediation.auto_reboot) }>
-                                                    Turn { remediation.auto_reboot && remediation.needs_reboot ? 'off' : 'on' } auto reboot
-                                                </Button>
-                                            </StackItem>
-                                        </Stack>
+                                        <Flex className='ins-c-plan' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
+                                            <Flex className='ins-c-plan__overview'>
+                                                <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                                    <DescriptionList isBold title='Total systems'>{ totalSystems } systems</DescriptionList>
+                                                </FlexItem>
+                                                <FlexItem>
+                                                    <DescriptionList isBold title='Plan progress'>TODO actions complete</DescriptionList>
+                                                </FlexItem>
+                                            </Flex>
+                                            <DescriptionList className='ins-c-plan__settings' title='Plan settings'>
+                                                <Flex>
+                                                    <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                                        Autoreboot:&nbsp;
+                                                        <b className='ins-c-plan__settings--reboot-status'>
+                                                            { remediation.auto_reboot && remediation.needs_reboot ? 'Enabled' : 'Disabled' }
+                                                        </b>
+                                                    </FlexItem>
+                                                    <FlexItem>{ pluralize(stats.systemsWithReboot, 'system') } require reboot</FlexItem>
+                                                </Flex>
+                                            </DescriptionList>
+                                            <Button
+                                                isDisabled={ !remediation.needs_reboot }
+                                                variant='link'
+                                                onClick={ () => this.handleRebootChange(!remediation.auto_reboot) }>
+                                                Turn { remediation.auto_reboot && remediation.needs_reboot ? 'off' : 'on' } auto reboot
+                                            </Button>
+                                        </Flex>
                                     </CardBody>
                                 </Card>
                             </StackItem>

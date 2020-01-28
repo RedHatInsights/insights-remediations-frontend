@@ -4,15 +4,20 @@ import classnames from 'classnames';
 
 import './DescriptionList.scss';
 
-const DescriptionList = ({ title, children, isBold, ...props }) => {
+const DescriptionList = ({ title, className, children, isBold, ...props }) => {
 
     const DescriptionListClasses = classnames(
         'ins-l-description-list__description',
         { ['ins-l-description-list__description--bold']: isBold }
     );
 
+    const mainClasses = classnames(
+        className,
+        'ins-l-description-list'
+    );
+
     return (
-        <dl className='ins-l-description-list' { ...props }>
+        <dl className={ mainClasses } { ...props }>
             <dt className='ins-l-description-list__title'><b>{ title }</b></dt>
             <dd className={ DescriptionListClasses }> { children } </dd>
         </dl>
@@ -24,5 +29,6 @@ export default DescriptionList;
 DescriptionList.propTypes = {
     title: propTypes.string,
     children: propTypes.any,
-    isBold: propTypes.bool
+    isBold: propTypes.bool,
+    className: propTypes.string
 };
