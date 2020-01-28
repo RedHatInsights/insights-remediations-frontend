@@ -55,9 +55,9 @@
         &__overview { margin-bottom: var(--pf-global--spacer--lg); }
         &__settings { margin-bottom: var(--pf-global--spacer--sm); }
         button {
-            margin: 0;
             width: min-content;
-            padding: 0;
+            padding-left: 0;
+            padding-right: 0;
         }
     }
 }
