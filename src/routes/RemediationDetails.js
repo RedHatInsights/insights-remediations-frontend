@@ -67,8 +67,6 @@ class RemediationDetails extends Component {
     render() {
         const { status, remediation } = this.props.selectedRemediation;
 
-        const isEnabled = () => localStorage.getItem('remediations:fifi:debug') === 'true';
-
         if (status !== 'fulfilled') {
             return <RemediationDetailsSkeleton/>;
         }
@@ -183,7 +181,7 @@ class RemediationDetails extends Component {
                                 </GridItem>
                             </Grid>
                         </StackItem>
-                        { isEnabled &&
+                        { localStorage.getItem('remediations:fifi:debug') === 'true' &&
                             <StackItem>
                                 <Card>
                                     <CardHead>

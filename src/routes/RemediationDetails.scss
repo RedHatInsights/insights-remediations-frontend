@@ -53,9 +53,7 @@
 
     .ins-c-plan {
         &__overview { margin-bottom: var(--pf-global--spacer--lg); }
-        &__settings {
-            margin-bottom: var(--pf-global--spacer--sm);
-        }
+        &__settings { margin-bottom: var(--pf-global--spacer--sm); }
         button {
             margin: 0;
             width: min-content;
