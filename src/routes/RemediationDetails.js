@@ -62,9 +62,9 @@ class RemediationDetails extends Component {
         // TODO: Cancel playbook
         this.props.toggleExecutePlaybookBanner();
         this.props.addNotification({
-            variant: 'danger',
-            title: `Remediation plan ${name} cancelled.`,
-            dismissDelay: 8000
+            variant: 'info',
+            title: `Canceled execution of playbook ${name}.`,
+            dismissDelay: 2000
         });
     }
 
