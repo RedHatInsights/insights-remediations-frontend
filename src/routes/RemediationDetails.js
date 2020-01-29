@@ -19,7 +19,7 @@ import {
 
 import {
     Grid, GridItem,
-    Card, CardHeader, CardBody, CardHead, CardActions,
+    Card, CardHeader, CardBody,
     Stack, StackItem,
     Switch,
     Level, LevelItem,
@@ -184,29 +184,19 @@ class RemediationDetails extends Component {
                         { localStorage.getItem('remediations:fifi:debug') === 'true' &&
                             <StackItem>
                                 <Card>
-                                    <CardHead>
-                                        <CardActions>
-                                            <Button variant='link'>View Activity</Button>
-                                        </CardActions>
-                                        <CardHeader className='ins-m-card__header-bold'>Plan Summary</CardHeader>
-                                    </CardHead>
+                                    <CardHeader className='ins-m-card__header-bold'>Playbook Summary</CardHeader>
                                     <CardBody>
-                                        <Flex className='ins-c-plan' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
-                                            <Flex className='ins-c-plan__overview'>
+                                        <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
+                                            <Flex className='ins-c-playbookSummary__overview'>
                                                 <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
                                                     <DescriptionList isBold title='Total systems'>{ totalSystems } systems</DescriptionList>
                                                 </FlexItem>
-                                                <FlexItem>
-                                                    <DescriptionList isBold title='Plan progress'>TODO actions complete</DescriptionList>
-                                                </FlexItem>
                                             </Flex>
-                                            <DescriptionList className='ins-c-plan__settings' title='Plan settings'>
+                                            <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
                                                 <Flex>
                                                     <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
                                                         Autoreboot:&nbsp;
-                                                        <b className='ins-c-plan__settings--reboot-status'>
-                                                            { remediation.auto_reboot && remediation.needs_reboot ? 'Enabled' : 'Disabled' }
-                                                        </b>
+                                                        <b> { remediation.auto_reboot && remediation.needs_reboot ? 'Enabled' : 'Disabled' } </b>
                                                     </FlexItem>
                                                     <FlexItem>{ pluralize(stats.systemsWithReboot, 'system') } require reboot</FlexItem>
                                                 </Flex>
