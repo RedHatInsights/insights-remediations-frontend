@@ -158,8 +158,7 @@ const reducers = {
                 columns: [
                     { key: 'display_name', title: 'System name',
                     // eslint-disable-next-line
-                        renderFunc: (name, id) => <div><a href={ props.urlBuilder(id) }>{ name }</a></div> },
-                    { key: 'satelite_id', title: 'Connection type' }
+                        renderFunc: (name, id) => <div><a href={ props.urlBuilder(id) }>{ name }</a></div> }
                 ]
             };
         }
