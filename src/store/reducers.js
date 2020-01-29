@@ -137,6 +137,10 @@ const reducers = {
         [ACTION_TYPES.GET_CONNECTION_STATUS_REJECTED]: () => ({
             status: 'rejected',
             data: []
+        }),
+        [ACTION_TYPES.SET_ETAG]: (state, action) => ({
+            ...state,
+            etag: action.etag
         })
     }, {
         status: 'initial'
@@ -160,6 +164,19 @@ const reducers = {
                 ]
             };
         }
+    }),
+
+    runRemediation: applyReducerHash({
+        [ACTION_TYPES.RUN_REMEDIATION_PENDING]: () => ({
+            status: 'pending'
+        }),
+        [ACTION_TYPES.RUN_REMEDIATION_FULFILLED]: (state, action) => ({
+            status: 'fulfilled',
+            data: action.payload.data
+        }),
+        [ACTION_TYPES.RUN_REMEDIATION_REJECTED]: (state, action) => ({
+            status: action.payload.response.status === 412 ? 'changed' : 'rejected'
+        })
     }, {
         status: 'initial'
     })
