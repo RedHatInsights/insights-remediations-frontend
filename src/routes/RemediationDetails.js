@@ -189,7 +189,7 @@ class RemediationDetails extends Component {
                                         <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
                                             <Flex className='ins-c-playbookSummary__overview'>
                                                 <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
-                                                    <DescriptionList isBold title='Total systems'>{ totalSystems } systems</DescriptionList>
+                                                    <DescriptionList isBold title='Total systems'>{ pluralize(totalSystems, 'system') }</DescriptionList>
                                                 </FlexItem>
                                             </Flex>
                                             <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
