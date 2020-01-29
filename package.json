@@ -13,7 +13,7 @@
     "@redhat-cloud-services/frontend-components-notifications": "0.0.5",
     "@redhat-cloud-services/frontend-components-remediations": "0.0.3",
     "@redhat-cloud-services/frontend-components-utilities": "0.0.5",
-    "@redhat-cloud-services/remediations-client": "^1.0.47",
+    "@redhat-cloud-services/remediations-client": "^1.0.49",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
     "classnames": "^2.2.5",

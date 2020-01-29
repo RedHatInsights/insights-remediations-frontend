@@ -1,15 +1,17 @@
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
-import { getConnectionStatus, toggleExecutePlaybookBanner } from '../actions';
+import { getConnectionStatus, runRemediation, toggleExecutePlaybookBanner, setEtag } from '../actions';
 
 import ExecuteButton from '../components/ExecuteButton';
 
 export const ExecutePlaybookButton = withRouter(connect(
-    ({ connectionStatus: { data, status }, selectedRemediation }) => ({
+    ({ connectionStatus: { data, status, etag }, selectedRemediation, runRemediation }) => ({
         data,
         isLoading: status !== 'fulfilled',
-        issueCount: selectedRemediation.remediation.issues.length
+        issueCount: selectedRemediation.remediation.issues.length,
+        etag,
+        remediationStatus: runRemediation.status
     }),
     (dispatch) => ({
         getConnectionStatus: (id) => {
@@ -17,6 +19,13 @@ export const ExecutePlaybookButton = withRouter(connect(
         },
         toggleExecutePlaybookBanner: () => {
             dispatch(toggleExecutePlaybookBanner());
+        },
+        runRemediation: (id, etag) => {
+            dispatch(runRemediation(id, etag));
+        },
+        setEtag: (etag) => {
+            dispatch(setEtag(etag));
         }
+
     })
 )(ExecuteButton));

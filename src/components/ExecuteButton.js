@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 import { downloadPlaybook } from '../api';
-import {
-    Button, Modal, TextContent, Text, TextVariants } from '@patternfly/react-core';
+import { Button, Modal, TextContent, Text, TextVariants, Alert } from '@patternfly/react-core';
 import { TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
 import { CheckCircleIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
 import { Skeleton } from '@redhat-cloud-services/frontend-components';
@@ -84,14 +83,36 @@ const styledConnectionStatus = (status) => ({
     </TextContent>)
 })[status];
 
-const ExecuteButton = ({ isLoading, data, getConnectionStatus, toggleExecutePlaybookBanner, remediationId, issueCount }) => {
+const ExecuteButton = ({
+    isLoading,
+    data,
+    getConnectionStatus,
+    toggleExecutePlaybookBanner,
+    remediationId,
+    issueCount,
+    runRemediation,
+    etag,
+    remediationStatus,
+    setEtag }) => {
     const [ open, setOpen ] = useState(false);
     const [ isUserEntitled, setIsUserEntitled ] = useState(false);
+    const [ showRefreshMessage, setShowRefreshMessage ] = useState(false);
     const isEnabled = () => localStorage.getItem('remediations:fifi:debug') === 'true';
+    const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
     useEffect(() => {
         window.insights.chrome.auth.getUser().then(user => setIsUserEntitled(user.entitlements.smart_management.is_entitled));
     }, []);
+
+    useEffect(() => {
+        if (remediationStatus === 'changed') {
+            getConnectionStatus(remediationId);
+            setShowRefreshMessage(true);
+        } else if (remediationStatus === 'fulfilled') {
+            setOpen(false);
+            toggleExecutePlaybookBanner();
+        }
+    }, [ remediationStatus ]);
 
     const [ connected, disconnected ] = data.reduce(
         ([ pass, fail ], e) => (e.connection_status === 'connected' ? [ [ ...pass, e ], fail ] : [ pass, [ ...fail, e ] ])
@@ -116,27 +137,38 @@ const ExecuteButton = ({ isLoading, data, getConnectionStatus, toggleExecutePlay
                 width={ '50%' }
                 title={ 'Execute Playbook' }
                 isOpen={ open }
-                onClose={ () => setOpen(false) }
+                onClose={ () => {
+                    setShowRefreshMessage(false);
+                    setOpen(false);
+                } }
                 isFooterLeftAligned
                 actions={ [
                     <Button
                         key="confirm"
                         variant="primary"
                         isDisabled={ connected.length === 0 }
-                        onClick={ () => {
-                            setOpen(false);
-                            toggleExecutePlaybookBanner();
-                        } }>
+                        onClick={ () => { runRemediation(remediationId, etag); } }>
                         { isLoading ? 'Execute Playbook' : `Execute Playbook on ${pluralize(connectedCount, 'system')}` }
                     </Button>,
                     <Button
                         key="download"
                         variant='link' onClick={ () => downloadPlaybook(remediationId) }>
                         Download Playbook
-                    </Button>
+                    </Button>,
+                    (isDebug()
+                        ? <Button
+                            key="reset-etag"
+                            onClick={ () => setEtag('test') }>
+                        Reset etag
+                        </Button>
+                        : null)
                 ] }
             >
                 <div>
+                    { showRefreshMessage
+                        ? <Alert variant="warning" isInline
+                            title="The connection status of systems associated with this Playbook has changed. Please review again." />
+                        : null }
                     <TextContent>
                         { isLoading
                             ? <Skeleton size='lg'/>
@@ -181,8 +213,12 @@ ExecuteButton.propTypes = {
     data: PropTypes.array,
     getConnectionStatus: PropTypes.func,
     toggleExecutePlaybookBanner: PropTypes.func,
+    runRemediation: PropTypes.func,
     remediationId: PropTypes.string,
-    issueCount: PropTypes.number
+    remediationStatus: PropTypes.string,
+    issueCount: PropTypes.number,
+    etag: PropTypes.string,
+    setEtag: PropTypes.func
 };
 
 ExecuteButton.defaultProps = {
