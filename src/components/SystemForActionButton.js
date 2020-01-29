@@ -5,12 +5,14 @@ import * as reactCore from '@patternfly/react-core';
 import * as reactIcons from '@patternfly/react-icons';
 import * as reactRouterDom from 'react-router-dom';
 import { connect } from 'react-redux';
+import orderBy from 'lodash/orderBy';
 
 import PropTypes from 'prop-types';
 import {
     Button, Modal
 } from '@patternfly/react-core';
 import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/Registry';
+import { inventoryUrlBuilder } from '../Utilities/urls';
 import reducers from '../store/reducers';
 import RemediationDetailsSystemDropdown from './RemediationDetailsSystemDropdown';
 import ConfirmationDialog from './ConfirmationDialog';
@@ -31,6 +33,8 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
         <RemediationDetailsSystemDropdown remediation={ remediation } issue={ issue } system={ system } />
     );
 
+    const urlBuilder = inventoryUrlBuilder(issue);
+
     const loadInventory = async () => {
         const {
             inventoryConnector,
@@ -45,7 +49,9 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
         });
 
         getRegistry().register({
-            ...mergeWithEntities(reducers.inventoryEntitiesReducer({ INVENTORY_ACTION_TYPES, detailDropdown: detailDropdown(remediation, issue) })())
+            ...mergeWithEntities(reducers.inventoryEntitiesReducer({
+                INVENTORY_ACTION_TYPES, detailDropdown: detailDropdown(remediation, issue), urlBuilder
+            })())
         });
 
         const { InventoryTable } = inventoryConnector();
@@ -78,31 +84,33 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
                 onClose={ () => setOpen(false) }
                 isFooterLeftAligned
             >
-                { InventoryTable && <InventoryTable
-                    ref={ inventory }
-                    items={ issue.systems }
-                    onRefresh={ onRefresh }
-                    page={ page }
-                    total={ issue.systems.length }
-                    perPage={ pageSize }
-                    tableProps={ { onSelect: undefined } }
-                    actions= { [
-                        {
-                            title: (
-                                <Button
-                                    className=' ins-c-button__danger-link'
-                                    onClick={ () => setDeleteDialogOpen(true) }
-                                    variant="link"
-                                >
+                <div>
+                    { InventoryTable && <InventoryTable
+                        ref={ inventory }
+                        items={ orderBy(issue.systems, [ s => getSystemName(s), s => s.id ]) }
+                        onRefresh={ onRefresh }
+                        page={ page }
+                        total={ issue.systems.length }
+                        perPage={ pageSize }
+                        tableProps={ { onSelect: undefined } }
+                        actions= { [
+                            {
+                                title: (
+                                    <Button
+                                        className=' ins-c-button__danger-link'
+                                        onClick={ () => setDeleteDialogOpen(true) }
+                                        variant="link"
+                                    >
                                     Remove system
-                                </Button>
-                            ),
-                            onClick: (event, rowId, rowData) => {
-                                setSystem(rowData);
-                                setDeleteDialogOpen(true);
-                            }
-                        }] }
-                /> }
+                                    </Button>
+                                ),
+                                onClick: (event, rowId, rowData) => {
+                                    setSystem(rowData);
+                                    setDeleteDialogOpen(true);
+                                }
+                            }] }
+                    /> }
+                </div>
             </Modal>
             <ConfirmationDialog
                 isOpen={ deleteDialogOpen }

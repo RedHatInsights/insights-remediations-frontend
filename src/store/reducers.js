@@ -1,3 +1,4 @@
+import React from 'react';
 
 import { ACTION_TYPES } from '../constants';
 import { applyReducerHash } from '@redhat-cloud-services/frontend-components-utilities/files/ReducerRegistry';
@@ -155,8 +156,10 @@ const reducers = {
             return {
                 ...state,
                 columns: [
-                    { key: 'display_name', title: 'System name', composed: [ 'display_name' ]},
-                    { key: 'satelite_id', title: 'Connection type', composed: [ 'satelite_id' ]}
+                    { key: 'display_name', title: 'System name',
+                    // eslint-disable-next-line
+                        renderFunc: (name, id) => <div><a href={ props.urlBuilder(id) }>{ name }</a></div> },
+                    { key: 'satelite_id', title: 'Connection type' }
                 ]
             };
         }
