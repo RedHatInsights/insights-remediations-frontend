@@ -9,3 +9,17 @@
     display: flex;
     .ins-c-skeleton {  @include rem('margin-left', 15px); }
 }
+
+.ins-m-isInline { 
+    display: inline-block;
+    &-sm {
+        width: 20px;
+        margin-right: 3px;
+    }
+    &-md {
+        width: 35px;
+        margin-left: 10px;
+    }
+}
+
+.ins-m-inline-flex, .ins-m-flex-children dd { display: inline-flex; }
