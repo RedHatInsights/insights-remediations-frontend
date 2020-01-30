@@ -66,34 +66,36 @@ const RemediationDetailsSkeleton = () => {
                     <StackItem>
                         <Card>
                             <CardHeader className='ins-m-card__header-bold'>Playbook Summary</CardHeader>
-                        <CardBody>
-                            <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
-                                <Flex className='ins-c-playbookSummary__overview'>
-                                    <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
-                                        <DescriptionList
-                                            isBold
-                                            title='Total systems'
-                                            className='ins-m-flex-children'>
-                                            <Skeleton size='sm' className='ins-m-isInline-sm'/> systems
-                                        </DescriptionList>
-                                    </FlexItem>
-                                </Flex>
-                                <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
-                                    <Flex>
-                                        <FlexItem className='ins-m-inline-flex' breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
-                                            Autoreboot: <Skeleton className='ins-m-isInline-md' size='md'/>
+                            <CardBody>
+                                <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
+                                    <Flex className='ins-c-playbookSummary__overview'>
+                                        <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                            <DescriptionList
+                                                isBold
+                                                title='Total systems'
+                                                className='ins-m-flex-children'>
+                                                <Skeleton size='sm' className='ins-m-isInline-sm'/> systems
+                                            </DescriptionList>
                                         </FlexItem>
-                                        <FlexItem className='ins-m-inline-flex'><Skeleton className='ins-m-isInline-sm' size='sm'/> systems require reboot</FlexItem>
                                     </Flex>
-                                </DescriptionList>
-                                <Button
-                                    isDisabled
-                                    variant='link'>
-                                    Turn <Skeleton className='ins-m-isInline' size='sm'/> auto reboot
-                                </Button>
-                            </Flex>
-                        </CardBody>
-                    </Card>
+                                    <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
+                                        <Flex>
+                                            <FlexItem className='ins-m-inline-flex' breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                                Autoreboot: <Skeleton className='ins-m-isInline-md' size='md'/>
+                                            </FlexItem>
+                                            <FlexItem className='ins-m-inline-flex'>
+                                                <Skeleton className='ins-m-isInline-sm' size='sm'/> systems require reboot
+                                            </FlexItem>
+                                        </Flex>
+                                    </DescriptionList>
+                                    <Button
+                                        isDisabled
+                                        variant='link'>
+                                        Turn <Skeleton className='ins-m-isInline' size='sm'/> auto reboot
+                                    </Button>
+                                </Flex>
+                            </CardBody>
+                        </Card>
                     </StackItem>
                     <StackItem>
                         <TableToolbar className='ins-c-remediations-details-table__toolbar'>
