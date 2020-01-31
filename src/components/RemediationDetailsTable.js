@@ -13,20 +13,20 @@ import {
 import { sortable, TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
 import { SimpleTableFilter, TableToolbar, EmptyTable } from '@redhat-cloud-services/frontend-components';
 
-import { getIssueApplication, getSystemName, includesIgnoreCase } from '../Utilities/model';
-import { inventoryUrlBuilder, buildIssueUrl } from '../Utilities/urls';
+import { getIssueApplication, includesIgnoreCase } from '../Utilities/model';
+import {  buildIssueUrl } from '../Utilities/urls';
 import './RemediationTable.scss';
 
 import { ConnectResolutionEditButton } from '../containers/ConnectedComponents';
 import { DeleteActionsButton } from '../containers/DeleteButtons';
 import { isBeta } from '../config';
-import RemediationDetailsSystemDropdown from './RemediationDetailsSystemDropdown';
+import SystemForActionButton from './SystemForActionButton';
 
-import { useExpander, useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
+import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
 import * as debug from '../Utilities/debug';
 
 import './RemediationDetailsTable.scss';
-import { CheckIcon } from '@patternfly/react-icons';
+import { CheckCircleIcon } from '@patternfly/react-icons';
 
 function resolutionDescriptionCell (remediation, issue) {
     if (issue.resolutions_available <= 1) {
@@ -53,10 +53,14 @@ function issueDescriptionCell (issue) {
 
 function needsRebootCell (needsReboot) {
     if (needsReboot) {
-        return <CheckIcon/>;
+        return <CheckCircleIcon className="ins-c-remediations-reboot-check-circle" aria-label="reboot required"/>;
     }
 
-    return (' ');
+    return ('No');
+}
+
+function systemsForAction(issue, remediation) {
+    return <SystemForActionButton key={ issue.id } remediation={ remediation } issue={ issue } />;
 }
 
 const SORTING_ITERATEES = [
@@ -69,7 +73,7 @@ const SORTING_ITERATEES = [
     i => getIssueApplication(i)
 ];
 
-const buildRow = (remediation, expanded) => (issue, index) => {
+const buildRow = (remediation) => (issue) => {
     const row = [
         {
             isOpen: false,
@@ -84,7 +88,9 @@ const buildRow = (remediation, expanded) => (issue, index) => {
                 {
                     title: needsRebootCell(issue.resolution.needs_reboot)
                 },
-                issue.systems.length,
+                {
+                    title: systemsForAction(issue, remediation)
+                },
                 {
                     title: getIssueApplication(issue),
                     props: { className: 'ins-m-nowrap' }
@@ -93,51 +99,6 @@ const buildRow = (remediation, expanded) => (issue, index) => {
         }
     ];
 
-    if (issue.id === expanded) {
-        const urlBuilder = inventoryUrlBuilder(issue);
-        const rows = orderBy(issue.systems, [ s => getSystemName(s), s => s.id ]).map(system => ({
-            id: system.id,
-            cells: [{
-                title:
-                    <a href={ urlBuilder(system.id) }>
-                        { getSystemName(system) }
-                    </a>
-            }, {
-                title: <RemediationDetailsSystemDropdown remediation={ remediation } issue={ issue } system={ system } />
-            }]
-        }));
-
-        row.push({
-            parent: index * 2,
-            cells: [{
-                title:
-                    <React.Fragment>
-                        <Table
-                            variant={ TableVariant.compact }
-                            className='ins-c-remediations-details-table-systems-table'
-                            aria-label="Systems"
-                            cells={ [{
-                                title: 'Systems'
-                            }, {
-                                title: ''
-                            }] }
-                            rows={ rows }
-                        >
-                            <TableHeader />
-                            <TableBody />
-                        </Table>
-                    </React.Fragment>
-            }]
-        });
-    } else {
-        row.push({
-            parent: index * 2,
-            cells: [{
-                title: 'Loading'
-            }]
-        });
-    }
-
     return row;
 };
 
@@ -145,7 +106,6 @@ function RemediationDetailsTable (props) {
     const pagination = usePagination();
     const sorter = useSorter(2, 'asc');
     const filter = useFilter();
-    const expander = useExpander();
     const selector = useSelector();
 
     sorter.onChange(pagination.reset);
@@ -155,9 +115,8 @@ function RemediationDetailsTable (props) {
     const sorted = orderBy(filtered, [ SORTING_ITERATEES[ sorter.sortBy] ], [ sorter.sortDir ]);
     const paged = sorted.slice(pagination.offset, pagination.offset + pagination.pageSize);
 
-    const rows = flatMap(paged, buildRow(props.remediation, expander.value));
+    const rows = flatMap(paged, buildRow(props.remediation));
 
-    expander.register(rows);
     selector.register(rows);
 
     const selectedIds = selector.getSelectedIds();
@@ -221,7 +180,6 @@ function RemediationDetailsTable (props) {
                         }
                         rows={ rows }
                         { ...sorter.props }
-                        { ...expander.props }
                         { ...selector.props }
                     >
                         <TableHeader />

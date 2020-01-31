@@ -55,3 +55,27 @@ export const getResolutions = (ruleId) => ({
     type: ACTION_TYPES.GET_RESOLUTIONS,
     payload: resolutions.getResolutionsForIssue(ruleId)
 });
+
+export const getConnectionStatus = (id) => {
+    return {
+        type: ACTION_TYPES.GET_CONNECTION_STATUS,
+        payload: remediations.getRemediationConnectionStatus(id)
+    };
+};
+
+export const toggleExecutePlaybookBanner = () => ({
+    type: ACTION_TYPES.EXECUTE_PLAYBOOK_BANNER
+});
+
+export const runRemediation = (id, etag) => {
+    return {
+        type: ACTION_TYPES.RUN_REMEDIATION,
+        payload: remediations.runRemediation(id, { headers: { 'If-Match': etag }})
+    };
+};
+
+export const setEtag = (etag) => ({
+    type: ACTION_TYPES.SET_ETAG,
+    payload: { etag }
+});
+
