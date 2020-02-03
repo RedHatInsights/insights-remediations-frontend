@@ -82,7 +82,7 @@ class RemediationDetails extends Component {
     }
 
     generateNumRebootString = (num) => {
-        return `${num} system${num === 1 ? '' : 's'} require${num === 1 ? 's' : ''} reboot`
+        return `${num} system${num === 1 ? '' : 's'} require${num === 1 ? 's' : ''} reboot`;
     }
 
     render() {
@@ -97,7 +97,6 @@ class RemediationDetails extends Component {
         const totalSystems = stats.systemsWithReboot + stats.systemsWithoutReboot;
 
         const pluralize = (number, str) => number === 1 ? `${number} ${str}` : `${number} ${str}s`;
-        const singularize = (number, str) => number === 1 ? `${str}s` : `${str}`;
 
         return (
             <React.Fragment>
