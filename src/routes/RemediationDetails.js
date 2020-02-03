@@ -81,6 +81,10 @@ class RemediationDetails extends Component {
         }
     }
 
+    generateNumRebootString = (num) => {
+        return `${num} system${num === 1 ? '' : 's'} require${num === 1 ? 's' : ''} reboot`
+    }
+
     render() {
         const { status, remediation } = this.props.selectedRemediation;
 
@@ -93,6 +97,7 @@ class RemediationDetails extends Component {
         const totalSystems = stats.systemsWithReboot + stats.systemsWithoutReboot;
 
         const pluralize = (number, str) => number === 1 ? `${number} ${str}` : `${number} ${str}s`;
+        const singularize = (number, str) => number === 1 ? `${str}s` : `${str}`;
 
         return (
             <React.Fragment>
@@ -154,7 +159,7 @@ class RemediationDetails extends Component {
                                                     Autoreboot:&nbsp;
                                                     <b> { remediation.auto_reboot && remediation.needs_reboot ? 'Enabled' : 'Disabled' } </b>
                                                 </FlexItem>
-                                                <FlexItem>{ pluralize(stats.systemsWithReboot, 'system') } require reboot</FlexItem>
+                                                <FlexItem>{ this.generateNumRebootString(stats.systemsWithReboot) }</FlexItem>
                                             </Flex>
                                         </DescriptionList>
                                         <Button
