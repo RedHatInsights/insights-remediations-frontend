@@ -19,7 +19,7 @@ exports[`UpsellBanner component should render 1`] = `
     </StackItem>
     <StackItem>
       <a
-        href="#"
+        href="https://access.redhat.com/products/cloud_management_services_for_rhel/evaluation"
       >
         Try it for 90 days
       </a>

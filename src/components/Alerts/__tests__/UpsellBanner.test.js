@@ -10,14 +10,12 @@ describe('UpsellBanner component', () => {
         expect(toJson(wrapper)).toMatchSnapshot();
     });
 
-    /* eslint-disable no-console */
-    it('should click close with default prop', () => {
-        console.log = jest.fn();
+    it('should call default prop', () => {
+        const mockCallBack = jest.fn();
         const wrapper = mount(<UpsellBanner/>);
         wrapper.find('AlertActionCloseButton').simulate('click');
-        expect(console.log.mock.calls[0][0]).toBe('Close banner');
+        expect(mockCallBack.mock.results[0]).toBeUndefined();
     });
-    /* eslint-enable no-console */
 
     it('should click close', () => {
         const mockCallBack = jest.fn();

@@ -29,5 +29,5 @@ UpsellBanner.propTypes = {
 
 /* eslint-disable no-console */
 UpsellBanner.defaultProps = {
-    onClose: () => console.log('Close banner')
+    onClose: () => undefined
 };

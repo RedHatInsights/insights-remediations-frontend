@@ -84,9 +84,11 @@ class RemediationDetails extends Component {
             this.loadRemediationStatus();
         }
 
-        window.insights.chrome.auth.getUser().then(({ entitlements }) => this.setState({
+        const { entitlements } = await window.insights.chrome.auth.getUser();
+
+        this.setState({
             isEntitled: entitlements.smart_management.is_entitled
-        }));
+        });
 
     }
 
