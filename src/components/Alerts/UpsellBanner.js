@@ -13,7 +13,9 @@ const UpsellBanner = ({ onClose, ...props }) => {
             { ...props }>
             <Stack gutter='md'>
                 <StackItem>Upgrade to Red Hat Smart Management to remediate all your systems, across regions and geographies</StackItem>
-                <StackItem><a href="#">Try it for 90 days</a></StackItem>
+                <StackItem>
+                    <a href="https://access.redhat.com/products/cloud_management_services_for_rhel/evaluation">Try it for 90 days</a>
+                </StackItem>
             </Stack>
         </Alert>
     );
