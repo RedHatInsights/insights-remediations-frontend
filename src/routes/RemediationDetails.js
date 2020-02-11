@@ -10,6 +10,7 @@ import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 import ExecuteBanner from '../components/Alerts/ExecuteBanner';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
+import classnames from 'classnames';
 
 import {
     Main,
@@ -85,6 +86,14 @@ class RemediationDetails extends Component {
         return `${num} system${num === 1 ? '' : 's'} require${num === 1 ? 's' : ''} reboot`;
     }
 
+    generateAutoRebootStatus = (status, needsReboot) => {
+        if(!needsReboot) {
+            return 'Not required'
+        } else {
+            return (status ? 'Enabled' : 'Disabled');
+        }
+    }
+
     render() {
         const { status, remediation } = this.props.selectedRemediation;
 
@@ -154,19 +163,26 @@ class RemediationDetails extends Component {
                                         </Flex>
                                         <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
                                             <Flex>
-                                                <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                                <FlexItem
+                                                    className={classnames(
+                                                        'ins-c-reboot-status',
+                                                        { 'ins-c-reboot-status__enabled': remediation.auto_reboot && remediation.needs_reboot},
+                                                        { 'ins-c-reboot-status__disabled': !remediation.auto_reboot }
+                                                    )}
+                                                    breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
                                                     Autoreboot:&nbsp;
-                                                    <b> { remediation.auto_reboot && remediation.needs_reboot ? 'Enabled' : 'Disabled' } </b>
+                                                    <b> { this.generateAutoRebootStatus(remediation.auto_reboot, remediation.needs_reboot) } </b>
                                                 </FlexItem>
                                                 <FlexItem>{ this.generateNumRebootString(stats.systemsWithReboot) }</FlexItem>
                                             </Flex>
                                         </DescriptionList>
-                                        <Button
-                                            isDisabled={ !remediation.needs_reboot }
-                                            variant='link'
-                                            onClick={ () => this.handleRebootChange(!remediation.auto_reboot) }>
-                                            Turn { remediation.auto_reboot && remediation.needs_reboot ? 'off' : 'on' } auto reboot
-                                        </Button>
+                                        { remediation.needs_reboot &&
+                                            <Button
+                                                variant='link'
+                                                onClick={ () => this.handleRebootChange(!remediation.auto_reboot) }>
+                                                Turn { remediation.auto_reboot && remediation.needs_reboot ? 'off' : 'on' } auto reboot
+                                            </Button>
+                                        }
                                     </Flex>
                                 </CardBody>
                             </Card>

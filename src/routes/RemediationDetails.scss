@@ -59,5 +59,9 @@
             padding-left: 0;
             padding-right: 0;
         }
+        .ins-c-reboot-status {
+            &__enabled b { color: var(--pf-global--success-color--200); }
+            &__disabled b { color: var(--pf-global--danger-color--200); }
+        }
     }
 }
