@@ -12,6 +12,7 @@ import ActionsResolvedCard from '../components/ActionsResolvedCard';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 import ExecuteBanner from '../components/Alerts/ExecuteBanner';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
+import UpsellBanner from '../components/Alerts/UpsellBanner';
 
 import {
     Main,
@@ -37,7 +38,8 @@ class RemediationDetails extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            autoReboot: true
+            autoReboot: true,
+            isUserEntitled: true
         };
         this.id = this.props.match.params.id;
         this.loadRemediation = this.props.loadRemediation.bind(this, this.id);
@@ -81,6 +83,11 @@ class RemediationDetails extends Component {
         if (isBeta) {
             this.loadRemediationStatus();
         }
+
+        window.insights.chrome.auth.getUser().then(({entitlements}) => this.setState({
+            isEntitled: entitlements.smart_management.is_entitled
+        }));
+
     }
 
     render() {
@@ -132,6 +139,11 @@ class RemediationDetails extends Component {
                 </PageHeader>
                 <Main>
                     <Stack gutter="md">
+                        { !this.state.isEntitled &&
+                            <StackItem>
+                                <UpsellBanner/>
+                            </StackItem>
+                        }
                         <StackItem>
                             <Grid gutter="md" sm={ 12 } md={ isBeta ? 4 : 6 } className='ins-c-summary-cards'>
                                 {
