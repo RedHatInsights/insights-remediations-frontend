@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import flatMap from 'lodash/flatMap';
@@ -10,7 +10,7 @@ import {
     ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
 
-import { sortable, TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
+import { sortable, TableHeader, Table, TableBody, TableVariant, expandable } from '@patternfly/react-table';
 import { SimpleTableFilter, TableToolbar, EmptyTable } from '@redhat-cloud-services/frontend-components';
 
 import { getIssueApplication, includesIgnoreCase } from '../Utilities/model';
@@ -116,6 +116,13 @@ function RemediationDetailsTable (props) {
     const paged = sorted.slice(pagination.offset, pagination.offset + pagination.pageSize);
 
     const rows = flatMap(paged, buildRow(props.remediation));
+    rows.push([{ parent: 1, cells: ['test-cell'] }]);
+
+    const [ expanded, expandRow ] = useState({});
+    const onCollapse = (_event, rowKey, isOpen) => expandRow((expanded) => ({
+        ...expanded,
+
+    }));
 
     selector.register(rows);
 
@@ -161,6 +168,7 @@ function RemediationDetailsTable (props) {
                         variant={ TableVariant.compact }
                         aria-label="Actions"
                         className='ins-c-remediations-details-table'
+                        onCollapse={ onCollapse }
                         cells={ [
                             {
                                 title: 'Actions',
