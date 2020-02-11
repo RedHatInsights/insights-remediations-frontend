@@ -9,7 +9,7 @@ const UpsellBanner = ({ onClose, ...props }) => {
             variant="default"
             isInline
             title="Do more with Find it Fix it capabilities"
-            action={<AlertActionCloseButton onClose={ onClose }/>}
+            action={ <AlertActionCloseButton onClose={ onClose }/> }
             { ...props }>
             <Stack gutter='md'>
                 <StackItem>Upgrade to Red Hat Smart Management to remediate all your systems, across regions and geographies</StackItem>

@@ -194,7 +194,7 @@ const ExecuteButton = ({
                                 title: 'Systems', value: 'count'
                             }, isUserEntitled && {
                                 title: 'Connection status', value: 'status'
-                            }] }
+                            } ] }
                             rows={ rows }
                         >
                             <TableHeader />
