@@ -87,11 +87,11 @@ class RemediationDetails extends Component {
     }
 
     generateAutoRebootStatus = (status, needsReboot) => {
-        if(!needsReboot) {
-            return 'Not required'
-        } else {
-            return (status ? 'Enabled' : 'Disabled');
+        if (!needsReboot) {
+            return 'Not required';
         }
+
+        return (status ? 'Enabled' : 'Disabled');
     }
 
     render() {
@@ -164,11 +164,11 @@ class RemediationDetails extends Component {
                                         <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
                                             <Flex>
                                                 <FlexItem
-                                                    className={classnames(
+                                                    className={ classnames(
                                                         'ins-c-reboot-status',
-                                                        { 'ins-c-reboot-status__enabled': remediation.auto_reboot && remediation.needs_reboot},
+                                                        { 'ins-c-reboot-status__enabled': remediation.auto_reboot && remediation.needs_reboot },
                                                         { 'ins-c-reboot-status__disabled': !remediation.auto_reboot }
-                                                    )}
+                                                    ) }
                                                     breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
                                                     Autoreboot:&nbsp;
                                                     <b> { this.generateAutoRebootStatus(remediation.auto_reboot, remediation.needs_reboot) } </b>
