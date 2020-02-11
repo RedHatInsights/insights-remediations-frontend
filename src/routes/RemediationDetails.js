@@ -118,11 +118,13 @@ class RemediationDetails extends Component {
                         </LevelItem>
                         <LevelItem>
                             <Split gutter="md">
-                                <SplitItem>
-                                    <ExecutePlaybookButton
-                                        remediationId={ remediation.id }>
-                                    </ExecutePlaybookButton>
-                                </SplitItem>
+                                { this.state.isEntitled &&
+                                    <SplitItem>
+                                        <ExecutePlaybookButton
+                                            remediationId={ remediation.id }>
+                                        </ExecutePlaybookButton>
+                                    </SplitItem>
+                                }
                                 <SplitItem>
                                     <Button
                                         isDisabled={ !remediation.issues.length }
