@@ -39,7 +39,8 @@ class RemediationDetails extends Component {
         super(props);
         this.state = {
             autoReboot: true,
-            isUserEntitled: true
+            isUserEntitled: undefined,
+            upsellBannerVisible: true
         };
         this.id = this.props.match.params.id;
         this.loadRemediation = this.props.loadRemediation.bind(this, this.id);
@@ -67,6 +68,13 @@ class RemediationDetails extends Component {
             variant: 'info',
             title: `Canceled execution of playbook ${name}.`,
             dismissDelay: 2000
+        });
+    }
+
+
+    handleUpsellToggle = () => {
+        this.setState({
+            upsellBannerVisible: false
         });
     }
 
@@ -143,9 +151,9 @@ class RemediationDetails extends Component {
                 </PageHeader>
                 <Main>
                     <Stack gutter="md">
-                        { !this.state.isEntitled &&
+                        { !this.state.isEntitled && this.state.upsellBannerVisible &&
                             <StackItem>
-                                <UpsellBanner/>
+                                <UpsellBanner onClose={ this.handleUpsellToggle }/>
                             </StackItem>
                         }
                         <StackItem>
