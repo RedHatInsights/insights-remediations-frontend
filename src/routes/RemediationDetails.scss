@@ -50,4 +50,18 @@
             border-top: 1px solid #efefef;
         }
     }
+
+    .ins-c-playbookSummary {
+        &__overview { margin-bottom: var(--pf-global--spacer--lg); }
+        &__settings { margin-bottom: var(--pf-global--spacer--sm); }
+        button {
+            width: min-content;
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .ins-c-reboot-status {
+            &__enabled b { color: var(--pf-global--success-color--200); }
+            &__disabled b { color: var(--pf-global--danger-color--200); }
+        }
+    }
 }
