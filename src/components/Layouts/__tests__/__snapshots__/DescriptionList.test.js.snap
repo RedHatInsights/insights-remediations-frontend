@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DescriptionList component should render 1`] = `
+<dl
+  className="ins-l-description-list"
+>
+  <dt
+    className="ins-l-description-list__title"
+  >
+    <b>
+      title
+    </b>
+  </dt>
+  <dd
+    className="ins-l-description-list__description"
+  >
+     
+    DescriptionList
+     
+  </dd>
+</dl>
+`;
+
+exports[`DescriptionList component should render with bold 1`] = `
+<dl
+  className="ins-l-description-list"
+>
+  <dt
+    className="ins-l-description-list__title"
+  >
+    <b>
+      title
+    </b>
+  </dt>
+  <dd
+    className="ins-l-description-list__description ins-l-description-list__description--bold"
+  >
+     
+    DescriptionList
+     
+  </dd>
+</dl>
+`;

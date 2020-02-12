@@ -2,16 +2,15 @@ import React, { Component } from 'react';
 import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { formatUser, formatDate } from '../Utilities/model';
 import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
 import { isBeta } from '../config';
-import ActionsResolvedCard from '../components/ActionsResolvedCard';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 import ExecuteBanner from '../components/Alerts/ExecuteBanner';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
+import classnames from 'classnames';
 
 import {
     Main,
@@ -19,18 +18,18 @@ import {
 } from '@redhat-cloud-services/frontend-components';
 
 import {
-    Grid, GridItem,
     Card, CardHeader, CardBody,
     Stack, StackItem,
-    Switch,
     Level, LevelItem,
     Breadcrumb, BreadcrumbItem,
     Button,
-    Split, SplitItem
+    Split, SplitItem,
+    Flex, FlexItem, FlexModifiers
 } from '@patternfly/react-core';
 
 import './RemediationDetails.scss';
 import RemediationDetailsSkeleton from '../skeletons/RemediationDetailsSkeleton';
+import DescriptionList from '../components/Layouts/DescriptionList';
 
 class RemediationDetails extends Component {
 
@@ -83,6 +82,18 @@ class RemediationDetails extends Component {
         }
     }
 
+    generateNumRebootString = (num) => {
+        return `${num} system${num === 1 ? '' : 's'} require${num === 1 ? 's' : ''} reboot`;
+    }
+
+    generateAutoRebootStatus = (status, needsReboot) => {
+        if (!needsReboot) {
+            return 'Not required';
+        }
+
+        return (status ? 'Enabled' : 'Disabled');
+    }
+
     render() {
         const { status, remediation } = this.props.selectedRemediation;
 
@@ -91,6 +102,10 @@ class RemediationDetails extends Component {
         }
 
         const { stats } = remediation;
+
+        const totalSystems = stats.systemsWithReboot + stats.systemsWithoutReboot;
+
+        const pluralize = (number, str) => number === 1 ? `${number} ${str}` : `${number} ${str}s`;
 
         return (
             <React.Fragment>
@@ -119,7 +134,7 @@ class RemediationDetails extends Component {
                                 <SplitItem>
                                     <Button
                                         isDisabled={ !remediation.issues.length }
-                                        variant='link'onClick={ () => downloadPlaybook(remediation.id) }>
+                                        variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
                                         Download Playbook
                                     </Button>
                                 </SplitItem>
@@ -131,70 +146,46 @@ class RemediationDetails extends Component {
                     </Level>
                 </PageHeader>
                 <Main>
-                    <Stack gutter="md">
+                    <Stack gutter='md'>
                         <StackItem>
-                            <Grid gutter="md" sm={ 12 } md={ isBeta ? 4 : 6 } className='ins-c-summary-cards'>
-                                {
-                                    isBeta &&
-                                    <GridItem>
-                                        <ActionsResolvedCard status={ this.props.selectedRemediationStatus } />
-                                    </GridItem>
-                                }
-                                <GridItem>
-                                    <Card className='ins-c-card__system-reboot'>
-                                        <CardHeader className='ins-m-card__header-bold'> Systems reboot </CardHeader>
-                                        <CardBody>
-                                            <Grid gutter="md" md={ 4 } sm={ 4 }>
-                                                <GridItem>
-                                                    <Stack>
-                                                        <StackItem className='ins-m-text-emphesis'>{ stats.systemsWithoutReboot }</StackItem>
-                                                        <StackItem>No reboot</StackItem>
-                                                    </Stack>
-                                                </GridItem>
-                                                <GridItem>
-                                                    <Stack>
-                                                        <StackItem className='ins-m-text-emphesis'>{ stats.systemsWithReboot }</StackItem>
-                                                        <StackItem>Reboot required</StackItem>
-                                                    </Stack>
-                                                </GridItem>
-                                                <GridItem>
-                                                    <Stack>
-                                                        <StackItem className='ins-c-reboot-switch'>
-                                                            <Switch
-                                                                id="autoReboot"
-                                                                aria-label="Auto reboot"
-                                                                isChecked={ remediation.needs_reboot ? remediation.auto_reboot : false }
-                                                                isDisabled={ !remediation.needs_reboot }
-                                                                onChange={ this.handleRebootChange }
-                                                            />
-                                                        </StackItem>
-                                                        <StackItem>Auto reboot</StackItem>
-                                                    </Stack>
-                                                </GridItem>
-                                            </Grid>
-                                        </CardBody>
-                                    </Card>
-                                </GridItem>
-                                <GridItem>
-                                    <Card className='ins-c-card__plan-details'>
-                                        <CardHeader className='ins-m-card__header-bold'>
-                                            Playbook details
-                                        </CardHeader>
-                                        <CardBody>
-                                            <Stack>
-                                                <StackItem>Created by: { formatUser(remediation.created_by) }</StackItem>
-                                                <StackItem>Created: { formatDate(remediation.created_at) }</StackItem>
-                                                <StackItem>Last modified by: { formatUser(remediation.updated_by) }</StackItem>
-                                                <StackItem>Last modified: { formatDate(remediation.updated_at) }</StackItem>
-                                                {
-                                                    isBeta &&
-                                                    <StackItem className='ins-m-border-top'> Shared with: unknown </StackItem>
-                                                }
-                                            </Stack>
-                                        </CardBody>
-                                    </Card>
-                                </GridItem>
-                            </Grid>
+                            <Card>
+                                <CardHeader className='ins-m-card__header-bold'>Playbook Summary</CardHeader>
+                                <CardBody>
+                                    <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
+                                        <Flex className='ins-c-playbookSummary__overview'>
+                                            <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                                <DescriptionList
+                                                    isBold
+                                                    title='Total systems'>
+                                                    { pluralize(totalSystems, 'system') }
+                                                </DescriptionList>
+                                            </FlexItem>
+                                        </Flex>
+                                        <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
+                                            <Flex>
+                                                <FlexItem
+                                                    className={ classnames(
+                                                        'ins-c-reboot-status',
+                                                        { 'ins-c-reboot-status__enabled': remediation.auto_reboot && remediation.needs_reboot },
+                                                        { 'ins-c-reboot-status__disabled': !remediation.auto_reboot }
+                                                    ) }
+                                                    breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                                    Autoreboot:&nbsp;
+                                                    <b> { this.generateAutoRebootStatus(remediation.auto_reboot, remediation.needs_reboot) } </b>
+                                                </FlexItem>
+                                                <FlexItem>{ this.generateNumRebootString(stats.systemsWithReboot) }</FlexItem>
+                                            </Flex>
+                                        </DescriptionList>
+                                        { remediation.needs_reboot &&
+                                            <Button
+                                                variant='link'
+                                                onClick={ () => this.handleRebootChange(!remediation.auto_reboot) }>
+                                                Turn { remediation.auto_reboot && remediation.needs_reboot ? 'off' : 'on' } auto reboot
+                                            </Button>
+                                        }
+                                    </Flex>
+                                </CardBody>
+                            </Card>
                         </StackItem>
                         <StackItem>
                             <RemediationDetailsTable remediation={ remediation } status={ this.props.selectedRemediationStatus }/>

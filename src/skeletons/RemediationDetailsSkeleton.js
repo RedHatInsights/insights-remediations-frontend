@@ -13,7 +13,7 @@ import {
 import SkeletonTable from './SkeletonTable';
 
 import {
-    Grid, GridItem,
+    Flex, FlexItem, FlexModifiers,
     Card, CardHeader, CardBody,
     Dropdown, KebabToggle,
     // Progress, ProgressMeasureLocation,
@@ -26,6 +26,8 @@ import {
 } from '@patternfly/react-core';
 
 import { isBeta } from '../config';
+
+import DescriptionList from '../components/Layouts/DescriptionList';
 
 import './RemediationDetailsSkeleton.scss';
 
@@ -62,80 +64,38 @@ const RemediationDetailsSkeleton = () => {
             <Main>
                 <Stack gutter="md">
                     <StackItem>
-                        <Grid gutter="md" sm={ 12 } md={ isBeta ? 4 : 6 } className='ins-c-summary-cards'>
-                            {
-                                isBeta &&
-                                <GridItem>
-                                    <Card className='ins-c-card__actions-resolved'>
-                                        <CardHeader>
-                                            <Level>
-                                                <LevelItem className='ins-m-card__header-bold'>
-                                                    Actions Resolved
-                                                </LevelItem>
-                                            </Level>
-                                        </CardHeader>
-                                        <CardBody>
-                                            <Skeleton size='md'/>
-                                        </CardBody>
-                                    </Card>
-                                </GridItem>
-                            }
-                            <GridItem>
-                                <Card className='ins-c-card__system-reboot'>
-                                    <CardHeader className='ins-m-card__header-bold'> Systems reboot </CardHeader>
-                                    <CardBody>
-                                        <Grid gutter="md" md={ 4 } sm={ 4 }>
-                                            <GridItem>
-                                                <Stack>
-                                                    <StackItem className='ins-m-text-emphesis'><Skeleton size='xs'/></StackItem>
-                                                    <StackItem>No reboot</StackItem>
-                                                </Stack>
-                                            </GridItem>
-                                            <GridItem>
-                                                <Stack>
-                                                    <StackItem className='ins-m-text-emphesis'><Skeleton size='xs'/></StackItem>
-                                                    <StackItem>Reboot required</StackItem>
-                                                </Stack>
-                                            </GridItem>
-                                            <GridItem>
-                                                <Stack>
-                                                    <StackItem className='ins-c-reboot-switch'>
-                                                        <Skeleton size='xs'/>
-                                                    </StackItem>
-                                                    <StackItem>Auto reboot</StackItem>
-                                                </Stack>
-                                            </GridItem>
-                                        </Grid>
-                                    </CardBody>
-                                </Card>
-                            </GridItem>
-                            <GridItem>
-                                <Card className='ins-c-card__plan-details'>
-                                    <CardHeader>
-                                        <Level>
-                                            <LevelItem className='ins-m-card__header-bold'>
-                                                Playbook details
-                                            </LevelItem>
-                                            <LevelItem className='ins-c-subheader-small'>
-                                                <Skeleton size='xs'/>
-                                            </LevelItem>
-                                        </Level>
-                                    </CardHeader>
-                                    <CardBody>
-                                        <Stack>
-                                            <StackItem><Skeleton size='md'/></StackItem>
-                                            <StackItem><Skeleton size='md'/></StackItem>
-                                            <StackItem><Skeleton size='md'/></StackItem>
-                                            <StackItem><Skeleton size='md'/></StackItem>
-                                            {
-                                                isBeta &&
-                                                <StackItem className='ins-m-border-top'><Skeleton size='md'/></StackItem>
-                                            }
-                                        </Stack>
-                                    </CardBody>
-                                </Card>
-                            </GridItem>
-                        </Grid>
+                        <Card>
+                            <CardHeader className='ins-m-card__header-bold'>Playbook Summary</CardHeader>
+                            <CardBody>
+                                <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
+                                    <Flex className='ins-c-playbookSummary__overview'>
+                                        <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                            <DescriptionList
+                                                isBold
+                                                title='Total systems'
+                                                className='ins-m-flex-children'>
+                                                <Skeleton size='sm' className='ins-m-isInline-sm'/> systems
+                                            </DescriptionList>
+                                        </FlexItem>
+                                    </Flex>
+                                    <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
+                                        <Flex>
+                                            <FlexItem className='ins-m-inline-flex' breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                                Autoreboot: <Skeleton className='ins-m-isInline-md' size='md'/>
+                                            </FlexItem>
+                                            <FlexItem className='ins-m-inline-flex'>
+                                                <Skeleton className='ins-m-isInline-sm' size='sm'/> systems require reboot
+                                            </FlexItem>
+                                        </Flex>
+                                    </DescriptionList>
+                                    <Button
+                                        isDisabled
+                                        variant='link'>
+                                        Turn <Skeleton className='ins-m-isInline' size='sm'/> auto reboot
+                                    </Button>
+                                </Flex>
+                            </CardBody>
+                        </Card>
                     </StackItem>
                     <StackItem>
                         <TableToolbar className='ins-c-remediations-details-table__toolbar'>
