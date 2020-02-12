@@ -102,6 +102,10 @@ const buildRow = (remediation) => (issue) => {
     return row;
 };
 
+const systemsDetails = () => {
+    return <EmptyTable centered className='ins-c-remediation-details-table--empty'>No Actions found</EmptyTable>
+}
+
 function RemediationDetailsTable (props) {
     const pagination = usePagination();
     const sorter = useSorter(2, 'asc');
@@ -117,10 +121,20 @@ function RemediationDetailsTable (props) {
     const paged = sorted.slice(pagination.offset, pagination.offset + pagination.pageSize);
 
     const rows = flatMap(paged, buildRow(props.remediation));
-    // rows.push([{ parent: 1, cells: ['test-cell'] }]);
+
+    const expandableRows = flatMap(rows, ({ child, ...row }, index) => [
+        {
+            ...row
+        },
+        {
+            id: index.toString(),
+            cells: [{ title: systemsDetails() }],
+            parent: index * 2
+        }
+    ])
 
     selector.register(rows);
-    expander.register(rows);
+    expander.register(expandableRows);
 
     const selectedIds = selector.getSelectedIds();
 
@@ -181,7 +195,7 @@ function RemediationDetailsTable (props) {
                                 transforms: [ sortable ]
                             }]
                         }
-                        rows={ rows }
+                        rows={ expandableRows }
                         { ...sorter.props }
                         { ...selector.props }
                         { ...expander.props }
