@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import flatMap from 'lodash/flatMap';
@@ -7,10 +7,14 @@ import orderBy from 'lodash/orderBy';
 import {
     Button,
     Pagination,
-    ToolbarItem, ToolbarGroup
+    ToolbarItem,
+    ToolbarGroup,
+    TextContent,
+    Text,
+    TextVariants
 } from '@patternfly/react-core';
 
-import { sortable, TableHeader, Table, TableBody, TableVariant, expandable } from '@patternfly/react-table';
+import { sortable, TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
 import { SimpleTableFilter, TableToolbar, EmptyTable } from '@redhat-cloud-services/frontend-components';
 
 import { getIssueApplication, includesIgnoreCase } from '../Utilities/model';
@@ -63,6 +67,17 @@ function systemsForAction(issue, remediation) {
     return <SystemForActionButton key={ issue.id } remediation={ remediation } issue={ issue } />;
 }
 
+const systemsDetails = () => {
+    return (
+        <React.Fragment>
+            <TextContent>
+                <Text component={ TextVariants.h3 }>Systems</Text>
+            </TextContent>
+            <EmptyTable centered className='ins-c-remediation-details-table--empty'>No Connetion Type found</EmptyTable>
+        </React.Fragment>
+    );
+};
+
 const SORTING_ITERATEES = [
     null, // expand toggle
     null, // checkboxes
@@ -102,10 +117,6 @@ const buildRow = (remediation) => (issue) => {
     return row;
 };
 
-const systemsDetails = () => {
-    return <EmptyTable centered className='ins-c-remediation-details-table--empty'>No Actions found</EmptyTable>
-}
-
 function RemediationDetailsTable (props) {
     const pagination = usePagination();
     const sorter = useSorter(2, 'asc');
@@ -122,7 +133,7 @@ function RemediationDetailsTable (props) {
 
     const rows = flatMap(paged, buildRow(props.remediation));
 
-    const expandableRows = flatMap(rows, ({ child, ...row }, index) => [
+    const expandableRows = flatMap(rows, ({ ...row }, index) => [
         {
             ...row
         },
@@ -131,9 +142,9 @@ function RemediationDetailsTable (props) {
             cells: [{ title: systemsDetails() }],
             parent: index * 2
         }
-    ])
+    ]);
 
-    selector.register(rows);
+    selector.register(expandableRows);
     expander.register(expandableRows);
 
     const selectedIds = selector.getSelectedIds();
