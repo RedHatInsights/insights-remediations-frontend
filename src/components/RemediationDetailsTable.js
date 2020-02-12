@@ -22,7 +22,7 @@ import { DeleteActionsButton } from '../containers/DeleteButtons';
 import { isBeta } from '../config';
 import SystemForActionButton from './SystemForActionButton';
 
-import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
+import { useFilter, usePagination, useSelector, useSorter, useExpander } from '../hooks/table';
 import * as debug from '../Utilities/debug';
 
 import './RemediationDetailsTable.scss';
@@ -107,6 +107,7 @@ function RemediationDetailsTable (props) {
     const sorter = useSorter(2, 'asc');
     const filter = useFilter();
     const selector = useSelector();
+    const expander = useExpander();
 
     sorter.onChange(pagination.reset);
     filter.onChange(pagination.reset);
@@ -116,15 +117,10 @@ function RemediationDetailsTable (props) {
     const paged = sorted.slice(pagination.offset, pagination.offset + pagination.pageSize);
 
     const rows = flatMap(paged, buildRow(props.remediation));
-    rows.push([{ parent: 1, cells: ['test-cell'] }]);
-
-    const [ expanded, expandRow ] = useState({});
-    const onCollapse = (_event, rowKey, isOpen) => expandRow((expanded) => ({
-        ...expanded,
-
-    }));
+    // rows.push([{ parent: 1, cells: ['test-cell'] }]);
 
     selector.register(rows);
+    expander.register(rows);
 
     const selectedIds = selector.getSelectedIds();
 
@@ -168,7 +164,6 @@ function RemediationDetailsTable (props) {
                         variant={ TableVariant.compact }
                         aria-label="Actions"
                         className='ins-c-remediations-details-table'
-                        onCollapse={ onCollapse }
                         cells={ [
                             {
                                 title: 'Actions',
@@ -189,6 +184,7 @@ function RemediationDetailsTable (props) {
                         rows={ rows }
                         { ...sorter.props }
                         { ...selector.props }
+                        { ...expander.props }
                     >
                         <TableHeader />
                         <TableBody { ...selector.tbodyProps } />
