@@ -71,7 +71,6 @@ class RemediationDetails extends Component {
         });
     }
 
-
     handleUpsellToggle = () => {
         this.setState({
             upsellBannerVisible: false
