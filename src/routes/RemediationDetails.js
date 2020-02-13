@@ -165,7 +165,7 @@ class RemediationDetails extends Component {
                 </PageHeader>
                 <Main>
                     <Stack gutter="md">
-                        { !this.state.isEntitled && this.state.upsellBannerVisible &&
+                        { this.state.isEntitled === false && this.state.upsellBannerVisible &&
                             <StackItem>
                                 <UpsellBanner onClose={ this.handleUpsellToggle }/>
                             </StackItem>
