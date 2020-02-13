@@ -10,6 +10,7 @@ import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 import ExecuteBanner from '../components/Alerts/ExecuteBanner';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
+import UpsellBanner from '../components/Alerts/UpsellBanner';
 import classnames from 'classnames';
 
 import {
@@ -36,7 +37,9 @@ class RemediationDetails extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            autoReboot: true
+            autoReboot: true,
+            isUserEntitled: undefined,
+            upsellBannerVisible: true
         };
         this.id = this.props.match.params.id;
         this.loadRemediation = this.props.loadRemediation.bind(this, this.id);
@@ -67,6 +70,12 @@ class RemediationDetails extends Component {
         });
     }
 
+    handleUpsellToggle = () => {
+        this.setState({
+            upsellBannerVisible: false
+        });
+    }
+
     async componentDidMount () {
         this.loadRemediation().catch(e => {
             if (e && e.response && e.response.status === 404) {
@@ -80,6 +89,13 @@ class RemediationDetails extends Component {
         if (isBeta) {
             this.loadRemediationStatus();
         }
+
+        const { entitlements } = await window.insights.chrome.auth.getUser();
+
+        this.setState({
+            isEntitled: entitlements.smart_management.is_entitled
+        });
+
     }
 
     generateNumRebootString = (num) => {
@@ -126,11 +142,13 @@ class RemediationDetails extends Component {
                         </LevelItem>
                         <LevelItem>
                             <Split gutter="md">
-                                <SplitItem>
-                                    <ExecutePlaybookButton
-                                        remediationId={ remediation.id }>
-                                    </ExecutePlaybookButton>
-                                </SplitItem>
+                                { this.state.isEntitled &&
+                                    <SplitItem>
+                                        <ExecutePlaybookButton
+                                            remediationId={ remediation.id }>
+                                        </ExecutePlaybookButton>
+                                    </SplitItem>
+                                }
                                 <SplitItem>
                                     <Button
                                         isDisabled={ !remediation.issues.length }
@@ -146,7 +164,12 @@ class RemediationDetails extends Component {
                     </Level>
                 </PageHeader>
                 <Main>
-                    <Stack gutter='md'>
+                    <Stack gutter="md">
+                        { this.state.isEntitled === false && this.state.upsellBannerVisible &&
+                            <StackItem>
+                                <UpsellBanner onClose={ this.handleUpsellToggle }/>
+                            </StackItem>
+                        }
                         <StackItem>
                             <Card>
                                 <CardHeader className='ins-m-card__header-bold'>Playbook Summary</CardHeader>

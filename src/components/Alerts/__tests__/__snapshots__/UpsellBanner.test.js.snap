@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UpsellBanner component should render 1`] = `
+<Component
+  action={
+    <AlertActionCloseButton
+      onClose={[Function]}
+    />
+  }
+  isInline={true}
+  title="Do more with Find it Fix it capabilities"
+  variant="default"
+>
+  <Stack
+    gutter="md"
+  >
+    <StackItem>
+      Upgrade to Red Hat Smart Management to remediate all your systems, across regions and geographies
+    </StackItem>
+    <StackItem>
+      <a
+        href="https://access.redhat.com/products/cloud_management_services_for_rhel/evaluation"
+      >
+        Try it for 90 days
+      </a>
+    </StackItem>
+  </Stack>
+</Component>
+`;

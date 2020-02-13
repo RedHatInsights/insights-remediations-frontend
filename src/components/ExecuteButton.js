@@ -120,7 +120,11 @@ const ExecuteButton = ({
     );
 
     const rows = [ ...connected, ...disconnected ].map(con =>
-        ({ cells: [ con.executor_name || 'Direct connection', con.system_count, { title: styledConnectionStatus(con.connection_status) }]})
+        ({ cells: [
+            con.executor_name || 'Direct connection',
+            con.system_count,
+            isUserEntitled && { title: styledConnectionStatus(con.connection_status) }
+        ]})
     );
     const connectedCount = connected.reduce((acc, e) => e.system_count + acc, 0);
     const systemCount = data.reduce((acc, e) => e.system_count + acc, 0);
@@ -192,9 +196,9 @@ const ExecuteButton = ({
                                 title: 'Connection type', value: 'type'
                             }, {
                                 title: 'Systems', value: 'count'
-                            }, {
+                            }, isUserEntitled && {
                                 title: 'Connection status', value: 'status'
-                            }] }
+                            } ] }
                             rows={ rows }
                         >
                             <TableHeader />
