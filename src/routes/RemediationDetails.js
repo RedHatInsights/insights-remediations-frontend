@@ -32,6 +32,8 @@ import './RemediationDetails.scss';
 import RemediationDetailsSkeleton from '../skeletons/RemediationDetailsSkeleton';
 import DescriptionList from '../components/Layouts/DescriptionList';
 
+import { PermissionContext } from '../App';
+
 class RemediationDetails extends Component {
 
     constructor (props) {
@@ -200,11 +202,16 @@ class RemediationDetails extends Component {
                                             </Flex>
                                         </DescriptionList>
                                         { remediation.needs_reboot &&
-                                            <Button
-                                                variant='link'
-                                                onClick={ () => this.handleRebootChange(!remediation.auto_reboot) }>
-                                                Turn { remediation.auto_reboot && remediation.needs_reboot ? 'off' : 'on' } auto reboot
-                                            </Button>
+                                            <PermissionContext.Consumer>
+                                                { value => (
+                                                    <Button
+                                                        variant='link'
+                                                        isDisabled={ !value.writePermission }
+                                                        onClick={ () => this.handleRebootChange(!remediation.auto_reboot) }>
+                                                        Turn { remediation.auto_reboot && remediation.needs_reboot ? 'off' : 'on' } auto reboot
+                                                    </Button>
+                                                )}
+                                            </PermissionContext.Consumer>
                                         }
                                     </Flex>
                                 </CardBody>

@@ -11,6 +11,8 @@ import TextInputDialog from './Dialogs/TextInputDialog';
 import ConfirmationDialog from './ConfirmationDialog';
 import { deleteRemediation, patchRemediation } from '../actions';
 
+import { PermissionContext } from '../App';
+
 const playbookNamePattern = /^$|^.*[\w\d]+.*$/;
 const EMPTY_NAME = 'Unnamed Playbook';
 
@@ -40,28 +42,32 @@ function RemediationDetailsDropdown ({ remediation, onRename, onDelete }) {
                     setDeleteDialogOpen(false);
                     confirm && onDelete(remediation.id);
                 } } />
-
-            <Dropdown
-                onSelect={ f => f }
-                toggle={ <KebabToggle onToggle={ () => setOpen(value => !value) } /> }
-                isOpen={ open }
-                position={ DropdownPosition.right }
-                isPlain
-            >
-                <Button
-                    onClick={ () => setRenameDialogOpen(true) }
-                    variant="link"
-                >
-                    Rename
-                </Button>
-                <Button
-                    className=' ins-c-button__danger-link'
-                    onClick={ () => setDeleteDialogOpen(true) }
-                    variant="link"
-                >
-                    Delete
-                </Button>
-            </Dropdown>
+            
+            <PermissionContext.Consumer>
+                { value => (
+                    <Dropdown
+                        onSelect={ f => f }
+                        toggle={ <KebabToggle isDisabled={ !value.writePermission } onToggle={ () => setOpen(value => !value) } /> }
+                        isOpen={ open }
+                        position={ DropdownPosition.right }
+                        isPlain
+                    >
+                        <Button
+                            onClick={ () => setRenameDialogOpen(true) }
+                            variant="link"
+                        >
+                            Rename
+                        </Button>
+                        <Button
+                            className=' ins-c-button__danger-link'
+                            onClick={ () => setDeleteDialogOpen(true) }
+                            variant="link"
+                        >
+                            Delete
+                        </Button>
+                    </Dropdown>
+                )}
+            </PermissionContext.Consumer>
         </React.Fragment>
     );
 }

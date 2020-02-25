@@ -26,6 +26,8 @@ import keyBy from 'lodash/keyBy';
 
 import { downloadPlaybook } from '../api';
 
+import { PermissionContext } from '../App';
+
 function buildName (name, id) {
     return ({
         title: <Link to={ `/${id}` }>{ name }</Link>
@@ -165,11 +167,15 @@ function RemediationTable (props) {
                         </Button>
                     </ToolbarItem>
                     <ToolbarItem>
-                        <ToolbarActions
-                            isDisabled={ !selectedIds.length }
-                            remediations={ selectedIds }
-                            afterDelete={ () => { selector.reset(); loadRemediations(); } }
-                        />
+                        <PermissionContext.Consumer>
+                            { value => (
+                                <ToolbarActions
+                                    isDisabled={ !selectedIds.length || !value.writePermission }
+                                    remediations={ selectedIds }
+                                    afterDelete={ () => { selector.reset(); loadRemediations(); } }
+                                />
+                            )}
+                        </PermissionContext.Consumer>
                     </ToolbarItem>
                 </ToolbarGroup>
                 <Pagination

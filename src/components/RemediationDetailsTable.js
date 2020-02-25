@@ -27,6 +27,7 @@ import * as debug from '../Utilities/debug';
 
 import './RemediationDetailsTable.scss';
 import { CheckCircleIcon } from '@patternfly/react-icons';
+import { PermissionContext } from '../App';
 
 function resolutionDescriptionCell (remediation, issue) {
     if (issue.resolutions_available <= 1) {
@@ -139,12 +140,16 @@ function RemediationDetailsTable (props) {
                 }
                 <ToolbarGroup>
                     <ToolbarItem>
-                        <DeleteActionsButton
-                            isDisabled={ !selectedIds.length }
-                            remediation={ props.remediation }
-                            issues={ selectedIds }
-                            afterDelete={ selector.reset }
-                        />
+                        <PermissionContext.Consumer>
+                            { value => (
+                                <DeleteActionsButton
+                                    isDisabled={ !selectedIds.length || !value.writePermission }
+                                    remediation={ props.remediation }
+                                    issues={ selectedIds }
+                                    afterDelete={ selector.reset }
+                                />
+                            )}
+                        </PermissionContext.Consumer>
                     </ToolbarItem>
                 </ToolbarGroup>
                 <Pagination

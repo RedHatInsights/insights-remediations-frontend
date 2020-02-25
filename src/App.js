@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component, Fragment } from 'react';
+import React, { createContext, Component, Fragment } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Routes } from './Routes';
@@ -8,11 +8,30 @@ import './App.scss';
 // Notifications
 import { NotificationsPortal } from '@redhat-cloud-services/frontend-components-notifications';
 
+export const PermissionContext = createContext();
+
 class App extends Component {
+
+    constructor() {
+        super();
+        this.state = {
+            readPermission: false,
+            writePermission: false,
+            executePermission: false
+        };
+    }
+
+    handlePermissionUpdate = (hasRead, hasWrite, hasExecute) => this.setState({
+        readPermission: hasRead,
+        writePermission: hasWrite,
+        executePermission: hasExecute
+    });
 
     componentDidMount () {
         insights.chrome.init();
         insights.chrome.identifyApp('remediations');
+        // TODO: Do the user check and set this function below to the right values
+        this.handlePermissionUpdate(true, false, false);
     }
 
     componentWillUnmount () {
@@ -22,10 +41,10 @@ class App extends Component {
 
     render () {
         return (
-            <Fragment>
+            <PermissionContext.Provider value={{readPermission: this.state.readPermission, writePermission: this.state.writePermission, executePermission: this.state.executePermission}}>
                 <NotificationsPortal />
                 <Routes childProps={ this.props } />
-            </Fragment>
+            </PermissionContext.Provider>
         );
     }
 }
