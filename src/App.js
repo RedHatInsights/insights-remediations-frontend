@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { createContext, Component, Fragment } from 'react';
+import React, { createContext, Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Routes } from './Routes';
@@ -41,7 +41,12 @@ class App extends Component {
 
     render () {
         return (
-            <PermissionContext.Provider value={{readPermission: this.state.readPermission, writePermission: this.state.writePermission, executePermission: this.state.executePermission}}>
+            <PermissionContext.Provider
+                value={ {
+                    readPermission: this.state.readPermission,
+                    writePermission: this.state.writePermission,
+                    executePermission: this.state.executePermission
+                } }>
                 <NotificationsPortal />
                 <Routes childProps={ this.props } />
             </PermissionContext.Provider>

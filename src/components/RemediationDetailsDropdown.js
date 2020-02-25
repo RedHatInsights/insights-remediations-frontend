@@ -42,7 +42,7 @@ function RemediationDetailsDropdown ({ remediation, onRename, onDelete }) {
                     setDeleteDialogOpen(false);
                     confirm && onDelete(remediation.id);
                 } } />
-            
+
             <PermissionContext.Consumer>
                 { value => (
                     <Dropdown
@@ -66,7 +66,7 @@ function RemediationDetailsDropdown ({ remediation, onRename, onDelete }) {
                             Delete
                         </Button>
                     </Dropdown>
-                )}
+                ) }
             </PermissionContext.Consumer>
         </React.Fragment>
     );

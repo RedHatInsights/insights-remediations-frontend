@@ -174,7 +174,7 @@ function RemediationTable (props) {
                                     remediations={ selectedIds }
                                     afterDelete={ () => { selector.reset(); loadRemediations(); } }
                                 />
-                            )}
+                            ) }
                         </PermissionContext.Consumer>
                     </ToolbarItem>
                 </ToolbarGroup>

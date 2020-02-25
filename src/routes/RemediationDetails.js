@@ -210,7 +210,7 @@ class RemediationDetails extends Component {
                                                         onClick={ () => this.handleRebootChange(!remediation.auto_reboot) }>
                                                         Turn { remediation.auto_reboot && remediation.needs_reboot ? 'off' : 'on' } auto reboot
                                                     </Button>
-                                                )}
+                                                ) }
                                             </PermissionContext.Consumer>
                                         }
                                     </Flex>

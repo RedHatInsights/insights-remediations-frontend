@@ -148,7 +148,7 @@ function RemediationDetailsTable (props) {
                                     issues={ selectedIds }
                                     afterDelete={ selector.reset }
                                 />
-                            )}
+                            ) }
                         </PermissionContext.Consumer>
                     </ToolbarItem>
                 </ToolbarGroup>

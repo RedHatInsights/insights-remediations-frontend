@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 import { downloadPlaybook } from '../api';
@@ -134,86 +134,86 @@ const ExecuteButton = ({
     const pluralize = (number, str) => number > 1 ? `${number} ${str}s` : `${number} ${str}`;
     return (isUserEntitled && isEnabled()
         ? <React.Fragment>
-                <PermissionContext.Consumer>
-                    { value => (
-                        <Button
-                            isDisabled={ !value.executePermission }
-                            onClick={ () => { setOpen(true); getConnectionStatus(remediationId); } }>
-                    Execute Playbook
+            <PermissionContext.Consumer>
+                { value => (
+                    <Button
+                        isDisabled={ !value.executePermission }
+                        onClick={ () => { setOpen(true); getConnectionStatus(remediationId); } }>
+                Execute Playbook
+                    </Button>
+                ) }
+            </PermissionContext.Consumer>
+            <Modal
+                className="ins-c-dialog"
+                width={ '50%' }
+                title={ 'Execute Playbook' }
+                isOpen={ open }
+                onClose={ () => {
+                    setShowRefreshMessage(false);
+                    setOpen(false);
+                } }
+                isFooterLeftAligned
+                actions={ [
+                    <Button
+                        key="confirm"
+                        variant="primary"
+                        isDisabled={ connected.length === 0 }
+                        onClick={ () => { runRemediation(remediationId, etag); } }>
+                        { isLoading ? 'Execute Playbook' : `Execute Playbook on ${pluralize(connectedCount, 'system')}` }
+                    </Button>,
+                    <Button
+                        key="download"
+                        variant='link' onClick={ () => downloadPlaybook(remediationId) }>
+                        Download Playbook
+                    </Button>,
+                    (isDebug()
+                        ? <Button
+                            key="reset-etag"
+                            onClick={ () => setEtag('test') }>
+                        Reset etag
                         </Button>
-                    )}
-                </PermissionContext.Consumer>
-                <Modal
-                    className="ins-c-dialog"
-                    width={ '50%' }
-                    title={ 'Execute Playbook' }
-                    isOpen={ open }
-                    onClose={ () => {
-                        setShowRefreshMessage(false);
-                        setOpen(false);
-                    } }
-                    isFooterLeftAligned
-                    actions={ [
-                        <Button
-                            key="confirm"
-                            variant="primary"
-                            isDisabled={ connected.length === 0 }
-                            onClick={ () => { runRemediation(remediationId, etag); } }>
-                            { isLoading ? 'Execute Playbook' : `Execute Playbook on ${pluralize(connectedCount, 'system')}` }
-                        </Button>,
-                        <Button
-                            key="download"
-                            variant='link' onClick={ () => downloadPlaybook(remediationId) }>
-                            Download Playbook
-                        </Button>,
-                        (isDebug()
-                            ? <Button
-                                key="reset-etag"
-                                onClick={ () => setEtag('test') }>
-                            Reset etag
-                            </Button>
-                            : null)
-                    ] }
-                >
-                    <div>
-                        { showRefreshMessage
-                            ? <Alert variant="warning" isInline
-                                title="The connection status of systems associated with this Playbook has changed. Please review again." />
-                            : null }
-                        <TextContent>
-                            { isLoading
-                                ? <Skeleton size='lg'/>
-                                : <Text component={ TextVariants.p }>
-                                    Playbook contains <b>{ `${pluralize(issueCount, 'issue')}` }</b> affecting
-                                    <b>  { `${pluralize(systemCount, 'system')}.` } </b>
-                                </Text> }
-                            <Text component={ TextVariants.p }>
-                            Systems connected to a Satellite instance and configured with Receptor can be automatically remediated.
-                                To remediate other systems, download the Ansible Playbook.
-
-                            </Text>
-                            <Text component={ TextVariants.h4 }>Connection status of systems</Text>
-                        </TextContent>
+                        : null)
+                ] }
+            >
+                <div>
+                    { showRefreshMessage
+                        ? <Alert variant="warning" isInline
+                            title="The connection status of systems associated with this Playbook has changed. Please review again." />
+                        : null }
+                    <TextContent>
                         { isLoading
                             ? <Skeleton size='lg'/>
-                            : <Table
-                                variant={ TableVariant.compact }
-                                aria-label="Systems"
-                                cells={ [{
-                                    title: 'Connection type', value: 'type'
-                                }, {
-                                    title: 'Systems', value: 'count'
-                                }, isUserEntitled && {
-                                    title: 'Connection status', value: 'status'
-                                } ] }
-                                rows={ rows }
-                            >
-                                <TableHeader />
-                                <TableBody />
-                            </Table> }
-                    </div>
-                </Modal>
-            </React.Fragment>
+                            : <Text component={ TextVariants.p }>
+                                Playbook contains <b>{ `${pluralize(issueCount, 'issue')}` }</b> affecting
+                                <b>  { `${pluralize(systemCount, 'system')}.` } </b>
+                            </Text> }
+                        <Text component={ TextVariants.p }>
+                        Systems connected to a Satellite instance and configured with Receptor can be automatically remediated.
+                            To remediate other systems, download the Ansible Playbook.
+
+                        </Text>
+                        <Text component={ TextVariants.h4 }>Connection status of systems</Text>
+                    </TextContent>
+                    { isLoading
+                        ? <Skeleton size='lg'/>
+                        : <Table
+                            variant={ TableVariant.compact }
+                            aria-label="Systems"
+                            cells={ [{
+                                title: 'Connection type', value: 'type'
+                            }, {
+                                title: 'Systems', value: 'count'
+                            }, isUserEntitled && {
+                                title: 'Connection status', value: 'status'
+                            } ] }
+                            rows={ rows }
+                        >
+                            <TableHeader />
+                            <TableBody />
+                        </Table> }
+                </div>
+            </Modal>
+        </React.Fragment>
         : null
     );
 };
