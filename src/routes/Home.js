@@ -17,6 +17,9 @@ import PlanSystems from '../components/CreatePlanModal/ModalSteps/PlanSystems';
 
 import './Home.scss';
 
+import { PermissionContext } from '../App';
+import DeniedState from '../components/DeniedState';
+
 const ConnectedRemediationTable = connect(({ remediations }) => ({ ...remediations }))(RemediationTable);
 
 class Home extends Component {
@@ -69,24 +72,32 @@ class Home extends Component {
         ];
 
         return (
-            <React.Fragment>
-                <PageHeader>
-                    <PageHeaderTitle title='Remediations'/>
-                    <TestButtons onRemediationCreated={ this.onRemediationCreated } />
-                </PageHeader>
-                <Main>
-                    <ConnectedRemediationTable loadRemediations={ this.loadRemediations } />
-                </Main>
+            <PermissionContext.Consumer>
+                { value =>
+                    value.permissions.read === false &&
+                    value.permissions.read === false &&
+                    value.permissions.execute === false
+                        ? <DeniedState/>
+                        : <React.Fragment>
+                            <PageHeader>
+                                <PageHeaderTitle title='Remediations'/>
+                                <TestButtons onRemediationCreated={ this.onRemediationCreated } />
+                            </PageHeader>
+                            <Main>
+                                <ConnectedRemediationTable loadRemediations={ this.loadRemediations } />
+                            </Main>
 
-                <Wizard
-                    isLarge
-                    title="Create Plan"
-                    className='ins-c-plan-modal'
-                    onClose = { this.onClose }
-                    isOpen= { isModalOpen }
-                    content = { ModalStepContent }
-                />
-            </React.Fragment>
+                            <Wizard
+                                isLarge
+                                title="Create Plan"
+                                className='ins-c-plan-modal'
+                                onClose = { this.onClose }
+                                isOpen= { isModalOpen }
+                                content = { ModalStepContent }
+                            />
+                        </React.Fragment>
+                }
+            </PermissionContext.Consumer>
         );
     }
 }

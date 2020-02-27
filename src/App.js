@@ -15,10 +15,10 @@ class App extends Component {
     constructor() {
         super();
         this.state = {
-            readPermission: false,
-            writePermission: false,
-            executePermission: false,
-            isOrgAdmin: false
+            readPermission: undefined,
+            writePermission: undefined,
+            executePermission: undefined,
+            isOrgAdmin: undefined
         };
     }
 
