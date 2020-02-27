@@ -21,7 +21,7 @@ const DeniedState = () => {
             <Main>
                 <EmptyState variant={ EmptyStateVariant.full } className='ins-c-remediaitions-denied-state'>
                     <EmptyStateIcon icon={ LockIcon } />
-                    <Title headingLevel="h5" size="lg"> You do not have permissions to view or manage Remediations </Title>
+                    <Title headingLevel="h5" size="lg"> You do not have access to Remediations </Title>
                     <EmptyStateBody>
                         Contact your organization administrator(s) for more information.
                     </EmptyStateBody>
