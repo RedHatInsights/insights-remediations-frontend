@@ -160,6 +160,54 @@ const reducers = {
         }
     }),
 
+    playbookActivityIntentory: (props) => () => applyReducerHash({
+        [props.INVENTORY_ACTION_TYPES.LOAD_ENTITIES_FULFILLED]: (state) => {
+            console.log('AAAAAAAAAAA', state);
+            return {
+                ...state,
+                columns: [
+                    ...state.columns.filter(col => col.key === 'display_name' || col.key === 'tags'),
+                    { key: 'status', title: 'Status',
+                        renderFunc: (status, id) => props.renderStatus(status) }
+                ]
+            };
+        },
+        [ACTION_TYPES.EXPAND_INVENTORY_TABLE]: (state, action) => ({
+            ...state,
+            rows: [ ...state.rows.filter(row => row.id !== action.payload.id),
+                { ...state.rows.find(row => row.id === action.payload.id), isOpen: action.payload.isOpen }
+            ]
+        })
+    }),
+
+    playbookRuns: applyReducerHash({
+        [ACTION_TYPES.GET_PLAYBOOK_RUNS]: (state, action) => ({
+            data: action.payload.data,
+            meta: action.payload.meta
+        })
+
+    }),
+
+    playbookRun: applyReducerHash({
+        [ACTION_TYPES.GET_PLAYBOOK_RUN]: (state, action) => ({
+            data: action.payload
+        })
+    }, {
+        data: {
+            created_by: {},
+            executors: []
+        }
+    }),
+
+    playbookRunSystems: applyReducerHash({
+        [ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEMS]: (state, action) => ({
+            ...action.payload
+        })
+    }, {
+        data: [],
+        meta: {}
+    }),
+
     runRemediation: applyReducerHash({
         [ACTION_TYPES.RUN_REMEDIATION_PENDING]: () => ({
             status: 'pending'

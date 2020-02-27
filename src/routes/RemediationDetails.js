@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter, Link, Route, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
@@ -12,6 +12,8 @@ import { addNotification } from '@redhat-cloud-services/frontend-components-noti
 import UpsellBanner from '../components/Alerts/UpsellBanner';
 import DeniedState from '../components/DeniedState';
 import classnames from 'classnames';
+import ActivityDetails from '../components/ActivityDetails';
+import ExecutorDetails from '../components/ExecutorDetails';
 
 import {
     Main,
@@ -110,21 +112,25 @@ class RemediationDetails extends Component {
                 { value =>
                     value.permissions.read === false
                         ? <DeniedState/>
-                        : <React.Fragment>
-                            <PageHeader>
-                                <Breadcrumb>
-                                    <BreadcrumbItem>
-                                        <Link to='/'> Remediations </Link>
-                                    </BreadcrumbItem>
-                                    <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
-                                </Breadcrumb>
-                                <Level className="ins-c-level">
-                                    <LevelItem>
-                                        <PageHeaderTitle title={ remediation.name }/>
-                                    </LevelItem>
-                                    <LevelItem>
-                                        <Split gutter="md">
-                                            { this.state.isEntitled &&
+                        : <Switch>
+                            <Route exact path='/:id/:run_id' render={ () => (<ActivityDetails remediation={ remediation } issue={ {} } />) } />
+                            <Route exact path='/:remediation_id/:run_id/:executor_id' render={ (props) => (<ExecutorDetails remediation={ remediation }  { ...props }/>) } />
+                            <Route path='/'>
+                                <React.Fragment>
+                                    <PageHeader>
+                                        <Breadcrumb>
+                                            <BreadcrumbItem>
+                                                <Link to='/'> Remediations </Link>
+                                            </BreadcrumbItem>
+                                            <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
+                                        </Breadcrumb>
+                                        <Level className="ins-c-level">
+                                            <LevelItem>
+                                                <PageHeaderTitle title={ remediation.name }/>
+                                            </LevelItem>
+                                            <LevelItem>
+                                                <Split gutter="md">
+                                                    { this.state.isEntitled &&
                                                 <PermissionContext.Consumer>
                                                     { value => value.permissions.execute &&
                                                         <SplitItem>
@@ -134,65 +140,65 @@ class RemediationDetails extends Component {
                                                         </SplitItem>
                                                     }
                                                 </PermissionContext.Consumer>
-                                            }
-                                            <SplitItem>
-                                                <Button
-                                                    isDisabled={ !remediation.issues.length }
-                                                    variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
+                                                    }
+                                                    <SplitItem>
+                                                        <Button
+                                                            isDisabled={ !remediation.issues.length }
+                                                            variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
                                                     Download Playbook
-                                                </Button>
-                                            </SplitItem>
-                                            <SplitItem>
-                                                <RemediationDetailsDropdown remediation={ remediation } />
-                                            </SplitItem>
-                                        </Split>
-                                    </LevelItem>
-                                </Level>
-                            </PageHeader>
-                            <Main>
-                                <Stack gutter="md">
-                                    { this.state.isEntitled === false && this.state.upsellBannerVisible &&
+                                                        </Button>
+                                                    </SplitItem>
+                                                    <SplitItem>
+                                                        <RemediationDetailsDropdown remediation={ remediation } />
+                                                    </SplitItem>
+                                                </Split>
+                                            </LevelItem>
+                                        </Level>
+                                    </PageHeader>
+                                    <Main>
+                                        <Stack gutter="md">
+                                            { this.state.isEntitled === false && this.state.upsellBannerVisible &&
                                         <StackItem>
                                             <UpsellBanner onClose={ this.handleUpsellToggle }/>
                                         </StackItem>
-                                    }
-                                    <StackItem>
-                                        <Card>
-                                            <CardHeader className='ins-m-card__header-bold'>Playbook Summary</CardHeader>
-                                            <CardBody>
-                                                <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
-                                                    <Flex className='ins-c-playbookSummary__overview'>
-                                                        <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
-                                                            <DescriptionList
-                                                                isBold
-                                                                title='Total systems'>
-                                                                { pluralize(totalSystems, 'system') }
-                                                            </DescriptionList>
-                                                        </FlexItem>
-                                                    </Flex>
-                                                    <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
-                                                        <Flex>
-                                                            <FlexItem
-                                                                className={ classnames(
-                                                                    'ins-c-reboot-status',
-                                                                    { 'ins-c-reboot-status__enabled':
+                                            }
+                                            <StackItem>
+                                                <Card>
+                                                    <CardHeader className='ins-m-card__header-bold'>Playbook Summary</CardHeader>
+                                                    <CardBody>
+                                                        <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
+                                                            <Flex className='ins-c-playbookSummary__overview'>
+                                                                <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                                                    <DescriptionList
+                                                                        isBold
+                                                                        title='Total systems'>
+                                                                        { pluralize(totalSystems, 'system') }
+                                                                    </DescriptionList>
+                                                                </FlexItem>
+                                                            </Flex>
+                                                            <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
+                                                                <Flex>
+                                                                    <FlexItem
+                                                                        className={ classnames(
+                                                                            'ins-c-reboot-status',
+                                                                            { 'ins-c-reboot-status__enabled':
                                                                         remediation.auto_reboot && remediation.needs_reboot
-                                                                    },
-                                                                    { 'ins-c-reboot-status__disabled': !remediation.auto_reboot }
-                                                                ) }
-                                                                breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                                                            },
+                                                                            { 'ins-c-reboot-status__disabled': !remediation.auto_reboot }
+                                                                        ) }
+                                                                        breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
                                                                 Autoreboot:&nbsp;
-                                                                <b>
-                                                                    { this.generateAutoRebootStatus(
-                                                                        remediation.auto_reboot,
-                                                                        remediation.needs_reboot)
-                                                                    }
-                                                                </b>
-                                                            </FlexItem>
-                                                            <FlexItem>{ this.generateNumRebootString(stats.systemsWithReboot) }</FlexItem>
-                                                        </Flex>
-                                                    </DescriptionList>
-                                                    { remediation.needs_reboot &&
+                                                                        <b>
+                                                                            { this.generateAutoRebootStatus(
+                                                                                remediation.auto_reboot,
+                                                                                remediation.needs_reboot)
+                                                                            }
+                                                                        </b>
+                                                                    </FlexItem>
+                                                                    <FlexItem>{ this.generateNumRebootString(stats.systemsWithReboot) }</FlexItem>
+                                                                </Flex>
+                                                            </DescriptionList>
+                                                            { remediation.needs_reboot &&
                                                         <PermissionContext.Consumer>
                                                             { value => value.permissions.write &&
                                                                 <Button
@@ -204,17 +210,20 @@ class RemediationDetails extends Component {
                                                                 </Button>
                                                             }
                                                         </PermissionContext.Consumer>
-                                                    }
-                                                </Flex>
-                                            </CardBody>
-                                        </Card>
-                                    </StackItem>
-                                    <StackItem>
-                                        <RemediationDetailsTable remediation={ remediation } status={ this.props.selectedRemediationStatus }/>
-                                    </StackItem>
-                                </Stack>
-                            </Main>
-                        </React.Fragment>
+                                                            }
+                                                            <Link to={ `/${this.id}/run_id` }> View activity</Link>
+                                                        </Flex>
+                                                    </CardBody>
+                                                </Card>
+                                            </StackItem>
+                                            <StackItem>
+                                                <RemediationDetailsTable remediation={ remediation } status={ this.props.selectedRemediationStatus }/>
+                                            </StackItem>
+                                        </Stack>
+                                    </Main>
+                                </React.Fragment>
+                            </Route>
+                        </Switch>
                 }
             </PermissionContext.Consumer>
         );
