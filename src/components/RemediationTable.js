@@ -168,13 +168,13 @@ function RemediationTable (props) {
                     </ToolbarItem>
                     <ToolbarItem>
                         <PermissionContext.Consumer>
-                            { value => (
+                            { value => value.permissions.write &&
                                 <ToolbarActions
-                                    isDisabled={ !selectedIds.length || !value.writePermission }
+                                    isDisabled={ !selectedIds.length }
                                     remediations={ selectedIds }
                                     afterDelete={ () => { selector.reset(); loadRemediations(); } }
                                 />
-                            ) }
+                            }
                         </PermissionContext.Consumer>
                     </ToolbarItem>
                 </ToolbarGroup>

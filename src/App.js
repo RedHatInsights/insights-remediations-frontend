@@ -17,7 +17,8 @@ class App extends Component {
         this.state = {
             readPermission: false,
             writePermission: false,
-            executePermission: false
+            executePermission: false,
+            isOrgAdmin: false
         };
     }
 
@@ -30,8 +31,17 @@ class App extends Component {
     componentDidMount () {
         insights.chrome.init();
         insights.chrome.identifyApp('remediations');
-        // TODO: Do the user check and set this function below to the right values
-        this.handlePermissionUpdate(true, false, false);
+        window.insights.chrome.getUserPermissions().then(
+            allPermissions => {
+                const permissionList = allPermissions.map(permissions => permissions.permission);
+                this.handlePermissionUpdate(
+                    permissionList.includes('remediations:remediation:read'),
+                    permissionList.includes('remediations:remediation:write'),
+                    permissionList.includes('remediations:remediation:execute')
+                );
+            }
+        );
+        window.insights.chrome.auth.getUser().then((user) => user.identity.user.is_org_admin && this.setState({ isOrgAdmin: true }));
     }
 
     componentWillUnmount () {
@@ -43,9 +53,11 @@ class App extends Component {
         return (
             <PermissionContext.Provider
                 value={ {
-                    readPermission: this.state.readPermission,
-                    writePermission: this.state.writePermission,
-                    executePermission: this.state.executePermission
+                    permissions: {
+                        read: this.state.isOrgAdmin ? true : this.state.readPermission,
+                        write: this.state.isOrgAdmin ? true : this.state.writePermission,
+                        execute: this.state.isOrgAdmin ? true : this.state.executePermission
+                    }
                 } }>
                 <NotificationsPortal />
                 <Routes childProps={ this.props } />

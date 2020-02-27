@@ -44,10 +44,10 @@ function RemediationDetailsDropdown ({ remediation, onRename, onDelete }) {
                 } } />
 
             <PermissionContext.Consumer>
-                { value => (
+                { value => value.permissions.write &&
                     <Dropdown
                         onSelect={ f => f }
-                        toggle={ <KebabToggle isDisabled={ !value.writePermission } onToggle={ () => setOpen(value => !value) } /> }
+                        toggle={ <KebabToggle onToggle={ () => setOpen(value => !value) } /> }
                         isOpen={ open }
                         position={ DropdownPosition.right }
                         isPlain
@@ -66,7 +66,7 @@ function RemediationDetailsDropdown ({ remediation, onRename, onDelete }) {
                             Delete
                         </Button>
                     </Dropdown>
-                ) }
+                }
             </PermissionContext.Consumer>
         </React.Fragment>
     );

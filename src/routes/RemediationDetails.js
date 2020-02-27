@@ -145,11 +145,15 @@ class RemediationDetails extends Component {
                         <LevelItem>
                             <Split gutter="md">
                                 { this.state.isEntitled &&
-                                    <SplitItem>
-                                        <ExecutePlaybookButton
-                                            remediationId={ remediation.id }>
-                                        </ExecutePlaybookButton>
-                                    </SplitItem>
+                                    <PermissionContext.Consumer>
+                                        { value => value.permissions.execute &&
+                                            <SplitItem>
+                                                <ExecutePlaybookButton
+                                                    remediationId={ remediation.id }>
+                                                </ExecutePlaybookButton>
+                                            </SplitItem>
+                                        }
+                                    </PermissionContext.Consumer>
                                 }
                                 <SplitItem>
                                     <Button
@@ -203,14 +207,13 @@ class RemediationDetails extends Component {
                                         </DescriptionList>
                                         { remediation.needs_reboot &&
                                             <PermissionContext.Consumer>
-                                                { value => (
+                                                { value => value.permissions.write &&
                                                     <Button
                                                         variant='link'
-                                                        isDisabled={ !value.writePermission }
                                                         onClick={ () => this.handleRebootChange(!remediation.auto_reboot) }>
                                                         Turn { remediation.auto_reboot && remediation.needs_reboot ? 'off' : 'on' } auto reboot
                                                     </Button>
-                                                ) }
+                                                }
                                             </PermissionContext.Consumer>
                                         }
                                     </Flex>

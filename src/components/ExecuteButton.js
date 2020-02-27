@@ -9,8 +9,6 @@ import { CheckCircleIcon, ExclamationCircleIcon } from '@patternfly/react-icons'
 import { Skeleton } from '@redhat-cloud-services/frontend-components';
 import './ExecuteButton.scss';
 
-import { PermissionContext } from '../App';
-
 const styledConnectionStatus = (status) => ({
     connected: (
         <TextContent>
@@ -134,15 +132,10 @@ const ExecuteButton = ({
     const pluralize = (number, str) => number > 1 ? `${number} ${str}s` : `${number} ${str}`;
     return (isUserEntitled && isEnabled()
         ? <React.Fragment>
-            <PermissionContext.Consumer>
-                { value => (
-                    <Button
-                        isDisabled={ !value.executePermission }
-                        onClick={ () => { setOpen(true); getConnectionStatus(remediationId); } }>
-                Execute Playbook
-                    </Button>
-                ) }
-            </PermissionContext.Consumer>
+            <Button
+                onClick={ () => { setOpen(true); getConnectionStatus(remediationId); } }>
+        Execute Playbook
+            </Button>
             <Modal
                 className="ins-c-dialog"
                 width={ '50%' }
