@@ -54,9 +54,9 @@ class App extends Component {
             <PermissionContext.Provider
                 value={ {
                     permissions: {
-                        read: this.state.isOrgAdmin ? true : this.state.readPermission,
-                        write: this.state.isOrgAdmin ? true : this.state.writePermission,
-                        execute: this.state.isOrgAdmin ? true : this.state.executePermission
+                        read: this.state.isOrgAdmin || this.state.readPermission,
+                        write: this.state.isOrgAdmin || this.state.writePermission,
+                        execute: this.state.isOrgAdmin || this.state.executePermission
                     }
                 } }>
                 <NotificationsPortal />
