@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 
 import flatMap from 'lodash/flatMap';
@@ -108,6 +108,7 @@ function RemediationDetailsTable (props) {
     const sorter = useSorter(2, 'asc');
     const filter = useFilter();
     const selector = useSelector();
+    const permission = useContext(PermissionContext);
 
     sorter.onChange(pagination.reset);
     filter.onChange(pagination.reset);
@@ -140,16 +141,14 @@ function RemediationDetailsTable (props) {
                 }
                 <ToolbarGroup>
                     <ToolbarItem>
-                        <PermissionContext.Consumer>
-                            { value => value.permissions.write &&
-                                <DeleteActionsButton
-                                    isDisabled={ !selectedIds.length }
-                                    remediation={ props.remediation }
-                                    issues={ selectedIds }
-                                    afterDelete={ selector.reset }
-                                />
-                            }
-                        </PermissionContext.Consumer>
+                        { permission.permissions.write &&
+                            <DeleteActionsButton
+                                isDisabled={ !selectedIds.length }
+                                remediation={ props.remediation }
+                                issues={ selectedIds }
+                                afterDelete={ selector.reset }
+                            />
+                        }
                     </ToolbarItem>
                 </ToolbarGroup>
                 <Pagination
@@ -185,7 +184,7 @@ function RemediationDetailsTable (props) {
                         }
                         rows={ rows }
                         { ...sorter.props }
-                        { ...selector.props }
+                        { ...(permission.permissions.write && { ... selector.props }) }
                     >
                         <TableHeader />
                         <TableBody { ...selector.tbodyProps } />

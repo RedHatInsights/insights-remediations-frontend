@@ -17,8 +17,7 @@ class App extends Component {
         this.state = {
             readPermission: undefined,
             writePermission: undefined,
-            executePermission: undefined,
-            isOrgAdmin: undefined
+            executePermission: undefined
         };
     }
 
@@ -41,7 +40,6 @@ class App extends Component {
                 );
             }
         );
-        window.insights.chrome.auth.getUser().then((user) => user.identity.user.is_org_admin && this.setState({ isOrgAdmin: true }));
     }
 
     componentWillUnmount () {
@@ -54,9 +52,9 @@ class App extends Component {
             <PermissionContext.Provider
                 value={ {
                     permissions: {
-                        read: this.state.isOrgAdmin || this.state.readPermission,
-                        write: this.state.isOrgAdmin || this.state.writePermission,
-                        execute: this.state.isOrgAdmin || this.state.executePermission
+                        read: this.state.readPermission,
+                        write: this.state.writePermission,
+                        execute: this.state.executePermission
                     }
                 } }>
                 <NotificationsPortal />
