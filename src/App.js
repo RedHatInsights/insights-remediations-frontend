@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Routes } from './Routes';
 import './App.scss';
+import GlobalSkeleton from './skeletons/GlobalSkeleton';
 
 // Notifications
 import { NotificationsPortal } from '@redhat-cloud-services/frontend-components-notifications';
@@ -17,14 +18,16 @@ class App extends Component {
         this.state = {
             readPermission: undefined,
             writePermission: undefined,
-            executePermission: undefined
+            executePermission: undefined,
+            arePermissionLoaded: false
         };
     }
 
     handlePermissionUpdate = (hasRead, hasWrite, hasExecute) => this.setState({
         readPermission: hasRead,
         writePermission: hasWrite,
-        executePermission: hasExecute
+        executePermission: hasExecute,
+        arePermissionLoaded: true
     });
 
     componentDidMount () {
@@ -33,11 +36,15 @@ class App extends Component {
         window.insights.chrome.getUserPermissions().then(
             allPermissions => {
                 const permissionList = allPermissions.map(permissions => permissions.permission);
-                this.handlePermissionUpdate(
-                    permissionList.includes('remediations:remediation:read'),
-                    permissionList.includes('remediations:remediation:write'),
-                    permissionList.includes('remediations:remediation:execute')
-                );
+                if (permissionList.includes('remediations:*:*' || 'remediations:remediation:*')) {
+                    this.handlePermissionUpdate(true, true, true);
+                } else {
+                    this.handlePermissionUpdate(
+                        permissionList.includes('remediations:remediation:read' || 'remediations:*:read'),
+                        permissionList.includes('remediations:remediation:write' || 'remediations:*:write'),
+                        permissionList.includes('remediations:remediation:execute' || 'remediations:*:execute')
+                    );
+                }
             }
         );
     }
@@ -49,17 +56,19 @@ class App extends Component {
 
     render () {
         return (
-            <PermissionContext.Provider
-                value={ {
-                    permissions: {
-                        read: this.state.readPermission,
-                        write: this.state.writePermission,
-                        execute: this.state.executePermission
-                    }
-                } }>
-                <NotificationsPortal />
-                <Routes childProps={ this.props } />
-            </PermissionContext.Provider>
+            this.state.arePermissionLoaded ?
+                <PermissionContext.Provider
+                    value={ {
+                        permissions: {
+                            read: this.state.readPermission,
+                            write: this.state.writePermission,
+                            execute: this.state.executePermission
+                        }
+                    } }>
+                    <NotificationsPortal />
+                    <Routes childProps={ this.props } />
+                </PermissionContext.Provider>
+                : <GlobalSkeleton/>
         );
     }
 }
