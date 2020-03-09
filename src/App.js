@@ -33,9 +33,9 @@ class App extends Component {
     componentDidMount () {
         insights.chrome.init();
         insights.chrome.identifyApp('remediations');
-        window.insights.chrome.getUserPermissions().then(
-            allPermissions => {
-                const permissionList = allPermissions.map(permissions => permissions.permission);
+        window.insights.chrome.getUserPermissions('remediations').then(
+            remediationsPermissions => {
+                const permissionList = remediationsPermissions.map(permissions => permissions.permission);
                 if (permissionList.includes('remediations:*:*' || 'remediations:remediation:*')) {
                     this.handlePermissionUpdate(true, true, true);
                 } else {
@@ -55,14 +55,16 @@ class App extends Component {
     }
 
     render () {
+        const { readPermission, writePermission, executePermission, arePermissionLoaded } = this.state;
+
         return (
-            this.state.arePermissionLoaded ?
+            arePermissionLoaded ?
                 <PermissionContext.Provider
                     value={ {
                         permissions: {
-                            read: this.state.readPermission,
-                            write: this.state.writePermission,
-                            execute: this.state.executePermission
+                            read: readPermission,
+                            write: writePermission,
+                            execute: executePermission
                         }
                     } }>
                     <NotificationsPortal />
