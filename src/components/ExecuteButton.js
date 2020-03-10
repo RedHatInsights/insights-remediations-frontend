@@ -131,7 +131,7 @@ const ExecuteButton = ({
 
     const pluralize = (number, str) => number > 1 ? `${number} ${str}s` : `${number} ${str}`;
     return (isUserEntitled && isEnabled()
-        ?  <React.Fragment>
+        ? <React.Fragment>
             <Button
                 onClick={ () => { setOpen(true); getConnectionStatus(remediationId); } }>
         Execute Playbook
@@ -206,7 +206,6 @@ const ExecuteButton = ({
                         </Table> }
                 </div>
             </Modal>
-
         </React.Fragment>
         : null
     );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 
 import flatMap from 'lodash/flatMap';
@@ -27,6 +27,7 @@ import * as debug from '../Utilities/debug';
 
 import './RemediationDetailsTable.scss';
 import { CheckCircleIcon } from '@patternfly/react-icons';
+import { PermissionContext } from '../App';
 
 function resolutionDescriptionCell (remediation, issue) {
     if (issue.resolutions_available <= 1) {
@@ -107,6 +108,7 @@ function RemediationDetailsTable (props) {
     const sorter = useSorter(2, 'asc');
     const filter = useFilter();
     const selector = useSelector();
+    const permission = useContext(PermissionContext);
 
     sorter.onChange(pagination.reset);
     filter.onChange(pagination.reset);
@@ -139,12 +141,14 @@ function RemediationDetailsTable (props) {
                 }
                 <ToolbarGroup>
                     <ToolbarItem>
-                        <DeleteActionsButton
-                            isDisabled={ !selectedIds.length }
-                            remediation={ props.remediation }
-                            issues={ selectedIds }
-                            afterDelete={ selector.reset }
-                        />
+                        { permission.permissions.write &&
+                            <DeleteActionsButton
+                                isDisabled={ !selectedIds.length }
+                                remediation={ props.remediation }
+                                issues={ selectedIds }
+                                afterDelete={ selector.reset }
+                            />
+                        }
                     </ToolbarItem>
                 </ToolbarGroup>
                 <Pagination
@@ -180,7 +184,7 @@ function RemediationDetailsTable (props) {
                         }
                         rows={ rows }
                         { ...sorter.props }
-                        { ...selector.props }
+                        { ...(permission.permissions.write && { ... selector.props }) }
                     >
                         <TableHeader />
                         <TableBody { ...selector.tbodyProps } />

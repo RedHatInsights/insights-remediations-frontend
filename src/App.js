@@ -1,18 +1,52 @@
 import PropTypes from 'prop-types';
-import React, { Component, Fragment } from 'react';
+import React, { createContext, Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Routes } from './Routes';
 import './App.scss';
+import GlobalSkeleton from './skeletons/GlobalSkeleton';
 
 // Notifications
 import { NotificationsPortal } from '@redhat-cloud-services/frontend-components-notifications';
 
+export const PermissionContext = createContext();
+
 class App extends Component {
+
+    constructor() {
+        super();
+        this.state = {
+            readPermission: undefined,
+            writePermission: undefined,
+            executePermission: undefined,
+            arePermissionLoaded: false
+        };
+    }
+
+    handlePermissionUpdate = (hasRead, hasWrite, hasExecute) => this.setState({
+        readPermission: hasRead,
+        writePermission: hasWrite,
+        executePermission: hasExecute,
+        arePermissionLoaded: true
+    });
 
     componentDidMount () {
         insights.chrome.init();
         insights.chrome.identifyApp('remediations');
+        window.insights.chrome.getUserPermissions('remediations').then(
+            remediationsPermissions => {
+                const permissionList = remediationsPermissions.map(permissions => permissions.permission);
+                if (permissionList.includes('remediations:*:*' || 'remediations:remediation:*')) {
+                    this.handlePermissionUpdate(true, true, true);
+                } else {
+                    this.handlePermissionUpdate(
+                        permissionList.includes('remediations:remediation:read' || 'remediations:*:read'),
+                        permissionList.includes('remediations:remediation:write' || 'remediations:*:write'),
+                        permissionList.includes('remediations:remediation:execute' || 'remediations:*:execute')
+                    );
+                }
+            }
+        );
     }
 
     componentWillUnmount () {
@@ -21,11 +55,22 @@ class App extends Component {
     }
 
     render () {
+        const { readPermission, writePermission, executePermission, arePermissionLoaded } = this.state;
+
         return (
-            <Fragment>
-                <NotificationsPortal />
-                <Routes childProps={ this.props } />
-            </Fragment>
+            arePermissionLoaded ?
+                <PermissionContext.Provider
+                    value={ {
+                        permissions: {
+                            read: readPermission,
+                            write: writePermission,
+                            execute: executePermission
+                        }
+                    } }>
+                    <NotificationsPortal />
+                    <Routes childProps={ this.props } />
+                </PermissionContext.Provider>
+                : <GlobalSkeleton/>
         );
     }
 }

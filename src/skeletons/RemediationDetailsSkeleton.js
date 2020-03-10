@@ -116,11 +116,6 @@ const RemediationDetailsSkeleton = () => {
                                     </ToolbarItem>
                                 </ToolbarGroup>
                             }
-                            <ToolbarGroup>
-                                <ToolbarItem>
-                                    <Button variant='link' isDisabled> Remove action </Button>
-                                </ToolbarItem>
-                            </ToolbarGroup>
                             <Skeleton size='sm' />
                         </TableToolbar>
                         <SkeletonTable/>

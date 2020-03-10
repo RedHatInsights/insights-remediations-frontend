@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 
 import { Link } from 'react-router-dom';
@@ -25,6 +25,8 @@ import * as debug from '../Utilities/debug';
 import keyBy from 'lodash/keyBy';
 
 import { downloadPlaybook } from '../api';
+
+import { PermissionContext } from '../App';
 
 function buildName (name, id) {
     return ({
@@ -110,6 +112,7 @@ function RemediationTable (props) {
     const filter = useFilter();
     const selector = useSelector();
     const pagination = usePagination();
+    const permission = useContext(PermissionContext);
 
     function loadRemediations () {
         const column = SORTING_ITERATEES[sorter.sortBy];
@@ -165,11 +168,13 @@ function RemediationTable (props) {
                         </Button>
                     </ToolbarItem>
                     <ToolbarItem>
-                        <ToolbarActions
-                            isDisabled={ !selectedIds.length }
-                            remediations={ selectedIds }
-                            afterDelete={ () => { selector.reset(); loadRemediations(); } }
-                        />
+                        { permission.permissions.write &&
+                            <ToolbarActions
+                                isDisabled={ !selectedIds.length }
+                                remediations={ selectedIds }
+                                afterDelete={ () => { selector.reset(); loadRemediations(); } }
+                            />
+                        }
                     </ToolbarItem>
                 </ToolbarGroup>
                 <Pagination
