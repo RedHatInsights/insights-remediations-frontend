@@ -74,9 +74,7 @@ class Home extends Component {
         return (
             <PermissionContext.Consumer>
                 { value =>
-                    value.permissions.read === false &&
-                    value.permissions.write === false &&
-                    value.permissions.execute === false
+                    value.permissions.read === false
                         ? <DeniedState/>
                         : <React.Fragment>
                             <PageHeader>
