@@ -87,7 +87,6 @@ const ExecuteButton = ({
     isLoading,
     data,
     getConnectionStatus,
-    toggleExecutePlaybookBanner,
     remediationId,
     issueCount,
     runRemediation,
@@ -110,7 +109,6 @@ const ExecuteButton = ({
             setShowRefreshMessage(true);
         } else if (remediationStatus === 'fulfilled') {
             setOpen(false);
-            toggleExecutePlaybookBanner();
         }
     }, [ remediationStatus ]);
 
@@ -215,7 +213,6 @@ ExecuteButton.propTypes = {
     isLoading: PropTypes.bool,
     data: PropTypes.array,
     getConnectionStatus: PropTypes.func,
-    toggleExecutePlaybookBanner: PropTypes.func,
     runRemediation: PropTypes.func,
     remediationId: PropTypes.string,
     remediationStatus: PropTypes.string,

@@ -14,7 +14,6 @@ const asyncActions = flatMap([
     'PATCH_REMEDIATION_ISSUE',
     'GET_RESOLUTIONS',
     'GET_CONNECTION_STATUS',
-    'EXECUTE_PLAYBOOK_BANNER',
     'RUN_REMEDIATION'
 ], a => [ a, `${a}_PENDING`, `${a}_FULFILLED`, `${a}_REJECTED` ]);
 

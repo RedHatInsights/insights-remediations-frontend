@@ -147,14 +147,6 @@ const reducers = {
         status: 'initial'
     }),
 
-    executePlaybookBanner: applyReducerHash({
-        [ACTION_TYPES.EXECUTE_PLAYBOOK_BANNER]: (state) => ({
-            isVisible: !state.isVisible
-        })
-    }, {
-        isVisible: false
-    }),
-
     inventoryEntitiesReducer: (props) => () => applyReducerHash({
         [props.INVENTORY_ACTION_TYPES.LOAD_ENTITIES_FULFILLED]: (state) => {
             return {

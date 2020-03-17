@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
-import { getConnectionStatus, runRemediation, toggleExecutePlaybookBanner, setEtag } from '../actions';
+import { getConnectionStatus, runRemediation, setEtag } from '../actions';
 
 import ExecuteButton from '../components/ExecuteButton';
 
@@ -16,9 +16,6 @@ export const ExecutePlaybookButton = withRouter(connect(
     (dispatch) => ({
         getConnectionStatus: (id) => {
             dispatch(getConnectionStatus(id));
-        },
-        toggleExecutePlaybookBanner: () => {
-            dispatch(toggleExecutePlaybookBanner());
         },
         runRemediation: (id, etag) => {
             dispatch(runRemediation(id, etag));
