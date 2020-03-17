@@ -8,7 +8,6 @@ import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
 import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
-import ExecuteBanner from '../components/Alerts/ExecuteBanner';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
 import UpsellBanner from '../components/Alerts/UpsellBanner';
 import DeniedState from '../components/DeniedState';
@@ -52,26 +51,6 @@ class RemediationDetails extends Component {
     handleRebootChange = autoReboot => {
         this.props.switchAutoReboot(this.id, autoReboot);
     };
-
-    handleSuccessBanner = (id, name) => {
-        // TODO: Needs to check when playbook is done
-        this.props.toggleExecutePlaybookBanner();
-        this.props.addNotification({
-            variant: 'success',
-            title: `Remediation plan ${name} successfully completed.`,
-            dismissDelay: 8000
-        });
-    }
-
-    handlePlaybookCancel = (id, name) => {
-        // TODO: Cancel playbook
-        this.props.toggleExecutePlaybookBanner();
-        this.props.addNotification({
-            variant: 'info',
-            title: `Canceled execution of playbook ${name}.`,
-            dismissDelay: 2000
-        });
-    }
 
     handleUpsellToggle = () => {
         this.setState({
@@ -132,10 +111,6 @@ class RemediationDetails extends Component {
                     value.permissions.read === false
                         ? <DeniedState/>
                         : <React.Fragment>
-                            {
-                                this.props.executePlaybookBanner.isVisible &&
-                                    <ExecuteBanner onCancel={ () => this.handlePlaybookCancel(remediation.id, remediation.name) } />
-                            }
                             <PageHeader>
                                 <Breadcrumb>
                                     <BreadcrumbItem>
@@ -259,7 +234,6 @@ RemediationDetails.propTypes = {
     loadRemediationStatus: PropTypes.func.isRequired,
     switchAutoReboot: PropTypes.func.isRequired,
     deleteRemediation: PropTypes.func.isRequired,
-    toggleExecutePlaybookBanner: PropTypes.func.isRequired,
     executePlaybookBanner: PropTypes.shape({
         isVisible: PropTypes.bool
     }),
@@ -280,7 +254,6 @@ export default withRouter(
             // eslint-disable-next-line camelcase
             switchAutoReboot: (id, auto_reboot) => dispatch(actions.patchRemediation(id, { auto_reboot })),
             deleteRemediation: id => dispatch(actions.deleteRemediation(id)),
-            toggleExecutePlaybookBanner: () => dispatch(actions.toggleExecutePlaybookBanner()),
             addNotification: (content) => dispatch(addNotification(content))
         })
     )(RemediationDetails)
