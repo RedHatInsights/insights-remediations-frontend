@@ -237,11 +237,7 @@ RemediationDetails.propTypes = {
     executePlaybookBanner: PropTypes.shape({
         isVisible: PropTypes.bool
     }),
-    addNotification: PropTypes.shape({
-        variant: PropTypes.string,
-        title: PropTypes.string,
-        dismissDelay: PropTypes.number
-    })
+    addNotification: PropTypes.func.isRequired
 };
 
 export default withRouter(
