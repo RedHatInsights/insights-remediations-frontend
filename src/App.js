@@ -30,9 +30,10 @@ class App extends Component {
         arePermissionLoaded: true
     });
 
-    componentDidMount () {
+    async componentDidMount () {
         insights.chrome.init();
         insights.chrome.identifyApp('remediations');
+        await window.insights.chrome.auth.getUser(); 
         window.insights.chrome.getUserPermissions('remediations').then(
             remediationsPermissions => {
                 const permissionList = remediationsPermissions.map(permissions => permissions.permission);
@@ -63,8 +64,8 @@ class App extends Component {
                     value={ {
                         permissions: {
                             read: readPermission,
-                            write: writePermission,
-                            execute: executePermission
+                            write: false,
+                            execute: true
                         }
                     } }>
                     <NotificationsPortal />
