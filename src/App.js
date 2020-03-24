@@ -30,9 +30,12 @@ class App extends Component {
         arePermissionLoaded: true
     });
 
-    componentDidMount () {
+    async componentDidMount () {
         insights.chrome.init();
         insights.chrome.identifyApp('remediations');
+
+        // wait for auth first, otherwise the call to RBAC may 401
+        await window.insights.chrome.auth.getUser();
         window.insights.chrome.getUserPermissions('remediations').then(
             remediationsPermissions => {
                 const permissionList = remediationsPermissions.map(permissions => permissions.permission);
