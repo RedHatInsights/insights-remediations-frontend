@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Home from './routes/Home';
 import RemediationDetails from './routes/RemediationDetails';
+import ActivityDetails from './components/ActivityDetails';
+import ExecutorDetails from './components/ExecutorDetails';
 
 const InsightsRoute = ({ component: Component, rootClass, ...rest }) => {
     const root = document.getElementById('root');
@@ -20,7 +22,9 @@ InsightsRoute.propTypes = {
 
 export const routes = {
     home: '/',
-    details: '/:id'
+    details: '/:id',
+    runDetails: '/:id/:run_id',
+    executorDetails: '/:id/:run_id/:executor_id'
 };
 
 function checkPaths(group, app) {
@@ -48,7 +52,10 @@ export const Routes = ({ childProps: { history }}) => {
     return (
         <Switch>
             <InsightsRoute exact path={ routes.home } component={ Home } rootClass='remediations' />
-            <InsightsRoute path={ routes.details } component={ RemediationDetails } rootClass='remediation-details' />
+            <InsightsRoute exact path={ routes.details } component={ RemediationDetails } rootClass='remediation-details' />
+            <InsightsRoute exact path={ routes.runDetails } render={ (props) => (<ActivityDetails  remediation={ {} } { ...props } />) } />
+            <InsightsRoute exact path={ routes.executorDetails } render={ (props) => (<ExecutorDetails   { ...props } />) } />
+
         </Switch>
     );
 };

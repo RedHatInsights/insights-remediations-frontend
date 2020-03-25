@@ -37,11 +37,11 @@ import reducers from '../store/reducers';
 import { getSystemName } from '../Utilities/model';
 import DescriptionList from './Layouts/DescriptionList';
 import { getPlaybookRuns, getPlaybookRun, getPlaybookRunSystems, getPlaybookRunSystemDetails, expandInventoryTable } from '../actions';
-import { downloadPlaybook } from '../api';
+import { downloadPlaybook, remediations } from '../api';
 import { renderStatus, normalizeStatus } from './ActivityDetails';
 
 const ExecutorDetails = ({
-    match: { params: { executor_id }},
+    match: { params: { executor_id, run_id, remediation_id }},
     remediation,
     playbookRun,
     playbookRuns,
@@ -91,9 +91,6 @@ const ExecutorDetails = ({
 
     useEffect(() => {
         loadInventory();
-        // setRows(createRows(getPlaybookRuns().payload.data));
-        // setRows([]);
-        // dispatch(getPlaybookRuns());
         getPlaybookRun();
         getPlaybookRunSystems();
 
@@ -102,8 +99,6 @@ const ExecutorDetails = ({
         setExecutor(playbookRun.data.executors.find(executor => executor.executor_id === executor_id) || {});
     }, [ playbookRun ]);
 
-    console.log('EXECUTOR', executor);
-    console.log(playbookRun.data);
     const systems = playbookRunSystems.map(({ system_id, system_name, status }) => ({
         id: system_id,
         display_name: system_name,
@@ -120,7 +115,7 @@ const ExecutorDetails = ({
                     <Link to={ `/${remediation.id}` }> { remediation.name } </Link>
                 </BreadcrumbItem>
                 <BreadcrumbItem>
-                    <Link to={ `/${remediation.id}/playbook_runs` }>  <DateFormat type='exact' date={ playbookRun.data.created_at } /> </Link>
+                    <Link to={ `/${remediation.id}/${run_id}` }>  <DateFormat type='exact' date={ playbookRun.data.created_at } /> </Link>
                 </BreadcrumbItem>
                 <BreadcrumbItem isActive> { executor.executor_name } </BreadcrumbItem>
             </Breadcrumb>
@@ -176,7 +171,7 @@ const ExecutorDetails = ({
 };
 
 ExecutorDetails.propTypes = {
-    remediation: PropTypes.object,
+    selectedRemediation: PropTypes.object,
     issue: PropTypes.object
 
 };
@@ -186,10 +181,11 @@ ExecutorDetails.defaultProps = {
 };
 
 const connected = connect(
-    ({ playbookRuns, playbookRun, playbookRunSystems }) => ({
+    ({ playbookRuns, playbookRun, playbookRunSystems, selectedRemediation }) => ({
         playbookRuns: playbookRuns.data,
         playbookRun,
-        playbookRunSystems: playbookRunSystems.data
+        playbookRunSystems: playbookRunSystems.data,
+        remediation: selectedRemediation.remediation
     }),
     (dispatch) => ({
         getPlaybookRuns: (id) => dispatch(getPlaybookRuns(id)),

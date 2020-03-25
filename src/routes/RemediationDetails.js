@@ -112,10 +112,7 @@ class RemediationDetails extends Component {
                 { value =>
                     value.permissions.read === false
                         ? <DeniedState/>
-                        : <Switch>
-                            <Route exact path='/:id/:run_id' render={ () => (<ActivityDetails remediation={ remediation } issue={ {} } />) } />
-                            <Route exact path='/:remediation_id/:run_id/:executor_id' render={ (props) => (<ExecutorDetails remediation={ remediation }  { ...props }/>) } />
-                            <Route path='/'>
+                        : 
                                 <React.Fragment>
                                     <PageHeader>
                                         <Breadcrumb>
@@ -222,8 +219,6 @@ class RemediationDetails extends Component {
                                         </Stack>
                                     </Main>
                                 </React.Fragment>
-                            </Route>
-                        </Switch>
                 }
             </PermissionContext.Consumer>
         );

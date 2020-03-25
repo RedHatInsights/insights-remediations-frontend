@@ -107,7 +107,7 @@ const ActivityDetail = ({
             <PageHeader>
                 <Breadcrumb>
                     <BreadcrumbItem>
-                        <Link to={ `/${remediation.id}` }> { remediation.name } </Link>
+                        <Link to={`/${remediation.id}`}> {remediation.name } </Link>
                     </BreadcrumbItem>
                     <BreadcrumbItem isActive> <DateFormat type='exact' date={ playbookRun.data.created_at } /> </BreadcrumbItem>
                 </Breadcrumb>
@@ -145,7 +145,7 @@ const ActivityDetail = ({
                                 aria-label="Collapsible table"
                                 rows={ playbookRun.data.executors.map(e =>({
                                     cells: [
-                                        { title: <Link to={ `/${remediation.id}/playbook_runs/${e.executor_id}` }> { e.executor_name } </Link> },
+                                        { title: <Link to={`/${remediation.id}/${playbookRun.data.id}/${e.executor_id}` }> { e.executor_name } </Link> },
                                         e.system_count,
                                         statusSummary(normalizeStatus(e.status), systemsStatus)
                                     ]
@@ -172,13 +172,13 @@ ActivityDetail.propTypes = {
 };
 
 ActivityDetail.defaultProps = {
-    remediation: {}
 };
 
 const connected = connect(
-    ({ playbookRun, playbookRunSystems }) => ({
+    ({ playbookRun, playbookRunSystems, selectedRemediation }) => ({
         playbookRun,
-        playbookRunSystems: playbookRunSystems.data
+        playbookRunSystems: playbookRunSystems.data,
+        remediation: selectedRemediation.remediation
     }),
     (dispatch) => ({
         getPlaybookRun: (id) => dispatch(getPlaybookRun(id)),
