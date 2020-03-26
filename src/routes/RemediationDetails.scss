@@ -63,5 +63,9 @@
             &__enabled b { color: var(--pf-global--success-color--200); }
             &__disabled b { color: var(--pf-global--danger-color--200); }
         }
+        &__tabs {
+            background: white;
+            padding: var(--pf-global--spacer--md);
+        }
     }
 }

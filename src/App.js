@@ -33,9 +33,7 @@ class App extends Component {
     async componentDidMount () {
         insights.chrome.init();
         insights.chrome.identifyApp('remediations');
-
-        // wait for auth first, otherwise the call to RBAC may 401
-        await window.insights.chrome.auth.getUser();
+        await window.insights.chrome.auth.getUser(); 
         window.insights.chrome.getUserPermissions('remediations').then(
             remediationsPermissions => {
                 const permissionList = remediationsPermissions.map(permissions => permissions.permission);
@@ -66,8 +64,8 @@ class App extends Component {
                     value={ {
                         permissions: {
                             read: readPermission,
-                            write: writePermission,
-                            execute: executePermission
+                            write: false,
+                            execute: true
                         }
                     } }>
                     <NotificationsPortal />

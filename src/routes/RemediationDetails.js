@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
+import RemediationActivityTable from '../components/RemediationActivityTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
 import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
@@ -27,7 +28,8 @@ import {
     Breadcrumb, BreadcrumbItem,
     Button,
     Split, SplitItem,
-    Flex, FlexItem, FlexModifiers
+    Flex, FlexItem, FlexModifiers,
+    Tabs, Tab, TabsVariant, TabContent
 } from '@patternfly/react-core';
 
 import './RemediationDetails.scss';
@@ -43,7 +45,8 @@ class RemediationDetails extends Component {
         this.state = {
             autoReboot: true,
             isUserEntitled: undefined,
-            upsellBannerVisible: true
+            upsellBannerVisible: true,
+            activeTabKey: 0
         };
         this.id = this.props.match.params.id;
         this.loadRemediation = this.props.loadRemediation.bind(this, this.id);
@@ -57,6 +60,12 @@ class RemediationDetails extends Component {
     handleUpsellToggle = () => {
         this.setState({
             upsellBannerVisible: false
+        });
+    }
+
+    handleTabClick = (event, tabIndex) => {
+        this.setState({
+            activeTabKey: tabIndex
         });
     }
 
@@ -207,18 +216,24 @@ class RemediationDetails extends Component {
                                                                 </Button>
                                                             }
                                                         </PermissionContext.Consumer>
-                                                            }
-                                                            <Link to={ `/${this.id}/run_id` }> View activity</Link>
-                                                        </Flex>
-                                                    </CardBody>
-                                                </Card>
-                                            </StackItem>
-                                            <StackItem>
+                                                    }
+                                                </Flex>
+                                            </CardBody>
+                                        </Card>
+                                    </StackItem>
+                                    <StackItem className='ins-c-playbookSummary__tabs'>
+                                        <Tabs activeKey={this.state.activeTabKey} onSelect={this.handleTabClick}>
+                                            <Tab eventKey={0} title='Issues'>
                                                 <RemediationDetailsTable remediation={ remediation } status={ this.props.selectedRemediationStatus }/>
-                                            </StackItem>
-                                        </Stack>
-                                    </Main>
-                                </React.Fragment>
+                                            </Tab>
+                                            <Tab eventKey={1} title='Activity'>
+                                                <RemediationActivityTable remediation={ remediation } status={ this.props.selectedRemediationStatus }/>
+                                            </Tab>
+                                        </Tabs>
+                                    </StackItem>
+                                </Stack>
+                            </Main>
+                        </React.Fragment>
                 }
             </PermissionContext.Consumer>
         );
