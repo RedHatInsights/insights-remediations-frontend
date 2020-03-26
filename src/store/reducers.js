@@ -181,7 +181,7 @@ const reducers = {
     }),
 
     playbookRuns: applyReducerHash({
-        [ACTION_TYPES.GET_PLAYBOOK_RUNS]: (state, action) => ({
+        [ACTION_TYPES.GET_PLAYBOOK_RUNS_FULFILLED]: (state, action) => ({
             data: action.payload.data,
             meta: action.payload.meta
         })
@@ -189,18 +189,14 @@ const reducers = {
     }),
 
     playbookRun: applyReducerHash({
-        [ACTION_TYPES.GET_PLAYBOOK_RUN]: (state, action) => ({
+        [ACTION_TYPES.GET_PLAYBOOK_RUN_FULFILLED]: (state, action) => ({
             data: action.payload
         })
-    }, {
-        data: {
-            created_by: {},
-            executors: []
-        }
+
     }),
 
     playbookRunSystems: applyReducerHash({
-        [ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEMS]: (state, action) => ({
+        [ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEMS_FULFILLED]: (state, action) => ({
             ...action.payload
         })
     }, {
