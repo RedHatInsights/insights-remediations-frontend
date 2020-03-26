@@ -25,6 +25,7 @@ import './Status.scss';
 import { statusSummary, normalizeStatus } from './statusHelper';
 
 const ActivityDetail = ({
+    match: { params: { remediation_id, run_id }},
     remediation,
     playbookRun,
     playbookRunSystems,
@@ -32,8 +33,7 @@ const ActivityDetail = ({
     getPlaybookRunSystems
 }) => {
     useEffect(() => {
-        getPlaybookRun();
-        getPlaybookRunSystems();
+        getPlaybookRun(remediation_id, run_id);
 
     }, []);
 

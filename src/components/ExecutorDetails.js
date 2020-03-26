@@ -91,8 +91,8 @@ const ExecutorDetails = ({
 
     useEffect(() => {
         loadInventory();
-        getPlaybookRun();
-        getPlaybookRunSystems();
+        getPlaybookRun(remediation_id, run_id);
+        getPlaybookRunSystems(remediation_id, run_id, executor_id);
 
     }, []);
     useEffect(() => {
