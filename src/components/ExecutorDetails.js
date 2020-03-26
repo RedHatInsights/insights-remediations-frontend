@@ -38,7 +38,7 @@ import { getSystemName } from '../Utilities/model';
 import DescriptionList from './Layouts/DescriptionList';
 import { getPlaybookRuns, getPlaybookRun, getPlaybookRunSystems, getPlaybookRunSystemDetails, expandInventoryTable } from '../actions';
 import { downloadPlaybook, remediations } from '../api';
-import { renderStatus, normalizeStatus } from './ActivityDetails';
+import { normalizeStatus, renderStatus } from './statusHelper';
 
 const ExecutorDetails = ({
     match: { params: { executor_id, run_id, remediation_id }},

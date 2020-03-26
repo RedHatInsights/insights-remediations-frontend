@@ -11,79 +11,18 @@ import {
     Card, CardHeader, CardBody,
     Stack, StackItem,
     Breadcrumb, BreadcrumbItem,
-    Split, SplitItem,
-    Text, TextVariants
+    Split, SplitItem
 } from '@patternfly/react-core';
 import {
     Table,
     TableHeader,
     TableBody
 } from '@patternfly/react-table';
-import { CheckCircleIcon, TimesCircleIcon, InProgressIcon } from '@patternfly/react-icons';
 
 import DescriptionList from './Layouts/DescriptionList';
 import { getPlaybookRun, getPlaybookRunSystems } from '../actions';
 import './Status.scss';
-
-export const normalizeStatus = (status) => ({
-    running: 'running',
-    pending: 'running',
-    failure: 'failure',
-    canceled: 'failure',
-    success: 'success',
-    acked: 'success'
-})[status];
-
-export const renderStatus = (status, text) => ({
-    running: <Text component={ TextVariants.p } >
-        <InProgressIcon
-            className="ins-c-remediations-running"
-            aria-label="connection status" />
-        { text || 'Running' }
-    </Text >,
-    success: <Text component={ TextVariants.p }>
-        <CheckCircleIcon
-            className="ins-c-remediations-success"
-            aria-label="connection status" />
-        { text || 'Success' }
-    </Text>,
-    failure: <Text component={ TextVariants.p }>
-        <TimesCircleIcon
-            className="ins-c-remediations-failure"
-            aria-label="connection status" />
-        { text || 'Failed' }
-    </Text>
-})[status];
-
-const statusText = (executorStatus) => ({
-    running: <Text component={ TextVariants.p } >
-        Running
-    </Text >,
-    success: <Text className="ins-c-remediations-success" component={ TextVariants.p }>
-        Suceeded
-    </Text>,
-    failure: <Text className="ins-c-remediations-failure" component={ TextVariants.p }>
-        Failed
-    </Text>
-})[executorStatus];
-
-const statusSummary = (executorStatus, systemsStatus) => {
-    console.log(executorStatus, systemsStatus);
-    return <Split style={ { display: 'flex' } } className="ins-c-remediations-status-bar">
-        <SplitItem>
-            { statusText('success') }
-        </SplitItem>
-        <SplitItem>
-            { renderStatus('success', systemsStatus.success) }
-        </SplitItem>
-        <SplitItem>
-            { renderStatus('failure', systemsStatus.failure) }
-        </SplitItem>
-        <SplitItem>
-            { renderStatus('running', systemsStatus.running) }
-        </SplitItem>
-    </Split>;
-};
+import { statusSummary, normalizeStatus } from './statusHelper';
 
 const ActivityDetail = ({
     remediation,
@@ -107,7 +46,7 @@ const ActivityDetail = ({
             <PageHeader>
                 <Breadcrumb>
                     <BreadcrumbItem>
-                        <Link to={`/${remediation.id}`}> {remediation.name } </Link>
+                        <Link to={ `/${remediation.id}` }> { remediation.name } </Link>
                     </BreadcrumbItem>
                     <BreadcrumbItem isActive> <DateFormat type='exact' date={ playbookRun.data.created_at } /> </BreadcrumbItem>
                 </Breadcrumb>
@@ -145,7 +84,7 @@ const ActivityDetail = ({
                                 aria-label="Collapsible table"
                                 rows={ playbookRun.data.executors.map(e =>({
                                     cells: [
-                                        { title: <Link to={`/${remediation.id}/${playbookRun.data.id}/${e.executor_id}` }> { e.executor_name } </Link> },
+                                        { title: <Link to={ `/${remediation.id}/${playbookRun.data.id}/${e.executor_id}` }> { e.executor_name } </Link> },
                                         e.system_count,
                                         statusSummary(normalizeStatus(e.status), systemsStatus)
                                     ]
