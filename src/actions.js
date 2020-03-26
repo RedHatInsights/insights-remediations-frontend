@@ -77,22 +77,22 @@ export const setEtag = (etag) => ({
 
 export const getPlaybookRuns = (remediationId) => ({
     type: ACTION_TYPES.GET_PLAYBOOK_RUNS,
-    payload: remediations.listPlaybookRuns(remediationId)
+    payload: remediations.listPlaybookRuns("9197ba55-0abc-4028-9bbe-269e530f8bd5")
 });
 
 export const getPlaybookRun = (remediationId, runId) => ({
     type: ACTION_TYPES.GET_PLAYBOOK_RUN,
-    payload: remediations.getPlaybookRunDetails(remediationId, runId)
+    payload: remediations.getPlaybookRunDetails("9197ba55-0abc-4028-9bbe-269e530f8bd5", "a8799a02-8be9-11e8-9eb6-529269fb1459")
 });
 
 export const getPlaybookRunSystems = (remediationId, runId, executorId) => ({
     type: ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEMS,
-    payload: remediations.getPlaybookRunSystems(remediationId, runId, executorId)
+    payload: remediations.getPlaybookRunSystems("9197ba55-0abc-4028-9bbe-269e530f8bd5", "a8799a02-8be9-11e8-9eb6-529269fb1459", "9197ba55-0abc-4028-9bbe-269e530f8bd5")
 });
 
-export const getPlaybookRunSystemDetails = (remediationId, runId, executorId, systemId) => ({
+export const getPlaybookRunSystemDetails = (remediationId, runId, systemId) => ({
     type: ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEM_DETAIL,
-    payload: remediations.getPlaybookRunSystemDetails(remediationId, runId, executorId, systemId)
+    payload: remediations.getPlaybookRunSystemDetails("9197ba55-0abc-4028-9bbe-269e530f8bd5", "a8799a02-8be9-11e8-9eb6-529269fb1459", "a8799a02-8be9-11e8-9eb6-529269fb1459")
 });
 
 export const expandInventoryTable = (id, isOpen) => ({
