@@ -36,19 +36,19 @@ import { getRegistry } from '@redhat-cloud-services/frontend-components-utilitie
 import reducers from '../store/reducers';
 import { getSystemName } from '../Utilities/model';
 import DescriptionList from './Layouts/DescriptionList';
-import { getPlaybookRuns, getPlaybookRun, getPlaybookRunSystems, getPlaybookRunSystemDetails, expandInventoryTable } from '../actions';
+import { getPlaybookRuns, getPlaybookRun, getPlaybookRunSystems, getPlaybookRunSystemDetails, expandInventoryTable, loadRemediation } from '../actions';
 import { downloadPlaybook, remediations } from '../api';
 import { normalizeStatus, renderStatus } from './statusHelper';
 
 const ExecutorDetails = ({
-    match: { params: { executor_id, run_id, remediation_id }},
+    match: { params: { executor_id, run_id, id }},
     remediation,
     playbookRun,
     playbookRuns,
     playbookRunSystems,
     getPlaybookRun,
     getPlaybookRunSystems,
-    onCollapseInventory
+    onCollapseInventory, loadRemediation
 }) => {
     const [ executor, setExecutor ] = useState({});
     const [ InventoryTable, setInventoryTable ] = useState();
@@ -91,12 +91,15 @@ const ExecutorDetails = ({
 
     useEffect(() => {
         loadInventory();
-        getPlaybookRun(remediation_id, run_id);
-        getPlaybookRunSystems(remediation_id, run_id, executor_id);
+        loadRemediation(id);
+        getPlaybookRun(id, run_id);
+        getPlaybookRunSystems(id, run_id, executor_id);
 
     }, []);
     useEffect(() => {
-        setExecutor(playbookRun.data.executors.find(executor => executor.executor_id === executor_id) || {});
+        if (playbookRun && playbookRun.data) {
+            setExecutor(playbookRun.data.executors.find(executor => executor.executor_id === executor_id) || {});
+        }
     }, [ playbookRun ]);
 
     const systems = playbookRunSystems.map(({ system_id, system_name, status }) => ({
@@ -108,7 +111,8 @@ const ExecutorDetails = ({
         </SyntaxHighlighter>)
     }));
 
-    return <React.Fragment>
+    return remediation && executor && playbookRun && playbookRun.data
+    ? <React.Fragment>
         <PageHeader>
             <Breadcrumb>
                 <BreadcrumbItem>
@@ -167,7 +171,8 @@ const ExecutorDetails = ({
                 </Card>
             </Stack>
         </Main>
-    </React.Fragment>;
+    </React.Fragment>
+    : null;
 };
 
 ExecutorDetails.propTypes = {
@@ -191,7 +196,8 @@ const connected = connect(
         getPlaybookRuns: (id) => dispatch(getPlaybookRuns(id)),
         getPlaybookRun: (id) => dispatch(getPlaybookRun(id)),
         getPlaybookRunSystems: (remediationId, runId) => dispatch(getPlaybookRunSystems(remediationId, runId)),
-        onCollapseInventory: (isOpen, id) => dispatch(expandInventoryTable(id, isOpen))
+        onCollapseInventory: (isOpen, id) => dispatch(expandInventoryTable(id, isOpen)),
+        loadRemediation: id => dispatch(loadRemediation(id))
     })
 )(ExecutorDetails);
 export default connected;

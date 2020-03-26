@@ -20,85 +20,93 @@ import {
 } from '@patternfly/react-table';
 
 import DescriptionList from './Layouts/DescriptionList';
-import { getPlaybookRun, getPlaybookRunSystems } from '../actions';
+import { getPlaybookRun, getPlaybookRunSystems, getPlaybookRuns, loadRemediation } from '../actions';
 import './Status.scss';
 import { statusSummary, normalizeStatus } from './statusHelper';
+import { remediations } from '../api';
 
 const ActivityDetail = ({
-    match: { params: { remediation_id, run_id }},
+    match: { params: { id, run_id }},
     remediation,
     playbookRun,
     playbookRunSystems,
     getPlaybookRun,
-    getPlaybookRunSystems
+    getPlaybookRuns,
+    getPlaybookRunSystems,
+    loadRemediation
 }) => {
     useEffect(() => {
-        getPlaybookRun(remediation_id, run_id);
+        console.log('AAAAAAAAAAAAAAA', id, run_id);
+        loadRemediation(id);
+        getPlaybookRuns(id);
+        getPlaybookRun(id, run_id);
 
     }, []);
-
     // const systemsStatus = playbookRunSystems.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
     //     , {  running: 0, success: 0, failure: 0 });
     const systemsStatus = { running: 1, success: 2, failure: 1 };
+    console.log('RENDER', remediation, playbookRun)
 
-    return (
-        <React.Fragment>
-            <PageHeader>
-                <Breadcrumb>
-                    <BreadcrumbItem>
-                        <Link to={ `/${remediation.id}` }> { remediation.name } </Link>
-                    </BreadcrumbItem>
-                    <BreadcrumbItem isActive> <DateFormat type='exact' date={ playbookRun.data.created_at } /> </BreadcrumbItem>
-                </Breadcrumb>
-                <Stack gutter>
-                    <StackItem>
-                        <PageHeaderTitle title={ <DateFormat type='exact' date={ playbookRun.data.created_at } /> } />
-                    </StackItem>
-                    <StackItem>
-                        <Split gutter>
-                            <SplitItem>
-                                <DescriptionList className='ins-c-playbookSummary__settings' title='Run on'>
-                                    <DateFormat type='exact' date={ playbookRun.data.created_at } />
-                                </DescriptionList>
-                            </SplitItem>
-                            <SplitItem>
-                                <DescriptionList className='ins-c-playbookSummary__settings' title='Run by'>
-                                    { `${playbookRun.data.created_by.first_name} ${playbookRun.data.created_by.last_name}` }
-                                </DescriptionList>
-                            </SplitItem>
-                            <SplitItem>
-                                <DescriptionList className='ins-c-playbookSummary__settings' title='Run status'>
-                                    { statusSummary(playbookRun.status, systemsStatus) }
-                                </DescriptionList>
-                            </SplitItem>
-                        </Split>
-                    </StackItem>
-                </Stack>
-            </PageHeader>
-            <Main>
-                <Stack gutter="md">
-                    <Card>
-                        <CardHeader className='ins-m-card__header-bold'>Results by connection</CardHeader>
-                        <CardBody>
-                            <Table
-                                aria-label="Collapsible table"
-                                rows={ playbookRun.data.executors.map(e =>({
-                                    cells: [
-                                        { title: <Link to={ `/${remediation.id}/${playbookRun.data.id}/${e.executor_id}` }> { e.executor_name } </Link> },
-                                        e.system_count,
-                                        statusSummary(normalizeStatus(e.status), systemsStatus)
-                                    ]
-                                })) }
-                                cells={ [{ title: 'Connection' }, { title: 'Systems' }, { title: 'Playbook run status' }] }>
-                                <TableHeader />
-                                <TableBody />
-                            </Table>
+    return remediation && playbookRun && playbookRun.data
+        ? (
+            <React.Fragment>
+                <PageHeader>
+                    <Breadcrumb>
+                        <BreadcrumbItem>
+                            <Link to={ `/${remediation.id}` }> { remediation.name } </Link>
+                        </BreadcrumbItem>
+                        <BreadcrumbItem isActive> <DateFormat type='exact' date={ playbookRun.data.created_at } /> </BreadcrumbItem>
+                    </Breadcrumb>
+                    <Stack gutter>
+                        <StackItem>
+                            <PageHeaderTitle title={ <DateFormat type='exact' date={ playbookRun.data.created_at } /> } />
+                        </StackItem>
+                        <StackItem>
+                            <Split gutter>
+                                <SplitItem>
+                                    <DescriptionList className='ins-c-playbookSummary__settings' title='Run on'>
+                                        <DateFormat type='exact' date={ playbookRun.data.created_at } />
+                                    </DescriptionList>
+                                </SplitItem>
+                                <SplitItem>
+                                    <DescriptionList className='ins-c-playbookSummary__settings' title='Run by'>
+                                        { `${playbookRun.data.created_by.first_name} ${playbookRun.data.created_by.last_name}` }
+                                    </DescriptionList>
+                                </SplitItem>
+                                <SplitItem>
+                                    <DescriptionList className='ins-c-playbookSummary__settings' title='Run status'>
+                                        { statusSummary(playbookRun.status, systemsStatus) }
+                                    </DescriptionList>
+                                </SplitItem>
+                            </Split>
+                        </StackItem>
+                    </Stack>
+                </PageHeader>
+                <Main>
+                    <Stack gutter="md">
+                        <Card>
+                            <CardHeader className='ins-m-card__header-bold'>Results by connection</CardHeader>
+                            <CardBody>
+                                <Table
+                                    aria-label="Collapsible table"
+                                    rows={ playbookRun.data.executors.map(e =>({
+                                        cells: [
+                                            { title: <Link to={ `/${remediation.id}/${playbookRun.data.id}/${e.executor_id}` }> { e.executor_name } </Link> },
+                                            e.system_count,
+                                            statusSummary(normalizeStatus(e.status), systemsStatus)
+                                        ]
+                                    })) }
+                                    cells={ [{ title: 'Connection' }, { title: 'Systems' }, { title: 'Playbook run status' }] }>
+                                    <TableHeader />
+                                    <TableBody />
+                                </Table>
 
-                        </CardBody>
-                    </Card>
-                </Stack>
-            </Main>
-        </React.Fragment>);
+                            </CardBody>
+                        </Card>
+                    </Stack>
+                </Main>
+            </React.Fragment>)
+        : null;
 };
 
 ActivityDetail.propTypes = {
@@ -121,7 +129,9 @@ const connected = connect(
     }),
     (dispatch) => ({
         getPlaybookRun: (id) => dispatch(getPlaybookRun(id)),
-        getPlaybookRunSystems: (remediationId, runId) => dispatch(getPlaybookRunSystems(remediationId, runId))
+        getPlaybookRunSystems: (remediationId, runId) => dispatch(getPlaybookRunSystems(remediationId, runId)),
+        getPlaybookRuns: (remediationId) => dispatch(getPlaybookRuns(remediationId)),
+        loadRemediation: id => dispatch(loadRemediation(id))
     })
 )(ActivityDetail);
 export default connected;
