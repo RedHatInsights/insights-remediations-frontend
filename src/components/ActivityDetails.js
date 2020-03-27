@@ -24,6 +24,7 @@ import { getPlaybookRun, getPlaybookRunSystems, getPlaybookRuns, loadRemediation
 import './Status.scss';
 import { statusSummary, normalizeStatus } from './statusHelper';
 import { remediations } from '../api';
+import ActivityDetailsSkeleton from '../skeletons/ActivityDetailsSkeleton';
 
 const ActivityDetail = ({
     match: { params: { id, run_id }},
@@ -44,6 +45,7 @@ const ActivityDetail = ({
     // const systemsStatus = playbookRunSystems.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
     //     , {  running: 0, success: 0, failure: 0 });
     const systemsStatus = { running: 1, success: 2, failure: 1 };
+    console.log('RENDER', remediation, playbookRun);
 
     return remediation && playbookRun && playbookRun.data
         ? (
@@ -104,7 +106,7 @@ const ActivityDetail = ({
                     </Stack>
                 </Main>
             </React.Fragment>)
-        : null;
+        : <ActivityDetailsSkeleton />;
 };
 
 ActivityDetail.propTypes = {

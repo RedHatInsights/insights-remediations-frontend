@@ -33,7 +33,7 @@ class App extends Component {
     async componentDidMount () {
         insights.chrome.init();
         insights.chrome.identifyApp('remediations');
-        await window.insights.chrome.auth.getUser(); 
+        await window.insights.chrome.auth.getUser();
         window.insights.chrome.getUserPermissions('remediations').then(
             remediationsPermissions => {
                 const permissionList = remediationsPermissions.map(permissions => permissions.permission);
