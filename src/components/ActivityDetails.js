@@ -37,6 +37,7 @@ const ActivityDetail = ({
     loadRemediation
 }) => {
     useEffect(() => {
+        console.log('IDS', id, run_id)
         loadRemediation(id);
         getPlaybookRuns(id);
         getPlaybookRun(id, run_id);
@@ -128,8 +129,8 @@ const connected = connect(
         remediation: selectedRemediation.remediation
     }),
     (dispatch) => ({
-        getPlaybookRun: (id) => dispatch(getPlaybookRun(id)),
-        getPlaybookRunSystems: (remediationId, runId) => dispatch(getPlaybookRunSystems(remediationId, runId)),
+        getPlaybookRun: (id, runId) => dispatch(getPlaybookRun(id, runId)),
+        getPlaybookRunSystems: (remediationId, runId, executorId) => dispatch(getPlaybookRunSystems(remediationId, runId, executorId)),
         getPlaybookRuns: (remediationId) => dispatch(getPlaybookRuns(remediationId)),
         loadRemediation: id => dispatch(loadRemediation(id))
     })

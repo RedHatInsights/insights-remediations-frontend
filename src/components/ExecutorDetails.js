@@ -252,8 +252,8 @@ const connected = connect(
     }),
     (dispatch) => ({
         getPlaybookRuns: (id) => dispatch(getPlaybookRuns(id)),
-        getPlaybookRun: (id) => dispatch(getPlaybookRun(id)),
-        getPlaybookRunSystems: (remediationId, runId) => dispatch(getPlaybookRunSystems(remediationId, runId)),
+        getPlaybookRun: (id, runId) => dispatch(getPlaybookRun(id, runId)),
+        getPlaybookRunSystems: (remediationId, runId, executorId) => dispatch(getPlaybookRunSystems(remediationId, runId, executorId)),
         onCollapseInventory: (isOpen, id) => dispatch(expandInventoryTable(id, isOpen)),
         loadRemediation: id => dispatch(loadRemediation(id))
     })
