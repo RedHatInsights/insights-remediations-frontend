@@ -204,6 +204,12 @@ const reducers = {
         meta: {}
     }),
 
+    playbookRunSystemDetails: applyReducerHash({
+        [ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEM_DETAILS_FULFILLED]: (state, action) => ({
+            ...action.payload
+        })
+    }),
+
     runRemediation: applyReducerHash({
         [ACTION_TYPES.RUN_REMEDIATION_PENDING]: () => ({
             status: 'pending'

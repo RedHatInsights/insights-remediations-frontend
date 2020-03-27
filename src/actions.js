@@ -91,7 +91,7 @@ export const getPlaybookRunSystems = (remediationId, runId, executorId) => ({
 });
 
 export const getPlaybookRunSystemDetails = (remediationId, runId, systemId) => ({
-    type: ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEM_DETAIL,
+    type: ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEM_DETAILS,
     payload: remediations.getPlaybookRunSystemDetails(remediationId, runId, systemId)
 });
 

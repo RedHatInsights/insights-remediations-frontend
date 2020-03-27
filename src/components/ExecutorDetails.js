@@ -50,6 +50,7 @@ const ExecutorDetails = ({
     playbookRunSystems,
     getPlaybookRun,
     getPlaybookRunSystems,
+    getPlaybookRunSystemDetails,
     onCollapseInventory, loadRemediation
 }) => {
     const [ executor, setExecutor ] = useState({});
@@ -139,6 +140,7 @@ const ExecutorDetails = ({
                             expandable
                             onExpandClick={ (_e, _i, isOpen, { id }) => {
                                 onCollapseInventory(isOpen, id);
+                                getPlaybookRunSystemDetails(remediation.id, run_id, id);
                             } }
                         /> }
                     </CardBody>
@@ -254,6 +256,7 @@ const connected = connect(
         getPlaybookRuns: (id) => dispatch(getPlaybookRuns(id)),
         getPlaybookRun: (id, runId) => dispatch(getPlaybookRun(id, runId)),
         getPlaybookRunSystems: (remediationId, runId, executorId) => dispatch(getPlaybookRunSystems(remediationId, runId, executorId)),
+        getPlaybookRunSystemDetails: (remediationId, runId, systemId) => dispatch(getPlaybookRunSystemDetails(remediationId, runId, systemId)),
         onCollapseInventory: (isOpen, id) => dispatch(expandInventoryTable(id, isOpen)),
         loadRemediation: id => dispatch(loadRemediation(id))
     })
