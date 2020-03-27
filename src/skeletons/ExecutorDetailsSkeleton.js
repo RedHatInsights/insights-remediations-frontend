@@ -48,6 +48,11 @@ const ExecutorDetailsSkeleton = () => {
                                 <Skeleton size='lg' />
                             </DescriptionList>
                         </SplitItem>
+                        <SplitItem>
+                            <DescriptionList className='ins-c-playbookSummary__settings' title='Run by'>
+                                <Skeleton size='lg' />
+                            </DescriptionList>
+                        </SplitItem>
                     </Split>
                 </StackItem>
             </Stack>

@@ -38,7 +38,7 @@ import { getSystemName } from '../Utilities/model';
 import DescriptionList from './Layouts/DescriptionList';
 import { getPlaybookRuns, getPlaybookRun, getPlaybookRunSystems, getPlaybookRunSystemDetails, expandInventoryTable, loadRemediation } from '../actions';
 import { downloadPlaybook, remediations } from '../api';
-import { normalizeStatus, renderStatus } from './statusHelper';
+import { normalizeStatus, renderStatus, statusSummary  } from './statusHelper';
 import ExecutorDetailsSkeleton from '../skeletons/ExecutorDetailsSkeleton';
 
 const ExecutorDetails = ({
@@ -112,6 +112,9 @@ const ExecutorDetails = ({
         </SyntaxHighlighter>)
     }));
 
+    const systemsStatus = playbookRunSystems.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
+        , {  running: 0, success: 0, failure: 0 });
+
     return remediation && executor && playbookRun && playbookRun.data
         ? <React.Fragment>
             <PageHeader>
@@ -138,6 +141,11 @@ const ExecutorDetails = ({
                             <SplitItem>
                                 <DescriptionList className='ins-c-playbookSummary__settings' title='Run by'>
                                     { `${playbookRun.data.created_by.first_name} ${playbookRun.data.created_by.last_name}` }
+                                </DescriptionList>
+                            </SplitItem>
+                            <SplitItem>
+                                <DescriptionList className='ins-c-playbookSummary__settings' title='Run status'>
+                                    { statusSummary(executor.status, systemsStatus) }
                                 </DescriptionList>
                             </SplitItem>
                         </Split>
