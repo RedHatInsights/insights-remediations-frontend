@@ -45,7 +45,7 @@ const ActivityDetail = ({
     // const systemsStatus = playbookRunSystems.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
     //     , {  running: 0, success: 0, failure: 0 });
     const systemsStatus = { running: 1, success: 2, failure: 1 };
-    console.log('RENDER', remediation, playbookRun)
+    console.log('RENDER', remediation, playbookRun);
 
     return remediation && playbookRun && playbookRun.data
         ? (

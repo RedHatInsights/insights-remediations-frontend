@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { CheckCircleIcon, TimesCircleIcon, InProgressIcon } from '@patternfly/react-icons';
 import {
     Split, SplitItem,
-    Text, TextVariants
+    Text, TextVariants, Button
 } from '@patternfly/react-core';
+
+import { PermissionContext } from '../App';
+
 export const renderStatus = (status, text) => ({
     running: <Text component={ TextVariants.p } >
         <InProgressIcon
@@ -39,6 +42,9 @@ export const statusText = (executorStatus) => ({
 })[executorStatus];
 
 export const statusSummary = (executorStatus, systemsStatus) => {
+    // TODO: Cancel onClick()
+    const permission = useContext(PermissionContext);
+
     return <Split style={ { display: 'flex' } } className="ins-c-remediations-status-bar">
         <SplitItem>
             { statusText('success') }
@@ -52,6 +58,11 @@ export const statusSummary = (executorStatus, systemsStatus) => {
         <SplitItem>
             { renderStatus('running', systemsStatus.running) }
         </SplitItem>
+        { permission.permissions.execute && systemsStatus.running &&
+            <SplitItem>
+                <Button variant='link'> Cancel process </Button>
+            </SplitItem>
+        }
     </Split>;
 };
 

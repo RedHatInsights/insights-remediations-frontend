@@ -112,67 +112,67 @@ const ExecutorDetails = ({
     }));
 
     return remediation && executor && playbookRun && playbookRun.data
-    ? <React.Fragment>
-        <PageHeader>
-            <Breadcrumb>
-                <BreadcrumbItem>
-                    <Link to={ `/${remediation.id}` }> { remediation.name } </Link>
-                </BreadcrumbItem>
-                <BreadcrumbItem>
-                    <Link to={ `/${remediation.id}/${run_id}` }>  <DateFormat type='exact' date={ playbookRun.data.created_at } /> </Link>
-                </BreadcrumbItem>
-                <BreadcrumbItem isActive> { executor.executor_name } </BreadcrumbItem>
-            </Breadcrumb>
-            <Stack gutter>
-                <StackItem>
-                    <PageHeaderTitle title={ executor.executor_name } />
-                </StackItem>
-                <StackItem>
-                    <Split gutter>
-                        <SplitItem>
-                            <DescriptionList className='ins-c-playbookSummary__settings' title='Run on'>
-                                <DateFormat type='exact' date={ playbookRun.data.created_at } />
-                            </DescriptionList>
-                        </SplitItem>
-                        <SplitItem>
-                            <DescriptionList className='ins-c-playbookSummary__settings' title='Run by'>
-                                { `${playbookRun.data.created_by.first_name} ${playbookRun.data.created_by.last_name}` }
-                            </DescriptionList>
-                        </SplitItem>
-                    </Split>
-                </StackItem>
-            </Stack>
-        </PageHeader>
-        <Main>
-            <Stack gutter="md">
-                <Card>
-                    <CardHeader className='ins-m-card__header-bold'>
-                        <Button
-                            variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
+        ? <React.Fragment>
+            <PageHeader>
+                <Breadcrumb>
+                    <BreadcrumbItem>
+                        <Link to={ `/${remediation.id}` }> { remediation.name } </Link>
+                    </BreadcrumbItem>
+                    <BreadcrumbItem>
+                        <Link to={ `/${remediation.id}/${run_id}` }>  <DateFormat type='exact' date={ playbookRun.data.created_at } /> </Link>
+                    </BreadcrumbItem>
+                    <BreadcrumbItem isActive> { executor.executor_name } </BreadcrumbItem>
+                </Breadcrumb>
+                <Stack gutter>
+                    <StackItem>
+                        <PageHeaderTitle title={ executor.executor_name } />
+                    </StackItem>
+                    <StackItem>
+                        <Split gutter>
+                            <SplitItem>
+                                <DescriptionList className='ins-c-playbookSummary__settings' title='Run on'>
+                                    <DateFormat type='exact' date={ playbookRun.data.created_at } />
+                                </DescriptionList>
+                            </SplitItem>
+                            <SplitItem>
+                                <DescriptionList className='ins-c-playbookSummary__settings' title='Run by'>
+                                    { `${playbookRun.data.created_by.first_name} ${playbookRun.data.created_by.last_name}` }
+                                </DescriptionList>
+                            </SplitItem>
+                        </Split>
+                    </StackItem>
+                </Stack>
+            </PageHeader>
+            <Main>
+                <Stack gutter="md">
+                    <Card>
+                        <CardHeader className='ins-m-card__header-bold'>
+                            <Button
+                                variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
                             Download Playbook
-                        </Button>
-                    </CardHeader>
+                            </Button>
+                        </CardHeader>
 
-                    <CardBody>
-                        { InventoryTable && <InventoryTable
-                            ref={ inventory }
-                            items={ orderBy(systems, [ s => getSystemName(s), s => s.id ]) }
-                            onRefresh={ onRefresh }
-                            page={ page }
-                            total={ systems.length }
-                            perPage={ pageSize }
-                            tableProps={ { onSelect: undefined } }
-                            expandable
-                            onExpandClick={ (_e, _i, isOpen, { id }) => {
-                                onCollapseInventory(isOpen, id);
-                            } }
-                        /> }
-                    </CardBody>
-                </Card>
-            </Stack>
-        </Main>
-    </React.Fragment>
-    : null;
+                        <CardBody>
+                            { InventoryTable && <InventoryTable
+                                ref={ inventory }
+                                items={ orderBy(systems, [ s => getSystemName(s), s => s.id ]) }
+                                onRefresh={ onRefresh }
+                                page={ page }
+                                total={ systems.length }
+                                perPage={ pageSize }
+                                tableProps={ { onSelect: undefined } }
+                                expandable
+                                onExpandClick={ (_e, _i, isOpen, { id }) => {
+                                    onCollapseInventory(isOpen, id);
+                                } }
+                            /> }
+                        </CardBody>
+                    </Card>
+                </Stack>
+            </Main>
+        </React.Fragment>
+        : null;
 };
 
 ExecutorDetails.propTypes = {
