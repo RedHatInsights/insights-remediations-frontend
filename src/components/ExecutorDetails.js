@@ -40,6 +40,7 @@ import { getPlaybookRuns, getPlaybookRun, getPlaybookRunSystems, getPlaybookRunS
 import { downloadPlaybook, remediations } from '../api';
 import { normalizeStatus, renderStatus, statusSummary  } from './statusHelper';
 import ExecutorDetailsSkeleton from '../skeletons/ExecutorDetailsSkeleton';
+import RunFailed from './Alerts/RunFailed';
 
 const ExecutorDetails = ({
     match: { params: { executor_id, run_id, id }},
@@ -115,6 +116,81 @@ const ExecutorDetails = ({
     const systemsStatus = playbookRunSystems.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
         , {  running: 0, success: 0, failure: 0 });
 
+    const renderMain = (status) => ({
+        running: <Main>
+            <Stack gutter="md">
+                <Card>
+                    <CardHeader className='ins-m-card__header-bold'>
+                        <Button
+                            variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
+                            Download Playbook
+                        </Button>
+                    </CardHeader>
+
+                    <CardBody>
+                        { InventoryTable && <InventoryTable
+                            ref={ inventory }
+                            items={ orderBy(systems, [ s => getSystemName(s), s => s.id ]) }
+                            onRefresh={ onRefresh }
+                            page={ page }
+                            total={ systems.length }
+                            perPage={ pageSize }
+                            tableProps={ { onSelect: undefined } }
+                            expandable
+                            onExpandClick={ (_e, _i, isOpen, { id }) => {
+                                onCollapseInventory(isOpen, id);
+                            } }
+                        /> }
+                    </CardBody>
+                </Card>
+            </Stack>
+        </Main>,
+        success: <Main>
+            <Stack gutter="md">
+                <Card>
+                    <CardHeader className='ins-m-card__header-bold'>
+                        <Button
+                            variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
+                            Download Playbook
+                        </Button>
+                    </CardHeader>
+
+                    <CardBody>
+                        { InventoryTable && <InventoryTable
+                            ref={ inventory }
+                            items={ orderBy(systems, [ s => getSystemName(s), s => s.id ]) }
+                            onRefresh={ onRefresh }
+                            page={ page }
+                            total={ systems.length }
+                            perPage={ pageSize }
+                            tableProps={ { onSelect: undefined } }
+                            expandable
+                            onExpandClick={ (_e, _i, isOpen, { id }) => {
+                                onCollapseInventory(isOpen, id);
+                            } }
+                        /> }
+                    </CardBody>
+                </Card>
+            </Stack>
+        </Main>,
+        failure: <Main>
+            <Stack gutter="md">
+                <Card>
+                    <CardHeader className='ins-m-card__header-bold'>
+                        <Button
+                            variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
+                            Download Playbook
+                        </Button>
+                    </CardHeader>
+
+                    <CardBody>
+                        <RunFailed name={ executor.executor_name }/>
+                    </CardBody>
+                </Card>
+            </Stack>
+        </Main>
+    })[normalizeStatus(status)];
+
     return remediation && executor && playbookRun && playbookRun.data
         ? <React.Fragment>
             <PageHeader>
@@ -152,34 +228,7 @@ const ExecutorDetails = ({
                     </StackItem>
                 </Stack>
             </PageHeader>
-            <Main>
-                <Stack gutter="md">
-                    <Card>
-                        <CardHeader className='ins-m-card__header-bold'>
-                            <Button
-                                variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
-                            Download Playbook
-                            </Button>
-                        </CardHeader>
-
-                        <CardBody>
-                            { InventoryTable && <InventoryTable
-                                ref={ inventory }
-                                items={ orderBy(systems, [ s => getSystemName(s), s => s.id ]) }
-                                onRefresh={ onRefresh }
-                                page={ page }
-                                total={ systems.length }
-                                perPage={ pageSize }
-                                tableProps={ { onSelect: undefined } }
-                                expandable
-                                onExpandClick={ (_e, _i, isOpen, { id }) => {
-                                    onCollapseInventory(isOpen, id);
-                                } }
-                            /> }
-                        </CardBody>
-                    </Card>
-                </Stack>
-            </Main>
+            { renderMain(executor.status) }
         </React.Fragment>
         : <ExecutorDetailsSkeleton />;
 };
