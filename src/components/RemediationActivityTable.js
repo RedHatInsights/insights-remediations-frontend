@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { Button, EmptyState, EmptyStateBody, EmptyStateIcon, Title, Bullseye } from '@patternfly/react-core';
 import { TableHeader, Table, TableBody, expandable } from '@patternfly/react-table';
 import SkeletonTable from '../skeletons/SkeletonTable';
+import SystemsTable from './SystemsTable';
 
 import { statusSummary, normalizeStatus } from './statusHelper';
 
@@ -30,20 +31,42 @@ const RemediationActivityTable = ({
 
     // TOOD, make expandable, fill in that data
     if (remediation && playbookRuns) {
+
         return playbookRuns.length ? (
             <Table
                 aria-label="Activity Table"
-                rows={ playbookRuns.map(playbooks => (
-                    {
-                        isOpen: true,
-                        cells: [
-                            { title: <Link to={ `/${remediation.id}/${playbooks.id}` }> { playbooks.created_at } </Link>,
-                                cellFormatters: [ expandable ]},
-                            `${playbooks.created_by.first_name} ${playbooks.created_by.last_name}`,
-                            statusSummary(normalizeStatus(playbooks.status), systemsStatus)
-                        ]
-                    }
-                )) }
+                columns={ [{ title: 'a' }, 'b', 'c' ] }
+                rows={ playbookRuns.reduce((acc, playbooks, i) => (
+                    [
+                        ...acc,
+                        {
+                            isOpen: true,
+                            cells: [
+                                { title: <Link to={ `/${remediation.id}/${playbooks.id}` }> { playbooks.created_at } </Link>,
+                                    cellFormatters: [ expandable ]},
+                                `${playbooks.created_by.first_name} ${playbooks.created_by.last_name}`,
+                                statusSummary(normalizeStatus(playbooks.status), systemsStatus)
+                            ]
+                        }, {
+                            parent: 2 * i,
+                            fullWidth: true,
+                            cells: [{
+                                title: <Table
+                                    aria-label="Compact expandable table"
+                                    cells={ [ 'Connection', 'Systems', 'Playbook runs status' ] }
+                                    rows={ playbooks.executors.map(e => (
+                                        { cells: [ e.executor_name,
+                                            e.system_count,
+                                            statusSummary(normalizeStatus(playbooks.status), systemsStatus) ]}
+                                    )) }
+                                >
+                                    <TableHeader />
+                                    <TableBody />
+                                </Table>
+                            }]
+                        }
+                    ]
+                ), []) }
                 cells={ [{ title: 'Run on' }, { title: 'Run by' }, { title: 'Status' }] }>
                 <TableHeader />
                 <TableBody />
