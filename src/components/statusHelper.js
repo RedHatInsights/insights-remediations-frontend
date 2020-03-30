@@ -8,6 +8,18 @@ import {
 
 import { PermissionContext } from '../App';
 
+export const renderStatusIcon = (status) => ({
+    running: <InProgressIcon
+            className="ins-c-remediations-running"
+            aria-label="connection status" />,
+    success: <CheckCircleIcon
+            className="ins-c-remediations-success"
+            aria-label="connection status" />,
+    failure: <TimesCircleIcon
+            className="ins-c-remediations-failure"
+            aria-label="connection status" />
+})[status];
+
 export const renderStatus = (status, text) => ({
     running: <Text component={ TextVariants.p } >
         <InProgressIcon

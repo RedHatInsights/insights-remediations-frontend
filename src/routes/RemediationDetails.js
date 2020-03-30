@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter, Link, Route, Switch } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
@@ -7,6 +7,7 @@ import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import RemediationActivityTable from '../components/RemediationActivityTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
+import { renderStatusIcon } from '../components/statusHelper';
 import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
@@ -17,7 +18,8 @@ import classnames from 'classnames';
 
 import {
     Main,
-    PageHeader, PageHeaderTitle
+    PageHeader, PageHeaderTitle,
+    DateFormat
 } from '@redhat-cloud-services/frontend-components';
 
 import {
@@ -88,6 +90,7 @@ class RemediationDetails extends Component {
             isEntitled: entitlements.smart_management.is_entitled
         });
 
+        this.props.getPlaybookRuns(remediation.id);
     }
 
     generateNumRebootString = (num) => {
@@ -100,6 +103,25 @@ class RemediationDetails extends Component {
         }
 
         return (status ? 'Enabled' : 'Disabled');
+    }
+
+    renderLatestActivity = (playbookRuns) => {
+        console.log(playbookRuns);
+
+        const mostRecentDate = Math.max(...playbookRuns.map(playbooks => new Date(playbooks.updated_at)), 0);
+        let mostRecentPlaybook = playbookRuns.find(allPlaybookRuns => new Date(allPlaybookRuns.updated_at).getTime() === mostRecentDate);
+
+        return (
+            <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                <DescriptionList
+                    hasGutter
+                    title='Latest activity'>
+                    { renderStatusIcon(mostRecentPlaybook.status) }
+                    <span><DateFormat type='exact' date={ mostRecentPlaybook.updated_at } /></span>
+                    <Link to={`/${mostRecentPlaybook.remediation_id}/${mostRecentPlaybook.id}`}>View</Link>
+                </DescriptionList>
+            </FlexItem>
+        )
     }
 
     render() {
@@ -180,6 +202,9 @@ class RemediationDetails extends Component {
                                                                 { pluralize(totalSystems, 'system') }
                                                             </DescriptionList>
                                                         </FlexItem>
+                                                        { this.props.playbookRuns &&
+                                                            this.renderLatestActivity(this.props.playbookRuns)
+                                                        }
                                                     </Flex>
                                                     <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
                                                         <Flex>
@@ -255,20 +280,28 @@ RemediationDetails.propTypes = {
     executePlaybookBanner: PropTypes.shape({
         isVisible: PropTypes.bool
     }),
-    addNotification: PropTypes.func.isRequired
+    addNotification: PropTypes.func.isRequired,
+    playbookRuns: PropTypes.object,
+    getPlaybookRuns: PropTypes.func
 };
 
 export default withRouter(
     connect(
-        ({ selectedRemediation, selectedRemediationStatus, executePlaybookBanner }) => ({ selectedRemediation, selectedRemediationStatus,
-            executePlaybookBanner }),
+        ({ selectedRemediation, selectedRemediationStatus, executePlaybookBanner, playbookRuns }) => ({
+            selectedRemediation,
+            selectedRemediationStatus,
+            executePlaybookBanner,
+            playbookRuns: playbookRuns.data,
+            remediation: selectedRemediation.remediation
+        }),
         dispatch => ({
             loadRemediation: id => dispatch(actions.loadRemediation(id)),
             loadRemediationStatus: id => dispatch(actions.loadRemediationStatus(id)),
             // eslint-disable-next-line camelcase
             switchAutoReboot: (id, auto_reboot) => dispatch(actions.patchRemediation(id, { auto_reboot })),
             deleteRemediation: id => dispatch(actions.deleteRemediation(id)),
-            addNotification: (content) => dispatch(addNotification(content))
+            addNotification: (content) => dispatch(addNotification(content)),
+            getPlaybookRuns: (id) => dispatch(actions.getPlaybookRuns(id))
         })
     )(RemediationDetails)
 );
