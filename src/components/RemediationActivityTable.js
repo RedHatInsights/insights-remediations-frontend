@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import { Button, EmptyState, EmptyStateBody, EmptyStateIcon, Title, Bullseye } from '@patternfly/react-core';
 import { TableHeader, Table, TableBody, expandable } from '@patternfly/react-table';
 import SkeletonTable from '../skeletons/SkeletonTable';
-import SystemsTable from './SystemsTable';
 
 import { statusSummary, normalizeStatus } from './statusHelper';
 
