@@ -6,8 +6,6 @@ import {
     Button, Tooltip
 } from '@patternfly/react-core';
 
-import { PermissionContext } from '../App';
-
 export const renderStatusIcon = (status) => ({
     running: <InProgressIcon
         className="ins-c-remediations-running"
@@ -70,20 +68,20 @@ export const statusSummary = (executorStatus, systemsStatus, permission, needsTo
             }
         </Flex>
     );
-    
-    if(needsTooltip) {
+
+    if (needsTooltip) {
         return <Tooltip
             position='right'
             enableFlip
             content={
-                <span>{`Run: ${statusTextPlain(executorStatus)} |
+                <span>{ `Run: ${statusTextPlain(executorStatus)} |
                         Pass: ${systemsStatus.success} |
                         Fail: ${systemsStatus.failure} |
-                        Pending: ${systemsStatus.running}`}
+                        Pending: ${systemsStatus.running}` }
                 </span>
             }>
             { statusBar }
-      </Tooltip>
+        </Tooltip>;
     }
 
     return statusBar;

@@ -18,16 +18,7 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
     const [ rows, setRows ] = useState([]);
     const permission = useContext(PermissionContext);
 
-    useEffect(() => {
-        if (playbookRuns && playbookRuns.length) {
-            setRows(() => generateRows(playbookRuns));
-        }
-    }, [ playbookRuns ]);
-        
-
     const systemsStatus = { running: 1, success: 2, failure: 1 };
-
-    console.log(playbookRuns);
 
     const generateRows = (playbookRuns) => {
         return (playbookRuns.reduce((acc, playbooks, i) => (
@@ -63,6 +54,12 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
             ]
         ), []));
     };
+
+    useEffect(() => {
+        if (playbookRuns && playbookRuns.length) {
+            setRows(() => generateRows(playbookRuns));
+        }
+    }, [ playbookRuns ]);
 
     const handleOnCollapse = (event, rowId, isOpen) => {
         const collapseRows = [ ...rows ];

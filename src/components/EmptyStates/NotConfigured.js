@@ -14,8 +14,8 @@ const NotConfigured = () => (
                 Do more with Find it Fix it.
             </Title>
             <EmptyStateBody>
-                Configure Cloud Connector to connect cloud.redhat.com with your 
-                Satellite instances and execute remediation across all regions, 
+                Configure Cloud Connector to connect cloud.redhat.com with your
+                Satellite instances and execute remediation across all regions,
                 geographies, and Satellites in one place.
             </EmptyStateBody>
             <Button variant="link">Learn how to configure</Button>
