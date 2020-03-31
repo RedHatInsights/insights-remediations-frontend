@@ -13,6 +13,7 @@ import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
 import UpsellBanner from '../components/Alerts/UpsellBanner';
 import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
+import NotConfigured from '../components/EmptyStates/NotConfigured';
 import DeniedState from '../components/DeniedState';
 import classnames from 'classnames';
 
@@ -257,10 +258,10 @@ class RemediationDetails extends Component {
                                                 <RemediationDetailsTable remediation={ remediation } status={ this.props.selectedRemediationStatus }/>
                                             </Tab>
                                             <Tab eventKey={ 1 } title='Activity'>
-                                                { this.state.isEntitled &&
-                                                    playbookRuns &&
-                                                    playbookRuns.length
-                                                    ? <RemediationActivityTable remediation={ remediation } playbookRuns={ playbookRuns }/>
+                                                { this.state.isEntitled
+                                                    ? playbookRuns && playbookRuns.length
+                                                        ? <RemediationActivityTable remediation={ remediation } playbookRuns={ playbookRuns }/>
+                                                        : <NotConfigured/>
                                                     : <ActivityTabUpsell/>
                                                 }
                                             </Tab>
