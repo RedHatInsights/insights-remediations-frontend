@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { CheckCircleIcon, TimesCircleIcon, InProgressIcon } from '@patternfly/react-icons';
 import {
     Flex, FlexItem, FlexModifiers,
-    Button
+    Button, Tooltip
 } from '@patternfly/react-core';
 
 import { PermissionContext } from '../App';
@@ -41,29 +41,54 @@ export const statusText = (executorStatus) => ({
     failure: <b className="ins-c-remediations-failure"> Failed </b>
 })[executorStatus];
 
-export const statusSummary = (executorStatus, systemsStatus) => {
+export const statusTextPlain = (executorStatus) => ({
+    running: 'Running',
+    success: 'Suceeded',
+    failure: 'Failed'
+})[executorStatus];
+
+export const statusSummary = (executorStatus, systemsStatus, needsTooltip) => {
     // TODO: Cancel onClick()
     const permission = useContext(PermissionContext);
 
-    return <Flex className="ins-c-remediations-status-bar">
-        <FlexItem>
-            { statusText('success') }
-        </FlexItem>
-        <FlexItem>
-            { renderStatus('success', systemsStatus.success) }
-        </FlexItem>
-        <FlexItem>
-            { renderStatus('failure', systemsStatus.failure) }
-        </FlexItem>
-        <FlexItem>
-            { renderStatus('running', systemsStatus.running) }
-        </FlexItem>
-        { permission.permissions.execute && systemsStatus.running &&
+    const statusBar = (
+        <Flex className="ins-c-remediations-status-bar">
             <FlexItem>
-                <Button variant='link'> Cancel process </Button>
+                { statusText(executorStatus) }
             </FlexItem>
-        }
-    </Flex>;
+            <FlexItem>
+                { renderStatus('success', systemsStatus.success) }
+            </FlexItem>
+            <FlexItem>
+                { renderStatus('failure', systemsStatus.failure) }
+            </FlexItem>
+            <FlexItem>
+                { renderStatus('running', systemsStatus.running) }
+            </FlexItem>
+            { permission.permissions.execute && systemsStatus.running &&
+                <FlexItem>
+                    <Button variant='link'> Cancel process </Button>
+                </FlexItem>
+            }
+        </Flex>
+    );
+    
+    if(needsTooltip) {
+        return <Tooltip
+            position='right'
+            enableFlip
+            content={
+                <span>{`Run: ${statusTextPlain(executorStatus)} |
+                        Pass: ${systemsStatus.success} |
+                        Fail: ${systemsStatus.failure} |
+                        Pending: ${systemsStatus.running}`}
+                </span>
+            }>
+            { statusBar }
+      </Tooltip>
+    }
+
+    return statusBar;
 };
 
 export const normalizeStatus = (status) => ({

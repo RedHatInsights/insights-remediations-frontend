@@ -45,7 +45,7 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
                                 { cells: [
                                     { title: <Link to={ `/${remediation.id}/${playbooks.id}/${e.executor_id}` }>{ e.executor_name }</Link> },
                                     e.system_count,
-                                    { title: statusSummary(normalizeStatus(playbooks.status), systemsStatus) }
+                                    { title: statusSummary(normalizeStatus(playbooks.status), systemsStatus, true) }
                                 ]}
                             )) }
                         >
