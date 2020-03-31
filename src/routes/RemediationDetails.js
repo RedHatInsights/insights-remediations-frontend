@@ -207,9 +207,7 @@ class RemediationDetails extends Component {
                                                             </DescriptionList>
                                                         </FlexItem>
                                                         { this.props.playbookRuns &&
-                                                            <Suspense fallback={<span> loading .. . </span> }>
-                                                                { this.renderLatestActivity(this.props.playbookRuns) }
-                                                            </Suspense>
+                                                            this.renderLatestActivity(this.props.playbookRuns)
                                                         }
                                                     </Flex>
                                                     <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
