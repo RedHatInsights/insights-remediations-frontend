@@ -29,11 +29,10 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
         'Status'
     ];
 
-    useEffect(() => {
+    const generateRows = () => {
         if (playbookRuns && playbookRuns.length) {
-            setRows(playbookRuns.reduce((acc, playbooks, i) => (
+            return (playbookRuns.reduce((acc, playbooks, i) => (
                 [
-                    ...acc,
                     {
                         isOpen: false,
                         cells: [
@@ -63,9 +62,13 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
                         }]
                     }
                 ]
-            ), []))
+            ), [playbookRuns]))
         }
-    });
+    }
+
+    useEffect(() => {
+        setRows(generateRows);
+    },[]);
     
     return (
         <Table aria-label="Collapsible table" onCollapse={ handleOnCollapse } rows={rows} cells={columns}>
@@ -77,7 +80,7 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
 
 RemediationActivityTable.propTypes = {
     remediation: PropTypes.object,
-    playbookRuns: PropTypes.object
+    playbookRuns: PropTypes.array
 };
 
 export default RemediationActivityTable;

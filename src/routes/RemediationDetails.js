@@ -289,7 +289,7 @@ RemediationDetails.propTypes = {
         isVisible: PropTypes.bool
     }),
     addNotification: PropTypes.func.isRequired,
-    playbookRuns: PropTypes.object,
+    playbookRuns: PropTypes.array,
     getPlaybookRuns: PropTypes.func
 };
 
