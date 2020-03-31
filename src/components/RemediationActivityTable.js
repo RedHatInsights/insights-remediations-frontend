@@ -1,114 +1,92 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
-
 import PropTypes from 'prop-types';
 
-import { Button, EmptyState, EmptyStateBody, EmptyStateIcon, Title, Bullseye } from '@patternfly/react-core';
-import { TableHeader, Table, TableBody, expandable } from '@patternfly/react-table';
-import SkeletonTable from '../skeletons/SkeletonTable';
+import {
+    Table,
+    TableHeader,
+    TableBody,
+    expandable
+} from '@patternfly/react-table';
 
 import { statusSummary, normalizeStatus } from './statusHelper';
 
-import { getPlaybookRuns, loadRemediation } from '../actions';
+import { PermissionContext } from '../App';
 
-import './RemediationActivityTable.scss';
+const RemediationActivityTable = ({ remediation, playbookRuns }) => {
 
-import { WrenchIcon } from '@patternfly/react-icons';
-
-const RemediationActivityTable = ({
-    remediation,
-    playbookRuns,
-    getPlaybookRuns
-}) => {
+    const [ rows, setRows ] = useState([]);
+    const permission = useContext(PermissionContext);
 
     useEffect(() => {
-        getPlaybookRuns(remediation.id);
-    }, [ getPlaybookRuns ]);
+        if (playbookRuns && playbookRuns.length) {
+            setRows(() => generateRows(playbookRuns));
+        }
+    }, [ playbookRuns ]);
+        
 
     const systemsStatus = { running: 1, success: 2, failure: 1 };
 
-    // TOOD, make expandable, fill in that data
-    if (remediation && playbookRuns) {
+    console.log(playbookRuns);
 
-        return playbookRuns.length ? (
-            <Table
-                aria-label="Activity Table"
-                columns={ [{ title: 'a' }, 'b', 'c' ] }
-                rows={ playbookRuns.reduce((acc, playbooks, i) => (
-                    [
-                        ...acc,
-                        {
-                            isOpen: true,
-                            cells: [
-                                { title: <Link to={ `/${remediation.id}/${playbooks.id}` }> { playbooks.created_at } </Link>,
-                                    cellFormatters: [ expandable ]},
-                                `${playbooks.created_by.first_name} ${playbooks.created_by.last_name}`,
-                                statusSummary(normalizeStatus(playbooks.status), systemsStatus)
-                            ]
-                        }, {
-                            parent: 2 * i,
-                            fullWidth: true,
-                            cells: [{
-                                title: <Table
-                                    aria-label="Compact expandable table"
-                                    cells={ [ 'Connection', 'Systems', 'Playbook runs status' ] }
-                                    rows={ playbooks.executors.map(e => (
-                                        { cells: [
-                                            { title: <Link to={ `/${remediation.id}/${playbooks.id}/${e.executor_id}` }>{ e.executor_name }</Link> },
-                                            e.system_count,
-                                            statusSummary(normalizeStatus(playbooks.status), systemsStatus) ]}
-                                    )) }
-                                >
-                                    <TableHeader />
-                                    <TableBody />
-                                </Table>
-                            }]
-                        }
+    const generateRows = (playbookRuns) => {
+        return (playbookRuns.reduce((acc, playbooks, i) => (
+            [
+                {
+                    isOpen: false,
+                    cells: [
+                        { title: <Link to={ `/${remediation.id}/${playbooks.id}` }> { playbooks.created_at } </Link>,
+                            cellFormatters: [ expandable ]},
+                        `${playbooks.created_by.first_name} ${playbooks.created_by.last_name}`,
+                        { title: statusSummary(normalizeStatus(playbooks.status), systemsStatus, permission) }
                     ]
-                ), []) }
-                cells={ [{ title: 'Run on' }, { title: 'Run by' }, { title: 'Status' }] }>
-                <TableHeader />
-                <TableBody />
-            </Table>
-        ) : (
-            <Bullseye>
-                <EmptyState>
-                    <EmptyStateIcon icon={ WrenchIcon } />
-                    <Title headingLevel="h5" size="lg">
-                        Do more with Find it Fix it.
-                    </Title>
-                    <EmptyStateBody>
-                        Configure Cloud Connector to connect cloud.redhat.com with your
-                        Satellite instances and execute remediation across all regions,
-                        geographies, and Satellites in one place.
-                    </EmptyStateBody>
-                    <Button variant="link">Learn how to configure</Button>
-                </EmptyState>
-            </Bullseye>
-        );
-    }
+                }, {
+                    parent: 2 * i,
+                    fullWidth: true,
+                    cells: [{
+                        title: <Table
+                            aria-label="Compact expandable table"
+                            cells={ [ 'Connection', 'Systems', 'Playbook runs status' ] }
+                            rows={ playbooks.executors.map(e => (
+                                { cells: [
+                                    { title: <Link to={ `/${remediation.id}/${playbooks.id}/${e.executor_id}` }>{ e.executor_name }</Link> },
+                                    e.system_count,
+                                    { title: statusSummary(normalizeStatus(playbooks.status), systemsStatus, permission, true) }
+                                ]}
+                            )) }
+                        >
+                            <TableHeader />
+                            <TableBody />
+                        </Table>
+                    }]
+                }
+            ]
+        ), []));
+    };
+
+    const handleOnCollapse = (event, rowId, isOpen) => {
+        const collapseRows = [ ...rows ];
+        collapseRows[rowId] = { ...collapseRows[rowId], isOpen };
+        setRows(collapseRows);
+    };
+
+    const columns = [
+        'Run on',
+        'Run by',
+        'Status'
+    ];
 
     return (
-        <SkeletonTable/>
+        <Table aria-label="Collapsible table" onCollapse={ handleOnCollapse } rows={ rows } cells={ columns }>
+            <TableHeader />
+            <TableBody />
+        </Table>
     );
-
 };
 
 RemediationActivityTable.propTypes = {
     remediation: PropTypes.object,
-    playbookRuns: PropTypes.object,
-    getPlaybookRuns: PropTypes.func
+    playbookRuns: PropTypes.array
 };
 
-const connected = connect(
-    ({ playbookRuns, selectedRemediation }) => ({
-        playbookRuns: playbookRuns.data,
-        remediation: selectedRemediation.remediation
-    }),
-    (dispatch) => ({
-        getPlaybookRuns: (id) => dispatch(getPlaybookRuns(id)),
-        loadRemediation: id => dispatch(loadRemediation(id))
-    })
-)(RemediationActivityTable);
-export default connected;
+export default RemediationActivityTable;

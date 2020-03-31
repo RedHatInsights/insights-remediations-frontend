@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -26,6 +26,7 @@ import { getPlaybookRun, getPlaybookRunSystems, getPlaybookRuns, loadRemediation
 import './Status.scss';
 import { statusSummary, normalizeStatus } from './statusHelper';
 import ActivityDetailsSkeleton from '../skeletons/ActivityDetailsSkeleton';
+import { PermissionContext } from '../App';
 
 const ActivityDetail = ({
     match: { params: { id, run_id }},
@@ -48,6 +49,7 @@ const ActivityDetail = ({
     //     , {  running: 0, success: 0, failure: 0 });
     const systemsStatus = { running: 1, success: 2, failure: 1 };
     console.log('RENDER', remediation, playbookRun);
+    const permission = useContext(PermissionContext);
 
     return remediation && playbookRun && playbookRun.data
         ? (
@@ -77,7 +79,7 @@ const ActivityDetail = ({
                                 </SplitItem>
                                 <SplitItem>
                                     <DescriptionList className='ins-c-playbookSummary__settings' title='Run status'>
-                                        { statusSummary(playbookRun.status, systemsStatus) }
+                                        { statusSummary(playbookRun.status, systemsStatus, permission) }
                                     </DescriptionList>
                                 </SplitItem>
                             </Split>
@@ -95,7 +97,7 @@ const ActivityDetail = ({
                                         cells: [
                                             { title: <Link to={ `/${remediation.id}/${playbookRun.data.id}/${e.executor_id}` }> { e.executor_name } </Link> },
                                             e.system_count,
-                                            statusSummary(normalizeStatus(e.status), systemsStatus)
+                                            statusSummary(normalizeStatus(e.status), systemsStatus, permission)
                                         ]
                                     })) }
                                     cells={ [{ title: 'Connection' }, { title: 'Systems' }, { title: 'Playbook run status' }] }>

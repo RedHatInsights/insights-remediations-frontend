@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
 import { CheckCircleIcon, TimesCircleIcon, InProgressIcon } from '@patternfly/react-icons';
 import {
@@ -47,10 +47,8 @@ export const statusTextPlain = (executorStatus) => ({
     failure: 'Failed'
 })[executorStatus];
 
-export const statusSummary = (executorStatus, systemsStatus, needsTooltip) => {
+export const statusSummary = (executorStatus, systemsStatus, permission, needsTooltip) => {
     // TODO: Cancel onClick()
-    const permission = useContext(PermissionContext);
-
     const statusBar = (
         <Flex className="ins-c-remediations-status-bar">
             <FlexItem>

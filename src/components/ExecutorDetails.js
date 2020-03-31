@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 /* eslint-disable camelcase */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
@@ -41,6 +41,8 @@ import { downloadPlaybook, remediations } from '../api';
 import { normalizeStatus, renderStatus, statusSummary  } from './statusHelper';
 import ExecutorDetailsSkeleton from '../skeletons/ExecutorDetailsSkeleton';
 import RunFailed from './Alerts/RunFailed';
+
+import { PermissionContext } from '../App';
 
 const ExecutorDetails = ({
     match: { params: { executor_id, run_id, id }},
@@ -193,6 +195,8 @@ const ExecutorDetails = ({
         </Main>
     })[normalizeStatus(status)];
 
+    const permission = useContext(PermissionContext);
+
     return remediation && executor && playbookRun && playbookRun.data
         ? <React.Fragment>
             <PageHeader>
@@ -223,7 +227,7 @@ const ExecutorDetails = ({
                             </SplitItem>
                             <SplitItem>
                                 <DescriptionList className='ins-c-playbookSummary__settings' title='Run status'>
-                                    { statusSummary(executor.status, systemsStatus) }
+                                    { statusSummary(executor.status, systemsStatus, permission) }
                                 </DescriptionList>
                             </SplitItem>
                         </Split>
