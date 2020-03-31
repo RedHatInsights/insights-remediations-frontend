@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
-import RemediationActivityTable from '../components/RemediationActivityTable';
+import RemediationActivityTable from '../components/RemediationActivityTable2';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
 import { renderStatusIcon } from '../components/statusHelper';
 import { isBeta } from '../config';
@@ -52,6 +52,7 @@ class RemediationDetails extends Component {
         this.id = this.props.match.params.id;
         this.loadRemediation = this.props.loadRemediation.bind(this, this.id);
         this.loadRemediationStatus = this.props.loadRemediationStatus.bind(this, this.id);
+        this.loadPlaybookRuns = this.props.getPlaybookRuns.bind(this, this.id);
     };
 
     handleRebootChange = autoReboot => {
@@ -86,11 +87,11 @@ class RemediationDetails extends Component {
 
         const { entitlements } = await window.insights.chrome.auth.getUser();
 
+        this.loadPlaybookRuns();
+
         this.setState({
             isEntitled: entitlements.smart_management.is_entitled
         });
-
-        this.props.getPlaybookRuns(remediation.id);
     }
 
     generateNumRebootString = (num) => {
@@ -130,6 +131,7 @@ class RemediationDetails extends Component {
 
     render() {
         const { status, remediation } = this.props.selectedRemediation;
+        const { playbookRuns } = this.props;
 
         if (status !== 'fulfilled') {
             return <RemediationDetailsSkeleton/>;
@@ -206,8 +208,8 @@ class RemediationDetails extends Component {
                                                                 { pluralize(totalSystems, 'system') }
                                                             </DescriptionList>
                                                         </FlexItem>
-                                                        { this.props.playbookRuns &&
-                                                            this.renderLatestActivity(this.props.playbookRuns)
+                                                        { playbookRuns &&
+                                                            this.renderLatestActivity(playbookRuns)
                                                         }
                                                     </Flex>
                                                     <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
@@ -255,7 +257,7 @@ class RemediationDetails extends Component {
                                                 <RemediationDetailsTable remediation={ remediation } status={ this.props.selectedRemediationStatus }/>
                                             </Tab>
                                             <Tab eventKey={ 1 } title='Activity'>
-                                                { this.state.isEntitled ? <RemediationActivityTable remediation={ remediation }/> : <ActivityTabUpsell/> }
+                                                { this.state.isEntitled ? <RemediationActivityTable remediation={ remediation } playbookRuns={ playbookRuns }/> : <ActivityTabUpsell/> }
                                             </Tab>
                                         </Tabs>
                                     </StackItem>
