@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Suspense } from 'react';
 import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -106,22 +106,26 @@ class RemediationDetails extends Component {
     }
 
     renderLatestActivity = (playbookRuns) => {
-        console.log(playbookRuns);
+        
+        if (playbookRuns.length) {
 
-        const mostRecentDate = Math.max(...playbookRuns.map(playbooks => new Date(playbooks.updated_at)), 0);
-        let mostRecentPlaybook = playbookRuns.find(allPlaybookRuns => new Date(allPlaybookRuns.updated_at).getTime() === mostRecentDate);
+            const mostRecentDate = Math.max(...playbookRuns.map(playbooks => new Date(playbooks.updated_at)), 0);
+            let mostRecentPlaybook = playbookRuns.find(allPlaybookRuns => new Date(allPlaybookRuns.updated_at).getTime() === mostRecentDate);
 
-        return (
-            <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
-                <DescriptionList
-                    hasGutter
-                    title='Latest activity'>
-                    { renderStatusIcon(mostRecentPlaybook.status) }
-                    <span><DateFormat type='exact' date={ mostRecentPlaybook.updated_at } /></span>
-                    <Link to={`/${mostRecentPlaybook.remediation_id}/${mostRecentPlaybook.id}`}>View</Link>
-                </DescriptionList>
-            </FlexItem>
-        )
+            return (
+                <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                    <DescriptionList
+                        hasGutter
+                        title='Latest activity'>
+                        { renderStatusIcon(mostRecentPlaybook.status) }
+                        <span><DateFormat type='exact' date={ mostRecentPlaybook.updated_at } /></span>
+                        <Link to={`/${mostRecentPlaybook.remediation_id}/${mostRecentPlaybook.id}`}>View</Link>
+                    </DescriptionList>
+                </FlexItem>
+            )
+        }
+
+        return;
     }
 
     render() {
@@ -203,7 +207,9 @@ class RemediationDetails extends Component {
                                                             </DescriptionList>
                                                         </FlexItem>
                                                         { this.props.playbookRuns &&
-                                                            this.renderLatestActivity(this.props.playbookRuns)
+                                                            <Suspense fallback={<span> loading .. . </span> }>
+                                                                { this.renderLatestActivity(this.props.playbookRuns) }
+                                                            </Suspense>
                                                         }
                                                     </Flex>
                                                     <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
