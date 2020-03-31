@@ -10,29 +10,29 @@ import { PermissionContext } from '../App';
 
 export const renderStatusIcon = (status) => ({
     running: <InProgressIcon
-            className="ins-c-remediations-running"
-            aria-label="connection status" />,
+        className="ins-c-remediations-running"
+        aria-label="connection status" />,
     success: <CheckCircleIcon
-            className="ins-c-remediations-success"
-            aria-label="connection status" />,
+        className="ins-c-remediations-success"
+        aria-label="connection status" />,
     failure: <TimesCircleIcon
-            className="ins-c-remediations-failure"
-            aria-label="connection status" />
+        className="ins-c-remediations-failure"
+        aria-label="connection status" />
 })[status];
 
 export const renderStatus = (status, text) => ({
-    running: <Flex className='ins-c-remediations-running' breakpointMods={[{modifier: FlexModifiers["space-items-sm"]}]}>
-            <FlexItem><b>{ text || 'Running' }</b></FlexItem>
-            <FlexItem><InProgressIcon aria-label="connection status: running"/></FlexItem>
-        </Flex>,
-    success: <Flex className="ins-c-remediations-success" breakpointMods={[{modifier: FlexModifiers["space-items-sm"]}]}>
-            <FlexItem><b>{ text || 'Success' }</b></FlexItem>
-            <FlexItem><CheckCircleIcon aria-label="connection status: success"/></FlexItem>
-        </Flex>,
-    failure: <Flex className="ins-c-remediations-failure" breakpointMods={[{modifier: FlexModifiers["space-items-sm"]}]}>
-            <FlexItem><b>{ text || 'Failed' }</b></FlexItem>
-            <FlexItem><TimesCircleIcon aria-label="connection status: failed"/></FlexItem>
-        </Flex>
+    running: <Flex className='ins-c-remediations-running' breakpointMods={ [{ modifier: FlexModifiers['space-items-sm'] }] }>
+        <FlexItem><b>{ text || 'Running' }</b></FlexItem>
+        <FlexItem><InProgressIcon aria-label="connection status: running"/></FlexItem>
+    </Flex>,
+    success: <Flex className="ins-c-remediations-success" breakpointMods={ [{ modifier: FlexModifiers['space-items-sm'] }] }>
+        <FlexItem><b>{ text || 'Success' }</b></FlexItem>
+        <FlexItem><CheckCircleIcon aria-label="connection status: success"/></FlexItem>
+    </Flex>,
+    failure: <Flex className="ins-c-remediations-failure" breakpointMods={ [{ modifier: FlexModifiers['space-items-sm'] }] }>
+        <FlexItem><b>{ text || 'Failed' }</b></FlexItem>
+        <FlexItem><TimesCircleIcon aria-label="connection status: failed"/></FlexItem>
+    </Flex>
 })[status];
 
 export const statusText = (executorStatus) => ({

@@ -64,8 +64,8 @@ class App extends Component {
                     value={ {
                         permissions: {
                             read: readPermission,
-                            write: false,
-                            execute: true
+                            write: writePermission,
+                            execute: executePermission
                         }
                     } }>
                     <NotificationsPortal />

@@ -1,4 +1,4 @@
-import React, { Component, Suspense } from 'react';
+import React, { Component } from 'react';
 import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -107,11 +107,11 @@ class RemediationDetails extends Component {
     }
 
     renderLatestActivity = (playbookRuns) => {
-        
+
         if (playbookRuns.length) {
 
             const mostRecentDate = Math.max(...playbookRuns.map(playbooks => new Date(playbooks.updated_at)), 0);
-            let mostRecentPlaybook = playbookRuns.find(allPlaybookRuns => new Date(allPlaybookRuns.updated_at).getTime() === mostRecentDate);
+            const mostRecentPlaybook = playbookRuns.find(allPlaybookRuns => new Date(allPlaybookRuns.updated_at).getTime() === mostRecentDate);
 
             return (
                 <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
@@ -120,10 +120,10 @@ class RemediationDetails extends Component {
                         title='Latest activity'>
                         { renderStatusIcon(mostRecentPlaybook.status) }
                         <span><DateFormat type='exact' date={ mostRecentPlaybook.updated_at } /></span>
-                        <Link to={`/${mostRecentPlaybook.remediation_id}/${mostRecentPlaybook.id}`}>View</Link>
+                        <Link to={ `/${mostRecentPlaybook.remediation_id}/${mostRecentPlaybook.id}` }>View</Link>
                     </DescriptionList>
                 </FlexItem>
-            )
+            );
         }
 
         return;
@@ -132,8 +132,6 @@ class RemediationDetails extends Component {
     render() {
         const { status, remediation } = this.props.selectedRemediation;
         const { playbookRuns } = this.props;
-
-        console.log(playbookRuns);
 
         if (status !== 'fulfilled') {
             return <RemediationDetailsSkeleton/>;
@@ -259,7 +257,12 @@ class RemediationDetails extends Component {
                                                 <RemediationDetailsTable remediation={ remediation } status={ this.props.selectedRemediationStatus }/>
                                             </Tab>
                                             <Tab eventKey={ 1 } title='Activity'>
-                                                { this.state.isEntitled && playbookRuns && playbookRuns.length ? <RemediationActivityTable remediation={ remediation } playbookRuns={ playbookRuns }/> : <ActivityTabUpsell/> }
+                                                { this.state.isEntitled &&
+                                                    playbookRuns &&
+                                                    playbookRuns.length
+                                                    ? <RemediationActivityTable remediation={ remediation } playbookRuns={ playbookRuns }/>
+                                                    : <ActivityTabUpsell/>
+                                                }
                                             </Tab>
                                         </Tabs>
                                     </StackItem>

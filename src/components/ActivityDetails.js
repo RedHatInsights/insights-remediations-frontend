@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -23,7 +25,6 @@ import DescriptionList from './Layouts/DescriptionList';
 import { getPlaybookRun, getPlaybookRunSystems, getPlaybookRuns, loadRemediation } from '../actions';
 import './Status.scss';
 import { statusSummary, normalizeStatus } from './statusHelper';
-import { remediations } from '../api';
 import ActivityDetailsSkeleton from '../skeletons/ActivityDetailsSkeleton';
 
 const ActivityDetail = ({
@@ -37,7 +38,7 @@ const ActivityDetail = ({
     loadRemediation
 }) => {
     useEffect(() => {
-        console.log('IDS', id, run_id)
+        console.log('IDS', id, run_id);
         loadRemediation(id);
         getPlaybookRuns(id);
         getPlaybookRun(id, run_id);
@@ -115,8 +116,8 @@ ActivityDetail.propTypes = {
     issue: PropTypes.object,
     playbookRun: PropTypes.object,
     getPlaybookRun: PropTypes.func,
-    getPlaybookRunSystems: PropTypes.func
-
+    getPlaybookRunSystems: PropTypes.func,
+    match: PropTypes.object
 };
 
 ActivityDetail.defaultProps = {

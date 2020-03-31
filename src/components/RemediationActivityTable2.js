@@ -13,14 +13,14 @@ import { statusSummary, normalizeStatus } from './statusHelper';
 
 const RemediationActivityTable = ({ remediation, playbookRuns }) => {
 
-    const [rows, setRows] = useState([]);
+    const [ rows, setRows ] = useState([]);
 
     useEffect(() => {
         if (playbookRuns && playbookRuns.length) {
             setRows(generateRows);
         }
-    },[playbookRuns]);
-    
+    }, [ playbookRuns ]);
+
     const systemsStatus = { running: 1, success: 2, failure: 1 };
 
     const generateRows = () => {
@@ -45,7 +45,7 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
                                 { cells: [
                                     { title: <Link to={ `/${remediation.id}/${playbooks.id}/${e.executor_id}` }>{ e.executor_name }</Link> },
                                     e.system_count,
-                                    { title: statusSummary(normalizeStatus(playbooks.status), systemsStatus)}
+                                    { title: statusSummary(normalizeStatus(playbooks.status), systemsStatus) }
                                 ]}
                             )) }
                         >
@@ -55,11 +55,11 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
                     }]
                 }
             ]
-        ), []))
-    }
+        ), []));
+    };
 
     const handleOnCollapse = (event, rowId, isOpen) => {
-        const collapseRows = [...rows];
+        const collapseRows = [ ...rows ];
         collapseRows[rowId] = { ...collapseRows[rowId], isOpen };
         setRows(collapseRows);
     };
@@ -69,14 +69,14 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
         'Run by',
         'Status'
     ];
-    
+
     return (
-        <Table aria-label="Collapsible table" onCollapse={ handleOnCollapse } rows={rows} cells={columns}>
+        <Table aria-label="Collapsible table" onCollapse={ handleOnCollapse } rows={ rows } cells={ columns }>
             <TableHeader />
             <TableBody />
         </Table>
     );
-}
+};
 
 RemediationActivityTable.propTypes = {
     remediation: PropTypes.object,
