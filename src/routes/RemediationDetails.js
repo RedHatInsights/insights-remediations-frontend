@@ -133,6 +133,8 @@ class RemediationDetails extends Component {
         const { status, remediation } = this.props.selectedRemediation;
         const { playbookRuns } = this.props;
 
+        console.log(playbookRuns);
+
         if (status !== 'fulfilled') {
             return <RemediationDetailsSkeleton/>;
         }
@@ -257,7 +259,7 @@ class RemediationDetails extends Component {
                                                 <RemediationDetailsTable remediation={ remediation } status={ this.props.selectedRemediationStatus }/>
                                             </Tab>
                                             <Tab eventKey={ 1 } title='Activity'>
-                                                { this.state.isEntitled ? <RemediationActivityTable remediation={ remediation } playbookRuns={ playbookRuns }/> : <ActivityTabUpsell/> }
+                                                { this.state.isEntitled && playbookRuns && playbookRuns.length ? <RemediationActivityTable remediation={ remediation } playbookRuns={ playbookRuns }/> : <ActivityTabUpsell/> }
                                             </Tab>
                                         </Tabs>
                                     </StackItem>
