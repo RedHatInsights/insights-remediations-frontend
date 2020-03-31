@@ -2,8 +2,8 @@ import React, { useContext } from 'react';
 
 import { CheckCircleIcon, TimesCircleIcon, InProgressIcon } from '@patternfly/react-icons';
 import {
-    Split, SplitItem,
-    Text, TextVariants, Button
+    Flex, FlexItem, FlexModifiers,
+    Button
 } from '@patternfly/react-core';
 
 import { PermissionContext } from '../App';
@@ -21,61 +21,49 @@ export const renderStatusIcon = (status) => ({
 })[status];
 
 export const renderStatus = (status, text) => ({
-    running: <Text component={ TextVariants.p } >
-        <InProgressIcon
-            className="ins-c-remediations-running"
-            aria-label="connection status" />
-        { text || 'Running' }
-    </Text >,
-    success: <Text component={ TextVariants.p }>
-        <CheckCircleIcon
-            className="ins-c-remediations-success"
-            aria-label="connection status" />
-        { text || 'Success' }
-    </Text>,
-    failure: <Text component={ TextVariants.p }>
-        <TimesCircleIcon
-            className="ins-c-remediations-failure"
-            aria-label="connection status" />
-        { text || 'Failed' }
-    </Text>
+    running: <Flex className='ins-c-remediations-running' breakpointMods={[{modifier: FlexModifiers["space-items-sm"]}]}>
+            <FlexItem><b>{ text || 'Running' }</b></FlexItem>
+            <FlexItem><InProgressIcon aria-label="connection status: running"/></FlexItem>
+        </Flex>,
+    success: <Flex className="ins-c-remediations-success" breakpointMods={[{modifier: FlexModifiers["space-items-sm"]}]}>
+            <FlexItem><b>{ text || 'Success' }</b></FlexItem>
+            <FlexItem><CheckCircleIcon aria-label="connection status: success"/></FlexItem>
+        </Flex>,
+    failure: <Flex className="ins-c-remediations-failure" breakpointMods={[{modifier: FlexModifiers["space-items-sm"]}]}>
+            <FlexItem><b>{ text || 'Failed' }</b></FlexItem>
+            <FlexItem><TimesCircleIcon aria-label="connection status: failed"/></FlexItem>
+        </Flex>
 })[status];
 
 export const statusText = (executorStatus) => ({
-    running: <Text component={ TextVariants.p } >
-        Running
-    </Text >,
-    success: <Text className="ins-c-remediations-success" component={ TextVariants.p }>
-        Suceeded
-    </Text>,
-    failure: <Text className="ins-c-remediations-failure" component={ TextVariants.p }>
-        Failed
-    </Text>
+    running: <b className="ins-c-remediations-running"> Running </b>,
+    success: <b className="ins-c-remediations-success"> Suceeded </b>,
+    failure: <b className="ins-c-remediations-failure"> Failed </b>
 })[executorStatus];
 
 export const statusSummary = (executorStatus, systemsStatus) => {
     // TODO: Cancel onClick()
     const permission = useContext(PermissionContext);
 
-    return <Split style={ { display: 'flex' } } className="ins-c-remediations-status-bar">
-        <SplitItem>
+    return <Flex className="ins-c-remediations-status-bar">
+        <FlexItem>
             { statusText('success') }
-        </SplitItem>
-        <SplitItem>
+        </FlexItem>
+        <FlexItem>
             { renderStatus('success', systemsStatus.success) }
-        </SplitItem>
-        <SplitItem>
+        </FlexItem>
+        <FlexItem>
             { renderStatus('failure', systemsStatus.failure) }
-        </SplitItem>
-        <SplitItem>
+        </FlexItem>
+        <FlexItem>
             { renderStatus('running', systemsStatus.running) }
-        </SplitItem>
+        </FlexItem>
         { permission.permissions.execute && systemsStatus.running &&
-            <SplitItem>
+            <FlexItem>
                 <Button variant='link'> Cancel process </Button>
-            </SplitItem>
+            </FlexItem>
         }
-    </Split>;
+    </Flex>;
 };
 
 export const normalizeStatus = (status) => ({
