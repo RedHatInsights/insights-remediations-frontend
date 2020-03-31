@@ -7,10 +7,10 @@ import './RemediationActivityTable.scss';
 
 const RemediationActivityTable = ({
     remediation,
-    runs,
+    playbookRuns,
 }) => {
 
-    console.log(remediation, runs);
+    console.log(remediation, playbookRuns);
 
 
     return <span> test </span>
@@ -18,7 +18,7 @@ const RemediationActivityTable = ({
 
 RemediationActivityTable.propTypes = {
     remediation: PropTypes.object,
-    runs: PropTypes.array
+    playbookRuns: PropTypes.array
 };
 
 export default RemediationActivityTable;
