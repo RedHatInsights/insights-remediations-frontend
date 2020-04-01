@@ -1,4 +1,4 @@
-import { Switch, matchPath, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Home from './routes/Home';
@@ -23,40 +23,11 @@ export const routes = {
     details: '/:id'
 };
 
-function checkPaths(group, app) {
-    return Object
-    .values(routes)
-    .some(
-        route => {
-            return matchPath(location.href, { path: `${document.baseURI}${group}/${app}${route}` });
-        }
-    );
-}
+export const Routes = () => (
+    <Switch>
+        <InsightsRoute exact path={ routes.home } component={ Home } rootClass='remediations' />
+        <InsightsRoute path={ routes.details } component={ RemediationDetails } rootClass='remediation-details' />
 
-export const Routes = ({ childProps: { history }}) => {
-    const pathName = window.location.pathname.split('/');
-    pathName.shift();
-
-    if (pathName[0] === 'beta') {
-        pathName.shift();
-    }
-
-    if (!checkPaths(pathName[0], pathName[1])) {
-        history.push(routes.home);
-    }
-
-    return (
-        <Switch>
-            <InsightsRoute exact path={ routes.home } component={ Home } rootClass='remediations' />
-            <InsightsRoute path={ routes.details } component={ RemediationDetails } rootClass='remediation-details' />
-        </Switch>
-    );
-};
-
-Routes.propTypes = {
-    childProps: PropTypes.shape({
-        history: PropTypes.shape({
-            push: PropTypes.func
-        })
-    })
-};
+        <Redirect path='*' to={ routes.home } push />
+    </Switch>
+);
