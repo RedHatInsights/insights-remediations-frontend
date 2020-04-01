@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { withRouter, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import orderBy from 'lodash/orderBy';
 import * as pfReactTable from '@patternfly/react-table';
 import * as reactCore from '@patternfly/react-core';
@@ -19,25 +19,23 @@ import {
     Button,
     Card, CardHeader, CardBody,
     Stack, StackItem,
-    Level, LevelItem,
     Breadcrumb, BreadcrumbItem,
-    Split, SplitItem, Expandable,
-    Text, TextVariants
+    Split, SplitItem
 } from '@patternfly/react-core';
-import {
-    Table,
-    TableHeader,
-    TableBody,
-    expandable
-} from '@patternfly/react-table';
-import { CheckCircleIcon } from '@patternfly/react-icons';
 
 import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/Registry';
 import reducers from '../store/reducers';
 import { getSystemName } from '../Utilities/model';
 import DescriptionList from './Layouts/DescriptionList';
-import { getPlaybookRuns, getPlaybookRun, getPlaybookRunSystems, getPlaybookRunSystemDetails, expandInventoryTable, loadRemediation } from '../actions';
-import { downloadPlaybook, remediations } from '../api';
+import {
+    getPlaybookRuns,
+    getPlaybookRun,
+    getPlaybookRunSystems,
+    getPlaybookRunSystemDetails,
+    expandInventoryTable,
+    loadRemediation
+} from '../actions';
+import { downloadPlaybook } from '../api';
 import { normalizeStatus, renderStatus, statusSummary  } from './statusHelper';
 import ExecutorDetailsSkeleton from '../skeletons/ExecutorDetailsSkeleton';
 import RunFailed from './Alerts/RunFailed';
@@ -48,13 +46,13 @@ const ExecutorDetails = ({
     match: { params: { executor_id, run_id, id }},
     remediation,
     playbookRun,
-    playbookRuns,
     playbookRunSystems,
     playbookRunSystemDetails,
     getPlaybookRun,
     getPlaybookRunSystems,
     getPlaybookRunSystemDetails,
-    onCollapseInventory, loadRemediation
+    onCollapseInventory,
+    loadRemediation
 }) => {
     const [ executor, setExecutor ] = useState({});
     const [ systems, setSystems ] = useState([]);
@@ -265,9 +263,16 @@ const ExecutorDetails = ({
 };
 
 ExecutorDetails.propTypes = {
-    selectedRemediation: PropTypes.object,
-    issue: PropTypes.object
-
+    match: PropTypes.object,
+    remediation: PropTypes.object,
+    playbookRun: PropTypes.object,
+    playbookRunSystems: PropTypes.array,
+    playbookRunSystemDetails: PropTypes.object,
+    getPlaybookRun: PropTypes.func,
+    getPlaybookRunSystems: PropTypes.func,
+    getPlaybookRunSystemDetails: PropTypes.func,
+    onCollapseInventory: PropTypes.func,
+    loadRemediation: PropTypes.func
 };
 
 ExecutorDetails.defaultProps = {
