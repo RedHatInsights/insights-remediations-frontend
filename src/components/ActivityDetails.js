@@ -96,7 +96,7 @@ const ActivityDetail = ({
                                         cells: [
                                             { title: <Link to={ `/${remediation.id}/${playbookRun.data.id}/${e.executor_id}` }> { e.executor_name } </Link> },
                                             e.system_count,
-                                            statusSummary(normalizeStatus(e.status), systemsStatus, permission)
+                                            { title: statusSummary(normalizeStatus(e.status), systemsStatus, permission) }
                                         ]
                                     })) }
                                     cells={ [{ title: 'Connection' }, { title: 'Systems' }, { title: 'Playbook run status' }] }>

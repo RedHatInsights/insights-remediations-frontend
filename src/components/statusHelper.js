@@ -44,24 +44,29 @@ export const statusTextPlain = (executorStatus) => ({
     success: 'Suceeded',
     failure: 'Failed'
 })[executorStatus];
-
+/*
+    executorStatus: bool,
+    systemsStatus: { success: number, failure: number, running: number }
+*/
 export const statusSummary = (executorStatus, systemsStatus, permission, needsTooltip) => {
     // TODO: Cancel onClick()
+
     const statusBar = (
         <Flex className="ins-c-remediations-status-bar">
             <FlexItem>
                 { statusText(executorStatus) }
             </FlexItem>
             <FlexItem>
-                { renderStatus('success', systemsStatus.success) }
+                { renderStatus('success', `${systemsStatus.success}`) }
             </FlexItem>
             <FlexItem>
-                { renderStatus('failure', systemsStatus.failure) }
+                { renderStatus('failure', `${systemsStatus.failure}`) }
             </FlexItem>
             <FlexItem>
-                { renderStatus('running', systemsStatus.running) }
+                { renderStatus('running', `${systemsStatus.running}`) }
             </FlexItem>
-            { permission.permissions.execute && systemsStatus.running &&
+            
+            { permission.permissions.execute && systemsStatus.running > 0 &&
                 <FlexItem>
                     <Button variant='link'> Cancel process </Button>
                 </FlexItem>
