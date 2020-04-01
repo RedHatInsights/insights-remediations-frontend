@@ -39,7 +39,6 @@ const ActivityDetail = ({
     loadRemediation
 }) => {
     useEffect(() => {
-        console.log('IDS', id, run_id);
         loadRemediation(id);
         getPlaybookRuns(id);
         getPlaybookRun(id, run_id);

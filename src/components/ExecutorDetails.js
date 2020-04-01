@@ -12,7 +12,7 @@ import * as reactRouterDom from 'react-router-dom';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import {
-    Main, PageHeader, PageHeaderTitle, DateFormat
+    Main, PageHeader, PageHeaderTitle, DateFormat, Skeleton
 } from '@redhat-cloud-services/frontend-components';
 
 import {
@@ -50,12 +50,14 @@ const ExecutorDetails = ({
     playbookRun,
     playbookRuns,
     playbookRunSystems,
+    playbookRunSystemDetails,
     getPlaybookRun,
     getPlaybookRunSystems,
     getPlaybookRunSystemDetails,
     onCollapseInventory, loadRemediation
 }) => {
     const [ executor, setExecutor ] = useState({});
+    const [systems, setSystems] = useState([]);
     const [ InventoryTable, setInventoryTable ] = useState();
     const [ page, setPage ] = useState(1);
     const [ pageSize, setPageSize ] = useState(50);
@@ -98,23 +100,36 @@ const ExecutorDetails = ({
         loadInventory();
         loadRemediation(id);
         getPlaybookRun(id, run_id);
-        getPlaybookRunSystems(id, run_id, executor_id);
 
     }, []);
     useEffect(() => {
         if (playbookRun && playbookRun.data) {
             setExecutor(playbookRun.data.executors.find(executor => executor.executor_id === executor_id) || {});
         }
+
+        getPlaybookRunSystems(id, run_id, executor_id);
     }, [ playbookRun ]);
 
-    const systems = playbookRunSystems.map(({ system_id, system_name, status }) => ({
-        id: system_id,
-        display_name: system_name,
-        status,
-        children: () => (<SyntaxHighlighter language="yaml" style={ dark }>
-            HERE IS PLAYBOOK LOG
-        </SyntaxHighlighter>)
-    }));
+    useEffect(() => {
+        setSystems(() => playbookRunSystems.map(({ system_id, system_name, status }) => ({
+            id: system_id,
+            display_name: system_name,
+            status,
+            children: <Skeleton size='lg' />
+        })));
+    }, [ playbookRunSystems ]);
+
+    useEffect(() => {
+        setSystems(() => ([
+            ...systems.filter(system => system.id !== playbookRunSystemDetails.system_id),
+            { ...systems.find(system => system.id === playbookRunSystemDetails.system_id),
+                isOpen: true,
+                children: <SyntaxHighlighter language="yaml" style={ dark }>
+                    { (playbookRunSystemDetails && playbookRunSystemDetails.console) || 'neco jineho' }
+                </SyntaxHighlighter>
+            }
+        ]));
+    }, [ playbookRunSystemDetails ]);
 
     const systemsStatus = playbookRunSystems.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
         , {  running: 0, success: 0, failure: 0 });
@@ -170,6 +185,7 @@ const ExecutorDetails = ({
                             tableProps={ { onSelect: undefined } }
                             expandable
                             onExpandClick={ (_e, _i, isOpen, { id }) => {
+                                getPlaybookRunSystemDetails(remediation.id, run_id, id);
                                 onCollapseInventory(isOpen, id);
                             } }
                         /> }
@@ -250,9 +266,10 @@ ExecutorDetails.defaultProps = {
 };
 
 const connected = connect(
-    ({ playbookRuns, playbookRun, playbookRunSystems, selectedRemediation }) => ({
+    ({ playbookRuns, playbookRun, playbookRunSystems, playbookRunSystemDetails, selectedRemediation }) => ({
         playbookRuns: playbookRuns.data,
         playbookRun,
+        playbookRunSystemDetails,
         playbookRunSystems: playbookRunSystems.data,
         remediation: selectedRemediation.remediation
     }),

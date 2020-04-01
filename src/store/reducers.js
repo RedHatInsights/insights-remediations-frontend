@@ -147,7 +147,7 @@ const reducers = {
         status: 'initial'
     }),
 
-    inventoryEntitiesReducer: (props) => () => applyReducerHash({
+    inventoryEntitiesReducer: (props = { INVENTORY_ACTION_TYPES: {}}) => () => applyReducerHash({
         [props.INVENTORY_ACTION_TYPES.LOAD_ENTITIES_FULFILLED]: (state) => {
             return {
                 ...state,
@@ -162,7 +162,6 @@ const reducers = {
 
     playbookActivityIntentory: (props) => () => applyReducerHash({
         [props.INVENTORY_ACTION_TYPES.LOAD_ENTITIES_FULFILLED]: (state) => {
-            console.log('AAAAAAAAAAA', state);
             return {
                 ...state,
                 columns: [
@@ -170,14 +169,17 @@ const reducers = {
                     { key: 'status', title: 'Status',
                         renderFunc: (status, id) => props.renderStatus(status) }
                 ]
+
             };
         },
-        [ACTION_TYPES.EXPAND_INVENTORY_TABLE]: (state, action) => ({
-            ...state,
-            rows: [ ...state.rows.filter(row => row.id !== action.payload.id),
-                { ...state.rows.find(row => row.id === action.payload.id), isOpen: action.payload.isOpen }
-            ]
-        })
+        [ACTION_TYPES.EXPAND_INVENTORY_TABLE]: (state, action) => {
+            return {
+                ...state,
+                rows: [ ...state.rows.filter(row => row.id !== action.payload.id),
+                    { ...state.rows.find(row => row.id === action.payload.id), isOpen: action.payload.isOpen
+                    }
+                ]
+            };}
     }),
 
     playbookRuns: applyReducerHash({
