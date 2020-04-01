@@ -39,6 +39,7 @@ import RemediationDetailsSkeleton from '../skeletons/RemediationDetailsSkeleton'
 import DescriptionList from '../components/Layouts/DescriptionList';
 
 import { PermissionContext } from '../App';
+import EmptyActivityTable from '../components/EmptyStates/EmptyActivityTable';
 
 class RemediationDetails extends Component {
 
@@ -48,7 +49,8 @@ class RemediationDetails extends Component {
             autoReboot: true,
             isUserEntitled: undefined,
             upsellBannerVisible: true,
-            activeTabKey: 0
+            activeTabKey: 0,
+            isReceptorConfigured: undefined
         };
         this.id = this.props.match.params.id;
         this.loadRemediation = this.props.loadRemediation.bind(this, this.id);
@@ -93,6 +95,10 @@ class RemediationDetails extends Component {
         this.setState({
             isEntitled: entitlements.smart_management.is_entitled
         });
+
+        fetch(`${window.location.origin}/api/sources/v2.0/endpoints?filter[receptor_node][not_nil]`)
+            .then(response => response.json())
+            .then(isConfigured => this.setState({ isReceptorConfigured: isConfigured.data.length > 0 }))
     }
 
     generateNumRebootString = (num) => {
@@ -125,13 +131,27 @@ class RemediationDetails extends Component {
                 </FlexItem>
             );
         }
-
+        
         return;
+    }
+
+    renderActivityState = (state, playbookRuns, remediation) => {
+        if(!state.isReceptorConfigured) return <NotConfigured/>
+    
+        if(!state.isEntitled) return <ActivityTabUpsell/>
+    
+        if(playbookRuns && playbookRuns.length) {
+            return <RemediationActivityTable remediation={ remediation } playbookRuns={ playbookRuns }/>
+        }
+    
+        return <EmptyActivityTable/>
     }
 
     render() {
         const { status, remediation } = this.props.selectedRemediation;
         const { playbookRuns } = this.props;
+
+        console.log(this.state);
 
         if (status !== 'fulfilled') {
             return <RemediationDetailsSkeleton/>;
@@ -165,7 +185,7 @@ class RemediationDetails extends Component {
                                         <Split gutter="md">
                                             { this.state.isEntitled &&
                                                 <PermissionContext.Consumer>
-                                                    { value => value.permissions.execute &&
+                                                    { value => value.permissions.execute && this.state.isReceptorConfigured &&
                                                         <SplitItem>
                                                             <ExecutePlaybookButton
                                                                 remediationId={ remediation.id }>
@@ -257,12 +277,7 @@ class RemediationDetails extends Component {
                                                 <RemediationDetailsTable remediation={ remediation } status={ this.props.selectedRemediationStatus }/>
                                             </Tab>
                                             <Tab eventKey={ 1 } title='Activity'>
-                                                { this.state.isEntitled
-                                                    ? playbookRuns && playbookRuns.length
-                                                        ? <RemediationActivityTable remediation={ remediation } playbookRuns={ playbookRuns }/>
-                                                        : <NotConfigured/>
-                                                    : <ActivityTabUpsell/>
-                                                }
+                                                { this.renderActivityState(this.state, playbookRuns, remediation) }
                                             </Tab>
                                         </Tabs>
                                     </StackItem>
