@@ -51,8 +51,6 @@ export const statusTextPlain = (executorStatus) => ({
 export const StatusSummary = ({executorStatus, systemsStatus, permission, needsTooltip, onCancel}) => {
     // TODO: Cancel onClick()
 
-    const status = normalizeStatus(executorStatus);
-
     const statusBar = (
         <Flex className="ins-c-remediations-status-bar">
             { executorStatus &&
@@ -69,7 +67,7 @@ export const StatusSummary = ({executorStatus, systemsStatus, permission, needsT
             <FlexItem>
                 { renderStatus('running', `${systemsStatus.running}`) }
             </FlexItem>
-            { onCancel && permission.permissions.execute && status === 'running' &&
+            { onCancel && permission.permissions.execute && executorStatus && normalizeStatus(executorStatus) === 'running' &&
                 <FlexItem>
                     <Button variant='link' onClick={onCancel}> Cancel process </Button>
                 </FlexItem>
@@ -77,15 +75,13 @@ export const StatusSummary = ({executorStatus, systemsStatus, permission, needsT
         </Flex>
     );
 
-    const capitalizedStatus = executorStatus.charAt(0).toUpperCase() + executorStatus.slice(1)
-
-    if (needsTooltip) {
+    if (needsTooltip && executorStatus) {
         return <Tooltip
             position='right'
             className='ins-c-status-tooltip'
             enableFlip
             content={
-                <span>{ `Run: ${capitalizedStatus} |
+                <span>{ `Run: ${executorStatus.charAt(0).toUpperCase() + executorStatus.slice(1)} |
                         Pass: ${systemsStatus.success} |
                         Fail: ${systemsStatus.failure} |
                         Pending: ${systemsStatus.running}` }
