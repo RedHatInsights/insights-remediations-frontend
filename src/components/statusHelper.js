@@ -6,6 +6,15 @@ import {
     Button, Tooltip
 } from '@patternfly/react-core';
 
+export const normalizeStatus = (status) => ({
+    running: 'running',
+    pending: 'running',
+    acked: 'running',
+    failure: 'failure',
+    canceled: 'failure',
+    success: 'success'
+})[status];
+
 export const renderStatusIcon = (status) => ({
     running: <InProgressIcon
         className="ins-c-remediations-running"
@@ -54,7 +63,7 @@ export const statusTextPlain = (executorStatus) => ({
         "canceled": num
     }
 */
-export const StatusSummary = ({executorStatus, permission, needsTooltip, onCancel, counts}) => {
+export const StatusSummary = ({ executorStatus, permission, needsTooltip, onCancel, counts }) => {
     // TODO: Cancel onClick()
 
     const runningCount = counts.running + counts.pending;
@@ -79,7 +88,7 @@ export const StatusSummary = ({executorStatus, permission, needsTooltip, onCance
             </FlexItem>
             { onCancel && permission.permissions.execute && executorStatus && normalizeStatus(executorStatus) === 'running' &&
                 <FlexItem>
-                    <Button variant='link' onClick={onCancel}> Cancel process </Button>
+                    <Button variant='link' onClick={ onCancel }> Cancel process </Button>
                 </FlexItem>
             }
         </Flex>
@@ -103,12 +112,3 @@ export const StatusSummary = ({executorStatus, permission, needsTooltip, onCance
 
     return statusBar;
 };
-
-export const normalizeStatus = (status) => ({
-    running: 'running',
-    pending: 'running',
-    acked: 'running',
-    failure: 'failure',
-    canceled: 'failure',
-    success: 'success'
-})[status];

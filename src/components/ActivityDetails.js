@@ -34,10 +34,8 @@ const ActivityDetail = ({
     match: { params: { id, run_id }},
     remediation,
     playbookRun,
-    playbookRunSystems,
     getPlaybookRun,
     getPlaybookRuns,
-    getPlaybookRunSystems,
     loadRemediation
 }) => {
     useEffect(() => {
@@ -49,14 +47,6 @@ const ActivityDetail = ({
     // const systemsStatus = playbookRunSystems.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
     //     , {  running: 0, success: 0, failure: 0 });
 
-    const systemsStatus = {
-        "pending": 0,
-        "running": 0,
-        "success": 0,
-        "failure": 0,
-        "canceled": 0
-    };
-    console.log('RENDER', remediation, playbookRun);
     const permission = useContext(PermissionContext);
 
     return remediation && playbookRun && playbookRun.data
@@ -88,17 +78,17 @@ const ActivityDetail = ({
                                 <SplitItem>
                                     <DescriptionList className='ins-c-playbookSummary__settings' title='Run status'>
                                         <StatusSummary
-                                            executorStatus={playbookRun.status}
-                                            counts={playbookRun.data.executors.reduce((acc, ex) => (
-                                                    {
-                                                        pending: acc.pending+ex.counts.pending,
-                                                        running: acc.running+ex.counts.running,
-                                                        success: acc.success+ex.counts.success,
-                                                        failure: acc.failure+ex.counts.failure,
-                                                        canceled: acc.canceled+ex.counts.canceled
-                                                    }
-                                                ), {pending: 0, running: 0, success: 0, failure: 0, canceled: 0})}
-                                            permission={permission}/>
+                                            executorStatus={ playbookRun.status }
+                                            counts={ playbookRun.data.executors.reduce((acc, ex) => (
+                                                {
+                                                    pending: acc.pending + ex.counts.pending,
+                                                    running: acc.running + ex.counts.running,
+                                                    success: acc.success + ex.counts.success,
+                                                    failure: acc.failure + ex.counts.failure,
+                                                    canceled: acc.canceled + ex.counts.canceled
+                                                }
+                                            ), { pending: 0, running: 0, success: 0, failure: 0, canceled: 0 }) }
+                                            permission={ permission }/>
                                     </DescriptionList>
                                 </SplitItem>
                             </Split>
@@ -114,12 +104,16 @@ const ActivityDetail = ({
                                     aria-label="Collapsible table"
                                     rows={ playbookRun.data.executors.map(e =>({
                                         cells: [
-                                            { title: <Link to={ `/${remediation.id}/${playbookRun.data.id}/${e.executor_id}` }> { e.executor_name } </Link> },
+                                            { title:
+                                                <Link to={ `/${remediation.id}/${playbookRun.data.id}/${e.executor_id}` }>
+                                                    { e.executor_name }
+                                                </Link>
+                                            },
                                             e.system_count,
                                             { title: <StatusSummary
-                                                executorStatus={(normalizeStatus(e.status))}
-                                                counts={e.counts}
-                                                permission={permission}/>
+                                                executorStatus={ (normalizeStatus(e.status)) }
+                                                counts={ e.counts }
+                                                permission={ permission }/>
                                             }
                                         ]
                                     })) }
@@ -141,7 +135,9 @@ ActivityDetail.propTypes = {
     issue: PropTypes.object,
     playbookRun: PropTypes.object,
     getPlaybookRun: PropTypes.func,
+    getPlaybookRuns: PropTypes.func,
     getPlaybookRunSystems: PropTypes.func,
+    loadRemediation: PropTypes.func,
     match: PropTypes.object
 };
 

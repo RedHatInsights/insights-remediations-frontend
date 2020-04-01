@@ -20,14 +20,6 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
     const [ rows, setRows ] = useState([]);
     const permission = useContext(PermissionContext);
 
-    const systemsStatus = {
-        "pending": 0,
-        "running": 0,
-        "success": 0,
-        "failure": 0,
-        "canceled": 0
-    };
-
     const generateRows = (playbookRuns) => {
         return (playbookRuns.reduce((acc, playbooks, i) => (
             [
@@ -39,15 +31,15 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
                             cellFormatters: [ expandable ]},
                         `${playbooks.created_by.first_name} ${playbooks.created_by.last_name}`,
                         { title: <StatusSummary
-                                executorStatus={normalizeStatus(playbooks.status)}
-                                counts={playbooks.executors.reduce((acc, ex) => (
-                                    {pending: acc.pending+ex.counts.pending,
-                                    running: acc.running+ex.counts.running,
-                                    success: acc.success+ex.counts.success,
-                                    failure: acc.failure+ex.counts.failure,
-                                    canceled: acc.canceled+ex.counts.canceled
-                                    }), {pending: 0, running: 0, success: 0, failure: 0, canceled: 0})}
-                                permission={permission}/>
+                            executorStatus={ normalizeStatus(playbooks.status) }
+                            counts={ playbooks.executors.reduce((acc, ex) => (
+                                { pending: acc.pending + ex.counts.pending,
+                                    running: acc.running + ex.counts.running,
+                                    success: acc.success + ex.counts.success,
+                                    failure: acc.failure + ex.counts.failure,
+                                    canceled: acc.canceled + ex.counts.canceled
+                                }), { pending: 0, running: 0, success: 0, failure: 0, canceled: 0 }) }
+                            permission={ permission }/>
                         }
                     ]
                 }, {
@@ -59,13 +51,17 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
                             cells={ [ 'Connection', 'Systems', 'Playbook run status' ] }
                             rows={ playbooks.executors.map(e => (
                                 { cells: [
-                                    { title: <Link to={ `/${remediation.id}/${playbooks.id}/${e.executor_id}` }>{ e.executor_name }</Link> },
+                                    { title:
+                                        <Link to={ `/${remediation.id}/${playbooks.id}/${e.executor_id}` }>
+                                            { e.executor_name }
+                                        </Link>
+                                    },
                                     e.system_count,
                                     { title: <StatusSummary
-                                        executorStatus={normalizeStatus(playbooks.status)} // TODO e.status
-                                        counts={e.counts}
-                                        permission={permission}
-                                        onCancel={() => console.log('cancel')}
+                                        executorStatus={ normalizeStatus(playbooks.status) } // TODO e.status
+                                        counts={ e.counts }
+                                        permission={ permission }
+                                        // onCancel={ () => console.log('cancel') } TODO add back
                                         needsTooltip/> }
                                 ]}
                             )) }

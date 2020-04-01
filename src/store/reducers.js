@@ -167,7 +167,7 @@ const reducers = {
                 columns: [
                     ...state.columns.filter(col => col.key === 'display_name' || col.key === 'tags'),
                     { key: 'status', title: 'Status',
-                        renderFunc: (status, id) => props.renderStatus(status) }
+                        renderFunc: (status) => props.renderStatus(status) } // TODO remove id
                 ]
 
             };

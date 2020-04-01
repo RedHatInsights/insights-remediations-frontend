@@ -9,8 +9,8 @@ import './EmptyActivityTable.scss';
 const EmptyActivityTable = () => (
     <Table
         aria-label='No activity'
-        cells={['Run on', 'Run by', 'Status']}
-        rows={[
+        cells={ [ 'Run on', 'Run by', 'Status' ] }
+        rows={ [
             {
                 cells: [{
                     title: <EmptyState className='ins-c-activity-table__empty'>
@@ -24,7 +24,7 @@ const EmptyActivityTable = () => (
                     props: { colSpan: 3 }
                 }]
             }
-        ]}
+        ] }
     >
         <TableHeader/>
         <TableBody/>

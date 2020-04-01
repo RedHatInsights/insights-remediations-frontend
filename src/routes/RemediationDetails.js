@@ -97,8 +97,8 @@ class RemediationDetails extends Component {
         });
 
         fetch(`${window.location.origin}/api/sources/v2.0/endpoints?filter[receptor_node][not_nil]`)
-            .then(response => response.json())
-            .then(isConfigured => this.setState({ isReceptorConfigured: isConfigured.data.length > 0 }))
+        .then(response => response.json())
+        .then(isConfigured => this.setState({ isReceptorConfigured: isConfigured.data.length > 0 }));
     }
 
     generateNumRebootString = (num) => {
@@ -131,27 +131,25 @@ class RemediationDetails extends Component {
                 </FlexItem>
             );
         }
-        
+
         return;
     }
 
     renderActivityState = (state, playbookRuns, remediation) => {
-        if(!state.isReceptorConfigured) return <NotConfigured/>
-    
-        if(!state.isEntitled) return <ActivityTabUpsell/>
-    
-        if(playbookRuns && playbookRuns.length) {
-            return <RemediationActivityTable remediation={ remediation } playbookRuns={ playbookRuns }/>
+        if (!state.isReceptorConfigured) {return <NotConfigured/>;}
+
+        if (!state.isEntitled) {return <ActivityTabUpsell/>;}
+
+        if (playbookRuns && playbookRuns.length) {
+            return <RemediationActivityTable remediation={ remediation } playbookRuns={ playbookRuns }/>;
         }
-    
-        return <EmptyActivityTable/>
+
+        return <EmptyActivityTable/>;
     }
 
     render() {
         const { status, remediation } = this.props.selectedRemediation;
         const { playbookRuns } = this.props;
-
-        console.log(this.state);
 
         if (status !== 'fulfilled') {
             return <RemediationDetailsSkeleton/>;
