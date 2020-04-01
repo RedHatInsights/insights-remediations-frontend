@@ -111,17 +111,16 @@ class RemediationDetails extends Component {
 
         if (playbookRuns.length) {
 
-            const mostRecentDate = Math.max(...playbookRuns.map(playbooks => new Date(playbooks.updated_at)), 0);
-            const mostRecentPlaybook = playbookRuns.find(allPlaybookRuns => new Date(allPlaybookRuns.updated_at).getTime() === mostRecentDate);
+            const mostRecent = playbookRuns[0];
 
             return (
                 <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
                     <DescriptionList
                         hasGutter
                         title='Latest activity'>
-                        { renderStatusIcon(mostRecentPlaybook.status) }
-                        <span><DateFormat type='exact' date={ mostRecentPlaybook.updated_at } /></span>
-                        <Link to={ `/${mostRecentPlaybook.remediation_id}/${mostRecentPlaybook.id}` }>View</Link>
+                        { renderStatusIcon(mostRecent.status) }
+                        <span><DateFormat type='exact' date={ mostRecent.updated_at } /></span>
+                        <Link to={ `/${mostRecent.remediation_id}/${mostRecent.id}` }>View</Link>
                     </DescriptionList>
                 </FlexItem>
             );

@@ -33,6 +33,7 @@ class App extends Component {
     async componentDidMount () {
         insights.chrome.init();
         insights.chrome.identifyApp('remediations');
+        // wait for auth first, otherwise the call to RBAC may 401
         await window.insights.chrome.auth.getUser();
         window.insights.chrome.getUserPermissions('remediations').then(
             remediationsPermissions => {

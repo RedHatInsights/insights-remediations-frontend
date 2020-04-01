@@ -9,7 +9,9 @@ import {
     expandable
 } from '@patternfly/react-table';
 
-import { statusSummary, normalizeStatus } from './statusHelper';
+import { DateFormat } from '@redhat-cloud-services/frontend-components';
+
+import { StatusSummary, normalizeStatus } from './statusHelper';
 
 import { PermissionContext } from '../App';
 
@@ -21,15 +23,22 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
     const systemsStatus = { running: 1, success: 2, failure: 1 };
 
     const generateRows = (playbookRuns) => {
+        console.log(playbookRuns);
         return (playbookRuns.reduce((acc, playbooks, i) => (
             [
+                ...acc,
                 {
                     isOpen: false,
                     cells: [
-                        { title: <Link to={ `/${remediation.id}/${playbooks.id}` }> { playbooks.created_at } </Link>,
+                        { title: <Link to={ `/${remediation.id}/${playbooks.id}` }><DateFormat type='exact' date={ playbooks.created_at }/></Link>,
                             cellFormatters: [ expandable ]},
                         `${playbooks.created_by.first_name} ${playbooks.created_by.last_name}`,
-                        { title: statusSummary(normalizeStatus(playbooks.status), systemsStatus, permission) }
+                        { title: <StatusSummary
+                                executorStatus={normalizeStatus(playbooks.status)}
+                                systemsStatus={systemsStatus}
+                                permission={permission}
+                                needsText/>
+                        }
                     ]
                 }, {
                     parent: 2 * i,
@@ -37,12 +46,18 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
                     cells: [{
                         title: <Table
                             aria-label="Compact expandable table"
-                            cells={ [ 'Connection', 'Systems', 'Playbook runs status' ] }
+                            cells={ [ 'Connection', 'Systems', 'Playbook run status' ] }
                             rows={ playbooks.executors.map(e => (
                                 { cells: [
                                     { title: <Link to={ `/${remediation.id}/${playbooks.id}/${e.executor_id}` }>{ e.executor_name }</Link> },
                                     e.system_count,
-                                    { title: statusSummary(normalizeStatus(playbooks.status), systemsStatus, permission, true) }
+                                    { title: <StatusSummary
+                                        executorStatus={normalizeStatus(playbooks.status)}
+                                        systemsStatus={systemsStatus}
+                                        permission={permission}
+                                        onCancel={() => console.log('cancel')}
+                                        needsText
+                                        needsTooltip/> }
                                 ]}
                             )) }
                         >

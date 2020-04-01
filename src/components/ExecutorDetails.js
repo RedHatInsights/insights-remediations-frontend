@@ -36,7 +36,7 @@ import {
     loadRemediation
 } from '../actions';
 import { downloadPlaybook } from '../api';
-import { normalizeStatus, renderStatus, statusSummary  } from './statusHelper';
+import { normalizeStatus, renderStatus, StatusSummary  } from './statusHelper';
 import ExecutorDetailsSkeleton from '../skeletons/ExecutorDetailsSkeleton';
 import RunFailed from './Alerts/RunFailed';
 
@@ -250,7 +250,10 @@ const ExecutorDetails = ({
                             </SplitItem>
                             <SplitItem>
                                 <DescriptionList className='ins-c-playbookSummary__settings' title='Run status'>
-                                    { statusSummary(executor.status, systemsStatus, permission) }
+                                    <StatusSummary
+                                        executorStatus={executor.status}
+                                        systemsStatus={systemsStatus}
+                                        permission={permission}/>
                                 </DescriptionList>
                             </SplitItem>
                         </Split>

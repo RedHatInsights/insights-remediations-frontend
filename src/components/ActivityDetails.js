@@ -24,9 +24,11 @@ import {
 import DescriptionList from './Layouts/DescriptionList';
 import { getPlaybookRun, getPlaybookRunSystems, getPlaybookRuns, loadRemediation } from '../actions';
 import './Status.scss';
-import { statusSummary, normalizeStatus } from './statusHelper';
+import { StatusSummary, normalizeStatus } from './statusHelper';
 import ActivityDetailsSkeleton from '../skeletons/ActivityDetailsSkeleton';
 import { PermissionContext } from '../App';
+
+import './ActivityDetails.scss';
 
 const ActivityDetail = ({
     match: { params: { id, run_id }},
@@ -78,7 +80,10 @@ const ActivityDetail = ({
                                 </SplitItem>
                                 <SplitItem>
                                     <DescriptionList className='ins-c-playbookSummary__settings' title='Run status'>
-                                        { statusSummary(playbookRun.status, systemsStatus, permission) }
+                                        <StatusSummary
+                                            executorStatus={playbookRun.status}
+                                            systemsStatus={systemsStatus}
+                                            permission={permission}/>
                                     </DescriptionList>
                                 </SplitItem>
                             </Split>
@@ -96,7 +101,11 @@ const ActivityDetail = ({
                                         cells: [
                                             { title: <Link to={ `/${remediation.id}/${playbookRun.data.id}/${e.executor_id}` }> { e.executor_name } </Link> },
                                             e.system_count,
-                                            { title: statusSummary(normalizeStatus(e.status), systemsStatus, permission) }
+                                            { title: <StatusSummary
+                                                executorStatus={(normalizeStatus(e.status))}
+                                                systemsStatus={systemsStatus}
+                                                permission={permission}/>
+                                            }
                                         ]
                                     })) }
                                     cells={ [{ title: 'Connection' }, { title: 'Systems' }, { title: 'Playbook run status' }] }>

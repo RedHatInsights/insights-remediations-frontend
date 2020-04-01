@@ -48,14 +48,18 @@ export const statusTextPlain = (executorStatus) => ({
     executorStatus: bool,
     systemsStatus: { success: number, failure: number, running: number }
 */
-export const statusSummary = (executorStatus, systemsStatus, permission, needsTooltip) => {
+export const StatusSummary = ({executorStatus, systemsStatus, permission, needsTooltip, onCancel}) => {
     // TODO: Cancel onClick()
+
+    const status = normalizeStatus(executorStatus);
 
     const statusBar = (
         <Flex className="ins-c-remediations-status-bar">
-            <FlexItem>
-                { statusText(executorStatus) }
-            </FlexItem>
+            { executorStatus &&
+                <FlexItem>
+                    { statusText(executorStatus) }
+                </FlexItem>
+            }
             <FlexItem>
                 { renderStatus('success', `${systemsStatus.success}`) }
             </FlexItem>
@@ -65,21 +69,23 @@ export const statusSummary = (executorStatus, systemsStatus, permission, needsTo
             <FlexItem>
                 { renderStatus('running', `${systemsStatus.running}`) }
             </FlexItem>
-            
-            { permission.permissions.execute && systemsStatus.running > 0 &&
+            { onCancel && permission.permissions.execute && status === 'running' &&
                 <FlexItem>
-                    <Button variant='link'> Cancel process </Button>
+                    <Button variant='link' onClick={onCancel}> Cancel process </Button>
                 </FlexItem>
             }
         </Flex>
     );
 
+    const capitalizedStatus = executorStatus.charAt(0).toUpperCase() + executorStatus.slice(1)
+
     if (needsTooltip) {
         return <Tooltip
             position='right'
+            className='ins-c-status-tooltip'
             enableFlip
             content={
-                <span>{ `Run: ${statusTextPlain(executorStatus)} |
+                <span>{ `Run: ${capitalizedStatus} |
                         Pass: ${systemsStatus.success} |
                         Fail: ${systemsStatus.failure} |
                         Pending: ${systemsStatus.running}` }
@@ -95,8 +101,8 @@ export const statusSummary = (executorStatus, systemsStatus, permission, needsTo
 export const normalizeStatus = (status) => ({
     running: 'running',
     pending: 'running',
+    acked: 'running',
     failure: 'failure',
     canceled: 'failure',
-    success: 'success',
-    acked: 'success'
+    success: 'success'
 })[status];
