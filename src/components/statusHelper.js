@@ -1,81 +1,90 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
 import { CheckCircleIcon, TimesCircleIcon, InProgressIcon } from '@patternfly/react-icons';
 import {
-    Split, SplitItem,
-    Text, TextVariants, Button
+    Flex, FlexItem, FlexModifiers,
+    Button, Tooltip
 } from '@patternfly/react-core';
-
-import { PermissionContext } from '../App';
 
 export const renderStatusIcon = (status) => ({
     running: <InProgressIcon
-            className="ins-c-remediations-running"
-            aria-label="connection status" />,
+        className="ins-c-remediations-running"
+        aria-label="connection status" />,
     success: <CheckCircleIcon
-            className="ins-c-remediations-success"
-            aria-label="connection status" />,
+        className="ins-c-remediations-success"
+        aria-label="connection status" />,
     failure: <TimesCircleIcon
-            className="ins-c-remediations-failure"
-            aria-label="connection status" />
+        className="ins-c-remediations-failure"
+        aria-label="connection status" />
 })[status];
 
 export const renderStatus = (status, text) => ({
-    running: <Text component={ TextVariants.p } >
-        <InProgressIcon
-            className="ins-c-remediations-running"
-            aria-label="connection status" />
-        { text || 'Running' }
-    </Text >,
-    success: <Text component={ TextVariants.p }>
-        <CheckCircleIcon
-            className="ins-c-remediations-success"
-            aria-label="connection status" />
-        { text || 'Success' }
-    </Text>,
-    failure: <Text component={ TextVariants.p }>
-        <TimesCircleIcon
-            className="ins-c-remediations-failure"
-            aria-label="connection status" />
-        { text || 'Failed' }
-    </Text>
+    running: <Flex className='ins-c-remediations-running' breakpointMods={ [{ modifier: FlexModifiers['space-items-sm'] }] }>
+        <FlexItem><b>{ text || 'Running' }</b></FlexItem>
+        <FlexItem><InProgressIcon aria-label="connection status: running"/></FlexItem>
+    </Flex>,
+    success: <Flex className="ins-c-remediations-success" breakpointMods={ [{ modifier: FlexModifiers['space-items-sm'] }] }>
+        <FlexItem><b>{ text || 'Success' }</b></FlexItem>
+        <FlexItem><CheckCircleIcon aria-label="connection status: success"/></FlexItem>
+    </Flex>,
+    failure: <Flex className="ins-c-remediations-failure" breakpointMods={ [{ modifier: FlexModifiers['space-items-sm'] }] }>
+        <FlexItem><b>{ text || 'Failed' }</b></FlexItem>
+        <FlexItem><TimesCircleIcon aria-label="connection status: failed"/></FlexItem>
+    </Flex>
 })[status];
 
 export const statusText = (executorStatus) => ({
-    running: <Text component={ TextVariants.p } >
-        Running
-    </Text >,
-    success: <Text className="ins-c-remediations-success" component={ TextVariants.p }>
-        Suceeded
-    </Text>,
-    failure: <Text className="ins-c-remediations-failure" component={ TextVariants.p }>
-        Failed
-    </Text>
+    running: <b className="ins-c-remediations-running"> Running </b>,
+    success: <b className="ins-c-remediations-success"> Suceeded </b>,
+    failure: <b className="ins-c-remediations-failure"> Failed </b>
 })[executorStatus];
 
-export const statusSummary = (executorStatus, systemsStatus) => {
-    // TODO: Cancel onClick()
-    const permission = useContext(PermissionContext);
+export const statusTextPlain = (executorStatus) => ({
+    running: 'Running',
+    success: 'Suceeded',
+    failure: 'Failed'
+})[executorStatus];
 
-    return <Split style={ { display: 'flex' } } className="ins-c-remediations-status-bar">
-        <SplitItem>
-            { statusText('success') }
-        </SplitItem>
-        <SplitItem>
-            { renderStatus('success', systemsStatus.success) }
-        </SplitItem>
-        <SplitItem>
-            { renderStatus('failure', systemsStatus.failure) }
-        </SplitItem>
-        <SplitItem>
-            { renderStatus('running', systemsStatus.running) }
-        </SplitItem>
-        { permission.permissions.execute && systemsStatus.running &&
-            <SplitItem>
-                <Button variant='link'> Cancel process </Button>
-            </SplitItem>
-        }
-    </Split>;
+export const statusSummary = (executorStatus, systemsStatus, permission, needsTooltip) => {
+    // TODO: Cancel onClick()
+    const statusBar = (
+        <Flex className="ins-c-remediations-status-bar">
+            <FlexItem>
+                { statusText(executorStatus) }
+            </FlexItem>
+            <FlexItem>
+                { renderStatus('success', systemsStatus.success) }
+            </FlexItem>
+            <FlexItem>
+                { renderStatus('failure', systemsStatus.failure) }
+            </FlexItem>
+            <FlexItem>
+                { renderStatus('running', systemsStatus.running) }
+            </FlexItem>
+            { permission.permissions.execute && systemsStatus.running &&
+                <FlexItem>
+                    <Button variant='link'> Cancel process </Button>
+                </FlexItem>
+            }
+        </Flex>
+    );
+
+    if (needsTooltip) {
+        return <Tooltip
+            position='right'
+            enableFlip
+            content={
+                <span>{ `Run: ${statusTextPlain(executorStatus)} |
+                        Pass: ${systemsStatus.success} |
+                        Fail: ${systemsStatus.failure} |
+                        Pending: ${systemsStatus.running}` }
+                </span>
+            }>
+            { statusBar }
+        </Tooltip>;
+    }
+
+    return statusBar;
 };
 
 export const normalizeStatus = (status) => ({
