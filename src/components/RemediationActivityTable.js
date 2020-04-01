@@ -58,7 +58,7 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
                                     },
                                     e.system_count,
                                     { title: <StatusSummary
-                                        executorStatus={ normalizeStatus(playbooks.status) } // TODO e.status
+                                        executorStatus={ normalizeStatus(e.status) } // TODO e.status
                                         counts={ e.counts }
                                         permission={ permission }
                                         // onCancel={ () => console.log('cancel') } TODO add back
