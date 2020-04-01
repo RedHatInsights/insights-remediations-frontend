@@ -48,6 +48,7 @@ const ActivityDetail = ({
     }, []);
     // const systemsStatus = playbookRunSystems.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
     //     , {  running: 0, success: 0, failure: 0 });
+
     const systemsStatus = {
         "pending": 0,
         "running": 0,
@@ -88,7 +89,15 @@ const ActivityDetail = ({
                                     <DescriptionList className='ins-c-playbookSummary__settings' title='Run status'>
                                         <StatusSummary
                                             executorStatus={playbookRun.status}
-                                            counts={systemsStatus}
+                                            counts={playbookRun.data.executors.reduce((acc, ex) => (
+                                                    {
+                                                        pending: acc.pending+ex.counts.pending,
+                                                        running: acc.running+ex.counts.running,
+                                                        success: acc.success+ex.counts.success,
+                                                        failure: acc.failure+ex.counts.failure,
+                                                        canceled: acc.canceled+ex.counts.canceled
+                                                    }
+                                                ), {pending: 0, running: 0, success: 0, failure: 0, canceled: 0})}
                                             permission={permission}/>
                                     </DescriptionList>
                                 </SplitItem>

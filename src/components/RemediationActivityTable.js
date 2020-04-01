@@ -40,7 +40,13 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
                         `${playbooks.created_by.first_name} ${playbooks.created_by.last_name}`,
                         { title: <StatusSummary
                                 executorStatus={normalizeStatus(playbooks.status)}
-                                counts={systemsStatus}
+                                counts={playbooks.executors.reduce((acc, ex) => (
+                                    {pending: acc.pending+ex.counts.pending,
+                                    running: acc.running+ex.counts.running,
+                                    success: acc.success+ex.counts.success,
+                                    failure: acc.failure+ex.counts.failure,
+                                    canceled: acc.canceled+ex.counts.canceled
+                                    }), {pending: 0, running: 0, success: 0, failure: 0, canceled: 0})}
                                 permission={permission}/>
                         }
                     ]
@@ -52,12 +58,11 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
                             aria-label="Compact expandable table"
                             cells={ [ 'Connection', 'Systems', 'Playbook run status' ] }
                             rows={ playbooks.executors.map(e => (
-                                console.log(e),
                                 { cells: [
                                     { title: <Link to={ `/${remediation.id}/${playbooks.id}/${e.executor_id}` }>{ e.executor_name }</Link> },
                                     e.system_count,
                                     { title: <StatusSummary
-                                        executorStatus={normalizeStatus(playbooks.status)}
+                                        executorStatus={normalizeStatus(playbooks.status)} // TODO e.status
                                         counts={e.counts}
                                         permission={permission}
                                         onCancel={() => console.log('cancel')}
