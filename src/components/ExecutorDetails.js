@@ -131,7 +131,11 @@ const ExecutorDetails = ({
     }, [ playbookRunSystemDetails ]);
 
     const systemsStatus = playbookRunSystems.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
-        , {  running: 0, success: 0, failure: 0 });
+        , { "pending": 0,
+        "running": 0,
+        "success": 0,
+        "failure": 0,
+        "canceled": 0});
 
     const renderMain = (status) => ({
         running: <Main>
@@ -252,7 +256,7 @@ const ExecutorDetails = ({
                                 <DescriptionList className='ins-c-playbookSummary__settings' title='Run status'>
                                     <StatusSummary
                                         executorStatus={executor.status}
-                                        systemsStatus={systemsStatus}
+                                        counts={systemsStatus}
                                         permission={permission}/>
                                 </DescriptionList>
                             </SplitItem>

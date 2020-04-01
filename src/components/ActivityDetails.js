@@ -48,7 +48,13 @@ const ActivityDetail = ({
     }, []);
     // const systemsStatus = playbookRunSystems.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
     //     , {  running: 0, success: 0, failure: 0 });
-    const systemsStatus = { running: 1, success: 2, failure: 1 };
+    const systemsStatus = {
+        "pending": 0,
+        "running": 0,
+        "success": 0,
+        "failure": 0,
+        "canceled": 0
+    };
     console.log('RENDER', remediation, playbookRun);
     const permission = useContext(PermissionContext);
 
@@ -82,7 +88,7 @@ const ActivityDetail = ({
                                     <DescriptionList className='ins-c-playbookSummary__settings' title='Run status'>
                                         <StatusSummary
                                             executorStatus={playbookRun.status}
-                                            systemsStatus={systemsStatus}
+                                            counts={systemsStatus}
                                             permission={permission}/>
                                     </DescriptionList>
                                 </SplitItem>
@@ -103,7 +109,7 @@ const ActivityDetail = ({
                                             e.system_count,
                                             { title: <StatusSummary
                                                 executorStatus={(normalizeStatus(e.status))}
-                                                systemsStatus={systemsStatus}
+                                                counts={e.counts}
                                                 permission={permission}/>
                                             }
                                         ]

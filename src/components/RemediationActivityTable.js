@@ -20,10 +20,15 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
     const [ rows, setRows ] = useState([]);
     const permission = useContext(PermissionContext);
 
-    const systemsStatus = { running: 1, success: 2, failure: 1 };
+    const systemsStatus = {
+        "pending": 0,
+        "running": 0,
+        "success": 0,
+        "failure": 0,
+        "canceled": 0
+    };
 
     const generateRows = (playbookRuns) => {
-        console.log(playbookRuns);
         return (playbookRuns.reduce((acc, playbooks, i) => (
             [
                 ...acc,
@@ -35,9 +40,8 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
                         `${playbooks.created_by.first_name} ${playbooks.created_by.last_name}`,
                         { title: <StatusSummary
                                 executorStatus={normalizeStatus(playbooks.status)}
-                                systemsStatus={systemsStatus}
-                                permission={permission}
-                                needsText/>
+                                counts={systemsStatus}
+                                permission={permission}/>
                         }
                     ]
                 }, {
@@ -48,15 +52,15 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
                             aria-label="Compact expandable table"
                             cells={ [ 'Connection', 'Systems', 'Playbook run status' ] }
                             rows={ playbooks.executors.map(e => (
+                                console.log(e),
                                 { cells: [
                                     { title: <Link to={ `/${remediation.id}/${playbooks.id}/${e.executor_id}` }>{ e.executor_name }</Link> },
                                     e.system_count,
                                     { title: <StatusSummary
                                         executorStatus={normalizeStatus(playbooks.status)}
-                                        systemsStatus={systemsStatus}
+                                        counts={e.counts}
                                         permission={permission}
                                         onCancel={() => console.log('cancel')}
-                                        needsText
                                         needsTooltip/> }
                                 ]}
                             )) }

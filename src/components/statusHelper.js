@@ -46,10 +46,20 @@ export const statusTextPlain = (executorStatus) => ({
 })[executorStatus];
 /*
     executorStatus: bool,
-    systemsStatus: { success: number, failure: number, running: number }
+    systemsStatus: {
+        "pending": num,
+        "running": num,
+        "success": num,
+        "failure": num,
+        "canceled": num
+    }
 */
-export const StatusSummary = ({executorStatus, systemsStatus, permission, needsTooltip, onCancel}) => {
+export const StatusSummary = ({executorStatus, permission, needsTooltip, onCancel, counts}) => {
     // TODO: Cancel onClick()
+
+    const runningCount = counts.running + counts.pending;
+    const failCount = counts.failure + counts.canceled;
+    const passCount = counts.success;
 
     const statusBar = (
         <Flex className="ins-c-remediations-status-bar">
@@ -59,13 +69,13 @@ export const StatusSummary = ({executorStatus, systemsStatus, permission, needsT
                 </FlexItem>
             }
             <FlexItem>
-                { renderStatus('success', `${systemsStatus.success}`) }
+                { renderStatus('success', `${passCount}`) }
             </FlexItem>
             <FlexItem>
-                { renderStatus('failure', `${systemsStatus.failure}`) }
+                { renderStatus('failure', `${failCount}`) }
             </FlexItem>
             <FlexItem>
-                { renderStatus('running', `${systemsStatus.running}`) }
+                { renderStatus('running', `${runningCount}`) }
             </FlexItem>
             { onCancel && permission.permissions.execute && executorStatus && normalizeStatus(executorStatus) === 'running' &&
                 <FlexItem>
@@ -82,9 +92,9 @@ export const StatusSummary = ({executorStatus, systemsStatus, permission, needsT
             enableFlip
             content={
                 <span>{ `Run: ${executorStatus.charAt(0).toUpperCase() + executorStatus.slice(1)} |
-                        Pass: ${systemsStatus.success} |
-                        Fail: ${systemsStatus.failure} |
-                        Pending: ${systemsStatus.running}` }
+                        Pass: ${passCount} |
+                        Fail: ${failCount} |
+                        Pending: ${runningCount}` }
                 </span>
             }>
             { statusBar }
