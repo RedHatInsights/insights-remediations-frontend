@@ -57,10 +57,11 @@ const ExecutorDetails = ({
     onCollapseInventory, loadRemediation
 }) => {
     const [ executor, setExecutor ] = useState({});
-    const [systems, setSystems] = useState([]);
+    const [ systems, setSystems ] = useState([]);
     const [ InventoryTable, setInventoryTable ] = useState();
     const [ page, setPage ] = useState(1);
     const [ pageSize, setPageSize ] = useState(50);
+    const [ refreshInterval, setRefreshInterval ] = useState();
     const inventory = useRef(null);
 
     const loadInventory = async () => {
@@ -125,7 +126,7 @@ const ExecutorDetails = ({
             { ...systems.find(system => system.id === playbookRunSystemDetails.system_id),
                 isOpen: true,
                 children: <SyntaxHighlighter language="yaml" style={ dark }>
-                    { (playbookRunSystemDetails && playbookRunSystemDetails.console) || 'neco jineho' }
+                    { playbookRunSystemDetails && playbookRunSystemDetails.console || '' }
                 </SyntaxHighlighter>
             }
         ]));
@@ -156,8 +157,16 @@ const ExecutorDetails = ({
                             tableProps={ { onSelect: undefined } }
                             expandable
                             onExpandClick={ (_e, _i, isOpen, { id }) => {
+                                if (isOpen) {
+                                    getPlaybookRunSystemDetails(remediation.id, run_id, id);
+                                    setRefreshInterval(setInterval(() => getPlaybookRunSystemDetails(remediation.id, run_id, id), 10000));
+                                }
+                                else {
+                                    clearInterval(refreshInterval);
+                                }
+
                                 onCollapseInventory(isOpen, id);
-                                getPlaybookRunSystemDetails(remediation.id, run_id, id);
+
                             } }
                         /> }
                     </CardBody>
