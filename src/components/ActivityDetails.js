@@ -85,7 +85,8 @@ const ActivityDetail = ({
                                                     running: acc.running + ex.counts.running,
                                                     success: acc.success + ex.counts.success,
                                                     failure: acc.failure + ex.counts.failure,
-                                                    canceled: acc.canceled + ex.counts.canceled
+                                                    canceled: acc.canceled + ex.counts.canceled,
+                                                    acked: acc.acked + ex.counts.acked
                                                 }
                                             ), { pending: 0, running: 0, success: 0, failure: 0, canceled: 0 }) }
                                             permission={ permission }/>

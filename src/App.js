@@ -6,6 +6,8 @@ import { Routes } from './Routes';
 import './App.scss';
 import GlobalSkeleton from './skeletons/GlobalSkeleton';
 
+import { getIsReceptorConfigured } from './api';
+
 // Notifications
 import { NotificationsPortal } from '@redhat-cloud-services/frontend-components-notifications';
 
@@ -19,6 +21,7 @@ class App extends Component {
             readPermission: undefined,
             writePermission: undefined,
             executePermission: undefined,
+            isReceptorConfigured: undefined,
             arePermissionLoaded: false
         };
     }
@@ -35,6 +38,9 @@ class App extends Component {
         insights.chrome.identifyApp('remediations');
         // wait for auth first, otherwise the call to RBAC may 401
         await window.insights.chrome.auth.getUser();
+        getIsReceptorConfigured().then(isConfigured => this.setState({
+            isReceptorConfigured: isConfigured.data.length > 0
+        }));
         window.insights.chrome.getUserPermissions('remediations').then(
             remediationsPermissions => {
                 const permissionList = remediationsPermissions.map(permissions => permissions.permission);
@@ -57,7 +63,7 @@ class App extends Component {
     }
 
     render () {
-        const { readPermission, writePermission, executePermission, arePermissionLoaded } = this.state;
+        const { readPermission, writePermission, executePermission, arePermissionLoaded, isReceptorConfigured } = this.state;
 
         return (
             arePermissionLoaded ?
@@ -67,7 +73,8 @@ class App extends Component {
                             read: readPermission,
                             write: writePermission,
                             execute: executePermission
-                        }
+                        },
+                        isReceptorConfigured: isReceptorConfigured
                     } }>
                     <NotificationsPortal />
                     <Routes childProps={ this.props } />
