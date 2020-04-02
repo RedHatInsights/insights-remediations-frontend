@@ -44,28 +44,14 @@ export const renderStatus = (status, text) => ({
 
 export const statusText = (executorStatus) => ({
     running: <b className="ins-c-remediations-running"> Running </b>,
+    pending: <b className="ins-c-remediations-running"> Pending </b>,
+    acked: <b className="ins-c-remediations-running"> Acked </b>,
     success: <b className="ins-c-remediations-success"> Suceeded </b>,
-    failure: <b className="ins-c-remediations-failure"> Failed </b>
+    failure: <b className="ins-c-remediations-failure"> Failed </b>,
+    canceled: <b className="ins-c-remediations-failure"> Canceled </b>
 })[executorStatus];
 
-export const statusTextPlain = (executorStatus) => ({
-    running: 'Running',
-    success: 'Suceeded',
-    failure: 'Failed'
-})[executorStatus];
-/*
-    executorStatus: bool,
-    systemsStatus: {
-        "pending": num,
-        "running": num,
-        "success": num,
-        "failure": num,
-        "canceled": num
-    }
-*/
 export const StatusSummary = ({ executorStatus, permission, needsTooltip, onCancel, counts }) => {
-    // TODO: Cancel onClick()
-
     const runningCount = counts.running + counts.pending;
     const failCount = counts.failure + counts.canceled;
     const passCount = counts.success;
