@@ -51,7 +51,7 @@ export const statusText = (executorStatus) => ({
     canceled: <b className="ins-c-remediations-failure"> Canceled </b>
 })[executorStatus];
 
-export const StatusSummary = ({ executorStatus, permission, needsTooltip, onCancel, counts }) => {
+export const StatusSummary = ({ executorStatus, permission, onCancel, counts }) => {
     const runningCount = counts.running + counts.pending;
     const failCount = counts.failure + counts.canceled;
     const passCount = counts.success;
@@ -80,7 +80,7 @@ export const StatusSummary = ({ executorStatus, permission, needsTooltip, onCanc
         </Flex>
     );
 
-    if (needsTooltip && executorStatus) {
+    if (executorStatus) {
         return <Tooltip
             position='right'
             className='ins-c-status-tooltip'

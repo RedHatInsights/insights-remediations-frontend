@@ -62,7 +62,7 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
                                         counts={ e.counts }
                                         permission={ permission }
                                         // onCancel={ () => console.log('cancel') } TODO add back
-                                        needsTooltip/> }
+                                    /> }
                                 ]}
                             )) }
                         >
