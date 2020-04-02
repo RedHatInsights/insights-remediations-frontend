@@ -54,7 +54,8 @@ export const statusText = (executorStatus) => ({
 })[executorStatus];
 
 export const StatusSummary = ({ executorStatus, permission, onCancel, counts }) => {
-    const runningCount = counts.running + counts.pending;
+
+    const runningCount = counts.acked && !counts.acked.isNaN() ? counts.running + counts.pending + counts.acked : counts.running + counts.pending;
     const failCount = counts.failure + counts.canceled;
     const passCount = counts.success;
 
@@ -82,18 +83,20 @@ export const StatusSummary = ({ executorStatus, permission, onCancel, counts }) 
         </Flex>
     );
 
+    const tooltipText = ` Run: ${capitalize(executorStatus)} |
+    Success: ${counts.success} |
+    Failed: ${counts.failure} |
+    Canceled: ${counts.canceled} |
+    Pending: ${counts.pending} |
+    Running: ${counts.running}
+    ${counts.acked && !counts.acked.isNaN() ? `| Acked: ${counts.acked}` : ''}`;
+
     if (executorStatus) {
         return <Tooltip
             position='right'
             className='ins-c-status-tooltip'
             enableFlip
-            content={
-                <span>{ `Run: ${capitalize(executorStatus)} |
-                        Pass: ${passCount} |
-                        Fail: ${failCount} |
-                        Pending: ${runningCount}` }
-                </span>
-            }>
+            content={ <span>{ tooltipText } </span> }>
             { statusBar }
         </Tooltip>;
     }
