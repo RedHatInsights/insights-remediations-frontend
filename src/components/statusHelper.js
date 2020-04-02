@@ -6,6 +6,8 @@ import {
     Button, Tooltip
 } from '@patternfly/react-core';
 
+import { capitalize } from '../Utilities/utils';
+
 export const normalizeStatus = (status) => ({
     running: 'running',
     pending: 'running',
@@ -86,7 +88,7 @@ export const StatusSummary = ({ executorStatus, permission, onCancel, counts }) 
             className='ins-c-status-tooltip'
             enableFlip
             content={
-                <span>{ `Run: ${executorStatus.charAt(0).toUpperCase() + executorStatus.slice(1)} |
+                <span>{ `Run: ${capitalize(executorStatus)} |
                         Pass: ${passCount} |
                         Fail: ${failCount} |
                         Pending: ${runningCount}` }

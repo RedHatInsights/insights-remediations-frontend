@@ -7,7 +7,7 @@ import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import RemediationActivityTable from '../components/RemediationActivityTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
-import { renderStatusIcon } from '../components/statusHelper';
+import { renderStatusIcon, normalizeStatus } from '../components/statusHelper';
 import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
@@ -16,6 +16,7 @@ import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
 import NotConfigured from '../components/EmptyStates/NotConfigured';
 import DeniedState from '../components/DeniedState';
 import classnames from 'classnames';
+import { capitalize } from '../Utilities/utils';
 
 import {
     Main,
@@ -31,7 +32,7 @@ import {
     Button,
     Split, SplitItem,
     Flex, FlexItem, FlexModifiers,
-    Tabs, Tab
+    Tabs, Tab, Tooltip
 } from '@patternfly/react-core';
 
 import './RemediationDetails.scss';
@@ -119,7 +120,9 @@ class RemediationDetails extends Component {
                     <DescriptionList
                         hasGutter
                         title='Latest activity'>
-                        { renderStatusIcon(mostRecent.status) }
+                        <Tooltip content={ <span>{ capitalize(mostRecent.status) }</span> }>
+                            { renderStatusIcon(normalizeStatus(mostRecent.status)) }
+                        </Tooltip>
                         <span><DateFormat type='exact' date={ mostRecent.updated_at } /></span>
                         <Link to={ `/${mostRecent.remediation_id}/${mostRecent.id}` }>View</Link>
                     </DescriptionList>

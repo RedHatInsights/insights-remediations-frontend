@@ -74,7 +74,7 @@ class App extends Component {
                             write: writePermission,
                             execute: executePermission
                         },
-                        isReceptorConfigured: isReceptorConfigured
+                        isReceptorConfigured
                     } }>
                     <NotificationsPortal />
                     <Routes childProps={ this.props } />
