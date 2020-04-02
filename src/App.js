@@ -22,7 +22,8 @@ class App extends Component {
             writePermission: undefined,
             executePermission: undefined,
             isReceptorConfigured: undefined,
-            arePermissionLoaded: false
+            arePermissionLoaded: false,
+            hasSmartManagement: undefined
         };
     }
 
@@ -37,7 +38,9 @@ class App extends Component {
         insights.chrome.init();
         insights.chrome.identifyApp('remediations');
         // wait for auth first, otherwise the call to RBAC may 401
-        await window.insights.chrome.auth.getUser();
+        await window.insights.chrome.auth.getUser().then((user) =>
+            this.setState({ hasSmartManagement: user.entitlements.smart_management.is_entitled})
+        );
         getIsReceptorConfigured().then(isConfigured => this.setState({
             isReceptorConfigured: isConfigured.data.length > 0
         }));
@@ -63,7 +66,12 @@ class App extends Component {
     }
 
     render () {
-        const { readPermission, writePermission, executePermission, arePermissionLoaded, isReceptorConfigured } = this.state;
+        const { readPermission,
+                writePermission,
+                executePermission,
+                arePermissionLoaded,
+                isReceptorConfigured,
+                hasSmartManagement } = this.state;
 
         return (
             arePermissionLoaded ?
@@ -74,7 +82,8 @@ class App extends Component {
                             write: writePermission,
                             execute: executePermission
                         },
-                        isReceptorConfigured
+                        isReceptorConfigured,
+                        hasSmartManagement
                     } }>
                     <NotificationsPortal />
                     <Routes childProps={ this.props } />
