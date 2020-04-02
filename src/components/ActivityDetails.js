@@ -78,7 +78,7 @@ const ActivityDetail = ({
                                 <SplitItem>
                                     <DescriptionList className='ins-c-playbookSummary__settings' title='Run status'>
                                         <StatusSummary
-                                            executorStatus={ playbookRun.status }
+                                            executorStatus={ playbookRun.data.status }
                                             counts={ playbookRun.data.executors.reduce((acc, ex) => (
                                                 {
                                                     pending: acc.pending + ex.counts.pending,
