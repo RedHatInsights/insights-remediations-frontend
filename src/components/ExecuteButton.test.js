@@ -23,7 +23,7 @@ describe('Execute button', () => {
             status={ 'fullfiled' }
             issueCount={ 1 }
             remediationId='id'
-            isDisabled={false}
+            isDisabled={ false }
             getConnectionStatus={ () => null }/>);
         expect(toJson(tree)).toMatchSnapshot();
     });
@@ -35,7 +35,7 @@ describe('Execute button', () => {
             status={ 'pending' }
             issueCount={ 1 }
             remediationId='id'
-            isDisabled={false}
+            isDisabled={ false }
             getConnectionStatus={ () => null } />);
         expect(toJson(tree)).toMatchSnapshot();
     });
