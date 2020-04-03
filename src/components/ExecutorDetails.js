@@ -254,10 +254,15 @@ const ExecutorDetails = ({
                             </SplitItem>
                             <SplitItem>
                                 <DescriptionList className='ins-c-playbookSummary__settings' title='Run status'>
-                                    <StatusSummary
-                                        executorStatus={ executor.status }
-                                        counts={ systemsStatus }
-                                        permission={ permission }/>
+                                    { executor.status
+                                        ? <StatusSummary
+                                            executorStatus={ executor.status }
+                                            counts={ systemsStatus }
+                                            permission={ permission } />
+                                        : <Skeleton size='lg' />
+
+                                    }
+
                                 </DescriptionList>
                             </SplitItem>
                         </Split>
