@@ -20,6 +20,7 @@ import {
     TableHeader,
     TableBody
 } from '@patternfly/react-table';
+import { InProgressIcon } from '@patternfly/react-icons';
 
 import DescriptionList from './Layouts/DescriptionList';
 import { getPlaybookRun, getPlaybookRunSystems, getPlaybookRuns, loadRemediation } from '../actions';
@@ -61,7 +62,16 @@ const ActivityDetail = ({
                     </Breadcrumb>
                     <Stack gutter>
                         <StackItem>
-                            <PageHeaderTitle title={ <DateFormat type='exact' date={ playbookRun.data.created_at } /> } />
+                            <PageHeaderTitle title={
+                                normalizeStatus(playbookRun.data.status) === 'Running'
+                                    ? <React.Fragment>
+                                        <InProgressIcon
+                                            className="ins-c-remediations-running"
+                                            aria-label="connection status" />{ ' ' }
+                                        <DateFormat type='exact' date={ playbookRun.data.created_at } />
+                                    </React.Fragment>
+                                    : <DateFormat type='exact' date={ playbookRun.data.created_at } />
+                            } />
                         </StackItem>
                         <StackItem>
                             <Split gutter>

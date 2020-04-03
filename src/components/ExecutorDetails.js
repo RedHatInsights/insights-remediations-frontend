@@ -22,6 +22,7 @@ import {
     Breadcrumb, BreadcrumbItem,
     Split, SplitItem
 } from '@patternfly/react-core';
+import { InProgressIcon } from '@patternfly/react-icons';
 
 import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/Registry';
 import reducers from '../store/reducers';
@@ -249,7 +250,16 @@ const ExecutorDetails = ({
                 </Breadcrumb>
                 <Stack gutter>
                     <StackItem>
-                        <PageHeaderTitle title={ executor.executor_name } />
+                        <PageHeaderTitle title={
+                            normalizeStatus(executor.status) === 'Running'
+                                ? <React.Fragment>
+                                    <InProgressIcon
+                                        className="ins-c-remediations-running"
+                                        aria-label="connection status" />{ ' ' }
+                                    { executor.executor_name }
+                                </React.Fragment>
+                                : executor.executor_name
+                        } />
                     </StackItem>
                     <StackItem>
                         <Split gutter>
