@@ -38,6 +38,7 @@ import {
 } from '../actions';
 import { downloadPlaybook } from '../api';
 import { normalizeStatus, renderStatus, StatusSummary  } from './statusHelper';
+import PlaybookSystemDetails from './SystemDetails';
 import ExecutorDetailsSkeleton from '../skeletons/ExecutorDetailsSkeleton';
 import RunFailed from './Alerts/RunFailed';
 
@@ -121,21 +122,9 @@ const ExecutorDetails = ({
             id: system_id,
             display_name: system_name,
             status,
-            children: <Skeleton size='lg' />
+            children: <PlaybookSystemDetails systemId={ system_id } />
         })));
     }, [ playbookRunSystems ]);
-
-    useEffect(() => {
-        setSystems(() => ([
-            ...systems.filter(system => system.id !== playbookRunSystemDetails.system_id),
-            { ...systems.find(system => system.id === playbookRunSystemDetails.system_id),
-                isOpen: true,
-                children: <SyntaxHighlighter language="yaml" style={ dark }>
-                    { playbookRunSystemDetails && playbookRunSystemDetails.console || '' }
-                </SyntaxHighlighter>
-            }
-        ]));
-    }, [ playbookRunSystemDetails ]);
 
     const systemsStatus = playbookRunSystems.data.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
         , { pending: 0,
