@@ -23,7 +23,7 @@ import {
 import { InProgressIcon } from '@patternfly/react-icons';
 
 import DescriptionList from './Layouts/DescriptionList';
-import { getPlaybookRun, getPlaybookRunSystems, getPlaybookRuns, loadRemediation } from '../actions';
+import { getPlaybookRun, getPlaybookRuns, loadRemediation } from '../actions';
 import './Status.scss';
 import { StatusSummary, normalizeStatus } from './statusHelper';
 import ActivityDetailsSkeleton from '../skeletons/ActivityDetailsSkeleton';
@@ -45,8 +45,6 @@ const ActivityDetail = ({
         getPlaybookRun(id, run_id);
 
     }, []);
-    // const systemsStatus = playbookRunSystems.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
-    //     , {  running: 0, success: 0, failure: 0 });
 
     const permission = useContext(PermissionContext);
 
@@ -147,7 +145,6 @@ ActivityDetail.propTypes = {
     playbookRun: PropTypes.object,
     getPlaybookRun: PropTypes.func,
     getPlaybookRuns: PropTypes.func,
-    getPlaybookRunSystems: PropTypes.func,
     loadRemediation: PropTypes.func,
     match: PropTypes.object
 };
@@ -156,14 +153,12 @@ ActivityDetail.defaultProps = {
 };
 
 const connected = connect(
-    ({ playbookRun, playbookRunSystems, selectedRemediation }) => ({
+    ({ playbookRun, selectedRemediation }) => ({
         playbookRun,
-        playbookRunSystems: playbookRunSystems.data,
         remediation: selectedRemediation.remediation
     }),
     (dispatch) => ({
         getPlaybookRun: (id, runId) => dispatch(getPlaybookRun(id, runId)),
-        getPlaybookRunSystems: (remediationId, runId, executorId) => dispatch(getPlaybookRunSystems(remediationId, runId, executorId)),
         getPlaybookRuns: (remediationId) => dispatch(getPlaybookRuns(remediationId)),
         loadRemediation: id => dispatch(loadRemediation(id))
     })

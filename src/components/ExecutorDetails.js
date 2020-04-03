@@ -113,11 +113,11 @@ const ExecutorDetails = ({
             setExecutor(playbookRun.data.executors.find(executor => executor.executor_id === executor_id) || {});
         }
 
-        getPlaybookRunSystems(id, run_id, executor_id);
+        getPlaybookRunSystems(id, run_id, executor_id, pageSize, pageSize * (page - 1));
     }, [ playbookRun ]);
 
     useEffect(() => {
-        setSystems(() => playbookRunSystems.map(({ system_id, system_name, status }) => ({
+        setSystems(() => playbookRunSystems.data.map(({ system_id, system_name, status }) => ({
             id: system_id,
             display_name: system_name,
             status,
@@ -137,7 +137,7 @@ const ExecutorDetails = ({
         ]));
     }, [ playbookRunSystemDetails ]);
 
-    const systemsStatus = playbookRunSystems.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
+    const systemsStatus = playbookRunSystems.data.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
         , { pending: 0,
             running: 0,
             success: 0,
@@ -299,7 +299,7 @@ ExecutorDetails.propTypes = {
     match: PropTypes.object,
     remediation: PropTypes.object,
     playbookRun: PropTypes.object,
-    playbookRunSystems: PropTypes.array,
+    playbookRunSystems: PropTypes.object,
     playbookRunSystemDetails: PropTypes.object,
     getPlaybookRun: PropTypes.func,
     getPlaybookRunSystems: PropTypes.func,
@@ -317,13 +317,13 @@ const connected = connect(
         playbookRuns: playbookRuns.data,
         playbookRun,
         playbookRunSystemDetails,
-        playbookRunSystems: playbookRunSystems.data,
+        playbookRunSystems,
         remediation: selectedRemediation.remediation
     }),
     (dispatch) => ({
         getPlaybookRuns: (id) => dispatch(getPlaybookRuns(id)),
         getPlaybookRun: (id, runId) => dispatch(getPlaybookRun(id, runId)),
-        getPlaybookRunSystems: (remediationId, runId, executorId) => dispatch(getPlaybookRunSystems(remediationId, runId, executorId)),
+        getPlaybookRunSystems: (remediationId, runId, executorId, limit, offset) => dispatch(getPlaybookRunSystems(remediationId, runId, executorId, limit, offset)),
         getPlaybookRunSystemDetails: (remediationId, runId, systemId) => dispatch(getPlaybookRunSystemDetails(remediationId, runId, systemId)),
         onCollapseInventory: (isOpen, id) => dispatch(expandInventoryTable(id, isOpen)),
         loadRemediation: id => dispatch(loadRemediation(id))

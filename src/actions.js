@@ -85,9 +85,10 @@ export const getPlaybookRun = (remediationId, runId) => ({
     payload: remediations.getPlaybookRunDetails(remediationId, runId)
 });
 
-export const getPlaybookRunSystems = (remediationId, runId, executorId) => ({
+//  (id, playbookRunId, executor, limit, offset, ansibleHost, options) 
+export const getPlaybookRunSystems = (remediationId, runId, executorId, limit = 50, offset = 0) => ({
     type: ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEMS,
-    payload: remediations.getPlaybookRunSystems(remediationId, runId, executorId)
+    payload: remediations.getPlaybookRunSystems(remediationId, runId, executorId, limit, offset)
 });
 
 export const getPlaybookRunSystemDetails = (remediationId, runId, systemId) => ({
