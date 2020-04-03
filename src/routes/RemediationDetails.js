@@ -35,12 +35,13 @@ import {
     Tabs, Tab, Tooltip
 } from '@patternfly/react-core';
 
-import './RemediationDetails.scss';
 import RemediationDetailsSkeleton from '../skeletons/RemediationDetailsSkeleton';
 import DescriptionList from '../components/Layouts/DescriptionList';
+import EmptyActivityTable from '../components/EmptyStates/EmptyActivityTable';
 
 import { PermissionContext } from '../App';
-import EmptyActivityTable from '../components/EmptyStates/EmptyActivityTable';
+
+import './RemediationDetails.scss';
 
 const RemediationDetails = ({
     match,
@@ -55,15 +56,10 @@ const RemediationDetails = ({
 }) => {
 
     const id = match.params.id;
-    const [ autoReboot, setAutoReboot ] = useState(true);
     const [ upsellBannerVisible, setUpsellBannerVisible ] = useState(true);
     const [ activeTabKey, setActiveTabKey ] = useState(0);
 
     const context = useContext(PermissionContext);
-
-    const onPlaybookExecution = () => {
-        getPlaybookRuns(id);
-    };
 
     const handleRebootChange = autoReboot => {
         switchAutoReboot(id, autoReboot);
@@ -71,11 +67,11 @@ const RemediationDetails = ({
 
     const handleUpsellToggle = () => {
         setUpsellBannerVisible(false);
-    }
+    };
 
     const handleTabClick = (event, tabIndex) => {
         setActiveTabKey(tabIndex);
-    }
+    };
 
     useEffect(() => {
         loadRemediation(id).catch(e => {
@@ -94,15 +90,21 @@ const RemediationDetails = ({
 
     useEffect(() => {
         getPlaybookRuns(id);
-    }, [ getPlaybookRuns ])
+    }, [ getPlaybookRuns ]);
 
     useEffect(() => {
         playbookRuns;
-    }, [ playbookRuns ])
+        if (playbookRuns && playbookRuns.length && normalizeStatus(playbookRuns[0].status) === 'running') {
+            const interval = setInterval(() => getPlaybookRuns(id), 10000);
+            return () => {
+                clearInterval(interval);
+            };
+        }
+    }, [ playbookRuns ]);
 
     const generateNumRebootString = (num) => {
         return `${num} system${num === 1 ? '' : 's'} require${num === 1 ? 's' : ''} reboot`;
-    }
+    };
 
     const generateAutoRebootStatus = (status, needsReboot) => {
         if (!needsReboot) {
@@ -110,7 +112,7 @@ const RemediationDetails = ({
         }
 
         return (status ? 'Enabled' : 'Disabled');
-    }
+    };
 
     const renderLatestActivity = (playbookRuns) => {
 
@@ -134,7 +136,7 @@ const RemediationDetails = ({
         }
 
         return;
-    }
+    };
 
     const renderActivityState = (isEntitled, isReceptorConfigured, playbookRuns, remediation) => {
         if (!isReceptorConfigured) {return <NotConfigured/>;}
@@ -146,7 +148,7 @@ const RemediationDetails = ({
         }
 
         return <EmptyActivityTable/>;
-    }
+    };
 
     const { status, remediation } = selectedRemediation;
 
@@ -182,8 +184,7 @@ const RemediationDetails = ({
                                     <SplitItem>
                                         <ExecutePlaybookButton
                                             isDisabled={ !context.isReceptorConfigured }
-                                            remediationId={ remediation.id }
-                                            onPlaybookExecution={ onPlaybookExecution }>
+                                            remediationId={ remediation.id }>
                                         </ExecutePlaybookButton>
                                     </SplitItem>
                                 }
@@ -279,7 +280,7 @@ const RemediationDetails = ({
                 </Main>
             </React.Fragment>
     );
-}
+};
 
 RemediationDetails.propTypes = {
     match: PropTypes.shape({

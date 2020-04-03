@@ -93,7 +93,6 @@ const ExecuteButton = ({
     runRemediation,
     etag,
     remediationStatus,
-    onPlaybookExecution,
     setEtag }) => {
     const [ open, setOpen ] = useState(false);
     const [ isUserEntitled, setIsUserEntitled ] = useState(false);
@@ -152,7 +151,7 @@ const ExecuteButton = ({
                         key="confirm"
                         variant="primary"
                         isDisabled={ connected.length === 0 }
-                        onClick={ () => { runRemediation(remediationId, etag); onPlaybookExecution() } }>
+                        onClick={ () => { runRemediation(remediationId, etag); } }>
                         { isLoading ? 'Execute Playbook' : `Execute Playbook on ${pluralize(connectedCount, 'system')}` }
                     </Button>,
                     <Button
@@ -222,8 +221,7 @@ ExecuteButton.propTypes = {
     issueCount: PropTypes.number,
     etag: PropTypes.string,
     setEtag: PropTypes.func,
-    isDisabled: PropTypes.bool,
-    onPlaybookExecution: PropTypes.func
+    isDisabled: PropTypes.bool
 };
 
 ExecuteButton.defaultProps = {
