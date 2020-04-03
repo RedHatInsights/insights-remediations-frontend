@@ -41,6 +41,7 @@ import ExecutorDetailsSkeleton from '../skeletons/ExecutorDetailsSkeleton';
 import RunFailed from './Alerts/RunFailed';
 
 import { PermissionContext } from '../App';
+let refreshInterval;
 
 const ExecutorDetails = ({
     match: { params: { executor_id, run_id, id }},
@@ -59,7 +60,6 @@ const ExecutorDetails = ({
     const [ InventoryTable, setInventoryTable ] = useState();
     const [ page, setPage ] = useState(1);
     const [ pageSize, setPageSize ] = useState(50);
-    const [ refreshInterval, setRefreshInterval ] = useState();
     const inventory = useRef(null);
 
     const loadInventory = async () => {
@@ -99,6 +99,12 @@ const ExecutorDetails = ({
         loadInventory();
         loadRemediation(id);
         getPlaybookRun(id, run_id);
+
+        return () => {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        };
 
     }, []);
     useEffect(() => {
@@ -160,8 +166,12 @@ const ExecutorDetails = ({
                             expandable
                             onExpandClick={ (_e, _i, isOpen, { id }) => {
                                 if (isOpen) {
+                                    if (refreshInterval) {
+                                        clearInterval(refreshInterval);
+                                    }
+
                                     getPlaybookRunSystemDetails(remediation.id, run_id, id);
-                                    setRefreshInterval(setInterval(() => getPlaybookRunSystemDetails(remediation.id, run_id, id), 10000));
+                                    refreshInterval = setInterval(() => getPlaybookRunSystemDetails(remediation.id, run_id, id), 10000);
                                 }
                                 else {
                                     clearInterval(refreshInterval);
@@ -198,6 +208,7 @@ const ExecutorDetails = ({
                             onExpandClick={ (_e, _i, isOpen, { id }) => {
                                 getPlaybookRunSystemDetails(remediation.id, run_id, id);
                                 onCollapseInventory(isOpen, id);
+
                             } }
                         /> }
                     </CardBody>
