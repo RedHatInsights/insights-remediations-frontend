@@ -118,10 +118,16 @@ const ExecutorDetails = ({
     }, [ playbookRun ]);
 
     useEffect(() => {
+        getPlaybookRun(id, run_id);
+    }, [ playbookRunSystemDetails, playbookRunSystemDetails.status ]);
+
+    useEffect(() => {
+        console.log('SYSTEMS', playbookRunSystems, systems)
         setSystems(() => playbookRunSystems.data.map(({ system_id, system_name, status }) => ({
             id: system_id,
             display_name: system_name,
             status,
+            isOpen: (systems.find(s => s.id === systems.id) || { isOpen: false }).isOpen,
             children: <PlaybookSystemDetails systemId={ system_id } />
         })));
     }, [ playbookRunSystems ]);
@@ -162,7 +168,7 @@ const ExecutorDetails = ({
                                     }
 
                                     getPlaybookRunSystemDetails(remediation.id, run_id, id);
-                                    refreshInterval = setInterval(() => getPlaybookRunSystemDetails(remediation.id, run_id, id), 10000);
+                                    refreshInterval = setInterval(() => getPlaybookRunSystemDetails(remediation.id, run_id, id), 5000);
                                 }
                                 else {
                                     clearInterval(refreshInterval);
