@@ -190,7 +190,7 @@ const ExecutorDetails = ({
                     <CardBody>
                         { InventoryTable && <InventoryTable
                             ref={ inventory }
-                            items={ orderBy(systems, [ s => getSystemName(s), s => s.id ]) }
+                            items={ systems }
                             onRefresh={ onRefresh }
                             page={ page }
                             total={ systems.length }
