@@ -100,4 +100,3 @@ export default connect(null, (dispatch) => ({
     createRemediation: (data) => dispatch(actions.createRemediation(data)),
     addNotification: (data) => dispatch(addNotification(data))
 }))(NewRemediationButton);
-    

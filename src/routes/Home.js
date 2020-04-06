@@ -54,7 +54,8 @@ class Home extends Component {
     }
 
     onRemediationCreated = result => {
-        const { loadRemediations } = this.props
+        const { loadRemediations } = this.props;
+        this.sendNotification(result.getNotification());
         loadRemediations();
     };
 
