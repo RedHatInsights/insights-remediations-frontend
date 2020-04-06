@@ -241,7 +241,7 @@ const reducers = {
         })
     }, {
         status: 'initial'
-    }),
+    })
 
 };
 
