@@ -133,29 +133,29 @@ const ExecutorDetails = ({
             failure: 0,
             canceled: 0 });
 
-    const renderMain = (status) => ({
-        running: <Main>
-            <Stack gutter="md">
-                <Card>
-                    <CardHeader className='ins-m-card__header-bold'>
-                        <Button
-                            variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
-                            <DownloadIcon />
-                            Download Playbook
-                        </Button>
-                    </CardHeader>
+    const renderInventorycard = (status) => <Main>
+        <Stack gutter="md">
+            <Card>
+                <CardHeader className='ins-m-card__header-bold'>
+                    <Button
+                        variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
+                        <DownloadIcon /> { ' ' }
+                        Download Playbook
+                    </Button>
+                </CardHeader>
 
-                    <CardBody>
-                        { InventoryTable && <InventoryTable
-                            ref={ inventory }
-                            items={ orderBy(systems, [ s => getSystemName(s), s => s.id ]) }
-                            onRefresh={ onRefresh }
-                            page={ page }
-                            total={ systems.length }
-                            perPage={ pageSize }
-                            tableProps={ { onSelect: undefined } }
-                            expandable
-                            onExpandClick={ (_e, _i, isOpen, { id }) => {
+                <CardBody>
+                    { InventoryTable && <InventoryTable
+                        ref={ inventory }
+                        items={ systems }
+                        onRefresh={ onRefresh }
+                        page={ page }
+                        total={ systems.length }
+                        perPage={ pageSize }
+                        tableProps={ { onSelect: undefined } }
+                        expandable
+                        onExpandClick={ status === 'running'
+                            ? (_e, _i, isOpen, { id }) => {
                                 if (isOpen) {
                                     if (refreshInterval) {
                                         clearInterval(refreshInterval);
@@ -170,44 +170,23 @@ const ExecutorDetails = ({
 
                                 onCollapseInventory(isOpen, id);
 
-                            } }
-                        /> }
-                    </CardBody>
-                </Card>
-            </Stack>
-        </Main>,
-        success: <Main>
-            <Stack gutter="md">
-                <Card>
-                    <CardHeader className='ins-m-card__header-bold'>
-                        <Button
-                            variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
-                            <DownloadIcon /> { ' ' }
-                            Download Playbook
-                        </Button>
-                    </CardHeader>
-
-                    <CardBody>
-                        { InventoryTable && <InventoryTable
-                            ref={ inventory }
-                            items={ systems }
-                            onRefresh={ onRefresh }
-                            page={ page }
-                            total={ systems.length }
-                            perPage={ pageSize }
-                            tableProps={ { onSelect: undefined } }
-                            expandable
-                            onExpandClick={ (_e, _i, isOpen, { id }) => {
+                            }
+                            : (_e, _i, isOpen, { id }) => {
                                 getPlaybookRunSystemDetails(remediation.id, run_id, id);
                                 onCollapseInventory(isOpen, id);
 
                             } }
-                        /> }
-                    </CardBody>
-                </Card>
-            </Stack>
-        </Main>,
-        failure: <Main>
+                    /> }
+                </CardBody>
+            </Card>
+        </Stack>
+    </Main>;
+
+    const renderMain = (status) => ({
+        running: renderInventorycard(status),
+        success: renderInventorycard(status),
+        failure: renderInventorycard(status),
+        epicFailure: <Main>
             <Stack gutter="md">
                 <Card>
                     <CardHeader className='ins-m-card__header-bold'>
@@ -281,7 +260,7 @@ const ExecutorDetails = ({
                     </StackItem>
                 </Stack>
             </PageHeader>
-            { renderMain(executor.status) }
+            { renderMain('running') }
         </React.Fragment>
         : <ExecutorDetailsSkeleton />;
 };
