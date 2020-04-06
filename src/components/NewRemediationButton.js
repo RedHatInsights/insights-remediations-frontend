@@ -13,10 +13,10 @@ import PlanName from '../components/CreatePlanModal/ModalSteps/PlanName';
 
 class NewRemediationButton extends Component {
 
-    constructor (props) {
-        super(props);
+    constructor (props, ctx) {
+        super(props, ctx);
         this.props = props;
-        this.store = store;
+        this.store = ctx.store;
         this.state = {
             open: false
         };
