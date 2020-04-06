@@ -80,6 +80,11 @@ export const getPlaybookRuns = (remediationId) => ({
     payload: remediations.listPlaybookRuns(remediationId)
 });
 
+export const cancelPlaybookRuns = (remediationId, runId) => ({
+    type: ACTION_TYPES.CANCEL_PLAYBOOK_RUNS,
+    payload: remediations.cancelPlaybookRuns(remediationId, runId)
+});
+
 export const getPlaybookRun = (remediationId, runId) => ({
     type: ACTION_TYPES.GET_PLAYBOOK_RUN,
     payload: remediations.getPlaybookRunDetails(remediationId, runId)

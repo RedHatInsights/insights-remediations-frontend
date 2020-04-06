@@ -191,6 +191,14 @@ const reducers = {
 
     }),
 
+    cancelPlaybookRuns: applyReducerHash({
+        [ACTION_TYPES.CANCEL_PLAYBOOK_RUNS_FULFILLED]: (state, action) => ({
+            data: action.payload.data,
+            meta: action.payload.meta
+        })
+
+    }),
+
     playbookRun: applyReducerHash({
         [ACTION_TYPES.GET_PLAYBOOK_RUN_FULFILLED]: (state, action) => ({
             data: action.payload
@@ -226,7 +234,7 @@ const reducers = {
         })
     }, {
         status: 'initial'
-    })
+    }),
 
 };
 
