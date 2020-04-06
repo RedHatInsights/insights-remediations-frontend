@@ -4,7 +4,7 @@ import * as pfReactTable from '@patternfly/react-table';
 import * as reactCore from '@patternfly/react-core';
 import * as reactIcons from '@patternfly/react-icons';
 import * as reactRouterDom from 'react-router-dom';
-import { connect } from 'react-redux';
+import { connect, useStore } from 'react-redux';
 import orderBy from 'lodash/orderBy';
 
 import PropTypes from 'prop-types';
@@ -27,6 +27,7 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
     const [ page, setPage ] = useState(1);
     const [ pageSize, setPageSize ] = useState(50);
     const inventory = useRef(null);
+    const store = useStore(); 
 
     // eslint-disable-next-line react/display-name
     const detailDropdown = (remediation, issue) => (system) => (
@@ -54,7 +55,7 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
             })())
         });
 
-        const { InventoryTable } = inventoryConnector();
+        const { InventoryTable } = inventoryConnector(store);
         setInventoryTable(() => InventoryTable);
     };
 
