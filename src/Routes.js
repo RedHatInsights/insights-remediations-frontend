@@ -1,4 +1,4 @@
-import { Switch, matchPath, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Home from './routes/Home';
@@ -27,38 +27,15 @@ export const routes = {
     executorDetails: '/:id/:run_id/:executor_id'
 };
 
-function checkPaths(group, app) {
-    return Object
-    .values(routes)
-    .some(
-        route => {
-            return matchPath(location.href, { path: `${document.baseURI}${group}/${app}${route}` });
-        }
-    );
-}
-
-export const Routes = ({ childProps: { history }}) => {
-    const pathName = window.location.pathname.split('/');
-    pathName.shift();
-
-    if (pathName[0] === 'beta') {
-        pathName.shift();
-    }
-
-    if (!checkPaths(pathName[0], pathName[1])) {
-        history.push(routes.home);
-    }
-
-    return (
-        <Switch>
-            <InsightsRoute exact path={ routes.home } component={ Home } rootClass='remediations' />
-            <InsightsRoute exact path={ routes.details } component={ RemediationDetails } rootClass='remediation-details' />
-            <InsightsRoute exact path={ routes.runDetails } render={ (props) => (<ActivityDetails  remediation={ {} } { ...props } />) } />
-            <InsightsRoute exact path={ routes.executorDetails } render={ (props) => (<ExecutorDetails   { ...props } />) } />
-
-        </Switch>
-    );
-};
+export const Routes = () => (
+    <Switch>
+        <InsightsRoute exact path={ routes.home } component={ Home } rootClass='remediations' />
+        <InsightsRoute exact path={ routes.details } component={ RemediationDetails } rootClass='remediation-details' />
+        <InsightsRoute exact path={ routes.runDetails } render={ (props) => (<ActivityDetails  remediation={ {} } { ...props } />) } />
+        <InsightsRoute exact path={ routes.executorDetails } render={ (props) => (<ExecutorDetails   { ...props } />) } />
+        <Redirect path='*' to={ routes.home } push />
+    </Switch>
+);
 
 Routes.propTypes = {
     childProps: PropTypes.shape({
@@ -67,3 +44,4 @@ Routes.propTypes = {
         })
     })
 };
+

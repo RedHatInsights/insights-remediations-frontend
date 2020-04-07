@@ -4,15 +4,13 @@ import React, { useEffect, useState, useRef, useContext } from 'react';
 import { connect, useStore } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import orderBy from 'lodash/orderBy';
 import * as pfReactTable from '@patternfly/react-table';
 import * as reactCore from '@patternfly/react-core';
 import * as reactIcons from '@patternfly/react-icons';
 import * as reactRouterDom from 'react-router-dom';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { dark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import {
-    Main, PageHeader, PageHeaderTitle, DateFormat, Skeleton
+    Main, PageHeader, PageHeaderTitle, DateFormat, Skeleton,
+    TableToolbar, ConditionalFilter, conditionalFilterType
 } from '@redhat-cloud-services/frontend-components';
 
 import {
@@ -26,7 +24,6 @@ import { InProgressIcon, DownloadIcon } from '@patternfly/react-icons';
 
 import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/Registry';
 import reducers from '../store/reducers';
-import { getSystemName } from '../Utilities/model';
 import DescriptionList from './Layouts/DescriptionList';
 import {
     getPlaybookRuns,
@@ -59,6 +56,8 @@ const ExecutorDetails = ({
 }) => {
     const [ executor, setExecutor ] = useState({});
     const [ systems, setSystems ] = useState([]);
+    const [ filteredSystems, setFilteredSystems ] = useState([]);
+    const [ filter, setFilter ] = useState({ key: 'display_name', value: '' });
     const [ InventoryTable, setInventoryTable ] = useState();
     const [ page, setPage ] = useState(1);
     const [ pageSize, setPageSize ] = useState(50);
@@ -123,7 +122,6 @@ const ExecutorDetails = ({
     }, [ playbookRunSystemDetails, playbookRunSystemDetails.status ]);
 
     useEffect(() => {
-        console.log('SYSTEMS', playbookRunSystems, systems);
         setSystems(() => playbookRunSystems.data.map(({ system_id, system_name, status }) => ({
             id: system_id,
             display_name: system_name,
@@ -133,31 +131,73 @@ const ExecutorDetails = ({
         })));
     }, [ playbookRunSystems ]);
 
-    const systemsStatus = playbookRunSystems.data.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
-        , { pending: 0,
-            running: 0,
-            success: 0,
-            failure: 0,
-            canceled: 0 });
+    useEffect(() => {
+        setFilteredSystems(systems);
+    }, [ systems ]);
+
+    const systemsStatus =
+        playbookRunSystems.data.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
+            , { pending: 0,
+                running: 0,
+                success: 0,
+                failure: 0,
+                canceled: 0 });
 
     const renderInventorycard = (status) => <Main>
         <Stack gutter="md">
             <Card>
                 <CardHeader className='ins-m-card__header-bold'>
-                    <Button
-                        variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
-                        <DownloadIcon /> { ' ' }
-                        Download Playbook
-                    </Button>
+                    <TableToolbar>
+                        <ConditionalFilter
+                            items={ [
+                                {   value: 'display_name',
+                                    label: 'Name',
+                                    filterValues: { placeholder: 'Filter by name', type: conditionalFilterType.text,
+                                        value: filter.value,
+                                        onChange: (e, selected) => {
+                                            setFilter({ ...filter, value: selected });
+                                            setFilteredSystems(systems.filter(s => s[filter.key].includes(selected)));
+                                        },
+                                        onSubmit: (e, selected) => {
+                                            setFilteredSystems(systems.filter(s => s[selected].includes(filter.value)));
+                                        }
+                                    }
+                                },
+                                {
+                                    value: 'status',
+                                    label: 'Status',
+                                    filterValues: { placeholder: 'Filter by status', type: conditionalFilterType.text,
+                                        value: filter.value,
+                                        onChange: (e, selected) => {
+                                            setFilter({ ...filter, value: selected });
+                                            setFilteredSystems(systems.filter(s => s[filter.key].includes(selected)));
+                                        },
+                                        onSubmit: (e, selected) => {
+                                            setFilteredSystems(systems.filter(s => s[selected].includes(filter.value)));
+                                        }
+                                    }
+                                }
+                            ] }
+                            value={ filter.key }
+                            onChange={ (e, selected) => setFilter({ key: selected, value: '' }) }
+                        />
+                        <Button
+                            variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
+                            <DownloadIcon /> { ' ' }
+                            Download Playbook
+                        </Button>
+                    </TableToolbar>
+
                 </CardHeader>
 
                 <CardBody>
+
                     { InventoryTable && <InventoryTable
                         ref={ inventory }
-                        items={ systems }
+                        items={ filteredSystems }
                         onRefresh={ onRefresh }
                         page={ page }
-                        total={ systems.length }
+                        total={ filteredSystems.length }
                         perPage={ pageSize }
                         tableProps={ { onSelect: undefined } }
                         expandable
@@ -300,7 +340,8 @@ const connected = connect(
     (dispatch) => ({
         getPlaybookRuns: (id) => dispatch(getPlaybookRuns(id)),
         getPlaybookRun: (id, runId) => dispatch(getPlaybookRun(id, runId)),
-        getPlaybookRunSystems: (remediationId, runId, executorId, limit, offset) => dispatch(getPlaybookRunSystems(remediationId, runId, executorId, limit, offset)),
+        getPlaybookRunSystems: (remediationId, runId, executorId, limit, offset) =>
+            dispatch(getPlaybookRunSystems(remediationId, runId, executorId, limit, offset)),
         getPlaybookRunSystemDetails: (remediationId, runId, systemId) => dispatch(getPlaybookRunSystemDetails(remediationId, runId, systemId)),
         onCollapseInventory: (isOpen, id) => dispatch(expandInventoryTable(id, isOpen)),
         loadRemediation: id => dispatch(loadRemediation(id))
