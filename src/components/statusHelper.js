@@ -2,9 +2,10 @@ import React from 'react';
 
 import { CheckCircleIcon, TimesCircleIcon, InProgressIcon } from '@patternfly/react-icons';
 import {
-    Flex, FlexItem, FlexModifiers,
-    Button, Tooltip
+    Flex, FlexItem, FlexModifiers, Tooltip
 } from '@patternfly/react-core';
+
+import { CancelButton } from '../containers/CancelButton';
 
 import { capitalize } from '../Utilities/utils';
 
@@ -53,7 +54,7 @@ export const statusText = (executorStatus) => ({
     canceled: <b className="ins-c-remediations-failure"> Canceled </b>
 })[executorStatus];
 
-export const StatusSummary = ({ executorStatus, permission, onCancel, counts }) => {
+export const StatusSummary = ({ executorStatus, permission, hasCancel, counts, remediationName, remediationId, playbookId }) => {
 
     const runningCount = counts.acked && !counts.acked.isNaN() ? counts.running + counts.pending + counts.acked : counts.running + counts.pending;
     const failCount = counts.failure + counts.canceled;
@@ -75,9 +76,12 @@ export const StatusSummary = ({ executorStatus, permission, onCancel, counts }) 
             <FlexItem>
                 { renderStatus('running', `${runningCount}`) }
             </FlexItem>
-            { onCancel && permission.permissions.execute && executorStatus && normalizeStatus(executorStatus) === 'running' &&
+            { hasCancel && permission.permissions.execute && executorStatus && normalizeStatus(executorStatus) === 'running' &&
                 <FlexItem>
-                    <Button variant='link' onClick={ onCancel }> Cancel process </Button>
+                    <CancelButton
+                        remediationName={ remediationName }
+                        remediationId={ remediationId }
+                        playbookId={ playbookId }/>
                 </FlexItem>
             }
         </Flex>

@@ -2,9 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import { useDispatch } from 'react-redux';
-import * as actions from '../actions';
-
 import {
     Table,
     TableHeader,
@@ -22,7 +19,6 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
 
     const [ rows, setRows ] = useState([]);
     const permission = useContext(PermissionContext);
-    const dispatch = useDispatch();
 
     const generateRows = (playbookRuns) => {
         return (playbookRuns.reduce((acc, playbooks, i) => (
@@ -44,7 +40,10 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
                                     canceled: acc.canceled + ex.counts.canceled,
                                     acked: acc.acked + ex.counts.acked
                                 }), { pending: 0, running: 0, success: 0, failure: 0, canceled: 0 }) }
-                            onCancel={ () => dispatch(actions.cancelPlaybookRuns(remediation.id, playbooks.id)) }
+                            hasCancel
+                            remediationName={ remediation.name }
+                            remediationId={ remediation.id }
+                            playbookId={ playbooks.id }
                             permission={ permission }/>
                         }
                     ]

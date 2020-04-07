@@ -23,6 +23,7 @@ import {
 import { InProgressIcon } from '@patternfly/react-icons';
 
 import DescriptionList from './Layouts/DescriptionList';
+import { CancelButton } from '../containers/CancelButton';
 import { getPlaybookRun, getPlaybookRuns, loadRemediation } from '../actions';
 import './Status.scss';
 import { StatusSummary, normalizeStatus } from './statusHelper';
@@ -61,12 +62,16 @@ const ActivityDetail = ({
                     <Stack gutter>
                         <StackItem>
                             <PageHeaderTitle title={
-                                normalizeStatus(playbookRun.data.status) === 'Running'
+                                normalizeStatus(playbookRun.data.status) === 'running'
                                     ? <React.Fragment>
                                         <InProgressIcon
                                             className="ins-c-remediations-running"
                                             aria-label="connection status" />{ ' ' }
                                         <DateFormat type='exact' date={ playbookRun.data.created_at } />
+                                        <CancelButton
+                                            remediationName={ remediation.name }
+                                            remediationId={ remediation.id }
+                                            playbookId={ playbookRun.data.id }/>
                                     </React.Fragment>
                                     : <DateFormat type='exact' date={ playbookRun.data.created_at } />
                             } />

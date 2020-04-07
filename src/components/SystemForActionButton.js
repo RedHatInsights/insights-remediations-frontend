@@ -27,7 +27,7 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
     const [ page, setPage ] = useState(1);
     const [ pageSize, setPageSize ] = useState(50);
     const inventory = useRef(null);
-    const store = useStore(); 
+    const store = useStore();
 
     // eslint-disable-next-line react/display-name
     const detailDropdown = (remediation, issue) => (system) => (

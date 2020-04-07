@@ -63,7 +63,7 @@ const ExecutorDetails = ({
     const [ page, setPage ] = useState(1);
     const [ pageSize, setPageSize ] = useState(50);
     const inventory = useRef(null);
-    const store = useStore(); 
+    const store = useStore();
 
     const loadInventory = async () => {
         const {
@@ -123,7 +123,7 @@ const ExecutorDetails = ({
     }, [ playbookRunSystemDetails, playbookRunSystemDetails.status ]);
 
     useEffect(() => {
-        console.log('SYSTEMS', playbookRunSystems, systems)
+        console.log('SYSTEMS', playbookRunSystems, systems);
         setSystems(() => playbookRunSystems.data.map(({ system_id, system_name, status }) => ({
             id: system_id,
             display_name: system_name,
