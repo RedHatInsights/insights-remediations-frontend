@@ -12,7 +12,8 @@ import * as reactRouterDom from 'react-router-dom';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import {
-    Main, PageHeader, PageHeaderTitle, DateFormat, Skeleton
+    Main, PageHeader, PageHeaderTitle, DateFormat, Skeleton,
+    TableToolbar, ToolbarGroup, ToolbarItem, SimpleTableFilter, ConditionalFilter, conditionalFilterType
 } from '@redhat-cloud-services/frontend-components';
 
 import {
@@ -59,6 +60,8 @@ const ExecutorDetails = ({
 }) => {
     const [ executor, setExecutor ] = useState({});
     const [ systems, setSystems ] = useState([]);
+    const [ filteredSystems, setFilteredSystems ] = useState([]);
+    const [ filter, setFilter ] = useState({ key: 'display_name', value: '' });
     const [ InventoryTable, setInventoryTable ] = useState();
     const [ page, setPage ] = useState(1);
     const [ pageSize, setPageSize ] = useState(50);
@@ -122,7 +125,6 @@ const ExecutorDetails = ({
     }, [ playbookRunSystemDetails, playbookRunSystemDetails.status ]);
 
     useEffect(() => {
-        console.log('SYSTEMS', playbookRunSystems, systems)
         setSystems(() => playbookRunSystems.data.map(({ system_id, system_name, status }) => ({
             id: system_id,
             display_name: system_name,
@@ -131,6 +133,10 @@ const ExecutorDetails = ({
             children: <PlaybookSystemDetails systemId={ system_id } />
         })));
     }, [ playbookRunSystems ]);
+
+    useEffect(() => {
+        setFilteredSystems(systems);
+    }, [ systems ]);
 
     const systemsStatus = playbookRunSystems.data.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
         , { pending: 0,
@@ -143,20 +149,57 @@ const ExecutorDetails = ({
         <Stack gutter="md">
             <Card>
                 <CardHeader className='ins-m-card__header-bold'>
-                    <Button
-                        variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
-                        <DownloadIcon /> { ' ' }
-                        Download Playbook
-                    </Button>
+                    <TableToolbar>
+                        <ConditionalFilter
+                            items={ [
+                                {   value: 'display_name',
+                                    label: 'Name',
+                                    filterValues: { placeholder: 'Filter by name', type: conditionalFilterType.text,
+                                        value: filter.value,
+                                        onChange: (e, selected) => {
+                                            setFilter({ ...filter, value: selected });
+                                            setFilteredSystems(systems.filter(s => s[filter.key].includes(selected)));
+                                        },
+                                        onSubmit: (e, selected) => {
+                                            setFilteredSystems(systems.filter(s => s[selected].includes(filter.value)));
+                                        }
+                                    }
+                                },
+                                {
+                                    value: 'status',
+                                    label: 'Status',
+                                    filterValues: { placeholder: 'Filter by status', type: conditionalFilterType.text,
+                                        value: filter.value,
+                                        onChange: (e, selected) => {
+                                            setFilter({ ...filter, value: selected });
+                                            setFilteredSystems(systems.filter(s => s[filter.key].includes(selected)));
+                                        },
+                                        onSubmit: (e, selected) => {
+                                            setFilteredSystems(systems.filter(s => s[selected].includes(filter.value)));
+                                        }
+                                    }
+                                }
+                            ] }
+                            value={ filter.key }
+                            onChange={ (e, selected) => setFilter({ key: selected, value: '' }) }
+                        />
+                        <Button
+                            variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
+                            <DownloadIcon /> { ' ' }
+                            Download Playbook
+                        </Button>
+                    </TableToolbar>
+
                 </CardHeader>
 
                 <CardBody>
+
                     { InventoryTable && <InventoryTable
                         ref={ inventory }
-                        items={ systems }
+                        items={ filteredSystems }
                         onRefresh={ onRefresh }
                         page={ page }
-                        total={ systems.length }
+                        total={ filteredSystems.length }
                         perPage={ pageSize }
                         tableProps={ { onSelect: undefined } }
                         expandable
