@@ -4,16 +4,13 @@ import React, { useEffect, useState, useRef, useContext } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import orderBy from 'lodash/orderBy';
 import * as pfReactTable from '@patternfly/react-table';
 import * as reactCore from '@patternfly/react-core';
 import * as reactIcons from '@patternfly/react-icons';
 import * as reactRouterDom from 'react-router-dom';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { dark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import {
     Main, PageHeader, PageHeaderTitle, DateFormat, Skeleton,
-    TableToolbar, ToolbarGroup, ToolbarItem, SimpleTableFilter, ConditionalFilter, conditionalFilterType
+    TableToolbar, ConditionalFilter, conditionalFilterType
 } from '@redhat-cloud-services/frontend-components';
 
 import {
@@ -27,7 +24,6 @@ import { InProgressIcon, DownloadIcon } from '@patternfly/react-icons';
 
 import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/Registry';
 import reducers from '../store/reducers';
-import { getSystemName } from '../Utilities/model';
 import DescriptionList from './Layouts/DescriptionList';
 import {
     getPlaybookRuns,
@@ -138,12 +134,13 @@ const ExecutorDetails = ({
         setFilteredSystems(systems);
     }, [ systems ]);
 
-    const systemsStatus = playbookRunSystems.data.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
-        , { pending: 0,
-            running: 0,
-            success: 0,
-            failure: 0,
-            canceled: 0 });
+    const systemsStatus =
+        playbookRunSystems.data.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
+            , { pending: 0,
+                running: 0,
+                success: 0,
+                failure: 0,
+                canceled: 0 });
 
     const renderInventorycard = (status) => <Main>
         <Stack gutter="md">
@@ -342,7 +339,8 @@ const connected = connect(
     (dispatch) => ({
         getPlaybookRuns: (id) => dispatch(getPlaybookRuns(id)),
         getPlaybookRun: (id, runId) => dispatch(getPlaybookRun(id, runId)),
-        getPlaybookRunSystems: (remediationId, runId, executorId, limit, offset) => dispatch(getPlaybookRunSystems(remediationId, runId, executorId, limit, offset)),
+        getPlaybookRunSystems: (remediationId, runId, executorId, limit, offset) =>
+            dispatch(getPlaybookRunSystems(remediationId, runId, executorId, limit, offset)),
         getPlaybookRunSystemDetails: (remediationId, runId, systemId) => dispatch(getPlaybookRunSystemDetails(remediationId, runId, systemId)),
         onCollapseInventory: (isOpen, id) => dispatch(expandInventoryTable(id, isOpen)),
         loadRemediation: id => dispatch(loadRemediation(id))
