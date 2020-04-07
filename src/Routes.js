@@ -29,14 +29,13 @@ export const routes = {
 
 export const Routes = () => (
     <Switch>
-            <InsightsRoute exact path={ routes.home } component={ Home } rootClass='remediations' />
-            <InsightsRoute exact path={ routes.details } component={ RemediationDetails } rootClass='remediation-details' />
-            <InsightsRoute exact path={ routes.runDetails } render={ (props) => (<ActivityDetails  remediation={ {} } { ...props } />) } />
-            <InsightsRoute exact path={ routes.executorDetails } render={ (props) => (<ExecutorDetails   { ...props } />) } />
-            <Redirect path='*' to={ routes.home } push />
-        </Switch>
-    );
-};
+        <InsightsRoute exact path={ routes.home } component={ Home } rootClass='remediations' />
+        <InsightsRoute exact path={ routes.details } component={ RemediationDetails } rootClass='remediation-details' />
+        <InsightsRoute exact path={ routes.runDetails } render={ (props) => (<ActivityDetails  remediation={ {} } { ...props } />) } />
+        <InsightsRoute exact path={ routes.executorDetails } render={ (props) => (<ExecutorDetails   { ...props } />) } />
+        <Redirect path='*' to={ routes.home } push />
+    </Switch>
+);
 
 Routes.propTypes = {
     childProps: PropTypes.shape({
