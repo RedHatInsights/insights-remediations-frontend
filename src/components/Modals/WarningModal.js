@@ -13,7 +13,7 @@ export const WarningModal = ({ isOpen, onModalCancel, onConfirmCancel }) => (
         title='Cancel remediation process'
         hideTitle
         isSmall
-        className='ins-c-wizard__cancel-warning'
+        className='ins-c-modal__cancel-run-warning'
         isOpen={ isOpen }
         onClose={ onModalCancel }
         actions={ [
