@@ -101,7 +101,7 @@ class Home extends Component {
     }
 }
 
-Home.PropTypes = {
+Home.propTypes = {
     loadRemediations: PropTypes.func,
     addNotification: PropTypes.func
 };

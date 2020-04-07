@@ -1,15 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Button } from '@patternfly/react-core';
+import { Modal, Button, BaseSizes, Title, TitleLevel } from '@patternfly/react-core';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import './WarningModal.scss';
 
 export const WarningModal = ({ isOpen, onModalCancel, onConfirmCancel }) => (
     <Modal
-        title={ <span className='ins-c-wizard__cancel-warning-header'>
+        header={ <Title headingLevel={ TitleLevel.h1 } size={ BaseSizes['2xl'] } className='ins-c-wizard__cancel-warning-header'>
             <ExclamationTriangleIcon size='md' className='ins-c-wizard__cancel-warning-header--icon'/>
-        Cancel remediation process
-        </span> }
+            Cancel remediation process
+        </Title> }
+        title='Cancel remediation process'
+        hideTitle
         isSmall
         className='ins-c-wizard__cancel-warning'
         isOpen={ isOpen }
