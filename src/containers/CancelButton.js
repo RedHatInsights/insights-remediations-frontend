@@ -17,7 +17,7 @@ export const CancelButton = ({ remediationName, remediationId, playbookId }) => 
         dispatch(cancelPlaybookRuns(remediationId, playbookId));
         dispatch(addNotification({
             variant: 'success',
-            title: `Execution of playbook ${remediationName} canceled`,
+            title: `Canceling playbook ${remediationName}`,
             dismissDelay: 8000,
             dismissable: false
         }));

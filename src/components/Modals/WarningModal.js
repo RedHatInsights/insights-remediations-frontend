@@ -18,7 +18,7 @@ export const WarningModal = ({ isOpen, onModalCancel, onConfirmCancel }) => (
         onClose={ onModalCancel }
         actions={ [
             <Button key="confirm" variant="danger" onClick={ onConfirmCancel }>
-        Cancel remediation process
+        Cancel playbook process
             </Button>,
             <Button key="cancel" variant="link" onClick={ onModalCancel }>
         Cancel
@@ -26,8 +26,8 @@ export const WarningModal = ({ isOpen, onModalCancel, onConfirmCancel }) => (
         ] }
         isFooterLeftAligned>
         <span>
-      Canceling a running remediation process only affects pending and running steps.
-      It does not affect any previously succeeded or failed steps that have already run.
+      Canceling a running playbook process only affects pending and running tasks.
+      It does not affect any previously succeeded or failed tasks that have already run.
         </span>
     </Modal>
 );
