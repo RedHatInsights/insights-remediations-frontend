@@ -18,7 +18,7 @@ import {
     Card, CardHeader, CardBody,
     Stack, StackItem,
     Breadcrumb, BreadcrumbItem,
-    Split, SplitItem
+    Split, SplitItem, ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
 import { InProgressIcon, DownloadIcon } from '@patternfly/react-icons';
 
@@ -148,46 +148,6 @@ const ExecutorDetails = ({
         <Stack gutter="md">
             <Card>
                 <CardHeader className='ins-m-card__header-bold'>
-                    <TableToolbar>
-                        <ConditionalFilter
-                            items={ [
-                                {   value: 'display_name',
-                                    label: 'Name',
-                                    filterValues: { placeholder: 'Filter by name', type: conditionalFilterType.text,
-                                        value: filter.value,
-                                        onChange: (e, selected) => {
-                                            setFilter({ ...filter, value: selected });
-                                            setFilteredSystems(systems.filter(s => s[filter.key].includes(selected)));
-                                        },
-                                        onSubmit: (e, selected) => {
-                                            setFilteredSystems(systems.filter(s => s[selected].includes(filter.value)));
-                                        }
-                                    }
-                                },
-                                {
-                                    value: 'status',
-                                    label: 'Status',
-                                    filterValues: { placeholder: 'Filter by status', type: conditionalFilterType.text,
-                                        value: filter.value,
-                                        onChange: (e, selected) => {
-                                            setFilter({ ...filter, value: selected });
-                                            setFilteredSystems(systems.filter(s => s[filter.key].includes(selected)));
-                                        },
-                                        onSubmit: (e, selected) => {
-                                            setFilteredSystems(systems.filter(s => s[selected].includes(filter.value)));
-                                        }
-                                    }
-                                }
-                            ] }
-                            value={ filter.key }
-                            onChange={ (e, selected) => setFilter({ key: selected, value: '' }) }
-                        />
-                        <Button
-                            variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
-                            <DownloadIcon /> { ' ' }
-                            Download Playbook
-                        </Button>
-                    </TableToolbar>
 
                 </CardHeader>
 
@@ -227,7 +187,51 @@ const ExecutorDetails = ({
                                 onCollapseInventory(isOpen, id);
 
                             } }
-                    /> }
+                    >
+                        <TableToolbar>
+                            <ToolbarGroup>
+                                <ToolbarItem>
+                                    <ConditionalFilter
+                                        items={ [
+                                            {
+                                                value: 'display_name',
+                                                label: 'Name',
+                                                filterValues: {
+                                                    placeholder: 'Filter by name', type: conditionalFilterType.text,
+                                                    value: filter.value,
+                                                    onChange: (e, selected) => {
+                                                        setFilter({ ...filter, value: selected });
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                value: 'status',
+                                                label: 'Status',
+                                                filterValues: {
+                                                    placeholder: 'Filter by status', type: conditionalFilterType.text,
+                                                    value: filter.value,
+                                                    onChange: (e, selected) => {
+                                                        setFilter({ ...filter, value: selected });
+                                                    }
+                                                }
+                                            }
+                                        ] }
+                                        value={ filter.key }
+                                        onChange={ (e, selected) => setFilter({ key: selected, value: '' }) }
+                                    />
+                                </ToolbarItem>
+                            </ToolbarGroup>
+                            <ToolbarGroup>
+                                <ToolbarItem>
+                                    <Button
+                                        variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
+                                        <DownloadIcon /> { ' ' }
+                                Download Playbook
+                                    </Button>
+                                </ToolbarItem>
+                            </ToolbarGroup>
+                        </TableToolbar>
+                    </InventoryTable> }
                 </CardBody>
             </Card>
         </Stack>
