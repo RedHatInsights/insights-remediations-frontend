@@ -10,7 +10,7 @@ import classnames from 'classnames';
 import './SystemDetails.scss';
 
 const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
-    
+
     const outputClasses = classnames(
         'ins-c-job-output',
         { ['ins-c-job-output__finished']: playbookRunSystemDetails.status !== 'running' }
@@ -22,10 +22,10 @@ const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
                 <SyntaxHighlighter
                     language="yaml"
                     showLineNumbers
-                    className={outputClasses}>
+                    className={ outputClasses }>
                     { playbookRunSystemDetails && playbookRunSystemDetails.console || '' }
                 </SyntaxHighlighter>
-                { playbookRunSystemDetails.status === 'running' && 
+                { playbookRunSystemDetails.status === 'running' &&
                     <div className='ins-l-playbook-running'>
                         <Spinner size='lg' aria-valuetext='playbook in progress' className='ins-c-spinner__playbook-running'/>
                     </div>
