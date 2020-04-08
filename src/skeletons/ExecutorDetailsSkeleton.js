@@ -32,12 +32,12 @@ const ExecutorDetailsSkeleton = () => {
                 </BreadcrumbItem>
                 <BreadcrumbItem isActive> <Skeleton size='lg' /> </BreadcrumbItem>
             </Breadcrumb>
-            <Stack gutter>
+            <Stack gutter='md'>
                 <StackItem>
                     <PageHeaderTitle title={ <Skeleton size='lg' /> } />
                 </StackItem>
                 <StackItem>
-                    <Split gutter>
+                    <Split gutter='md'>
                         <SplitItem>
                             <DescriptionList className='ins-c-playbookSummary__settings' title='Run on'>
                                 <Skeleton size='lg' />

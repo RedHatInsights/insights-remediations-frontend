@@ -32,7 +32,7 @@ const ActivityDetailsSkeleton = () => {
                     <PageHeaderTitle title={ <Skeleton size='lg' /> } />
                 </StackItem>
                 <StackItem>
-                    <Split gutter>
+                    <Split gutter="md">
                         <SplitItem>
                             <DescriptionList className='ins-c-playbookSummary__settings' title='Run on'>
                                 <Skeleton size='lg' />
