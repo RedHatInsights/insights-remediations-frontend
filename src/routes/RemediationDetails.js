@@ -17,6 +17,7 @@ import NotConfigured from '../components/EmptyStates/NotConfigured';
 import DeniedState from '../components/DeniedState';
 import classnames from 'classnames';
 import { capitalize } from '../Utilities/utils';
+import SkeletonTable from '../skeletons/SkeletonTable';
 
 import {
     Main,
@@ -45,6 +46,7 @@ import './RemediationDetails.scss';
 
 const RemediationDetails = ({
     match,
+    location,
     selectedRemediation,
     selectedRemediationStatus,
     history,
@@ -57,7 +59,7 @@ const RemediationDetails = ({
 
     const id = match.params.id;
     const [ upsellBannerVisible, setUpsellBannerVisible ] = useState(true);
-    const [ activeTabKey, setActiveTabKey ] = useState(0);
+    const [ activeTabKey, setActiveTabKey ] = useState(location.search.includes('?activity') ? 1 : 0);
 
     const context = useContext(PermissionContext);
 
@@ -71,6 +73,7 @@ const RemediationDetails = ({
 
     const handleTabClick = (event, tabIndex) => {
         setActiveTabKey(tabIndex);
+        history.push(tabIndex === 1 ? '?activity' : '?issues');
     };
 
     useEffect(() => {
@@ -143,11 +146,15 @@ const RemediationDetails = ({
 
         if (!isEntitled) {return <ActivityTabUpsell/>;}
 
-        if (playbookRuns && playbookRuns.length) {
+        if (Array.isArray(playbookRuns) && playbookRuns.length) {
             return <RemediationActivityTable remediation={ remediation } playbookRuns={ playbookRuns }/>;
         }
 
-        return <EmptyActivityTable/>;
+        if (Array.isArray(playbookRuns) && !playbookRuns.length) {
+            return <EmptyActivityTable/>;
+        }
+
+        return <SkeletonTable/>;
     };
 
     const { status, remediation } = selectedRemediation;
@@ -288,6 +295,7 @@ RemediationDetails.propTypes = {
             id: PropTypes.string.isRequired
         })
     }).isRequired,
+    location: PropTypes.object,
     selectedRemediation: PropTypes.object,
     selectedRemediationStatus: PropTypes.object,
     history: PropTypes.object.isRequired,
