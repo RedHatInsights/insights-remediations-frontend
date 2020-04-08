@@ -14,6 +14,8 @@
             margin-right: 8px;
         }
     }
+
+    // add the border to the bottom since the spinner won't be there
     &__finished { border-bottom: 2px solid var(--pf-global--Color--light-300);}
 }
 
