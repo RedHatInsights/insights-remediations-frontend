@@ -61,6 +61,7 @@ const ExecutorDetails = ({
     const [ InventoryTable, setInventoryTable ] = useState();
     const [ page, setPage ] = useState(1);
     const [ pageSize, setPageSize ] = useState(50);
+    const [ openId, setOpenId ] = useState();
     const inventory = useRef(null);
     const store = useStore();
 
@@ -112,28 +113,28 @@ const ExecutorDetails = ({
     useEffect(() => {
         if (playbookRun && playbookRun.data) {
             setExecutor(playbookRun.data.executors.find(executor => executor.executor_id === executor_id) || {});
+
         }
 
-        getPlaybookRunSystems(id, run_id, executor_id, pageSize, pageSize * (page - 1));
+        if (playbookRunSystems.status !== 'pending') {
+            getPlaybookRunSystems(id, run_id, executor_id, pageSize, pageSize * (page - 1));
+        }
+
     }, [ playbookRun ]);
 
     useEffect(() => {
         getPlaybookRun(id, run_id);
-    }, [ playbookRunSystemDetails, playbookRunSystemDetails.status ]);
+    }, [ playbookRunSystemDetails.status ]);
 
     useEffect(() => {
         setSystems(() => playbookRunSystems.data.map(({ system_id, system_name, status }) => ({
             id: system_id,
             display_name: system_name,
             status,
-            isOpen: (systems.find(s => s.id === systems.id) || { isOpen: false }).isOpen,
+            isOpen: openId === system_id,
             children: <PlaybookSystemDetails systemId={ system_id } />
         })));
     }, [ playbookRunSystems ]);
-
-    useEffect(() => {
-        setFilteredSystems(systems);
-    }, [ systems ]);
 
     const systemsStatus =
         playbookRunSystems.data.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
@@ -194,16 +195,17 @@ const ExecutorDetails = ({
 
                     { InventoryTable && <InventoryTable
                         ref={ inventory }
-                        items={ filteredSystems }
+                        items={ systems.filter(s => s[filter.key].includes(filter.value)) }
                         onRefresh={ onRefresh }
                         page={ page }
-                        total={ filteredSystems.length }
+                        total={ systems.filter(s => s[filter.key].includes(filter.value)).length }
                         perPage={ pageSize }
                         tableProps={ { onSelect: undefined } }
                         expandable
                         onExpandClick={ status === 'running'
                             ? (_e, _i, isOpen, { id }) => {
                                 if (isOpen) {
+                                    setOpenId(id);
                                     if (refreshInterval) {
                                         clearInterval(refreshInterval);
                                     }
@@ -212,6 +214,7 @@ const ExecutorDetails = ({
                                     refreshInterval = setInterval(() => getPlaybookRunSystemDetails(remediation.id, run_id, id), 5000);
                                 }
                                 else {
+                                    setOpenId(undefined);
                                     clearInterval(refreshInterval);
                                 }
 
@@ -219,6 +222,7 @@ const ExecutorDetails = ({
 
                             }
                             : (_e, _i, isOpen, { id }) => {
+                                clearInterval(refreshInterval);
                                 getPlaybookRunSystemDetails(remediation.id, run_id, id);
                                 onCollapseInventory(isOpen, id);
 
@@ -307,7 +311,7 @@ const ExecutorDetails = ({
                     </StackItem>
                 </Stack>
             </PageHeader>
-            { renderMain('running') }
+            { renderMain(normalizeStatus(executor.status)) }
         </React.Fragment>
         : <ExecutorDetailsSkeleton />;
 };

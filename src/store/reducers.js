@@ -173,6 +173,7 @@ const reducers = {
 
             };
         },
+
         [ACTION_TYPES.EXPAND_INVENTORY_TABLE]: (state, action) => {
             return {
                 ...state,
@@ -216,6 +217,10 @@ const reducers = {
     playbookRunSystems: applyReducerHash({
         [ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEMS_FULFILLED]: (state, action) => ({
             ...action.payload
+        }),
+        [ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEMS_PENDING]: (state) => ({
+            ...state,
+            status: 'pending'
         })
     }, {
         data: [],
