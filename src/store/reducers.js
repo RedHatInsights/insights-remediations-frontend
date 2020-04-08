@@ -186,6 +186,7 @@ const reducers = {
 
     playbookRuns: applyReducerHash({
         [ACTION_TYPES.GET_PLAYBOOK_RUNS_FULFILLED]: (state, action) => ({
+            status: 'fulfilled',
             data: action.payload.data,
             meta: action.payload.meta
         })

@@ -272,7 +272,7 @@ const ExecutorDetails = ({
                     </BreadcrumbItem>
                     <BreadcrumbItem isActive> { executor.executor_name } </BreadcrumbItem>
                 </Breadcrumb>
-                <Stack gutter='md'>
+                <Stack gutter="md">
                     <StackItem>
                         <PageHeaderTitle title={
                             normalizeStatus(executor.status) === 'Running'
@@ -286,7 +286,7 @@ const ExecutorDetails = ({
                         } />
                     </StackItem>
                     <StackItem>
-                        <Split gutter='md'>
+                        <Split gutter="md">
                             <SplitItem>
                                 <DescriptionList className='ins-c-playbookSummary__settings' title='Run on'>
                                     <DateFormat type='exact' date={ playbookRun.data.created_at } />

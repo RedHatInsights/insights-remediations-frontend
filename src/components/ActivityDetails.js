@@ -110,7 +110,7 @@ const ActivityDetail = ({
                     </Stack>
                 </PageHeader>
                 <Main>
-                    <Stack gutter="md">
+                    <Stack gutter='md'>
                         <Card>
                             <CardHeader className='ins-m-card__header-bold'>Results by connection</CardHeader>
                             <CardBody>
