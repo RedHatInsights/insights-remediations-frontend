@@ -40,7 +40,10 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
                                     canceled: acc.canceled + ex.counts.canceled,
                                     acked: acc.acked + ex.counts.acked
                                 }), { pending: 0, running: 0, success: 0, failure: 0, canceled: 0 }) }
-                            // onCancel={ () => console.log('cancel') } TODO add back
+                            hasCancel
+                            remediationName={ remediation.name }
+                            remediationId={ remediation.id }
+                            playbookId={ playbooks.id }
                             permission={ permission }/>
                         }
                     ]

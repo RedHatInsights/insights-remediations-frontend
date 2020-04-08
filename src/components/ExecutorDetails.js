@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 /* eslint-disable camelcase */
 import React, { useEffect, useState, useRef, useContext } from 'react';
-import { connect } from 'react-redux';
+import { connect, useStore } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import * as pfReactTable from '@patternfly/react-table';
@@ -62,6 +62,7 @@ const ExecutorDetails = ({
     const [ page, setPage ] = useState(1);
     const [ pageSize, setPageSize ] = useState(50);
     const inventory = useRef(null);
+    const store = useStore();
 
     const loadInventory = async () => {
         const {
@@ -84,7 +85,7 @@ const ExecutorDetails = ({
             })())
         });
 
-        const { InventoryTable } = inventoryConnector();
+        const { InventoryTable } = inventoryConnector(store);
         setInventoryTable(() => InventoryTable);
     };
 

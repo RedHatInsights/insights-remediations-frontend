@@ -191,6 +191,21 @@ const reducers = {
 
     }),
 
+    cancelPlaybookRuns: applyReducerHash({
+        [ACTION_TYPES.CANCEL_PLAYBOOK_RUNS_PENDING]: () => ({
+            status: 'pending'
+        }),
+        [ACTION_TYPES.CANCEL_PLAYBOOK_RUNS_FULFILLED]: (state, action) => ({
+            status: 'fulfilled',
+            value: action.payload
+        }),
+        [ACTION_TYPES.CANCEL_PLAYBOOK_RUNS_REJECTED]: () => ({
+            status: 'rejected'
+        })
+    }, {
+        status: 'initial'
+    }),
+
     playbookRun: applyReducerHash({
         [ACTION_TYPES.GET_PLAYBOOK_RUN_FULFILLED]: (state, action) => ({
             data: action.payload
