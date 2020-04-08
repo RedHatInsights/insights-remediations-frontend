@@ -173,14 +173,15 @@ const reducers = {
 
             };
         },
+
         [ACTION_TYPES.EXPAND_INVENTORY_TABLE]: (state, action) => {
             return {
                 ...state,
-                rows: [ ...state.rows.filter(row => row.id !== action.payload.id),
-                    { ...state.rows.find(row => row.id === action.payload.id), isOpen: action.payload.isOpen
-                    }
-                ]
-            };}
+                rows:
+                    state.rows.map(row => ({ ...row, isOpen: row.id === action.payload.id ? action.payload.isOpen : false }))
+
+            };
+        }
     }),
 
     playbookRuns: applyReducerHash({
@@ -217,6 +218,10 @@ const reducers = {
     playbookRunSystems: applyReducerHash({
         [ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEMS_FULFILLED]: (state, action) => ({
             ...action.payload
+        }),
+        [ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEMS_PENDING]: (state) => ({
+            ...state,
+            status: 'pending'
         })
     }, {
         data: [],

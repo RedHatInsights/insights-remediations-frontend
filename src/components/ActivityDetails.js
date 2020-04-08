@@ -77,7 +77,7 @@ const ActivityDetail = ({
                             } />
                         </StackItem>
                         <StackItem>
-                            <Split gutter>
+                            <Split gutter='md'>
                                 <SplitItem>
                                     <DescriptionList className='ins-c-playbookSummary__settings' title='Run on'>
                                         <DateFormat type='exact' date={ playbookRun.data.created_at } />
