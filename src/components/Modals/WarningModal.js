@@ -7,7 +7,7 @@ import './WarningModal.scss';
 export const WarningModal = ({ isOpen, onModalCancel, onConfirmCancel }) => (
     <Modal
         header={ <Title headingLevel={ TitleLevel.h1 } size={ BaseSizes['2xl'] } className='ins-c-modal__cancel-run-warning-header'>
-            <ExclamationTriangleIcon size='md' className='ins-c-wizard__cancel-warning-header--icon'/>
+            <ExclamationTriangleIcon size='md' className='ins-c-modal__cancel-run-warning-header--icon'/>
             Cancel remediation process
         </Title> }
         title='Cancel remediation process'
