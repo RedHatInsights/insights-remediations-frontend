@@ -59,7 +59,7 @@ const ActivityDetail = ({
                         </BreadcrumbItem>
                         <BreadcrumbItem isActive> <DateFormat type='exact' date={ playbookRun.data.created_at } /> </BreadcrumbItem>
                     </Breadcrumb>
-                    <Stack gutter>
+                    <Stack gutter='md'>
                         <StackItem>
                             <PageHeaderTitle title={
                                 normalizeStatus(playbookRun.data.status) === 'running'
@@ -77,7 +77,7 @@ const ActivityDetail = ({
                             } />
                         </StackItem>
                         <StackItem>
-                            <Split gutter>
+                            <Split gutter='md'>
                                 <SplitItem>
                                     <DescriptionList className='ins-c-playbookSummary__settings' title='Run on'>
                                         <DateFormat type='exact' date={ playbookRun.data.created_at } />
