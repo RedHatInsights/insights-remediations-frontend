@@ -155,7 +155,8 @@ const ExecutorDetails = ({
                 <CardBody>
                     { InventoryTable && <InventoryTable
                         ref={ inventory }
-                        items={ systems.filter(s => s[filter.key].includes(filter.value)) }
+                        items={ playbookRunSystems.status !== 'pending' ? systems.filter(s => s[filter.key].includes(filter.value)) : [] }
+                        isLoaded={ playbookRunSystems.status !== 'pending' }
                         onRefresh={ onRefresh }
                         page={ page }
                         total={ systems.filter(s => s[filter.key].includes(filter.value)).length }
