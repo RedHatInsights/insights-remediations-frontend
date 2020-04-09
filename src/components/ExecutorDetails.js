@@ -164,6 +164,7 @@ const ExecutorDetails = ({
                         perPage={ pageSize }
                         tableProps={ { onSelect: undefined } }
                         expandable
+                        showTags
                         onExpandClick={ status === 'running'
                             ? (_e, _i, isOpen, { id }) => {
                                 if (isOpen) {
