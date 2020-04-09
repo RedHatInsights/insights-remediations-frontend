@@ -13,4 +13,7 @@
     .ins-l-description-list__description--withGutter {
         * + * { margin-left: var(--pf-global--spacer--sm); }
     }
+    .ins-l-description-list__description--needsPointer {
+        cursor: pointer;
+    }
 }
