@@ -10,7 +10,7 @@ const DescriptionList = ({ title, className, children, isBold, hasGutter, needsP
         'ins-l-description-list__description',
         { ['ins-l-description-list__description--bold']: isBold },
         { ['ins-l-description-list__description--withGutter']: hasGutter },
-        { ['ins-l-description-list__description--needsPointer']: hasGutter }
+        { ['ins-l-description-list__description--needsPointer']: needsPointer }
     );
 
     const mainClasses = classnames(
