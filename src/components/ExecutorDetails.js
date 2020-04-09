@@ -38,6 +38,7 @@ import { normalizeStatus, renderStatus, StatusSummary  } from './statusHelper';
 import PlaybookSystemDetails from './SystemDetails';
 import ExecutorDetailsSkeleton from '../skeletons/ExecutorDetailsSkeleton';
 import RunFailed from './Alerts/RunFailed';
+import { inventoryUrlBuilder } from '../Utilities/urls';
 
 import { PermissionContext } from '../App';
 let refreshInterval;
@@ -64,6 +65,8 @@ const ExecutorDetails = ({
     const inventory = useRef(null);
     const store = useStore();
 
+    const urlBuilder = inventoryUrlBuilder({ id: 'default' });
+
     const loadInventory = async () => {
         const {
             inventoryConnector,
@@ -81,7 +84,7 @@ const ExecutorDetails = ({
             ...mergeWithEntities(reducers.playbookActivityIntentory({
                 INVENTORY_ACTION_TYPES, renderStatus: (status) => (<div className="ins-c-remediations-status-bar">
                     { renderStatus(normalizeStatus(status)) }
-                </div>)
+                </div>), urlBuilder
             })())
         });
 
