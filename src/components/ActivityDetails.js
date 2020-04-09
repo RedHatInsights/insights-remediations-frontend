@@ -48,6 +48,7 @@ const ActivityDetail = ({
     }, []);
 
     const permission = useContext(PermissionContext);
+    const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
     return remediation && playbookRun && playbookRun.data
         ? (
@@ -68,10 +69,14 @@ const ActivityDetail = ({
                                             className="ins-c-remediations-running"
                                             aria-label="connection status" />{ ' ' }
                                         <DateFormat type='exact' date={ playbookRun.data.created_at } />
-                                        <CancelButton
-                                            remediationName={ remediation.name }
-                                            remediationId={ remediation.id }
-                                            playbookId={ playbookRun.data.id }/>
+                                        {
+                                            isDebug() &&
+                                            <CancelButton
+                                                remediationName={ remediation.name }
+                                                remediationId={ remediation.id }
+                                                playbookId={ playbookRun.data.id }/>
+                                        }
+
                                     </React.Fragment>
                                     : <DateFormat type='exact' date={ playbookRun.data.created_at } />
                             } />

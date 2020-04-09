@@ -59,6 +59,7 @@ export const StatusSummary = ({ executorStatus, permission, hasCancel, counts, r
     const runningCount = counts.acked && !counts.acked.isNaN() ? counts.running + counts.pending + counts.acked : counts.running + counts.pending;
     const failCount = counts.failure + counts.canceled;
     const passCount = counts.success;
+    const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
     const statusBar = (
         <Flex className="ins-c-remediations-status-bar">
@@ -76,7 +77,7 @@ export const StatusSummary = ({ executorStatus, permission, hasCancel, counts, r
             <FlexItem>
                 { renderStatus('running', `${runningCount}`) }
             </FlexItem>
-            { hasCancel && permission.permissions.execute && executorStatus && normalizeStatus(executorStatus) === 'running' &&
+            { isDebug() && hasCancel && permission.permissions.execute && executorStatus && normalizeStatus(executorStatus) === 'running' &&
                 <FlexItem>
                     <CancelButton
                         remediationName={ remediationName }
