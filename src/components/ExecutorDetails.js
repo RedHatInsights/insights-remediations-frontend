@@ -123,6 +123,9 @@ const ExecutorDetails = ({
 
     useEffect(() => {
         getPlaybookRun(id, run_id);
+        if (normalizeStatus(playbookRunSystemDetails.status) !== 'running' && refreshInterval) {
+            clearInterval(refreshInterval);
+        }
     }, [ playbookRunSystemDetails.status ]);
 
     useEffect(() => {
