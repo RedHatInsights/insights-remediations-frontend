@@ -149,12 +149,7 @@ const ExecutorDetails = ({
     const renderInventorycard = (status) => <Main>
         <Stack gutter="md">
             <Card>
-                <CardHeader className='ins-m-card__header-bold'>
-
-                </CardHeader>
-
                 <CardBody>
-
                     { InventoryTable && <InventoryTable
                         ref={ inventory }
                         items={ systems.filter(s => s[filter.key].includes(filter.value)) }
