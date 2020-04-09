@@ -39,7 +39,7 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
                                     failure: acc.failure + ex.counts.failure,
                                     canceled: acc.canceled + ex.counts.canceled,
                                     acked: acc.acked + ex.counts.acked
-                                }), { pending: 0, running: 0, success: 0, failure: 0, canceled: 0 }) }
+                                }), { pending: 0, running: 0, success: 0, failure: 0, canceled: 0, acked: 0 }) }
                             hasCancel
                             remediationName={ remediation.name }
                             remediationId={ remediation.id }
