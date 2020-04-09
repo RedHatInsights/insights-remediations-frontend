@@ -184,6 +184,12 @@ const ExecutorDetails = ({
 
                             }
                             : (_e, _i, isOpen, { id }) => {
+                                if (isOpen) {
+                                    setOpenId(id);
+                                } else {
+                                    setOpenId(undefined);
+                                }
+
                                 clearInterval(refreshInterval);
                                 getPlaybookRunSystemDetails(remediation.id, run_id, id);
                                 onCollapseInventory(isOpen, id);
