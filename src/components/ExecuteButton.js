@@ -97,7 +97,7 @@ const ExecuteButton = ({
     const [ open, setOpen ] = useState(false);
     const [ isUserEntitled, setIsUserEntitled ] = useState(false);
     const [ showRefreshMessage, setShowRefreshMessage ] = useState(false);
-    const isEnabled = () => localStorage.getItem('remediations:fifi:debug') === 'true';
+    const isEnabled = () => true || localStorage.getItem('remediations:fifi:debug') === 'true';
     const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
     useEffect(() => {
