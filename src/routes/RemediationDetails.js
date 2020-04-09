@@ -7,7 +7,7 @@ import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import RemediationActivityTable from '../components/RemediationActivityTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
-import { renderStatusIcon, normalizeStatus, StatusSummary } from '../components/statusHelper';
+import { renderStatusIcon, normalizeStatus } from '../components/statusHelper';
 import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
@@ -125,22 +125,20 @@ const RemediationDetails = ({
             const mostRecent = playbookRuns[0];
 
             return (
-                <React.Fragment>
-                    <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
-                        <DescriptionList
-                            hasGutter
-                            needsPointer
-                            title='Latest activity'>
-                            <LatestActivityPopover mostRecent={ mostRecent }>
-                                <span><DateFormat type='relative' date={ mostRecent.updated_at } /></span>
-                                <Tooltip content={ <span>{ capitalize(mostRecent.status) }</span> }>
-                                    { renderStatusIcon(normalizeStatus(mostRecent.status)) }
-                                </Tooltip>
-                            </LatestActivityPopover>
-                            <Link to={ `/${mostRecent.remediation_id}/${mostRecent.id}` }>View</Link>
-                        </DescriptionList>
-                    </FlexItem>
-                </React.Fragment>
+                <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                    <DescriptionList
+                        hasGutter
+                        needsPointer
+                        title='Latest activity'>
+                        <LatestActivityPopover mostRecent={ mostRecent }>
+                            <span><DateFormat type='relative' date={ mostRecent.updated_at } /></span>
+                            <Tooltip content={ <span>{ capitalize(mostRecent.status) }</span> }>
+                                { renderStatusIcon(normalizeStatus(mostRecent.status)) }
+                            </Tooltip>
+                        </LatestActivityPopover>
+                        <Link to={ `/${mostRecent.remediation_id}/${mostRecent.id}` }>View</Link>
+                    </DescriptionList>
+                </FlexItem>
             );
         }
 

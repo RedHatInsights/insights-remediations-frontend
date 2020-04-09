@@ -6,7 +6,7 @@ import { DateFormat } from '@redhat-cloud-services/frontend-components';
 
 import {
     Popover, PopoverPosition,
-    Flex, FlexItem, FlexModifiers,
+    Flex, FlexItem, FlexModifiers
 } from '@patternfly/react-core';
 
 import { normalizeStatus, StatusSummary } from '../statusHelper';
@@ -57,7 +57,7 @@ export const LatestActivityPopover = ({ mostRecent, children }) => {
             }
             footerContent={ <Link to={ `/${mostRecent.remediation_id}/${mostRecent.id}` }>View activity details</Link> }
         >
-            {/* Patternfly expects a single element here, so wrap in a fragment */}
+            { /* Patternfly expects a single element here, so wrap in a fragment */ }
             <React.Fragment>
                 { children }
             </React.Fragment>
