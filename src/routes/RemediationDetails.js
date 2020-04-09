@@ -7,7 +7,7 @@ import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import RemediationActivityTable from '../components/RemediationActivityTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
-import { renderStatusIcon, normalizeStatus } from '../components/statusHelper';
+import { renderStatusIcon, normalizeStatus, StatusSummary } from '../components/statusHelper';
 import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
@@ -33,7 +33,8 @@ import {
     Button,
     Split, SplitItem,
     Flex, FlexItem, FlexModifiers,
-    Tabs, Tab, Tooltip
+    Tabs, Tab, Tooltip,
+    Popover, PopoverPosition
 } from '@patternfly/react-core';
 
 import RemediationDetailsSkeleton from '../skeletons/RemediationDetailsSkeleton';
@@ -117,6 +118,56 @@ const RemediationDetails = ({
         return (status ? 'Enabled' : 'Disabled');
     };
 
+    const LatestActivityPopover = ({ mostRecent, children }) => {
+        return(
+            <Popover
+                maxWidth='25rem'
+                position={ PopoverPosition.bottom }
+                headerContent={<div>Latest Activity</div>}
+                bodyContent={
+                    <Flex breakpointMods={[{modifier: FlexModifiers.column}]}>
+                        <Flex>
+                            <FlexItem>
+                                <DescriptionList
+                                    hasGutter
+                                    title='Run on'>
+                                    <span><DateFormat type='exact' date={ mostRecent.updated_at } /></span>
+                                </DescriptionList>
+                            </FlexItem>
+                            <FlexItem>
+                                <DescriptionList
+                                    hasGutter
+                                    title='Run by'>
+                                    <span>{ `${mostRecent.created_by.first_name} ${mostRecent.created_by.last_name}` }</span>
+                                </DescriptionList>
+                            </FlexItem>
+                        </Flex>
+                        <Flex>
+                            <FlexItem>
+                                <DescriptionList
+                                    title='Status'>
+                                    <StatusSummary
+                                        executorStatus={ normalizeStatus(mostRecent.status) }
+                                        counts={ mostRecent.executors.reduce((acc, ex) => (
+                                            { pending: acc.pending + ex.counts.pending,
+                                                running: acc.running + ex.counts.running,
+                                                success: acc.success + ex.counts.success,
+                                                failure: acc.failure + ex.counts.failure,
+                                                canceled: acc.canceled + ex.counts.canceled,
+                                                acked: acc.acked + ex.counts.acked
+                                            }), { pending: 0, running: 0, success: 0, failure: 0, canceled: 0, acked: 0 }) }/>
+                                </DescriptionList>
+                            </FlexItem>
+                        </Flex>
+                    </Flex>
+                }
+                footerContent={<Link to={ `/${mostRecent.remediation_id}/${mostRecent.id}` }>View activity details</Link>}
+            >
+                { children }
+            </Popover>
+        )
+    }
+
     const renderLatestActivity = (playbookRuns) => {
 
         if (playbookRuns.length) {
@@ -124,17 +175,22 @@ const RemediationDetails = ({
             const mostRecent = playbookRuns[0];
 
             return (
-                <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
-                    <DescriptionList
-                        hasGutter
-                        title='Latest activity'>
-                        <span><DateFormat type='relative' date={ mostRecent.updated_at } /></span>
-                        <Tooltip content={ <span>{ capitalize(mostRecent.status) }</span> }>
-                            { renderStatusIcon(normalizeStatus(mostRecent.status)) }
-                        </Tooltip>
-                        <Link to={ `/${mostRecent.remediation_id}/${mostRecent.id}` }>View</Link>
-                    </DescriptionList>
-                </FlexItem>
+                <React.Fragment>
+                        <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                        <DescriptionList
+                            hasGutter
+                            needsPointer
+                            title='Latest activity'>
+                            <LatestActivityPopover mostRecent={ mostRecent }>
+                                <span><DateFormat type='relative' date={ mostRecent.updated_at } /></span>
+                                <Tooltip content={ <span>{ capitalize(mostRecent.status) }</span> }>
+                                    { renderStatusIcon(normalizeStatus(mostRecent.status)) }
+                                </Tooltip>
+                            </LatestActivityPopover>
+                            <Link to={ `/${mostRecent.remediation_id}/${mostRecent.id}` }>View</Link>
+                        </DescriptionList>
+                    </FlexItem>
+                </React.Fragment>
             );
         }
 
