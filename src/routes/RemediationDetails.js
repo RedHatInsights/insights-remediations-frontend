@@ -128,10 +128,10 @@ const RemediationDetails = ({
                     <DescriptionList
                         hasGutter
                         title='Latest activity'>
+                        <span><DateFormat type='relative' date={ mostRecent.updated_at } /></span>
                         <Tooltip content={ <span>{ capitalize(mostRecent.status) }</span> }>
                             { renderStatusIcon(normalizeStatus(mostRecent.status)) }
                         </Tooltip>
-                        <span><DateFormat type='exact' date={ mostRecent.updated_at } /></span>
                         <Link to={ `/${mostRecent.remediation_id}/${mostRecent.id}` }>View</Link>
                     </DescriptionList>
                 </FlexItem>
