@@ -18,6 +18,7 @@ import DeniedState from '../components/DeniedState';
 import classnames from 'classnames';
 import { capitalize } from '../Utilities/utils';
 import SkeletonTable from '../skeletons/SkeletonTable';
+import { LatestActivityPopover } from '../components/Popovers/LatestActivityPopover';
 
 import {
     Main,
@@ -33,8 +34,7 @@ import {
     Button,
     Split, SplitItem,
     Flex, FlexItem, FlexModifiers,
-    Tabs, Tab, Tooltip,
-    Popover, PopoverPosition
+    Tabs, Tab, Tooltip
 } from '@patternfly/react-core';
 
 import RemediationDetailsSkeleton from '../skeletons/RemediationDetailsSkeleton';
@@ -118,56 +118,6 @@ const RemediationDetails = ({
         return (status ? 'Enabled' : 'Disabled');
     };
 
-    const LatestActivityPopover = ({ mostRecent, children }) => {
-        return(
-            <Popover
-                maxWidth='25rem'
-                position={ PopoverPosition.bottom }
-                headerContent={<div>Latest Activity</div>}
-                bodyContent={
-                    <Flex breakpointMods={[{modifier: FlexModifiers.column}]}>
-                        <Flex>
-                            <FlexItem>
-                                <DescriptionList
-                                    hasGutter
-                                    title='Run on'>
-                                    <span><DateFormat type='exact' date={ mostRecent.updated_at } /></span>
-                                </DescriptionList>
-                            </FlexItem>
-                            <FlexItem>
-                                <DescriptionList
-                                    hasGutter
-                                    title='Run by'>
-                                    <span>{ `${mostRecent.created_by.first_name} ${mostRecent.created_by.last_name}` }</span>
-                                </DescriptionList>
-                            </FlexItem>
-                        </Flex>
-                        <Flex>
-                            <FlexItem>
-                                <DescriptionList
-                                    title='Status'>
-                                    <StatusSummary
-                                        executorStatus={ normalizeStatus(mostRecent.status) }
-                                        counts={ mostRecent.executors.reduce((acc, ex) => (
-                                            { pending: acc.pending + ex.counts.pending,
-                                                running: acc.running + ex.counts.running,
-                                                success: acc.success + ex.counts.success,
-                                                failure: acc.failure + ex.counts.failure,
-                                                canceled: acc.canceled + ex.counts.canceled,
-                                                acked: acc.acked + ex.counts.acked
-                                            }), { pending: 0, running: 0, success: 0, failure: 0, canceled: 0, acked: 0 }) }/>
-                                </DescriptionList>
-                            </FlexItem>
-                        </Flex>
-                    </Flex>
-                }
-                footerContent={<Link to={ `/${mostRecent.remediation_id}/${mostRecent.id}` }>View activity details</Link>}
-            >
-                { children }
-            </Popover>
-        )
-    }
-
     const renderLatestActivity = (playbookRuns) => {
 
         if (playbookRuns.length) {
@@ -176,7 +126,7 @@ const RemediationDetails = ({
 
             return (
                 <React.Fragment>
-                        <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                    <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
                         <DescriptionList
                             hasGutter
                             needsPointer
