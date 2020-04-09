@@ -25,7 +25,7 @@ export const LatestActivityPopover = ({ mostRecent, children }) => {
                             <DescriptionList
                                 hasGutter
                                 title='Run on'>
-                                <span><DateFormat type='exact' date={ mostRecent.updated_at } /></span>
+                                <span><DateFormat type='exact' date={ mostRecent.created_at } /></span>
                             </DescriptionList>
                         </FlexItem>
                         <FlexItem>
