@@ -166,9 +166,13 @@ const reducers = {
             return {
                 ...state,
                 columns: [
-                    ...state.columns.filter(col => col.key === 'display_name' || col.key === 'tags'),
+                    { key: 'display_name', title: 'Name',
+                    // eslint-disable-next-line
+                        renderFunc: (name, id, { display_name }) => <div><a href={props.urlBuilder(id)}>{display_name}</a></div>
+                    },
+                    state.columns.find(col => col.key === 'tags'),
                     { key: 'status', title: 'Status',
-                        renderFunc: (status) => props.renderStatus(status) } // TODO remove id
+                        renderFunc: (status) => props.renderStatus(status) }
                 ]
 
             };
