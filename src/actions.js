@@ -75,3 +75,35 @@ export const setEtag = (etag) => ({
     payload: { etag }
 });
 
+export const getPlaybookRuns = (remediationId) => ({
+    type: ACTION_TYPES.GET_PLAYBOOK_RUNS,
+    payload: remediations.listPlaybookRuns(remediationId)
+});
+
+export const cancelPlaybookRuns = (remediationId, runId) => ({
+    type: ACTION_TYPES.CANCEL_PLAYBOOK_RUNS,
+    payload: remediations.cancelPlaybookRuns(remediationId, runId)
+});
+
+export const getPlaybookRun = (remediationId, runId) => ({
+    type: ACTION_TYPES.GET_PLAYBOOK_RUN,
+    payload: remediations.getPlaybookRunDetails(remediationId, runId)
+});
+
+export const getPlaybookRunSystems = (remediationId, runId, executorId, limit = 50, offset = 0) => ({
+    type: ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEMS,
+    payload: remediations.getPlaybookRunSystems(remediationId, runId, executorId, limit, offset)
+});
+
+export const getPlaybookRunSystemDetails = (remediationId, runId, systemId) => ({
+    type: ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEM_DETAILS,
+    payload: remediations.getPlaybookRunSystemDetails(remediationId, runId, systemId)
+});
+
+export const expandInventoryTable = (id, isOpen) => ({
+    type: ACTION_TYPES.EXPAND_INVENTORY_TABLE,
+    payload: {
+        id,
+        isOpen
+    }
+});

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import * as actions from '../actions';
 
@@ -13,10 +14,9 @@ import PlanName from '../components/CreatePlanModal/ModalSteps/PlanName';
 
 class NewRemediationButton extends Component {
 
-    constructor (props, ctx) {
-        super(props, ctx);
+    constructor (props) {
+        super(props);
         this.props = props;
-        this.store = ctx.store;
         this.state = {
             open: false
         };
@@ -32,9 +32,10 @@ class NewRemediationButton extends Component {
     };
 
     newRemediation = (name) => {
+        const { addNotification, createRemediation } = this.props;
         name = (!name || !name.length) ? 'Unnamed remediation' : name;
 
-        this.store.dispatch(actions.createRemediation({
+        createRemediation({
             name,
             add: {
                 issues: [{
@@ -49,14 +50,14 @@ class NewRemediationButton extends Component {
                     'da8355c0-b259-490d-a9ec-8c1bc0ba7e98'
                 ]
             }
-        }))
+        })
         .then(({ value }) => {
-            this.store.dispatch(addNotification({
+            addNotification({
                 variant: 'success',
                 title: 'Remediation created',
                 description: `Remediation ${value.name} has been created`,
                 dismissDelay: 8000
-            }));
+            });
 
             return value;
         })
@@ -85,16 +86,17 @@ class NewRemediationButton extends Component {
     }
 }
 
-NewRemediationButton.contextTypes = {
-    store: PropTypes.object
-};
-
 NewRemediationButton.propTypes = {
-    onCreated: PropTypes.func
+    onCreated: PropTypes.func,
+    addNotification: PropTypes.func,
+    createRemediation: PropTypes.func
 };
 
 NewRemediationButton.defaultProps = {
     onCreated: f => f
 };
 
-export default NewRemediationButton;
+export default connect(null, (dispatch) => ({
+    createRemediation: (data) => dispatch(actions.createRemediation(data)),
+    addNotification: (data) => dispatch(addNotification(data))
+}))(NewRemediationButton);

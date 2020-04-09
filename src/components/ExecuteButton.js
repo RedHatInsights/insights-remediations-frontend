@@ -85,6 +85,7 @@ const styledConnectionStatus = (status) => ({
 
 const ExecuteButton = ({
     isLoading,
+    isDisabled,
     data,
     getConnectionStatus,
     remediationId,
@@ -96,7 +97,7 @@ const ExecuteButton = ({
     const [ open, setOpen ] = useState(false);
     const [ isUserEntitled, setIsUserEntitled ] = useState(false);
     const [ showRefreshMessage, setShowRefreshMessage ] = useState(false);
-    const isEnabled = () => localStorage.getItem('remediations:fifi:debug') === 'true';
+    const isEnabled = () => true || localStorage.getItem('remediations:fifi:debug') === 'true';
     const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
     useEffect(() => {
@@ -131,6 +132,7 @@ const ExecuteButton = ({
     return (isUserEntitled && isEnabled()
         ? <React.Fragment>
             <Button
+                isDisabled={ isDisabled }
                 onClick={ () => { setOpen(true); getConnectionStatus(remediationId); } }>
         Execute Playbook
             </Button>
@@ -218,11 +220,13 @@ ExecuteButton.propTypes = {
     remediationStatus: PropTypes.string,
     issueCount: PropTypes.number,
     etag: PropTypes.string,
-    setEtag: PropTypes.func
+    setEtag: PropTypes.func,
+    isDisabled: PropTypes.bool
 };
 
 ExecuteButton.defaultProps = {
-    data: []
+    data: [],
+    isDisabled: false
 };
 
 export default ExecuteButton;

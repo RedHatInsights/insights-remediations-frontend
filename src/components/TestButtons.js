@@ -165,7 +165,7 @@ class TestButtons extends React.Component {
                     <StackItem>
                         <Split gutter='sm'>
                             {
-                                [ 'ping', 'alwaysFail', 'failHalfTheTime', 'pause1m', 'pauseRandom15m', 'pause1h', 'pause6h' ]
+                                [ 'ping', 'alwaysFail', 'failHalfTheTime', 'pause1m', 'pause5m', 'pause15m', 'pauseRandom15m', 'pause1h', 'pause6h' ]
                                 .map(name =>
                                     <RemediationBtn
                                         key={ name }

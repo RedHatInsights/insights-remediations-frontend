@@ -1,21 +1,29 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
+import RemediationActivityTable from '../components/RemediationActivityTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
+import { renderStatusIcon, normalizeStatus } from '../components/statusHelper';
 import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
 import UpsellBanner from '../components/Alerts/UpsellBanner';
+import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
+import NotConfigured from '../components/EmptyStates/NotConfigured';
 import DeniedState from '../components/DeniedState';
 import classnames from 'classnames';
+import { capitalize } from '../Utilities/utils';
+import SkeletonTable from '../skeletons/SkeletonTable';
+import { LatestActivityPopover } from '../components/Popovers/LatestActivityPopover';
 
 import {
     Main,
-    PageHeader, PageHeaderTitle
+    PageHeader, PageHeaderTitle,
+    DateFormat
 } from '@redhat-cloud-services/frontend-components';
 
 import {
@@ -25,43 +33,54 @@ import {
     Breadcrumb, BreadcrumbItem,
     Button,
     Split, SplitItem,
-    Flex, FlexItem, FlexModifiers
+    Flex, FlexItem, FlexModifiers,
+    Tabs, Tab, Tooltip
 } from '@patternfly/react-core';
 
-import './RemediationDetails.scss';
 import RemediationDetailsSkeleton from '../skeletons/RemediationDetailsSkeleton';
 import DescriptionList from '../components/Layouts/DescriptionList';
+import EmptyActivityTable from '../components/EmptyStates/EmptyActivityTable';
 
 import { PermissionContext } from '../App';
 
-class RemediationDetails extends Component {
+import './RemediationDetails.scss';
 
-    constructor (props) {
-        super(props);
-        this.state = {
-            autoReboot: true,
-            isUserEntitled: undefined,
-            upsellBannerVisible: true
-        };
-        this.id = this.props.match.params.id;
-        this.loadRemediation = this.props.loadRemediation.bind(this, this.id);
-        this.loadRemediationStatus = this.props.loadRemediationStatus.bind(this, this.id);
+const RemediationDetails = ({
+    match,
+    location,
+    selectedRemediation,
+    selectedRemediationStatus,
+    history,
+    loadRemediation,
+    loadRemediationStatus,
+    switchAutoReboot,
+    playbookRuns,
+    getPlaybookRuns
+}) => {
+
+    const id = match.params.id;
+    const [ upsellBannerVisible, setUpsellBannerVisible ] = useState(true);
+    const [ activeTabKey, setActiveTabKey ] = useState(location.search.includes('?activity') ? 1 : 0);
+
+    const context = useContext(PermissionContext);
+
+    const handleRebootChange = autoReboot => {
+        switchAutoReboot(id, autoReboot);
     };
 
-    handleRebootChange = autoReboot => {
-        this.props.switchAutoReboot(this.id, autoReboot);
+    const handleUpsellToggle = () => {
+        setUpsellBannerVisible(false);
     };
 
-    handleUpsellToggle = () => {
-        this.setState({
-            upsellBannerVisible: false
-        });
-    }
+    const handleTabClick = (event, tabIndex) => {
+        setActiveTabKey(tabIndex);
+        history.push(tabIndex === 1 ? '?activity' : '?issues');
+    };
 
-    async componentDidMount () {
-        this.loadRemediation().catch(e => {
+    useEffect(() => {
+        loadRemediation(id).catch(e => {
             if (e && e.response && e.response.status === 404) {
-                this.props.history.push('/');
+                history.push('/');
                 return;
             }
 
@@ -69,157 +88,210 @@ class RemediationDetails extends Component {
         });
 
         if (isBeta) {
-            this.loadRemediationStatus();
+            loadRemediationStatus(id);
         }
+    }, []);
 
-        const { entitlements } = await window.insights.chrome.auth.getUser();
+    useEffect(() => {
+        getPlaybookRuns(id);
+    }, [ getPlaybookRuns ]);
 
-        this.setState({
-            isEntitled: entitlements.smart_management.is_entitled
-        });
+    useEffect(() => {
+        playbookRuns;
+        if (playbookRuns && playbookRuns.length && normalizeStatus(playbookRuns[0].status) === 'running') {
+            const interval = setInterval(() => getPlaybookRuns(id), 10000);
+            return () => {
+                clearInterval(interval);
+            };
+        }
+    }, [ playbookRuns ]);
 
-    }
-
-    generateNumRebootString = (num) => {
+    const generateNumRebootString = (num) => {
         return `${num} system${num === 1 ? '' : 's'} require${num === 1 ? 's' : ''} reboot`;
-    }
+    };
 
-    generateAutoRebootStatus = (status, needsReboot) => {
+    const generateAutoRebootStatus = (status, needsReboot) => {
         if (!needsReboot) {
             return 'Not required';
         }
 
         return (status ? 'Enabled' : 'Disabled');
-    }
+    };
 
-    render() {
-        const { status, remediation } = this.props.selectedRemediation;
+    const renderLatestActivity = (playbookRuns) => {
 
-        if (status !== 'fulfilled') {
-            return <RemediationDetailsSkeleton/>;
+        if (playbookRuns.length) {
+
+            const mostRecent = playbookRuns[0];
+
+            return (
+                <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                    <DescriptionList
+                        hasGutter
+                        needsPointer
+                        title='Latest activity'>
+                        <LatestActivityPopover mostRecent={ mostRecent }>
+                            <span><DateFormat type='relative' date={ mostRecent.updated_at } /></span>
+                            <Tooltip content={ <span>{ capitalize(mostRecent.status) }</span> }>
+                                { renderStatusIcon(normalizeStatus(mostRecent.status)) }
+                            </Tooltip>
+                        </LatestActivityPopover>
+                        <Link to={ `/${mostRecent.remediation_id}/${mostRecent.id}` }>View</Link>
+                    </DescriptionList>
+                </FlexItem>
+            );
         }
 
-        const { stats } = remediation;
+        return;
+    };
 
-        const totalSystems = stats.systemsWithReboot + stats.systemsWithoutReboot;
+    const renderActivityState = (isEntitled, isReceptorConfigured, playbookRuns, remediation) => {
+        if (!isReceptorConfigured) {return <NotConfigured/>;}
 
-        const pluralize = (number, str) => number === 1 ? `${number} ${str}` : `${number} ${str}s`;
+        if (!isEntitled) {return <ActivityTabUpsell/>;}
 
-        return (
-            <PermissionContext.Consumer>
-                { value =>
-                    value.permissions.read === false
-                        ? <DeniedState/>
-                        : <React.Fragment>
-                            <PageHeader>
-                                <Breadcrumb>
-                                    <BreadcrumbItem>
-                                        <Link to='/'> Remediations </Link>
-                                    </BreadcrumbItem>
-                                    <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
-                                </Breadcrumb>
-                                <Level className="ins-c-level">
-                                    <LevelItem>
-                                        <PageHeaderTitle title={ remediation.name }/>
-                                    </LevelItem>
-                                    <LevelItem>
-                                        <Split gutter="md">
-                                            { this.state.isEntitled &&
-                                                <PermissionContext.Consumer>
-                                                    { value => value.permissions.execute &&
-                                                        <SplitItem>
-                                                            <ExecutePlaybookButton
-                                                                remediationId={ remediation.id }>
-                                                            </ExecutePlaybookButton>
-                                                        </SplitItem>
-                                                    }
-                                                </PermissionContext.Consumer>
-                                            }
-                                            <SplitItem>
-                                                <Button
-                                                    isDisabled={ !remediation.issues.length }
-                                                    variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
-                                                    Download Playbook
-                                                </Button>
-                                            </SplitItem>
-                                            <SplitItem>
-                                                <RemediationDetailsDropdown remediation={ remediation } />
-                                            </SplitItem>
-                                        </Split>
-                                    </LevelItem>
-                                </Level>
-                            </PageHeader>
-                            <Main>
-                                <Stack gutter="md">
-                                    { this.state.isEntitled === false && this.state.upsellBannerVisible &&
-                                        <StackItem>
-                                            <UpsellBanner onClose={ this.handleUpsellToggle }/>
-                                        </StackItem>
-                                    }
-                                    <StackItem>
-                                        <Card>
-                                            <CardHeader className='ins-m-card__header-bold'>Playbook Summary</CardHeader>
-                                            <CardBody>
-                                                <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
-                                                    <Flex className='ins-c-playbookSummary__overview'>
-                                                        <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
-                                                            <DescriptionList
-                                                                isBold
-                                                                title='Total systems'>
-                                                                { pluralize(totalSystems, 'system') }
-                                                            </DescriptionList>
-                                                        </FlexItem>
-                                                    </Flex>
-                                                    <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
-                                                        <Flex>
-                                                            <FlexItem
-                                                                className={ classnames(
-                                                                    'ins-c-reboot-status',
-                                                                    { 'ins-c-reboot-status__enabled':
-                                                                        remediation.auto_reboot && remediation.needs_reboot
-                                                                    },
-                                                                    { 'ins-c-reboot-status__disabled': !remediation.auto_reboot }
-                                                                ) }
-                                                                breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
-                                                                Autoreboot:&nbsp;
-                                                                <b>
-                                                                    { this.generateAutoRebootStatus(
-                                                                        remediation.auto_reboot,
-                                                                        remediation.needs_reboot)
-                                                                    }
-                                                                </b>
-                                                            </FlexItem>
-                                                            <FlexItem>{ this.generateNumRebootString(stats.systemsWithReboot) }</FlexItem>
-                                                        </Flex>
-                                                    </DescriptionList>
-                                                    { remediation.needs_reboot &&
-                                                        <PermissionContext.Consumer>
-                                                            { value => value.permissions.write &&
-                                                                <Button
-                                                                    variant='link'
-                                                                    onClick={ () => this.handleRebootChange(!remediation.auto_reboot) }>
-                                                                    Turn {
-                                                                        remediation.auto_reboot && remediation.needs_reboot ? 'off' : 'on'
-                                                                    } auto reboot
-                                                                </Button>
-                                                            }
-                                                        </PermissionContext.Consumer>
-                                                    }
-                                                </Flex>
-                                            </CardBody>
-                                        </Card>
-                                    </StackItem>
-                                    <StackItem>
-                                        <RemediationDetailsTable remediation={ remediation } status={ this.props.selectedRemediationStatus }/>
-                                    </StackItem>
-                                </Stack>
-                            </Main>
-                        </React.Fragment>
-                }
-            </PermissionContext.Consumer>
-        );
+        if (Array.isArray(playbookRuns) && playbookRuns.length) {
+            return <RemediationActivityTable remediation={ remediation } playbookRuns={ playbookRuns }/>;
+        }
+
+        if (Array.isArray(playbookRuns) && !playbookRuns.length) {
+            return <EmptyActivityTable/>;
+        }
+
+        return <SkeletonTable/>;
+    };
+
+    const { status, remediation } = selectedRemediation;
+
+    if (status !== 'fulfilled') {
+        return <RemediationDetailsSkeleton/>;
     }
-}
+
+    const { stats } = remediation;
+
+    const totalSystems = stats.systemsWithReboot + stats.systemsWithoutReboot;
+
+    const pluralize = (number, str) => number === 1 ? `${number} ${str}` : `${number} ${str}s`;
+
+    return (
+        context.permissions.read === false
+            ? <DeniedState/>
+            :
+            <React.Fragment>
+                <PageHeader>
+                    <Breadcrumb>
+                        <BreadcrumbItem>
+                            <Link to='/'> Remediations </Link>
+                        </BreadcrumbItem>
+                        <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
+                    </Breadcrumb>
+                    <Level className="ins-c-level">
+                        <LevelItem>
+                            <PageHeaderTitle title={ remediation.name }/>
+                        </LevelItem>
+                        <LevelItem>
+                            <Split gutter="md">
+                                { context.hasSmartManagement && context.permissions.execute &&
+                                    <SplitItem>
+                                        <ExecutePlaybookButton
+                                            isDisabled={ !context.isReceptorConfigured }
+                                            remediationId={ remediation.id }>
+                                        </ExecutePlaybookButton>
+                                    </SplitItem>
+                                }
+                                <SplitItem>
+                                    <Button
+                                        isDisabled={ !remediation.issues.length }
+                                        variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
+                                        Download Playbook
+                                    </Button>
+                                </SplitItem>
+                                <SplitItem>
+                                    <RemediationDetailsDropdown remediation={ remediation } />
+                                </SplitItem>
+                            </Split>
+                        </LevelItem>
+                    </Level>
+                </PageHeader>
+                <Main>
+                    <Stack gutter="md">
+                        { !context.hasSmartManagement && upsellBannerVisible &&
+                            <StackItem>
+                                <UpsellBanner onClose={ () => handleUpsellToggle() }/>
+                            </StackItem>
+                        }
+                        <StackItem>
+                            <Card>
+                                <CardHeader className='ins-m-card__header-bold'>Playbook Summary</CardHeader>
+                                <CardBody>
+                                    <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
+                                        <Flex className='ins-c-playbookSummary__overview'>
+                                            <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                                <DescriptionList
+                                                    isBold
+                                                    title='Total systems'>
+                                                    { pluralize(totalSystems, 'system') }
+                                                </DescriptionList>
+                                            </FlexItem>
+                                            { playbookRuns &&
+                                                renderLatestActivity(playbookRuns)
+                                            }
+                                        </Flex>
+                                        <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
+                                            <Flex>
+                                                <FlexItem
+                                                    className={ classnames(
+                                                        'ins-c-reboot-status',
+                                                        { 'ins-c-reboot-status__enabled':
+                                                            remediation.auto_reboot && remediation.needs_reboot
+                                                        },
+                                                        { 'ins-c-reboot-status__disabled': !remediation.auto_reboot }
+                                                    ) }
+                                                    breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                                    Autoreboot:&nbsp;
+                                                    <b>
+                                                        { generateAutoRebootStatus(
+                                                            remediation.auto_reboot,
+                                                            remediation.needs_reboot)
+                                                        }
+                                                    </b>
+                                                </FlexItem>
+                                                <FlexItem>{ generateNumRebootString(stats.systemsWithReboot) }</FlexItem>
+                                            </Flex>
+                                        </DescriptionList>
+                                        { remediation.needs_reboot && context.permissions.write &&
+                                            <Button
+                                                variant='link'
+                                                onClick={ () => handleRebootChange(!remediation.auto_reboot) }>
+                                                Turn {
+                                                    remediation.auto_reboot && remediation.needs_reboot ? 'off' : 'on'
+                                                } auto reboot
+                                            </Button>
+                                        }
+                                    </Flex>
+                                </CardBody>
+                            </Card>
+                        </StackItem>
+                        <StackItem className='ins-c-playbookSummary__tabs'>
+                            <Tabs activeKey={ activeTabKey } onSelect={ handleTabClick }>
+                                <Tab eventKey={ 0 } title='Issues'>
+                                    <RemediationDetailsTable remediation={ remediation } status={ selectedRemediationStatus }/>
+                                </Tab>
+                                <Tab eventKey={ 1 } title='Activity'>
+                                    { renderActivityState(
+                                        context.hasSmartManagement,
+                                        context.isReceptorConfigured,
+                                        playbookRuns,
+                                        remediation)
+                                    }
+                                </Tab>
+                            </Tabs>
+                        </StackItem>
+                    </Stack>
+                </Main>
+            </React.Fragment>
+    );
+};
 
 RemediationDetails.propTypes = {
     match: PropTypes.shape({
@@ -227,6 +299,7 @@ RemediationDetails.propTypes = {
             id: PropTypes.string.isRequired
         })
     }).isRequired,
+    location: PropTypes.object,
     selectedRemediation: PropTypes.object,
     selectedRemediationStatus: PropTypes.object,
     history: PropTypes.object.isRequired,
@@ -237,20 +310,28 @@ RemediationDetails.propTypes = {
     executePlaybookBanner: PropTypes.shape({
         isVisible: PropTypes.bool
     }),
-    addNotification: PropTypes.func.isRequired
+    addNotification: PropTypes.func.isRequired,
+    playbookRuns: PropTypes.array,
+    getPlaybookRuns: PropTypes.func
 };
 
 export default withRouter(
     connect(
-        ({ selectedRemediation, selectedRemediationStatus, executePlaybookBanner }) => ({ selectedRemediation, selectedRemediationStatus,
-            executePlaybookBanner }),
+        ({ selectedRemediation, selectedRemediationStatus, executePlaybookBanner, playbookRuns }) => ({
+            selectedRemediation,
+            selectedRemediationStatus,
+            executePlaybookBanner,
+            playbookRuns: playbookRuns.data,
+            remediation: selectedRemediation.remediation
+        }),
         dispatch => ({
             loadRemediation: id => dispatch(actions.loadRemediation(id)),
             loadRemediationStatus: id => dispatch(actions.loadRemediationStatus(id)),
             // eslint-disable-next-line camelcase
             switchAutoReboot: (id, auto_reboot) => dispatch(actions.patchRemediation(id, { auto_reboot })),
             deleteRemediation: id => dispatch(actions.deleteRemediation(id)),
-            addNotification: (content) => dispatch(addNotification(content))
+            addNotification: (content) => dispatch(addNotification(content)),
+            getPlaybookRuns: (id) => dispatch(actions.getPlaybookRuns(id))
         })
     )(RemediationDetails)
 );

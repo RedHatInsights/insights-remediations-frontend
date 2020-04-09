@@ -21,6 +21,7 @@ exports[`Execute button fullfiled request 1`] = `
     ]
   }
   getConnectionStatus={[Function]}
+  isDisabled={false}
   isLoading={true}
   issueCount={1}
   remediationId="id"
@@ -32,6 +33,7 @@ exports[`Execute button pending request 1`] = `
 <ExecuteButton
   data={Array []}
   getConnectionStatus={[Function]}
+  isDisabled={false}
   isLoading={true}
   issueCount={1}
   remediationId="id"
