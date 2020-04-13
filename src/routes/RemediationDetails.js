@@ -45,6 +45,7 @@ import EmptyActivityTable from '../components/EmptyStates/EmptyActivityTable';
 import { PermissionContext } from '../App';
 
 import './RemediationDetails.scss';
+import NoReceptorBanner from '../components/Alerts/NoReceptorBanner';
 
 const RemediationDetails = ({
     match,
@@ -219,6 +220,11 @@ const RemediationDetails = ({
                         { !context.hasSmartManagement && upsellBannerVisible &&
                             <StackItem>
                                 <UpsellBanner onClose={ () => handleUpsellToggle() }/>
+                            </StackItem>
+                        }
+                        { !context.isReceptorConfigured &&
+                            <StackItem>
+                                <NoReceptorBanner/>
                             </StackItem>
                         }
                         <StackItem>
