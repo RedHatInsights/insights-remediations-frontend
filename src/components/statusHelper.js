@@ -47,12 +47,12 @@ export const renderStatus = (status, text) => ({
 
 const statusTextClass = 'ins-c-remediations-status-text';
 export const statusText = (executorStatus) => ({
-    running: <b className={`${statusTextClass} ins-c-remediations-running`}> Running </b>,
-    pending: <b className={`${statusTextClass} ins-c-remediations-running`}> Pending </b>,
-    acked: <b className={`${statusTextClass} ins-c-remediations-running`}> Acked </b>,
-    success: <b className={`${statusTextClass} ins-c-remediations-success`}> Suceeded </b>,
-    failure: <b className={`${statusTextClass} ins-c-remediations-failure`}> Failed </b>,
-    canceled: <b className={`${statusTextClass} ins-c-remediations-failure`}> Canceled </b>
+    running: <b className={ `${statusTextClass} ins-c-remediations-running` }> Running </b>,
+    pending: <b className={ `${statusTextClass} ins-c-remediations-running` }> Pending </b>,
+    acked: <b className={ `${statusTextClass} ins-c-remediations-running` }> Acked </b>,
+    success: <b className={ `${statusTextClass} ins-c-remediations-success` }> Suceeded </b>,
+    failure: <b className={ `${statusTextClass} ins-c-remediations-failure` }> Failed </b>,
+    canceled: <b className={ `${statusTextClass} ins-c-remediations-failure` }> Canceled </b>
 })[executorStatus];
 
 export const StatusSummary = ({ executorStatus, permission, hasCancel, counts, remediationName, remediationId, playbookId }) => {

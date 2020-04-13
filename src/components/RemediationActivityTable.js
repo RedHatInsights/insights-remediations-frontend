@@ -15,7 +15,7 @@ import { StatusSummary, normalizeStatus } from './statusHelper';
 
 import { PermissionContext } from '../App';
 
-import './RemediationActivityTable.scss'
+import './RemediationActivityTable.scss';
 
 const RemediationActivityTable = ({ remediation, playbookRuns }) => {
 
