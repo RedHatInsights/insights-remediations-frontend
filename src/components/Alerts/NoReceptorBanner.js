@@ -1,7 +1,6 @@
 import React from 'react';
-import propTypes from 'prop-types';
 
-import { Alert, AlertActionCloseButton, Stack, StackItem } from '@patternfly/react-core';
+import { Alert, Stack, StackItem } from '@patternfly/react-core';
 
 const NoReceptorBanner = ({ ...props }) => {
     return (
@@ -13,7 +12,7 @@ const NoReceptorBanner = ({ ...props }) => {
             <Stack gutter='md'>
                 <StackItem>Configure your systems with Cloud Connector to fix systems across all your Satellite instances.</StackItem>
                 <StackItem>
-                    <a href="#">Learn how to configure</a> {/* TODO */}
+                    <a href="#">Learn how to configure</a> { /* TODO */ }
                 </StackItem>
             </Stack>
         </Alert>
