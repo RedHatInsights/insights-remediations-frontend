@@ -10,4 +10,10 @@
             font-weight: var(--pf-global--FontWeight--redhatfont--bold);
         }
     }
+    .ins-l-description-list__description--withGutter {
+        * + * { margin-left: var(--pf-global--spacer--sm); }
+    }
+    .ins-l-description-list__description--needsPointer {
+        cursor: pointer;
+    }
 }

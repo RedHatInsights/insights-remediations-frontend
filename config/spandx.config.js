@@ -9,4 +9,5 @@ exports.routes = {
     '/beta/rhcs/remediations': { host: `http://${localhost}:8002` },
     '/beta/insights/remediations': { host: `http://${localhost}:8002` },
     '/beta/apps/remediations': { host: `http://${localhost}:8002` }
+
 };

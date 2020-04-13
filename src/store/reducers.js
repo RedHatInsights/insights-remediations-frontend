@@ -147,17 +147,95 @@ const reducers = {
         status: 'initial'
     }),
 
-    inventoryEntitiesReducer: (props) => () => applyReducerHash({
+    inventoryEntitiesReducer: (props = { INVENTORY_ACTION_TYPES: {}}) => () => applyReducerHash({
         [props.INVENTORY_ACTION_TYPES.LOAD_ENTITIES_FULFILLED]: (state) => {
             return {
                 ...state,
                 columns: [
                     { key: 'display_name', title: 'System name',
                     // eslint-disable-next-line
-                        renderFunc: (name, id) => <div><a href={ props.urlBuilder(id) }>{ name }</a></div> }
+                        renderFunc: (name, id, { display_name }) => <div><a href={props.urlBuilder(id)}>{display_name}</a></div>
+                    }
                 ]
             };
         }
+    }),
+
+    playbookActivityIntentory: (props) => () => applyReducerHash({
+        [props.INVENTORY_ACTION_TYPES.LOAD_ENTITIES_FULFILLED]: (state) => {
+            return {
+                ...state,
+                columns: [
+                    { key: 'display_name', title: 'Name',
+                    // eslint-disable-next-line
+                        renderFunc: (name, id, { display_name }) => <div><a href={props.urlBuilder(id)}>{display_name}</a></div>
+                    },
+                    state.columns.find(col => col.key === 'tags'),
+                    { key: 'status', title: 'Status',
+                        renderFunc: (status) => props.renderStatus(status) }
+                ]
+
+            };
+        },
+
+        [ACTION_TYPES.EXPAND_INVENTORY_TABLE]: (state, action) => {
+            return {
+                ...state,
+                rows:
+                    state.rows.map(row => ({ ...row, isOpen: row.id === action.payload.id ? action.payload.isOpen : false }))
+
+            };
+        }
+    }),
+
+    playbookRuns: applyReducerHash({
+        [ACTION_TYPES.GET_PLAYBOOK_RUNS_FULFILLED]: (state, action) => ({
+            status: 'fulfilled',
+            data: action.payload.data,
+            meta: action.payload.meta
+        })
+
+    }),
+
+    cancelPlaybookRuns: applyReducerHash({
+        [ACTION_TYPES.CANCEL_PLAYBOOK_RUNS_PENDING]: () => ({
+            status: 'pending'
+        }),
+        [ACTION_TYPES.CANCEL_PLAYBOOK_RUNS_FULFILLED]: (state, action) => ({
+            status: 'fulfilled',
+            value: action.payload
+        }),
+        [ACTION_TYPES.CANCEL_PLAYBOOK_RUNS_REJECTED]: () => ({
+            status: 'rejected'
+        })
+    }, {
+        status: 'initial'
+    }),
+
+    playbookRun: applyReducerHash({
+        [ACTION_TYPES.GET_PLAYBOOK_RUN_FULFILLED]: (state, action) => ({
+            data: action.payload
+        })
+
+    }),
+
+    playbookRunSystems: applyReducerHash({
+        [ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEMS_FULFILLED]: (state, action) => ({
+            ...action.payload
+        }),
+        [ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEMS_PENDING]: (state) => ({
+            ...state,
+            status: 'pending'
+        })
+    }, {
+        data: [],
+        meta: {}
+    }),
+
+    playbookRunSystemDetails: applyReducerHash({
+        [ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEM_DETAILS_FULFILLED]: (state, action) => ({
+            ...action.payload
+        })
     }),
 
     runRemediation: applyReducerHash({
