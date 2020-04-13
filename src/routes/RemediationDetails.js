@@ -34,7 +34,8 @@ import {
     Button,
     Split, SplitItem,
     Flex, FlexItem, FlexModifiers,
-    Tabs, Tab, Tooltip
+    Tabs, Tab, Tooltip,
+    Title
 } from '@patternfly/react-core';
 
 import RemediationDetailsSkeleton from '../skeletons/RemediationDetailsSkeleton';
@@ -203,7 +204,7 @@ const RemediationDetails = ({
                                     <Button
                                         isDisabled={ !remediation.issues.length }
                                         variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
-                                        Download Playbook
+                                        Download playbook
                                     </Button>
                                 </SplitItem>
                                 <SplitItem>
@@ -222,7 +223,9 @@ const RemediationDetails = ({
                         }
                         <StackItem>
                             <Card>
-                                <CardHeader className='ins-m-card__header-bold'>Playbook Summary</CardHeader>
+                                <CardHeader className='ins-m-card__header-bold'>
+                                    <Title headingLevel="h4" size="xl">Playbook summary</Title>
+                                </CardHeader>
                                 <CardBody>
                                     <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
                                         <Flex className='ins-c-playbookSummary__overview'>

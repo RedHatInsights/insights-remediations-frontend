@@ -22,7 +22,8 @@ import {
     Breadcrumb, BreadcrumbItem,
     Split, SplitItem,
     Button,
-    ToolbarItem, ToolbarGroup
+    ToolbarItem, ToolbarGroup,
+    Title
 } from '@patternfly/react-core';
 
 import { isBeta } from '../config';
@@ -49,7 +50,7 @@ const RemediationDetailsSkeleton = () => {
                     </LevelItem>
                     <LevelItem>
                         <Split gutter="md">
-                            <SplitItem><Button isDisabled variant='link'> Download Playbook </Button></SplitItem>
+                            <SplitItem><Button isDisabled variant='link'> Download playbook </Button></SplitItem>
                             <SplitItem>
                                 <Dropdown
                                     toggle={ <KebabToggle isDisabled={ true } /> }
@@ -65,7 +66,9 @@ const RemediationDetailsSkeleton = () => {
                 <Stack gutter="md">
                     <StackItem>
                         <Card>
-                            <CardHeader className='ins-m-card__header-bold'>Playbook Summary</CardHeader>
+                            <CardHeader className='ins-m-card__header-bold'>
+                                <Title headingLevel="h4" size="xl">Playbook summary</Title>
+                            </CardHeader>
                             <CardBody>
                                 <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
                                     <Flex className='ins-c-playbookSummary__overview'>
