@@ -12,7 +12,8 @@ import {
     Card, CardHeader, CardBody,
     Stack, StackItem,
     Breadcrumb, BreadcrumbItem,
-    Split, SplitItem
+    Split, SplitItem,
+    Title
 } from '@patternfly/react-core';
 
 import DescriptionList from '../components/Layouts/DescriptionList';
@@ -55,7 +56,9 @@ const ActivityDetailsSkeleton = () => {
         <Main>
             <Stack gutter="md">
                 <Card>
-                    <CardHeader className='ins-m-card__header-bold'>Results by connection</CardHeader>
+                    <CardHeader className='ins-m-card__header-bold'>
+                        <Title headingLevel="h4" size="xl">Results by connection</Title>
+                    </CardHeader>
                     <CardBody>
                         <SkeletonTable />
                     </CardBody>

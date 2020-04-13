@@ -84,7 +84,7 @@ const RemediationDetailsSkeleton = () => {
                                     <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
                                         <Flex>
                                             <FlexItem className='ins-m-inline-flex' breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
-                                                Autoreboot: <Skeleton className='ins-m-isInline-md' size='md'/>
+                                                Auto reboot: <Skeleton className='ins-m-isInline-md' size='md'/>
                                             </FlexItem>
                                             <FlexItem className='ins-m-inline-flex'>
                                                 <Skeleton className='ins-m-isInline-sm' size='sm'/> systems require reboot

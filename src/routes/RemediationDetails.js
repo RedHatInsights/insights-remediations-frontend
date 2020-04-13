@@ -251,7 +251,7 @@ const RemediationDetails = ({
                                                         { 'ins-c-reboot-status__disabled': !remediation.auto_reboot }
                                                     ) }
                                                     breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
-                                                    Autoreboot:&nbsp;
+                                                    Auto reboot:&nbsp;
                                                     <b>
                                                         { generateAutoRebootStatus(
                                                             remediation.auto_reboot,
@@ -277,7 +277,7 @@ const RemediationDetails = ({
                         </StackItem>
                         <StackItem className='ins-c-playbookSummary__tabs'>
                             <Tabs activeKey={ activeTabKey } onSelect={ handleTabClick }>
-                                <Tab eventKey={ 0 } title='Issues'>
+                                <Tab eventKey={ 0 } title='Actions'>
                                     <RemediationDetailsTable remediation={ remediation } status={ selectedRemediationStatus }/>
                                 </Tab>
                                 <Tab eventKey={ 1 } title='Activity'>

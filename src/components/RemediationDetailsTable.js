@@ -143,6 +143,7 @@ function RemediationDetailsTable (props) {
                     <ToolbarItem>
                         { permission.permissions.write &&
                             <DeleteActionsButton
+                                variant='secondary'
                                 isDisabled={ !selectedIds.length }
                                 remediation={ props.remediation }
                                 issues={ selectedIds }

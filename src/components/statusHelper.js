@@ -89,13 +89,14 @@ export const StatusSummary = ({ executorStatus, permission, hasCancel, counts, r
         </Flex>
     );
 
+    const pluralize = (number, str) => number === 1 ? `${number} ${str}` : `${number} ${str}s`;
     const tooltipText = ` Run: ${capitalize(executorStatus)} |
-    Success: ${counts.success} |
-    Failed: ${counts.failure} |
-    Canceled: ${counts.canceled} |
-    Pending: ${counts.pending} |
-    Running: ${counts.running}
-    ${counts.acked && !counts.acked.isNaN() ? `| Acked: ${counts.acked}` : ''}`;
+    Success: ${pluralize(counts.success, 'system')} |
+    Failed: ${pluralize(counts.failure, 'system')} |
+    Canceled: ${pluralize(counts.canceled, 'system')} |
+    Pending: ${pluralize(counts.pending, 'system')} |
+    Running: ${pluralize(counts.running, 'system')}
+    ${counts.acked && !counts.acked.isNaN() ? `| Acked: ${pluralize(counts.acked, 'system')}` : ''}`;
 
     if (executorStatus) {
         return <Tooltip

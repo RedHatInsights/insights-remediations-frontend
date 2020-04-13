@@ -39,7 +39,7 @@ import PlaybookSystemDetails from './SystemDetails';
 import ExecutorDetailsSkeleton from '../skeletons/ExecutorDetailsSkeleton';
 import RunFailed from './Alerts/RunFailed';
 import { inventoryUrlBuilder } from '../Utilities/urls';
-
+import './ExecutorDetails.scss';
 import { PermissionContext } from '../App';
 let refreshInterval;
 
@@ -151,7 +151,7 @@ const ExecutorDetails = ({
 
     const renderInventorycard = (status) => <Main>
         <Stack gutter="md">
-            <Card>
+            <Card className='ins-c-card__playbook-log'>
                 <CardBody>
                     { InventoryTable && <InventoryTable
                         ref={ inventory }
@@ -274,6 +274,9 @@ const ExecutorDetails = ({
             <PageHeader>
                 <Breadcrumb>
                     <BreadcrumbItem>
+                        <Link to={ `/` }> Remediations </Link>
+                    </BreadcrumbItem>
+                    <BreadcrumbItem>
                         <Link to={ `/${remediation.id}` }> { remediation.name } </Link>
                     </BreadcrumbItem>
                     <BreadcrumbItem>
@@ -297,16 +300,6 @@ const ExecutorDetails = ({
                     <StackItem>
                         <Split gutter="md">
                             <SplitItem>
-                                <DescriptionList className='ins-c-playbookSummary__settings' title='Run on'>
-                                    <DateFormat type='exact' date={ playbookRun.data.created_at } />
-                                </DescriptionList>
-                            </SplitItem>
-                            <SplitItem>
-                                <DescriptionList className='ins-c-playbookSummary__settings' title='Run by'>
-                                    { `${playbookRun.data.created_by.first_name} ${playbookRun.data.created_by.last_name}` }
-                                </DescriptionList>
-                            </SplitItem>
-                            <SplitItem>
                                 <DescriptionList className='ins-c-playbookSummary__settings' title='Run status'>
                                     { executor.status
                                         ? <StatusSummary
@@ -316,7 +309,16 @@ const ExecutorDetails = ({
                                         : <Skeleton size='lg' />
 
                                     }
-
+                                </DescriptionList>
+                            </SplitItem>
+                            <SplitItem>
+                                <DescriptionList className='ins-c-playbookSummary__settings' title='Run by'>
+                                    { `${playbookRun.data.created_by.first_name} ${playbookRun.data.created_by.last_name}` }
+                                </DescriptionList>
+                            </SplitItem>
+                            <SplitItem>
+                                <DescriptionList className='ins-c-playbookSummary__settings' title='Run on'>
+                                    <DateFormat type='exact' date={ playbookRun.data.created_at } />
                                 </DescriptionList>
                             </SplitItem>
                         </Split>

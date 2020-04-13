@@ -7,6 +7,8 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import { Spinner } from '@patternfly/react-core';
 import classnames from 'classnames';
 
+import { Title } from '@patternfly/react-core';
+
 import './SystemDetails.scss';
 
 const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
@@ -17,6 +19,7 @@ const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
     );
 
     return <React.Fragment>
+        <Title headingLevel="h4" size="xl" className='ins-c-job-output__title'>Playbook log</Title>
         { systemId && systemId === playbookRunSystemDetails.system_id ?
             <React.Fragment>
                 <SyntaxHighlighter
