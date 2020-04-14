@@ -1,54 +1,88 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { formatUser, formatDate } from '../Utilities/model';
 import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
+import RemediationActivityTable from '../components/RemediationActivityTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
+import { renderStatusIcon, normalizeStatus } from '../components/statusHelper';
 import { isBeta } from '../config';
-import ActionsResolvedCard from '../components/ActionsResolvedCard';
+import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
+import UpsellBanner from '../components/Alerts/UpsellBanner';
+import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
+import NotConfigured from '../components/EmptyStates/NotConfigured';
+import DeniedState from '../components/DeniedState';
+import classnames from 'classnames';
+import { capitalize } from '../Utilities/utils';
+import SkeletonTable from '../skeletons/SkeletonTable';
+import { LatestActivityPopover } from '../components/Popovers/LatestActivityPopover';
 
 import {
     Main,
-    PageHeader, PageHeaderTitle
+    PageHeader, PageHeaderTitle,
+    DateFormat
 } from '@redhat-cloud-services/frontend-components';
 
 import {
-    Grid, GridItem,
     Card, CardHeader, CardBody,
     Stack, StackItem,
-    Switch,
     Level, LevelItem,
     Breadcrumb, BreadcrumbItem,
     Button,
-    Split, SplitItem
+    Split, SplitItem,
+    Flex, FlexItem, FlexModifiers,
+    Tabs, Tab, Tooltip,
+    Title
 } from '@patternfly/react-core';
 
-import './RemediationDetails.scss';
 import RemediationDetailsSkeleton from '../skeletons/RemediationDetailsSkeleton';
+import DescriptionList from '../components/Layouts/DescriptionList';
+import EmptyActivityTable from '../components/EmptyStates/EmptyActivityTable';
 
-class RemediationDetails extends Component {
+import { PermissionContext } from '../App';
 
-    constructor (props) {
-        super(props);
-        this.state = {
-            autoReboot: true
-        };
-        this.id = this.props.match.params.id;
-        this.loadRemediation = this.props.loadRemediation.bind(this, this.id);
-        this.loadRemediationStatus = this.props.loadRemediationStatus.bind(this, this.id);
+import './RemediationDetails.scss';
+import NoReceptorBanner from '../components/Alerts/NoReceptorBanner';
+
+const RemediationDetails = ({
+    match,
+    location,
+    selectedRemediation,
+    selectedRemediationStatus,
+    history,
+    loadRemediation,
+    loadRemediationStatus,
+    switchAutoReboot,
+    playbookRuns,
+    getPlaybookRuns
+}) => {
+
+    const id = match.params.id;
+    const [ upsellBannerVisible, setUpsellBannerVisible ] = useState(true);
+    const [ activeTabKey, setActiveTabKey ] = useState(location.search.includes('?activity') ? 1 : 0);
+
+    const context = useContext(PermissionContext);
+
+    const handleRebootChange = autoReboot => {
+        switchAutoReboot(id, autoReboot);
     };
 
-    handleRebootChange = autoReboot => {
-        this.props.switchAutoReboot(this.id, autoReboot);
+    const handleUpsellToggle = () => {
+        setUpsellBannerVisible(false);
     };
 
-    async componentDidMount () {
-        this.loadRemediation().catch(e => {
+    const handleTabClick = (event, tabIndex) => {
+        setActiveTabKey(tabIndex);
+        history.push(tabIndex === 1 ? '?activity' : '?issues');
+    };
+
+    useEffect(() => {
+        loadRemediation(id).catch(e => {
             if (e && e.response && e.response.status === 404) {
-                this.props.history.push('/');
+                history.push('/');
                 return;
             }
 
@@ -56,20 +90,95 @@ class RemediationDetails extends Component {
         });
 
         if (isBeta) {
-            this.loadRemediationStatus();
+            loadRemediationStatus(id);
         }
+    }, []);
+
+    useEffect(() => {
+        getPlaybookRuns(id);
+    }, [ getPlaybookRuns ]);
+
+    useEffect(() => {
+        playbookRuns;
+        if (playbookRuns && playbookRuns.length && normalizeStatus(playbookRuns[0].status) === 'running') {
+            const interval = setInterval(() => getPlaybookRuns(id), 10000);
+            return () => {
+                clearInterval(interval);
+            };
+        }
+    }, [ playbookRuns ]);
+
+    const generateNumRebootString = (num) => {
+        return `${num} system${num === 1 ? '' : 's'} require${num === 1 ? 's' : ''} reboot`;
+    };
+
+    const generateAutoRebootStatus = (status, needsReboot) => {
+        if (!needsReboot) {
+            return 'Not required';
+        }
+
+        return (status ? 'Enabled' : 'Disabled');
+    };
+
+    const renderLatestActivity = (playbookRuns) => {
+
+        if (playbookRuns.length) {
+
+            const mostRecent = playbookRuns[0];
+
+            return (
+                <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                    <DescriptionList
+                        hasGutter
+                        needsPointer
+                        title='Latest activity'>
+                        <LatestActivityPopover mostRecent={ mostRecent }>
+                            <span><DateFormat type='relative' date={ mostRecent.updated_at } /></span>
+                            <Tooltip content={ <span>{ capitalize(mostRecent.status) }</span> }>
+                                { renderStatusIcon(normalizeStatus(mostRecent.status)) }
+                            </Tooltip>
+                        </LatestActivityPopover>
+                        <Link to={ `/${mostRecent.remediation_id}/${mostRecent.id}` }>View</Link>
+                    </DescriptionList>
+                </FlexItem>
+            );
+        }
+
+        return;
+    };
+
+    const renderActivityState = (isEntitled, isReceptorConfigured, playbookRuns, remediation) => {
+        if (!isReceptorConfigured) {return <NotConfigured/>;}
+
+        if (!isEntitled) {return <ActivityTabUpsell/>;}
+
+        if (Array.isArray(playbookRuns) && playbookRuns.length) {
+            return <RemediationActivityTable remediation={ remediation } playbookRuns={ playbookRuns }/>;
+        }
+
+        if (Array.isArray(playbookRuns) && !playbookRuns.length) {
+            return <EmptyActivityTable/>;
+        }
+
+        return <SkeletonTable/>;
+    };
+
+    const { status, remediation } = selectedRemediation;
+
+    if (status !== 'fulfilled') {
+        return <RemediationDetailsSkeleton/>;
     }
 
-    render() {
-        const { status, remediation } = this.props.selectedRemediation;
+    const { stats } = remediation;
 
-        if (status !== 'fulfilled') {
-            return <RemediationDetailsSkeleton/>;
-        }
+    const totalSystems = stats.systemsWithReboot + stats.systemsWithoutReboot;
 
-        const { stats } = remediation;
+    const pluralize = (number, str) => number === 1 ? `${number} ${str}` : `${number} ${str}s`;
 
-        return (
+    return (
+        context.permissions.read === false
+            ? <DeniedState/>
+            :
             <React.Fragment>
                 <PageHeader>
                     <Breadcrumb>
@@ -84,11 +193,19 @@ class RemediationDetails extends Component {
                         </LevelItem>
                         <LevelItem>
                             <Split gutter="md">
+                                { context.hasSmartManagement && context.permissions.execute &&
+                                    <SplitItem>
+                                        <ExecutePlaybookButton
+                                            isDisabled={ !context.isReceptorConfigured }
+                                            remediationId={ remediation.id }>
+                                        </ExecutePlaybookButton>
+                                    </SplitItem>
+                                }
                                 <SplitItem>
                                     <Button
                                         isDisabled={ !remediation.issues.length }
-                                        variant='link'onClick={ () => downloadPlaybook(remediation.id) }>
-                                        Download Playbook
+                                        variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
+                                        Download playbook
                                     </Button>
                                 </SplitItem>
                                 <SplitItem>
@@ -100,79 +217,90 @@ class RemediationDetails extends Component {
                 </PageHeader>
                 <Main>
                     <Stack gutter="md">
+                        { !context.hasSmartManagement && upsellBannerVisible &&
+                            <StackItem>
+                                <UpsellBanner onClose={ () => handleUpsellToggle() }/>
+                            </StackItem>
+                        }
+                        { !context.isReceptorConfigured &&
+                            <StackItem>
+                                <NoReceptorBanner/>
+                            </StackItem>
+                        }
                         <StackItem>
-                            <Grid gutter="md" sm={ 12 } md={ isBeta ? 4 : 6 } className='ins-c-summary-cards'>
-                                {
-                                    isBeta &&
-                                    <GridItem>
-                                        <ActionsResolvedCard status={ this.props.selectedRemediationStatus } />
-                                    </GridItem>
-                                }
-                                <GridItem>
-                                    <Card className='ins-c-card__system-reboot'>
-                                        <CardHeader className='ins-m-card__header-bold'> Systems reboot </CardHeader>
-                                        <CardBody>
-                                            <Grid gutter="md" md={ 4 } sm={ 4 }>
-                                                <GridItem>
-                                                    <Stack>
-                                                        <StackItem className='ins-m-text-emphesis'>{ stats.systemsWithoutReboot }</StackItem>
-                                                        <StackItem>No reboot</StackItem>
-                                                    </Stack>
-                                                </GridItem>
-                                                <GridItem>
-                                                    <Stack>
-                                                        <StackItem className='ins-m-text-emphesis'>{ stats.systemsWithReboot }</StackItem>
-                                                        <StackItem>Reboot required</StackItem>
-                                                    </Stack>
-                                                </GridItem>
-                                                <GridItem>
-                                                    <Stack>
-                                                        <StackItem className='ins-c-reboot-switch'>
-                                                            <Switch
-                                                                id="autoReboot"
-                                                                aria-label="Auto reboot"
-                                                                isChecked={ remediation.needs_reboot ? remediation.auto_reboot : false }
-                                                                isDisabled={ !remediation.needs_reboot }
-                                                                onChange={ this.handleRebootChange }
-                                                            />
-                                                        </StackItem>
-                                                        <StackItem>Auto reboot</StackItem>
-                                                    </Stack>
-                                                </GridItem>
-                                            </Grid>
-                                        </CardBody>
-                                    </Card>
-                                </GridItem>
-                                <GridItem>
-                                    <Card className='ins-c-card__plan-details'>
-                                        <CardHeader className='ins-m-card__header-bold'>
-                                            Playbook details
-                                        </CardHeader>
-                                        <CardBody>
-                                            <Stack>
-                                                <StackItem>Created by: { formatUser(remediation.created_by) }</StackItem>
-                                                <StackItem>Created: { formatDate(remediation.created_at) }</StackItem>
-                                                <StackItem>Last modified by: { formatUser(remediation.updated_by) }</StackItem>
-                                                <StackItem>Last modified: { formatDate(remediation.updated_at) }</StackItem>
-                                                {
-                                                    isBeta &&
-                                                    <StackItem className='ins-m-border-top'> Shared with: unknown </StackItem>
-                                                }
-                                            </Stack>
-                                        </CardBody>
-                                    </Card>
-                                </GridItem>
-                            </Grid>
+                            <Card>
+                                <CardHeader className='ins-m-card__header-bold'>
+                                    <Title headingLevel="h4" size="xl">Playbook summary</Title>
+                                </CardHeader>
+                                <CardBody>
+                                    <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
+                                        <Flex className='ins-c-playbookSummary__overview'>
+                                            <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                                <DescriptionList
+                                                    isBold
+                                                    title='Total systems'>
+                                                    { pluralize(totalSystems, 'system') }
+                                                </DescriptionList>
+                                            </FlexItem>
+                                            { playbookRuns &&
+                                                renderLatestActivity(playbookRuns)
+                                            }
+                                        </Flex>
+                                        <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
+                                            <Flex>
+                                                <FlexItem
+                                                    className={ classnames(
+                                                        'ins-c-reboot-status',
+                                                        { 'ins-c-reboot-status__enabled':
+                                                            remediation.auto_reboot && remediation.needs_reboot
+                                                        },
+                                                        { 'ins-c-reboot-status__disabled': !remediation.auto_reboot }
+                                                    ) }
+                                                    breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                                    Auto reboot:&nbsp;
+                                                    <b>
+                                                        { generateAutoRebootStatus(
+                                                            remediation.auto_reboot,
+                                                            remediation.needs_reboot)
+                                                        }
+                                                    </b>
+                                                </FlexItem>
+                                                <FlexItem>{ generateNumRebootString(stats.systemsWithReboot) }</FlexItem>
+                                            </Flex>
+                                        </DescriptionList>
+                                        { remediation.needs_reboot && context.permissions.write &&
+                                            <Button
+                                                variant='link'
+                                                onClick={ () => handleRebootChange(!remediation.auto_reboot) }>
+                                                Turn {
+                                                    remediation.auto_reboot && remediation.needs_reboot ? 'off' : 'on'
+                                                } auto reboot
+                                            </Button>
+                                        }
+                                    </Flex>
+                                </CardBody>
+                            </Card>
                         </StackItem>
-                        <StackItem>
-                            <RemediationDetailsTable remediation={ remediation } status={ this.props.selectedRemediationStatus }/>
+                        <StackItem className='ins-c-playbookSummary__tabs'>
+                            <Tabs activeKey={ activeTabKey } onSelect={ handleTabClick }>
+                                <Tab eventKey={ 0 } title='Actions'>
+                                    <RemediationDetailsTable remediation={ remediation } status={ selectedRemediationStatus }/>
+                                </Tab>
+                                <Tab eventKey={ 1 } title='Activity'>
+                                    { renderActivityState(
+                                        context.hasSmartManagement,
+                                        context.isReceptorConfigured,
+                                        playbookRuns,
+                                        remediation)
+                                    }
+                                </Tab>
+                            </Tabs>
                         </StackItem>
                     </Stack>
                 </Main>
             </React.Fragment>
-        );
-    }
-}
+    );
+};
 
 RemediationDetails.propTypes = {
     match: PropTypes.shape({
@@ -180,24 +308,39 @@ RemediationDetails.propTypes = {
             id: PropTypes.string.isRequired
         })
     }).isRequired,
+    location: PropTypes.object,
     selectedRemediation: PropTypes.object,
     selectedRemediationStatus: PropTypes.object,
     history: PropTypes.object.isRequired,
     loadRemediation: PropTypes.func.isRequired,
     loadRemediationStatus: PropTypes.func.isRequired,
     switchAutoReboot: PropTypes.func.isRequired,
-    deleteRemediation: PropTypes.func.isRequired
+    deleteRemediation: PropTypes.func.isRequired,
+    executePlaybookBanner: PropTypes.shape({
+        isVisible: PropTypes.bool
+    }),
+    addNotification: PropTypes.func.isRequired,
+    playbookRuns: PropTypes.array,
+    getPlaybookRuns: PropTypes.func
 };
 
 export default withRouter(
     connect(
-        ({ selectedRemediation, selectedRemediationStatus }) => ({ selectedRemediation, selectedRemediationStatus }),
+        ({ selectedRemediation, selectedRemediationStatus, executePlaybookBanner, playbookRuns }) => ({
+            selectedRemediation,
+            selectedRemediationStatus,
+            executePlaybookBanner,
+            playbookRuns: playbookRuns.data,
+            remediation: selectedRemediation.remediation
+        }),
         dispatch => ({
             loadRemediation: id => dispatch(actions.loadRemediation(id)),
             loadRemediationStatus: id => dispatch(actions.loadRemediationStatus(id)),
             // eslint-disable-next-line camelcase
             switchAutoReboot: (id, auto_reboot) => dispatch(actions.patchRemediation(id, { auto_reboot })),
-            deleteRemediation: id => dispatch(actions.deleteRemediation(id))
+            deleteRemediation: id => dispatch(actions.deleteRemediation(id)),
+            addNotification: (content) => dispatch(addNotification(content)),
+            getPlaybookRuns: (id) => dispatch(actions.getPlaybookRuns(id))
         })
     )(RemediationDetails)
 );

@@ -1,0 +1,32 @@
+
+.ins-c-job-output__title { padding-bottom: var(--pf-global--spacer--lg)}
+
+.ins-c-job-output {
+    max-height: 500px;
+    padding: 0 !important;
+    border-color: var(--pf-global--Color--light-300);
+    border-width: 2px;
+    border-style: solid solid none solid;
+
+    code {
+        // style the line numbers
+        &:first-of-type {
+            padding: 8px;
+            border-right: 2px solid var(--pf-global--Color--light-300);
+            margin-right: 8px;
+        }
+    }
+
+    // add the border to the bottom since the spinner won't be there
+    &__finished { border-bottom: 2px solid var(--pf-global--Color--light-300);}
+}
+
+.ins-l-playbook-running {
+    background: rgb(240, 240, 240);
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    border-color: var(--pf-global--Color--light-300);
+    border-width: 2px;
+    border-style: none solid solid solid;
+}

@@ -33,7 +33,6 @@ function RemediationDetailsSystemDropdown ({ remediation, issue, system, onDelet
                 isPlain
             >
                 <Button
-                    className=' ins-c-button__danger-link'
                     onClick={ () => setDeleteDialogOpen(true) }
                     variant="link"
                 >

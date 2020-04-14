@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Split, SplitItem } from '@patternfly/react-core';
+import { Split, SplitItem, Stack, StackItem } from '@patternfly/react-core';
 import RemediationButton from '@redhat-cloud-services/frontend-components-remediations/RemediationButton';
 
 import propTypes from 'prop-types';
@@ -17,6 +17,14 @@ class TestButtons extends React.Component {
     }
 
     isEnabled = () => localStorage.getItem('remediations:debug') === 'true';
+
+    dataProviderPing = () => ({
+        issues: [{
+            id: 'test:ping',
+            description: 'Ansible ping'
+        }],
+        systems: this.state.allHosts
+    });
 
     dataProviderA1 = () => ({
         issues: [{
@@ -152,19 +160,47 @@ class TestButtons extends React.Component {
             </SplitItem>;
 
         return (
-            <Split gutter='sm'>
-                <RemediationBtn dataProvider={ this.dataProviderA1 }>A1</RemediationBtn>
-                <RemediationBtn dataProvider={ this.dataProviderA2 }>A2</RemediationBtn>
+            <React.Fragment>
+                <Stack gutter='sm'>
+                    <StackItem>
+                        <Split gutter='sm'>
+                            {
+                                [ 'ping', 'alwaysFail', 'failHalfTheTime', 'pause1m', 'pause5m', 'pause15m', 'pauseRandom15m', 'pause1h', 'pause6h' ]
+                                .map(name =>
+                                    <RemediationBtn
+                                        key={ name }
+                                        dataProvider={
+                                            () => ({
+                                                issues: [{
+                                                    id: `test:${name}`,
+                                                    description: `Ansible ${name} test playbook`
+                                                }],
+                                                systems: this.state.allHosts
+                                            })
+                                        }>
+                                        { name }
+                                    </RemediationBtn>)
+                            }
+                        </Split>
+                    </StackItem>
 
-                <RemediationBtn dataProvider={ this.dataProviderC1 }>C1</RemediationBtn>
-                <RemediationBtn dataProvider={ this.dataProviderC2 }>C2</RemediationBtn>
-                <RemediationBtn dataProvider={ this.dataProviderC3 }>C3</RemediationBtn>
-                <RemediationBtn dataProvider={ this.dataProviderC4 }>C4 (multires)</RemediationBtn>
-                <RemediationBtn dataProvider={ this.dataProviderC5 }>C5 (unsupported)</RemediationBtn>
+                    <StackItem>
+                        <Split gutter='sm'>
+                            <RemediationBtn dataProvider={ this.dataProviderA1 }>A1</RemediationBtn>
+                            <RemediationBtn dataProvider={ this.dataProviderA2 }>A2</RemediationBtn>
 
-                <RemediationBtn dataProvider={ this.dataProviderD1 }>D1</RemediationBtn>
-                <RemediationBtn dataProvider={ this.dataProviderD2 }>D2</RemediationBtn>
-            </Split>
+                            <RemediationBtn dataProvider={ this.dataProviderC1 }>C1</RemediationBtn>
+                            <RemediationBtn dataProvider={ this.dataProviderC2 }>C2</RemediationBtn>
+                            <RemediationBtn dataProvider={ this.dataProviderC3 }>C3</RemediationBtn>
+                            <RemediationBtn dataProvider={ this.dataProviderC4 }>C4 (multires)</RemediationBtn>
+                            <RemediationBtn dataProvider={ this.dataProviderC5 }>C5 (unsupported)</RemediationBtn>
+
+                            <RemediationBtn dataProvider={ this.dataProviderD1 }>D1</RemediationBtn>
+                            <RemediationBtn dataProvider={ this.dataProviderD2 }>D2</RemediationBtn>
+                        </Split>
+                    </StackItem>
+                </Stack>
+            </React.Fragment>
         );
     }
 }

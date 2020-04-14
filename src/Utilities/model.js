@@ -11,6 +11,7 @@ export function getIssueApplication ({ id }) {
         case 'advisor': return 'Insights';
         case 'ssg': return 'Compliance';
         case 'vulnerabilities': return 'Vulnerability';
+        case 'patch-advisory': return 'Patch';
         default: return 'Unknown';
     }
 }
@@ -36,7 +37,7 @@ export function includesIgnoreCase(text, included) {
     return text.toLowerCase().includes(included.toLowerCase());
 }
 
-const DATE_FORMAT = 'DD MMM YYYY, hh:mm UTC';
+export const DATE_FORMAT = 'DD MMM YYYY, hh:mm UTC';
 
 export function formatDate (date) {
     return (

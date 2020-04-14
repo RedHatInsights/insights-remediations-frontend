@@ -37,7 +37,7 @@ async function authInterceptor (config) {
 
 function responseDataInterceptor (response) {
     if (response.data) {
-        return response.data;
+        return { ...response.data, etag: response.headers.etag };
     }
 
     return response;
@@ -97,4 +97,8 @@ export function downloadPlaybook (id) {
             }
         }, 500);
     });
+}
+
+export function getIsReceptorConfigured() {
+    return doGet(`${window.location.origin}/api/sources/v2.0/endpoints?filter[receptor_node][not_nil]`);
 }

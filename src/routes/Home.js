@@ -17,14 +17,15 @@ import PlanSystems from '../components/CreatePlanModal/ModalSteps/PlanSystems';
 
 import './Home.scss';
 
+import { PermissionContext } from '../App';
+import DeniedState from '../components/DeniedState';
+
 const ConnectedRemediationTable = connect(({ remediations }) => ({ ...remediations }))(RemediationTable);
 
 class Home extends Component {
 
     constructor (props, ctx) {
         super(props, ctx);
-        this.store = ctx.store;
-        this.loadRemediations = (...args) => ctx.store.dispatch(actions.loadRemediations(...args));
         this.state = {
             isModalOpen: false,
             selected: []
@@ -48,12 +49,14 @@ class Home extends Component {
     };
 
     sendNotification = data => {
-        this.store.dispatch(addNotification(data));
+        const { addNotification } = this.props;
+        addNotification(data);
     }
 
     onRemediationCreated = result => {
+        const { loadRemediations } = this.props;
         this.sendNotification(result.getNotification());
-        this.loadRemediations();
+        loadRemediations();
     };
 
     onSelect = selected => this.setState({ selected });
@@ -61,6 +64,7 @@ class Home extends Component {
     render() {
 
         const { isModalOpen } = this.state;
+        const { loadRemediations } = this.props;
 
         // Wizard Content
         const ModalStepContent = [
@@ -69,30 +73,40 @@ class Home extends Component {
         ];
 
         return (
-            <React.Fragment>
-                <PageHeader>
-                    <PageHeaderTitle title='Remediations'/>
-                    <TestButtons onRemediationCreated={ this.onRemediationCreated } />
-                </PageHeader>
-                <Main>
-                    <ConnectedRemediationTable loadRemediations={ this.loadRemediations } />
-                </Main>
+            <PermissionContext.Consumer>
+                { value =>
+                    value.permissions.read === false
+                        ? <DeniedState/>
+                        : <React.Fragment>
+                            <PageHeader>
+                                <PageHeaderTitle title='Remediations'/>
+                                <TestButtons onRemediationCreated={ this.onRemediationCreated } />
+                            </PageHeader>
+                            <Main>
+                                <ConnectedRemediationTable loadRemediations={ loadRemediations } />
+                            </Main>
 
-                <Wizard
-                    isLarge
-                    title="Create Plan"
-                    className='ins-c-plan-modal'
-                    onClose = { this.onClose }
-                    isOpen= { isModalOpen }
-                    content = { ModalStepContent }
-                />
-            </React.Fragment>
+                            <Wizard
+                                isLarge
+                                title="Create Plan"
+                                className='ins-c-plan-modal'
+                                onClose = { this.onClose }
+                                isOpen= { isModalOpen }
+                                content = { ModalStepContent }
+                            />
+                        </React.Fragment>
+                }
+            </PermissionContext.Consumer>
         );
     }
 }
 
-Home.contextTypes = {
-    store: PropTypes.object
+Home.propTypes = {
+    loadRemediations: PropTypes.func,
+    addNotification: PropTypes.func
 };
 
-export default withRouter(Home);
+export default withRouter(connect(null, (dispatch) => ({
+    loadRemediations: (...args)  => dispatch(actions.loadRemediations(...args)),
+    addNotification: (data) => dispatch(addNotification(data))
+}))(Home));

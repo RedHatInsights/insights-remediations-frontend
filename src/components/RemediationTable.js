@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 
 import { Link } from 'react-router-dom';
@@ -26,6 +26,8 @@ import keyBy from 'lodash/keyBy';
 
 import { downloadPlaybook } from '../api';
 
+import { PermissionContext } from '../App';
+
 function buildName (name, id) {
     return ({
         title: <Link to={ `/${id}` }>{ name }</Link>
@@ -46,7 +48,7 @@ function skeleton () {
                         // <ToolbarItem><Button isDisabled> Create Remediation </Button></ToolbarItem>
                     }
                     <ToolbarItem>
-                        <Button variant='link' isDisabled> Download Playbook </Button>
+                        <Button variant='link' isDisabled> Download playbook </Button>
                     </ToolbarItem>
                     <ToolbarItem>
                         <Dropdown
@@ -110,6 +112,7 @@ function RemediationTable (props) {
     const filter = useFilter();
     const selector = useSelector();
     const pagination = usePagination();
+    const permission = useContext(PermissionContext);
 
     function loadRemediations () {
         const column = SORTING_ITERATEES[sorter.sortBy];
@@ -161,15 +164,17 @@ function RemediationTable (props) {
                             isDisabled={ !selectedIds.length }
                             onClick= { () => downloadAll(selectedIds, value.data) }
                         >
-                            Download Playbook
+                            Download playbook
                         </Button>
                     </ToolbarItem>
                     <ToolbarItem>
-                        <ToolbarActions
-                            isDisabled={ !selectedIds.length }
-                            remediations={ selectedIds }
-                            afterDelete={ () => { selector.reset(); loadRemediations(); } }
-                        />
+                        { permission.permissions.write &&
+                            <ToolbarActions
+                                isDisabled={ !selectedIds.length }
+                                remediations={ selectedIds }
+                                afterDelete={ () => { selector.reset(); loadRemediations(); } }
+                            />
+                        }
                     </ToolbarItem>
                 </ToolbarGroup>
                 <Pagination
