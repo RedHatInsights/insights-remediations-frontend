@@ -62,6 +62,7 @@ const ExecutorDetails = ({
     const [ page, setPage ] = useState(1);
     const [ pageSize, setPageSize ] = useState(50);
     const [ openId, setOpenId ] = useState();
+    const [ firstExpand, setFirstExpand ] = useState(false);
     const inventory = useRef(null);
     const store = useStore();
 
@@ -125,10 +126,15 @@ const ExecutorDetails = ({
     }, [ playbookRun ]);
 
     useEffect(() => {
-        getPlaybookRun(id, run_id);
+        if (!firstExpand) {
+            getPlaybookRun(id, run_id);
+        }
+
         if (normalizeStatus(playbookRunSystemDetails.status) !== 'running' && refreshInterval) {
             clearInterval(refreshInterval);
         }
+
+        setFirstExpand(false);
     }, [ playbookRunSystemDetails.status ]);
 
     useEffect(() => {
@@ -166,6 +172,7 @@ const ExecutorDetails = ({
                         showTags
                         onExpandClick={ status === 'running'
                             ? (_e, _i, isOpen, { id }) => {
+                                setFirstExpand(true);
                                 if (isOpen) {
                                     setOpenId(id);
                                     if (refreshInterval) {
@@ -184,14 +191,16 @@ const ExecutorDetails = ({
 
                             }
                             : (_e, _i, isOpen, { id }) => {
+                                setFirstExpand(true);
                                 if (isOpen) {
                                     setOpenId(id);
+                                    getPlaybookRunSystemDetails(remediation.id, run_id, id);
+
                                 } else {
                                     setOpenId(undefined);
                                 }
 
                                 clearInterval(refreshInterval);
-                                getPlaybookRunSystemDetails(remediation.id, run_id, id);
                                 onCollapseInventory(isOpen, id);
 
                             } }
