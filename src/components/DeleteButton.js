@@ -28,10 +28,9 @@ class DeleteButton extends Component {
         return (
             <React.Fragment>
                 <Button
-                    className='ins-c-button__danger-link'
                     onClick={ this.onButtonClicked }
                     isDisabled={ this.props.isDisabled }
-                    variant="link">
+                    variant={ this.props.variant }>
                     { this.props.label }
                 </Button>
                 {
@@ -47,11 +46,13 @@ DeleteButton.propTypes = {
     label: PropTypes.string,
     dialogMessage: PropTypes.string,
     isDisabled: PropTypes.bool,
-    onDelete: PropTypes.func.isRequired
+    onDelete: PropTypes.func.isRequired,
+    variant: PropTypes.string
 };
 
 DeleteButton.defaultProps = {
-    label: 'Delete'
+    label: 'Delete',
+    variant: 'link'
 };
 
 export default DeleteButton;

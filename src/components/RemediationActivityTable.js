@@ -15,6 +15,8 @@ import { StatusSummary, normalizeStatus } from './statusHelper';
 
 import { PermissionContext } from '../App';
 
+import './RemediationActivityTable.scss';
+
 const RemediationActivityTable = ({ remediation, playbookRuns }) => {
 
     const [ rows, setRows ] = useState([]);
@@ -98,7 +100,12 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
     ];
 
     return (
-        <Table aria-label="Collapsible table" onCollapse={ handleOnCollapse } rows={ rows } cells={ columns }>
+        <Table
+            className='ins-c-activity-table'
+            aria-label="Collapsible table"
+            onCollapse={ handleOnCollapse }
+            rows={ rows }
+            cells={ columns }>
             <TableHeader />
             <TableBody />
         </Table>

@@ -22,7 +22,8 @@ import {
     Breadcrumb, BreadcrumbItem,
     Split, SplitItem,
     Button,
-    ToolbarItem, ToolbarGroup
+    ToolbarItem, ToolbarGroup,
+    Title
 } from '@patternfly/react-core';
 
 import { isBeta } from '../config';
@@ -49,7 +50,7 @@ const RemediationDetailsSkeleton = () => {
                     </LevelItem>
                     <LevelItem>
                         <Split gutter="md">
-                            <SplitItem><Button isDisabled variant='link'> Download Playbook </Button></SplitItem>
+                            <SplitItem><Button isDisabled variant='link'> Download playbook </Button></SplitItem>
                             <SplitItem>
                                 <Dropdown
                                     toggle={ <KebabToggle isDisabled={ true } /> }
@@ -65,7 +66,9 @@ const RemediationDetailsSkeleton = () => {
                 <Stack gutter="md">
                     <StackItem>
                         <Card>
-                            <CardHeader className='ins-m-card__header-bold'>Playbook Summary</CardHeader>
+                            <CardHeader className='ins-m-card__header-bold'>
+                                <Title headingLevel="h4" size="xl">Playbook summary</Title>
+                            </CardHeader>
                             <CardBody>
                                 <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
                                     <Flex className='ins-c-playbookSummary__overview'>
@@ -81,7 +84,7 @@ const RemediationDetailsSkeleton = () => {
                                     <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
                                         <Flex>
                                             <FlexItem className='ins-m-inline-flex' breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
-                                                Autoreboot: <Skeleton className='ins-m-isInline-md' size='md'/>
+                                                Auto reboot: <Skeleton className='ins-m-isInline-md' size='md'/>
                                             </FlexItem>
                                             <FlexItem className='ins-m-inline-flex'>
                                                 <Skeleton className='ins-m-isInline-sm' size='sm'/> systems require reboot
