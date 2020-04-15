@@ -65,7 +65,6 @@ function systemsForAction(issue, remediation) {
 }
 
 const SORTING_ITERATEES = [
-    null, // expand toggle
     null, // checkboxes
     i => i.description,
     null, // resolution steps
@@ -105,7 +104,7 @@ const buildRow = (remediation) => (issue) => {
 
 function RemediationDetailsTable (props) {
     const pagination = usePagination();
-    const sorter = useSorter(2, 'asc');
+    const sorter = useSorter(1, 'asc');
     const filter = useFilter();
     const selector = useSelector();
     const permission = useContext(PermissionContext);
@@ -143,6 +142,7 @@ function RemediationDetailsTable (props) {
                     <ToolbarItem>
                         { permission.permissions.write &&
                             <DeleteActionsButton
+                                variant='secondary'
                                 isDisabled={ !selectedIds.length }
                                 remediation={ props.remediation }
                                 issues={ selectedIds }

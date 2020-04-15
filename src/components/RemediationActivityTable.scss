@@ -1,14 +1,9 @@
-.ins-activity-status{
-    &__text {
-        &-passed { color: var(--pf-global--success-color--200); }
-        &-failed { color: var(--pf-global--danger-color--200); }
-        &-in_progress { color: var(--pf-global--Color--200); }
+// Activity Table
+.ins-c-activity-table {
+    .pf-c-table__expandable-row {
+        th { padding-top: 24px; }
     }
-    &__icon {
-        font-size: 16px;
-        padding-left: var(--pf-global--spacer--md);
-        &-passed { color: var(--pf-global--success-color--200); }
-        &-failed { color: var(--pf-global--danger-color--200); }
-        &-in_progress { color: var(--pf-global--Color--200); }
+    .ins-c-remediations-status-bar {
+        max-width: max-content;
     }
 }

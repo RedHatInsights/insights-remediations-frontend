@@ -48,7 +48,7 @@ function skeleton () {
                         // <ToolbarItem><Button isDisabled> Create Remediation </Button></ToolbarItem>
                     }
                     <ToolbarItem>
-                        <Button variant='link' isDisabled> Download Playbook </Button>
+                        <Button variant='link' isDisabled> Download playbook </Button>
                     </ToolbarItem>
                     <ToolbarItem>
                         <Dropdown
@@ -164,7 +164,7 @@ function RemediationTable (props) {
                             isDisabled={ !selectedIds.length }
                             onClick= { () => downloadAll(selectedIds, value.data) }
                         >
-                            Download Playbook
+                            Download playbook
                         </Button>
                     </ToolbarItem>
                     <ToolbarItem>

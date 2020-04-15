@@ -134,12 +134,12 @@ const ExecuteButton = ({
             <Button
                 isDisabled={ isDisabled }
                 onClick={ () => { setOpen(true); getConnectionStatus(remediationId); } }>
-        Execute Playbook
+        Execute playbook
             </Button>
             <Modal
                 className="ins-c-dialog"
                 width={ '50%' }
-                title={ 'Execute Playbook' }
+                title={ 'Execute playbook' }
                 isOpen={ open }
                 onClose={ () => {
                     setShowRefreshMessage(false);
@@ -152,12 +152,12 @@ const ExecuteButton = ({
                         variant="primary"
                         isDisabled={ connected.length === 0 }
                         onClick={ () => { runRemediation(remediationId, etag); } }>
-                        { isLoading ? 'Execute Playbook' : `Execute Playbook on ${pluralize(connectedCount, 'system')}` }
+                        { isLoading ? 'Execute playbook' : `Execute playbook on ${pluralize(connectedCount, 'system')}` }
                     </Button>,
                     <Button
                         key="download"
                         variant='link' onClick={ () => downloadPlaybook(remediationId) }>
-                        Download Playbook
+                        Download playbook
                     </Button>,
                     (isDebug()
                         ? <Button

@@ -9,7 +9,7 @@ exports[`UpsellBanner component should render 1`] = `
   }
   isInline={true}
   title="Do more with Find it Fix it capabilities"
-  variant="default"
+  variant="info"
 >
   <Stack
     gutter="md"
@@ -21,7 +21,7 @@ exports[`UpsellBanner component should render 1`] = `
       <a
         href="https://access.redhat.com/products/cloud_management_services_for_rhel/evaluation"
       >
-        Try it for 90 days
+        Learn more
       </a>
     </StackItem>
   </Stack>

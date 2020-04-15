@@ -39,7 +39,7 @@ import PlaybookSystemDetails from './SystemDetails';
 import ExecutorDetailsSkeleton from '../skeletons/ExecutorDetailsSkeleton';
 import RunFailed from './Alerts/RunFailed';
 import { inventoryUrlBuilder } from '../Utilities/urls';
-
+import './ExecutorDetails.scss';
 import { PermissionContext } from '../App';
 let refreshInterval;
 
@@ -62,6 +62,7 @@ const ExecutorDetails = ({
     const [ page, setPage ] = useState(1);
     const [ pageSize, setPageSize ] = useState(50);
     const [ openId, setOpenId ] = useState();
+    const [ firstExpand, setFirstExpand ] = useState(false);
     const inventory = useRef(null);
     const store = useStore();
 
@@ -125,10 +126,15 @@ const ExecutorDetails = ({
     }, [ playbookRun ]);
 
     useEffect(() => {
-        getPlaybookRun(id, run_id);
+        if (!firstExpand) {
+            getPlaybookRun(id, run_id);
+        }
+
         if (normalizeStatus(playbookRunSystemDetails.status) !== 'running' && refreshInterval) {
             clearInterval(refreshInterval);
         }
+
+        setFirstExpand(false);
     }, [ playbookRunSystemDetails.status ]);
 
     useEffect(() => {
@@ -151,7 +157,7 @@ const ExecutorDetails = ({
 
     const renderInventorycard = (status) => <Main>
         <Stack gutter="md">
-            <Card>
+            <Card className='ins-c-card__playbook-log'>
                 <CardBody>
                     { InventoryTable && <InventoryTable
                         ref={ inventory }
@@ -166,6 +172,7 @@ const ExecutorDetails = ({
                         showTags
                         onExpandClick={ status === 'running'
                             ? (_e, _i, isOpen, { id }) => {
+                                setFirstExpand(true);
                                 if (isOpen) {
                                     setOpenId(id);
                                     if (refreshInterval) {
@@ -184,14 +191,16 @@ const ExecutorDetails = ({
 
                             }
                             : (_e, _i, isOpen, { id }) => {
+                                setFirstExpand(true);
                                 if (isOpen) {
                                     setOpenId(id);
+                                    getPlaybookRunSystemDetails(remediation.id, run_id, id);
+
                                 } else {
                                     setOpenId(undefined);
                                 }
 
                                 clearInterval(refreshInterval);
-                                getPlaybookRunSystemDetails(remediation.id, run_id, id);
                                 onCollapseInventory(isOpen, id);
 
                             } }
@@ -234,7 +243,7 @@ const ExecutorDetails = ({
                                     <Button
                                         variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
                                         <DownloadIcon /> { ' ' }
-                                Download Playbook
+                                Download playbook
                                     </Button>
                                 </ToolbarItem>
                             </ToolbarGroup>
@@ -255,7 +264,7 @@ const ExecutorDetails = ({
                     <CardHeader className='ins-m-card__header-bold'>
                         <Button
                             variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
-                            Download Playbook
+                            Download playbook
                         </Button>
                     </CardHeader>
 
@@ -273,6 +282,9 @@ const ExecutorDetails = ({
         ? <React.Fragment>
             <PageHeader>
                 <Breadcrumb>
+                    <BreadcrumbItem>
+                        <Link to={ `/` }> Remediations </Link>
+                    </BreadcrumbItem>
                     <BreadcrumbItem>
                         <Link to={ `/${remediation.id}` }> { remediation.name } </Link>
                     </BreadcrumbItem>
@@ -297,16 +309,6 @@ const ExecutorDetails = ({
                     <StackItem>
                         <Split gutter="md">
                             <SplitItem>
-                                <DescriptionList className='ins-c-playbookSummary__settings' title='Run on'>
-                                    <DateFormat type='exact' date={ playbookRun.data.created_at } />
-                                </DescriptionList>
-                            </SplitItem>
-                            <SplitItem>
-                                <DescriptionList className='ins-c-playbookSummary__settings' title='Run by'>
-                                    { `${playbookRun.data.created_by.first_name} ${playbookRun.data.created_by.last_name}` }
-                                </DescriptionList>
-                            </SplitItem>
-                            <SplitItem>
                                 <DescriptionList className='ins-c-playbookSummary__settings' title='Run status'>
                                     { executor.status
                                         ? <StatusSummary
@@ -316,7 +318,16 @@ const ExecutorDetails = ({
                                         : <Skeleton size='lg' />
 
                                     }
-
+                                </DescriptionList>
+                            </SplitItem>
+                            <SplitItem>
+                                <DescriptionList className='ins-c-playbookSummary__settings' title='Run by'>
+                                    { `${playbookRun.data.created_by.first_name} ${playbookRun.data.created_by.last_name}` }
+                                </DescriptionList>
+                            </SplitItem>
+                            <SplitItem>
+                                <DescriptionList className='ins-c-playbookSummary__settings' title='Run on'>
+                                    <DateFormat type='exact' date={ playbookRun.data.created_at } />
                                 </DescriptionList>
                             </SplitItem>
                         </Split>

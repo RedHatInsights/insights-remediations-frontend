@@ -62,7 +62,7 @@ const ExecutorDetailsSkeleton = () => {
                 <Card>
                     <CardHeader className='ins-m-card__header-bold'>
                         <Button>
-                        Download Playbook
+                        Download playbook
                         </Button>
                     </CardHeader>
 

@@ -98,7 +98,6 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
                             {
                                 title: (
                                     <Button
-                                        className=' ins-c-button__danger-link'
                                         onClick={ () => setDeleteDialogOpen(true) }
                                         variant="link"
                                     >

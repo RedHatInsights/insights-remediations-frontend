@@ -34,7 +34,8 @@ import {
     Button,
     Split, SplitItem,
     Flex, FlexItem, FlexModifiers,
-    Tabs, Tab, Tooltip
+    Tabs, Tab, Tooltip,
+    Title
 } from '@patternfly/react-core';
 
 import RemediationDetailsSkeleton from '../skeletons/RemediationDetailsSkeleton';
@@ -44,6 +45,7 @@ import EmptyActivityTable from '../components/EmptyStates/EmptyActivityTable';
 import { PermissionContext } from '../App';
 
 import './RemediationDetails.scss';
+import NoReceptorBanner from '../components/Alerts/NoReceptorBanner';
 
 const RemediationDetails = ({
     match,
@@ -203,7 +205,7 @@ const RemediationDetails = ({
                                     <Button
                                         isDisabled={ !remediation.issues.length }
                                         variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
-                                        Download Playbook
+                                        Download playbook
                                     </Button>
                                 </SplitItem>
                                 <SplitItem>
@@ -220,9 +222,16 @@ const RemediationDetails = ({
                                 <UpsellBanner onClose={ () => handleUpsellToggle() }/>
                             </StackItem>
                         }
+                        { !context.isReceptorConfigured &&
+                            <StackItem>
+                                <NoReceptorBanner/>
+                            </StackItem>
+                        }
                         <StackItem>
                             <Card>
-                                <CardHeader className='ins-m-card__header-bold'>Playbook Summary</CardHeader>
+                                <CardHeader className='ins-m-card__header-bold'>
+                                    <Title headingLevel="h4" size="xl">Playbook summary</Title>
+                                </CardHeader>
                                 <CardBody>
                                     <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
                                         <Flex className='ins-c-playbookSummary__overview'>
@@ -248,7 +257,7 @@ const RemediationDetails = ({
                                                         { 'ins-c-reboot-status__disabled': !remediation.auto_reboot }
                                                     ) }
                                                     breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
-                                                    Autoreboot:&nbsp;
+                                                    Auto reboot:&nbsp;
                                                     <b>
                                                         { generateAutoRebootStatus(
                                                             remediation.auto_reboot,
@@ -274,7 +283,7 @@ const RemediationDetails = ({
                         </StackItem>
                         <StackItem className='ins-c-playbookSummary__tabs'>
                             <Tabs activeKey={ activeTabKey } onSelect={ handleTabClick }>
-                                <Tab eventKey={ 0 } title='Issues'>
+                                <Tab eventKey={ 0 } title='Actions'>
                                     <RemediationDetailsTable remediation={ remediation } status={ selectedRemediationStatus }/>
                                 </Tab>
                                 <Tab eventKey={ 1 } title='Activity'>

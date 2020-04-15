@@ -13,7 +13,8 @@ import {
     Card, CardHeader, CardBody,
     Stack, StackItem,
     Breadcrumb, BreadcrumbItem,
-    Split, SplitItem
+    Split, SplitItem,
+    Title
 } from '@patternfly/react-core';
 import {
     Table,
@@ -55,6 +56,9 @@ const ActivityDetail = ({
             <React.Fragment>
                 <PageHeader>
                     <Breadcrumb>
+                        <BreadcrumbItem>
+                            <Link to={ `/` }> Remediations </Link>
+                        </BreadcrumbItem>
                         <BreadcrumbItem>
                             <Link to={ `/${remediation.id}` }> { remediation.name } </Link>
                         </BreadcrumbItem>
@@ -117,7 +121,9 @@ const ActivityDetail = ({
                 <Main>
                     <Stack gutter='md'>
                         <Card>
-                            <CardHeader className='ins-m-card__header-bold'>Results by connection</CardHeader>
+                            <CardHeader className='ins-m-card__header-bold'>
+                                <Title headingLevel="h4" size="xl">Results by connection</Title>
+                            </CardHeader>
                             <CardBody>
                                 <Table
                                     aria-label="Collapsible table"
