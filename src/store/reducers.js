@@ -256,6 +256,18 @@ const reducers = {
         })
     }, {
         status: 'initial'
+    }),
+
+    sources: applyReducerHash({
+        [ACTION_TYPES.GET_ENDPOINT_FULFILLED]: (state, action) => ({
+            status: 'fulfilled',
+            data: {
+                ...state.data,
+                [action.payload.id]: action.payload
+            }
+        })
+    }, {
+        status: 'initial'
     })
 
 };

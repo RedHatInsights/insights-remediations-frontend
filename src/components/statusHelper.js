@@ -123,7 +123,7 @@ export const StatusSummary = ({ executorStatus, permission, hasCancel, counts, r
     return statusBar;
 };
 
-export const styledConnectionStatus = (status) => ({
+export const styledConnectionStatus = (status, err) => ({
     connected: (
         <TextContent>
             <Text component={ TextVariants.p }>
@@ -147,6 +147,25 @@ export const styledConnectionStatus = (status) => ({
                     variant='link' onClick={ () => console.log('TODO: add link') }>
                     Troubleshoot
                 </Button> */ }
+            </Text>
+        </TextContent>),
+    unavailable: (
+        <TextContent>
+            <Text component={ TextVariants.p }>
+                <ExclamationCircleIcon
+                    className="ins-c-remediations-failure ins-c-remediations-connection-status"
+                    aria-label="connection status" />
+                Connection issue
+                <Text component={ TextVariants.small } style={ { margin: '0px' } }>
+                    { err ? err : 'Receptor not responding' }
+                </Text>
+                <Button
+                    style={ { padding: '0px' } }
+                    key="troubleshoot"
+                    // eslint-disable-next-line no-console
+                    variant='link' onClick={ () => console.log('TODO: add link') }>
+                    Troubleshoot
+                </Button>
             </Text>
         </TextContent>),
     // eslint-disable-next-line camelcase

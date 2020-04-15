@@ -21,10 +21,16 @@ exports[`Execute button fullfiled request 1`] = `
     ]
   }
   getConnectionStatus={[Function]}
+  getEndpoint={[Function]}
   isDisabled={false}
   isLoading={true}
   issueCount={1}
   remediationId="id"
+  sources={
+    Object {
+      "data": Object {},
+    }
+  }
   status="fullfiled"
 />
 `;
@@ -37,6 +43,11 @@ exports[`Execute button pending request 1`] = `
   isLoading={true}
   issueCount={1}
   remediationId="id"
+  sources={
+    Object {
+      "data": Object {},
+    }
+  }
   status="pending"
 />
 `;

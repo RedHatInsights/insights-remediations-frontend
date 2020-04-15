@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal, ModalVariant, TextContent, Text, TextVariants, Alert, Tooltip } from '@patternfly/react-core';
@@ -17,33 +18,83 @@ export const ExecuteModal = ({
     issueCount,
     runRemediation,
     etag,
+    getEndpoint,
+    sources,
     setEtag }) => {
 
     const [ isUserEntitled, setIsUserEntitled ] = useState(false);
+    const [ connected, setConnected ] = useState([]);
+    const [ disconnected, setDisconnected ] = useState([]);
     const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
     useEffect(() => {
         window.insights.chrome.auth.getUser().then(user => setIsUserEntitled(user.entitlements.smart_management.is_entitled));
     }, []);
 
-    const [ connected, disconnected ] = data.reduce(
-        ([ pass, fail ], e) => (e.connection_status === 'connected' ? [ [ ...pass, e ], fail ] : [ pass, [ ...fail, e ] ])
-        , [ [], [] ]
-    );
+    const combineStatuses = (status, availability) => status === 'connected'
+        ? availability ? availability.availability_status : 'loading'
+        : status;
 
-    const rows = [ ...connected, ...disconnected ].map(con =>
-        ({ cells: [
-            {
-                title: con.executor_name
-                    ? <Tooltip content={ `${con.executor_name}` }>
-                        <span>{ con.executor_name.length > 25 ? `${ con.executor_name.slice(0, 22)}...` : con.executor_name }</span>
-                    </Tooltip>
-                    : 'Direct connection'
+    useEffect(() => {
+        const [ con, dis ] = data.reduce(
+            ([ pass, fail ], e) => (
+                e.connection_status === 'connected'
+                    ? [ [ ...pass, { ...e, connection_status: 'loading' }], fail ]
+                    : [ pass, [ ...fail, e ] ])
+            , [ [], [] ]
+        );
+        setConnected(con);
+        setDisconnected(dis);
+        con.map(c => getEndpoint(c.endpoint_id));
+    }, [ data ]);
 
-            },
-            con.system_count,
-            isUserEntitled && { title: styledConnectionStatus(con.connection_status) }
-        ]})
+    useEffect(() => {
+        const isAvailable = (connectionStatus, sourcesStatus, data) => (
+            combineStatuses(connectionStatus, sourcesStatus === 'fulfilled' && data) === 'available'
+        );
+
+        const updatedData = data.map(e => ({
+            ...e,
+            connection_status: combineStatuses(
+                e.connection_status,
+                sources.status === 'fulfilled' && sources.data[`${e.endpoint_id}`]
+            )
+        }));
+
+        const [ con, dis ] = updatedData.reduce(
+            ([ pass, fail ], e) => (
+                isAvailable(e.connection_status, sources.status, sources.data[`${e.endpoint_id}`])
+                    ? [
+                        [ ...pass, { ...e }], fail ]
+                    : [ pass, [ ...fail, { ...e }] ]
+            )
+            , [ [], [] ]
+        );
+        setConnected(con);
+        setDisconnected(dis);
+    }, [ sources ]);
+
+    const rows = [...connected, ...disconnected].map(con =>
+        ({
+            cells: [
+                {
+                    title: con.executor_name
+                        ? <Tooltip content={`${con.executor_name}`}>
+                            <span>{con.executor_name.length > 25 ? `${con.executor_name.slice(0, 22)}...` : con.executor_name}</span>
+                        </Tooltip>
+                        : 'Direct connection'
+
+                },
+                con.system_count,
+                isUserEntitled && {
+                    title: styledConnectionStatus(
+                        con.connection_status,
+                        sources.status === 'fulfilled' && sources.data[`${con.endpoint_id}`]
+                        && sources.data[`${con.endpoint_id}`].availability_status_error
+                    )
+                }
+            ]
+        })
     );
     const connectedCount = connected.reduce((acc, e) => e.system_count + acc, 0);
     const systemCount = data.reduce((acc, e) => e.system_count + acc, 0);
@@ -63,7 +114,7 @@ export const ExecuteModal = ({
                     key="confirm"
                     variant="primary"
                     isDisabled={ connected.length === 0 }
-                    onClick={ () => { runRemediation(remediationId, etag); } }>
+                    onClick={() => { runRemediation(remediationId, etag, disconnected.map(e => e.executor_id).filter(e => e)); } }>
                     { isLoading ? 'Execute playbook' : `Execute playbook on ${pluralize(connectedCount, 'system')}` }
                 </Button>,
                 <Button
@@ -131,5 +182,7 @@ ExecuteModal.propTypes = {
     issueCount: PropTypes.number,
     runRemediation: PropTypes.func,
     etag: PropTypes.string,
-    setEtag: PropTypes.func
+    setEtag: PropTypes.func,
+    getEndpoint: PropTypes.func,
+    sources: PropTypes.object
 };

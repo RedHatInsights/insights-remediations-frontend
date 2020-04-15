@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { Button, Tooltip } from '@patternfly/react-core';
 import { ExecuteModal } from './Modals/ExecuteModal';
 import './ExecuteButton.scss';
+import './Status.scss';
 
 const ExecuteButton = ({
     isLoading,
@@ -16,10 +17,13 @@ const ExecuteButton = ({
     runRemediation,
     etag,
     remediationStatus,
+    getEndpoint,
+    sources,
     setEtag }) => {
     const [ open, setOpen ] = useState(false);
     const [ isUserEntitled, setIsUserEntitled ] = useState(false);
     const [ showRefreshMessage, setShowRefreshMessage ] = useState(false);
+
     const isEnabled = () => true || localStorage.getItem('remediations:fifi:debug') === 'true';
 
     useEffect(() => {
@@ -68,6 +72,8 @@ const ExecuteButton = ({
                     issueCount = { issueCount }
                     runRemediation = { runRemediation }
                     setEtag = { setEtag }
+                    getEndpoint = { getEndpoint }
+                    sources = { sources }
                 />
             }
         </React.Fragment>
@@ -85,7 +91,9 @@ ExecuteButton.propTypes = {
     issueCount: PropTypes.number,
     etag: PropTypes.string,
     setEtag: PropTypes.func,
-    isDisabled: PropTypes.bool
+    isDisabled: PropTypes.bool,
+    getEndpoint: PropTypes.func,
+    sources: PropTypes.object
 };
 
 ExecuteButton.defaultProps = {
