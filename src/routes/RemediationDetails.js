@@ -241,10 +241,11 @@ const RemediationDetails = ({
                                                     { pluralize(totalSystems, 'system') }
                                                 </DescriptionList>
                                             </FlexItem>
-                                            { playbookRuns &&
-                                                renderLatestActivity(playbookRuns)
-                                            }
+
                                         </Flex>
+                                        { playbookRuns &&
+                                            renderLatestActivity(playbookRuns)
+                                        }
 
                                         <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
                                             <Flex>
