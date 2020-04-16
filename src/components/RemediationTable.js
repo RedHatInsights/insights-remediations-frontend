@@ -77,7 +77,7 @@ function empty () {
                     <br />
                     To create a new remediation Playbook, select issues identified in
                     <br />
-                    <a href={ appUrl('advisor').toString() }>Red Hat Insights</a>,&nbsp;
+                    <a href={ appUrl('advisor').toString() }>Recommendations</a>,&nbsp;
                     <a href={ appUrl('compliance').toString() }>Compliance</a> or&nbsp;
                     <a href={ appUrl('vulnerabilities').toString() }>Vulnerability</a>&nbsp;
                     and select

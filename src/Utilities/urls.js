@@ -47,7 +47,7 @@ export function buildIssueUrl (id) {
 
     switch (parts[0]) {
         case 'advisor':
-            return appUrl(parts[0]).segment('rules').segment(parts[1]).toString();
+            return appUrl(parts[0]).segment('recommendations').segment(parts[1]).toString();
         case 'vulnerabilities':
             return appUrl(parts[0]).segment('cves').segment(parts[1]).toString();
         case 'patch-advisory':
@@ -62,14 +62,14 @@ export function appUrl (app) {
         case 'advisor':
             return urijs(document.baseURI).segment('insights');
         case 'vulnerabilities':
-            return urijs(document.baseURI).segment('rhel').segment('vulnerability');
+            return urijs(document.baseURI).segment('insights').segment('vulnerability');
         case 'compliance':
         case 'ssg':
-            return urijs(document.baseURI).segment('rhel').segment('compliance');
+            return urijs(document.baseURI).segment('insights').segment('compliance');
         case 'inventory':
             return urijs(document.baseURI).segment(getGroup()).segment('inventory');
         case 'patch-advisory':
-            return urijs(document.baseURI).segment('rhel').segment('patch');
+            return urijs(document.baseURI).segment('insights').segment('patch');
         default:
             throw new Error(`Unknown app: ${app}`);
     }
