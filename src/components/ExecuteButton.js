@@ -124,9 +124,11 @@ const ExecuteButton = ({
     const rows = [ ...connected, ...disconnected ].map(con =>
         ({ cells: [
             {
-                title: (<Tooltip content={ `${con.executor_name}` }>
-                    <span>{ con.executor_name.length > 25 ? `${ con.executor_name.slice(0, 22)}...` : con.executor_name }</span>
-                </Tooltip> || 'Direct connection')
+                title: con.executor_name
+                    ? <Tooltip content={ `${con.executor_name}` }>
+                        <span>{ con.executor_name.length > 25 ? `${ con.executor_name.slice(0, 22)}...` : con.executor_name }</span>
+                    </Tooltip>
+                    : 'Direct connection'
 
             },
             con.system_count,
