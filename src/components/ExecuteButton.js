@@ -3,7 +3,11 @@ import React, { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 import { downloadPlaybook } from '../api';
+<<<<<<< Updated upstream
 import { Button, Modal, TextContent, Text, TextVariants, Alert } from '@patternfly/react-core';
+=======
+import { Button, Modal, TextContent, Text, TextVariants, Alert, Tooltip, Stack, StackItem } from '@patternfly/react-core';
+>>>>>>> Stashed changes
 import { TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
 import { CheckCircleIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
 import { Skeleton } from '@redhat-cloud-services/frontend-components';
@@ -90,6 +94,8 @@ const ExecuteButton = ({
     getConnectionStatus,
     remediationId,
     issueCount,
+    needsReboot,
+    autoReboot,
     runRemediation,
     etag,
     remediationStatus,
@@ -189,21 +195,41 @@ const ExecuteButton = ({
                     </TextContent>
                     { isLoading
                         ? <Skeleton size='lg'/>
-                        : <Table
-                            variant={ TableVariant.compact }
-                            aria-label="Systems"
-                            cells={ [{
-                                title: 'Connection type', value: 'type'
-                            }, {
-                                title: 'Systems', value: 'count'
-                            }, isUserEntitled && {
-                                title: 'Connection status', value: 'status'
-                            } ] }
-                            rows={ rows }
-                        >
-                            <TableHeader />
-                            <TableBody />
-                        </Table> }
+                        : <Stack gutter='md'>
+                            <StackItem>
+                                <Table
+                                    variant={ TableVariant.compact }
+                                    aria-label="Systems"
+                                    cells={ [{
+                                        title: 'Connection type', value: 'type'
+                                    }, {
+                                        title: 'Systems', value: 'count'
+                                    }, isUserEntitled && {
+                                        title: 'Connection status', value: 'status'
+                                    } ] }
+                                    rows={ rows }
+                                >
+                                    <TableHeader />
+                                    <TableBody />
+                                </Table>
+                            </StackItem>
+                            <StackItem>
+                                <TextContent>
+                                    { needsReboot
+                                        ? autoReboot
+                                            ? <Text> Automatic reboot is on for this playbook. { `${connected.length}` } will be rebooted. </Text>
+                                            : <Text> Automatic reboot is off for this playbook. Changes for { `${connected.length}` } will not take
+                                                effect until systems are rebooted.</Text>
+                                        : null }
+                                    { disconnected.length > 0
+                                        ? <Text>{ `${disconnected.length}` } systems cannot be remediated at this time. Executing
+                                            remediation will have no effect on these systems.
+                                        </Text>
+                                        : null
+                                    }
+                                </TextContent>
+                            </StackItem>
+                        </Stack> }
                 </div>
             </Modal>
         </React.Fragment>
@@ -221,7 +247,9 @@ ExecuteButton.propTypes = {
     issueCount: PropTypes.number,
     etag: PropTypes.string,
     setEtag: PropTypes.func,
-    isDisabled: PropTypes.bool
+    isDisabled: PropTypes.bool,
+    needsReboot: PropTypes.bool,
+    autoReboot: PropTypes.bool
 };
 
 ExecuteButton.defaultProps = {

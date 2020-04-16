@@ -10,6 +10,8 @@ export const ExecutePlaybookButton = withRouter(connect(
         data,
         isLoading: status !== 'fulfilled',
         issueCount: selectedRemediation.remediation.issues.length,
+        needsReboot: selectedRemediation.remediation.needs_reboot,
+        autoReboot: selectedRemediation.remediation.auto_reboot,
         etag,
         remediationStatus: runRemediation.status
     }),
