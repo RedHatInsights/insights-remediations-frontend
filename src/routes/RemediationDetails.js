@@ -7,7 +7,7 @@ import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import RemediationActivityTable from '../components/RemediationActivityTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
-import { renderStatusIcon, normalizeStatus, StatusSummary } from '../components/statusHelper';
+import { normalizeStatus, StatusSummary } from '../components/statusHelper';
 import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
@@ -16,9 +16,7 @@ import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
 import NotConfigured from '../components/EmptyStates/NotConfigured';
 import DeniedState from '../components/DeniedState';
 import classnames from 'classnames';
-import { capitalize } from '../Utilities/utils';
 import SkeletonTable from '../skeletons/SkeletonTable';
-import { LatestActivityPopover } from '../components/Popovers/LatestActivityPopover';
 import '../components/Status.scss';
 
 import {
@@ -35,7 +33,7 @@ import {
     Button,
     Split, SplitItem,
     Flex, FlexItem, FlexModifiers,
-    Tabs, Tab, Tooltip,
+    Tabs, Tab,
     Title
 } from '@patternfly/react-core';
 

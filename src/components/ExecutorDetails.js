@@ -20,7 +20,7 @@ import {
     Breadcrumb, BreadcrumbItem,
     Split, SplitItem, ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
-import { InProgressIcon, DownloadIcon } from '@patternfly/react-icons';
+import { InProgressIcon } from '@patternfly/react-icons';
 
 import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/Registry';
 import reducers from '../store/reducers';
