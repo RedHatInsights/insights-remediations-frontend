@@ -15,9 +15,12 @@ const ActivityTabUpsell = () => (
             </Title>
             <EmptyStateBody>
                 Upgrade to Red Hat Smart Management to remediate all your systems,
-                across regions and geographies directly from Red Hat Insights
+                across regions and geographies directly from Red Hat Insights.
             </EmptyStateBody>
-            <Button variant="link">Learn more</Button>
+            <Button
+                variant="link"
+                component='a'
+                href='https://www.redhat.com/en/technologies/management/smart-management'>Learn more</Button>
         </EmptyState>
     </Bullseye>
 );

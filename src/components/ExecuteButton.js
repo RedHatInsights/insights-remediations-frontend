@@ -27,12 +27,12 @@ const styledConnectionStatus = (status) => ({
             <Text component={ TextVariants.small }>
                 Receptor not responding
             </Text>
-            <Button
+            {/* <Button
                 key="troubleshoot"
                 // eslint-disable-next-line no-console
                 variant='link' onClick={ () => console.log('TODO: add link') }>
                 Troubleshoot
-            </Button>
+            </Button> */}
         </TextContent>),
     no_executor: (
         <TextContent>
@@ -46,7 +46,9 @@ const styledConnectionStatus = (status) => ({
             <Button
                 key="download"
                 // eslint-disable-next-line no-console
-                variant='link' onClick={ () => console.log('TODO: add link') }>
+                variant='link'
+                component='a'
+                href='https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights'>
                Learn how to connect
             </Button>
         </TextContent>),
@@ -57,12 +59,12 @@ const styledConnectionStatus = (status) => ({
         <Text component={ TextVariants.small }>
            Satellite not registered for Playbook execution
         </Text>
-        <Button
+        {/* <Button
             key="register"
             // eslint-disable-next-line no-console
             variant='link' onClick={ () => console.log('TODO: add link') }>
             Learn how to register Satellite
-        </Button>
+        </Button> */ }
     </TextContent>),
     no_receptor: (<TextContent>
         <Text component={ TextVariants.p }>
@@ -74,12 +76,12 @@ const styledConnectionStatus = (status) => ({
         <Text component={ TextVariants.small }>
             Configure Receptor to automatically remediate
         </Text>
-        <Button
+        {/* <Button
             key="configure"
             // eslint-disable-next-line no-console
             variant='link' onClick={ () => console.log('TODO: add link') }>
             Learn how to configure
-        </Button>
+        </Button> */ }
     </TextContent>)
 })[status];
 
