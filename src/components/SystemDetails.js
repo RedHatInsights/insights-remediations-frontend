@@ -25,6 +25,7 @@ const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
                 <SyntaxHighlighter
                     language="yaml"
                     showLineNumbers
+                    style={ { 'white-space': 'pre-wrap' } }
                     className={ outputClasses }>
                     { playbookRunSystemDetails && playbookRunSystemDetails.console || '' }
                 </SyntaxHighlighter>
