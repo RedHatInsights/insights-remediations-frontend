@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 import { downloadPlaybook } from '../api';
-import { Button, Modal, TextContent, Text, TextVariants, Alert } from '@patternfly/react-core';
+import { Button, Modal, TextContent, Text, TextVariants, Alert, Tooltip } from '@patternfly/react-core';
 import { TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
 import { CheckCircleIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
 import { Skeleton } from '@redhat-cloud-services/frontend-components';
@@ -123,7 +123,12 @@ const ExecuteButton = ({
 
     const rows = [ ...connected, ...disconnected ].map(con =>
         ({ cells: [
-            con.executor_name || 'Direct connection',
+            {
+                title: (<Tooltip content={ `${con.executor_name}` }>
+                    <span>{ con.executor_name.length > 25 ? `${ con.executor_name.slice(0, 22)}...` : con.executor_name }</span>
+                </Tooltip> || 'Direct connection')
+
+            },
             con.system_count,
             isUserEntitled && { title: styledConnectionStatus(con.connection_status) }
         ]})
