@@ -185,7 +185,7 @@ const ExecuteButton = ({
                         { isLoading
                             ? <Skeleton size='lg'/>
                             : <Text component={ TextVariants.p }>
-                                Playbook contains <b>{ `${pluralize(issueCount, 'issue')}` }</b> affecting
+                                Playbook contains <b>{ `${pluralize(issueCount, 'action')}` }</b> affecting
                                 <b>  { `${pluralize(systemCount, 'system')}.` } </b>
                             </Text> }
                         <Text component={ TextVariants.p }>
