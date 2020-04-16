@@ -48,7 +48,7 @@ function skeleton () {
                         // <ToolbarItem><Button isDisabled> Create Remediation </Button></ToolbarItem>
                     }
                     <ToolbarItem>
-                        <Button variant='link' isDisabled> Download playbook </Button>
+                        <Button variant='secondary' isDisabled> Download playbook </Button>
                     </ToolbarItem>
                     <ToolbarItem>
                         <Dropdown

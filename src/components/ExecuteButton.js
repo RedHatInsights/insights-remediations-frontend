@@ -164,7 +164,7 @@ const ExecuteButton = ({
                     </Button>,
                     <Button
                         key="download"
-                        variant='link' onClick={ () => downloadPlaybook(remediationId) }>
+                        variant='secondary' onClick={ () => downloadPlaybook(remediationId) }>
                         Download playbook
                     </Button>,
                     (isDebug()

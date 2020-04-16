@@ -204,7 +204,7 @@ const RemediationDetails = ({
                                 <SplitItem>
                                     <Button
                                         isDisabled={ !remediation.issues.length }
-                                        variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
+                                        variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
                                         Download playbook
                                     </Button>
                                 </SplitItem>

@@ -242,7 +242,6 @@ const ExecutorDetails = ({
                                 <ToolbarItem>
                                     <Button
                                         variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
-                                        <DownloadIcon /> { ' ' }
                                 Download playbook
                                     </Button>
                                 </ToolbarItem>
@@ -263,7 +262,7 @@ const ExecutorDetails = ({
                 <Card>
                     <CardHeader className='ins-m-card__header-bold'>
                         <Button
-                            variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
+                            variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
                             Download playbook
                         </Button>
                     </CardHeader>
