@@ -7,6 +7,7 @@
     border-color: var(--pf-global--Color--light-300);
     border-width: 2px;
     border-style: solid solid none solid;
+    white-space: pre-wrap;
 
     code {
         // style the line numbers
@@ -15,6 +16,11 @@
             border-right: 2px solid var(--pf-global--Color--light-300);
             margin-right: 8px;
         }
+         &:nth-of-type(2) {
+             position: relative;
+             top: 8px;
+             white-space: pre-wrap;
+         }
     }
 
     // add the border to the bottom since the spinner won't be there
