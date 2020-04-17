@@ -147,14 +147,6 @@ const ExecutorDetails = ({
         })));
     }, [ playbookRunSystems ]);
 
-    const systemsStatus =
-        playbookRunSystems.data.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
-            , { pending: 0,
-                running: 0,
-                success: 0,
-                failure: 0,
-                canceled: 0 });
-
     const renderInventorycard = (status) => <Main>
         <Stack gutter="md">
             <Card className='ins-c-card__playbook-log'>
@@ -313,7 +305,7 @@ const ExecutorDetails = ({
                                     { executor.status
                                         ? <StatusSummary
                                             executorStatus={ executor.status }
-                                            counts={ systemsStatus }
+                                            counts={executor.counts }
                                             permission={ permission } />
                                         : <Skeleton size='lg' />
 
