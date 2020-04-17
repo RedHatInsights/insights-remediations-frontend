@@ -3,3 +3,12 @@
 .ins-c-remediations-running { color: var(--pf-global--default-color--300); }
 
 td .ins-c-remediations-status-text { display: inline-block; min-width: 85px; }
+
+.ins-c-latest-activity .ins-l-description-list__description {
+    display: flex;
+    align-items: center;
+    .ins-c-latest-activity__date {
+        margin-left: 16px;
+        margin-right: 16px;
+    }
+}

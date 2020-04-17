@@ -20,7 +20,7 @@ import {
     Breadcrumb, BreadcrumbItem,
     Split, SplitItem, ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
-import { InProgressIcon, DownloadIcon } from '@patternfly/react-icons';
+import { InProgressIcon } from '@patternfly/react-icons';
 
 import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/Registry';
 import reducers from '../store/reducers';
@@ -235,7 +235,6 @@ const ExecutorDetails = ({
                                 <ToolbarItem>
                                     <Button
                                         variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
-                                        <DownloadIcon /> { ' ' }
                                 Download playbook
                                     </Button>
                                 </ToolbarItem>
@@ -256,7 +255,7 @@ const ExecutorDetails = ({
                 <Card>
                     <CardHeader className='ins-m-card__header-bold'>
                         <Button
-                            variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
+                            variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
                             Download playbook
                         </Button>
                     </CardHeader>
