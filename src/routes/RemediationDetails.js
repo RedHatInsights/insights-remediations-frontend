@@ -7,7 +7,7 @@ import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import RemediationActivityTable from '../components/RemediationActivityTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
-import { renderStatusIcon, normalizeStatus } from '../components/statusHelper';
+import { normalizeStatus, StatusSummary } from '../components/statusHelper';
 import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
@@ -16,9 +16,8 @@ import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
 import NotConfigured from '../components/EmptyStates/NotConfigured';
 import DeniedState from '../components/DeniedState';
 import classnames from 'classnames';
-import { capitalize } from '../Utilities/utils';
 import SkeletonTable from '../skeletons/SkeletonTable';
-import { LatestActivityPopover } from '../components/Popovers/LatestActivityPopover';
+import '../components/Status.scss';
 
 import {
     Main,
@@ -34,7 +33,7 @@ import {
     Button,
     Split, SplitItem,
     Flex, FlexItem, FlexModifiers,
-    Tabs, Tab, Tooltip,
+    Tabs, Tab,
     Title
 } from '@patternfly/react-core';
 
@@ -121,30 +120,30 @@ const RemediationDetails = ({
     };
 
     const renderLatestActivity = (playbookRuns) => {
-
         if (playbookRuns.length) {
-
             const mostRecent = playbookRuns[0];
-
-            return (
-                <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
-                    <DescriptionList
-                        hasGutter
-                        needsPointer
-                        title='Latest activity'>
-                        <LatestActivityPopover mostRecent={ mostRecent }>
-                            <span><DateFormat type='relative' date={ mostRecent.updated_at } /></span>
-                            <Tooltip content={ <span>{ capitalize(mostRecent.status) }</span> }>
-                                { renderStatusIcon(normalizeStatus(mostRecent.status)) }
-                            </Tooltip>
-                        </LatestActivityPopover>
-                        <Link to={ `/${mostRecent.remediation_id}/${mostRecent.id}` }>View</Link>
-                    </DescriptionList>
-                </FlexItem>
-            );
+            return <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                <DescriptionList
+                    needsPointer
+                    className='ins-c-latest-activity'
+                    title='Latest activity'>
+                    <StatusSummary
+                        executorStatus={ mostRecent.status }
+                        counts={ mostRecent.executors.reduce((acc, ex) => (
+                            {
+                                pending: acc.pending + ex.counts.pending,
+                                running: acc.running + ex.counts.running,
+                                success: acc.success + ex.counts.success,
+                                failure: acc.failure + ex.counts.failure,
+                                canceled: acc.canceled + ex.counts.canceled,
+                                acked: acc.acked + ex.counts.acked
+                            }), { pending: 0, running: 0, success: 0, failure: 0, canceled: 0, acked: 0 }) }
+                        permission={ {} } />
+                    <span className='ins-c-latest-activity__date'><DateFormat type='relative' date={ mostRecent.updated_at } /></span>
+                    <Link to={ `/${mostRecent.remediation_id}/${mostRecent.id}` }>View</Link>
+                </DescriptionList>
+            </FlexItem>;
         }
-
-        return;
     };
 
     const renderActivityState = (isEntitled, isReceptorConfigured, playbookRuns, remediation) => {
@@ -204,7 +203,7 @@ const RemediationDetails = ({
                                 <SplitItem>
                                     <Button
                                         isDisabled={ !remediation.issues.length }
-                                        variant='link' onClick={ () => downloadPlaybook(remediation.id) }>
+                                        variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
                                         Download playbook
                                     </Button>
                                 </SplitItem>
@@ -242,10 +241,12 @@ const RemediationDetails = ({
                                                     { pluralize(totalSystems, 'system') }
                                                 </DescriptionList>
                                             </FlexItem>
-                                            { playbookRuns &&
-                                                renderLatestActivity(playbookRuns)
-                                            }
+
                                         </Flex>
+                                        { playbookRuns &&
+                                            renderLatestActivity(playbookRuns)
+                                        }
+
                                         <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
                                             <Flex>
                                                 <FlexItem

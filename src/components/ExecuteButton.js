@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 import { downloadPlaybook } from '../api';
-import { Button, Modal, TextContent, Text, TextVariants, Alert } from '@patternfly/react-core';
+import { Button, Modal, TextContent, Text, TextVariants, Alert, Tooltip } from '@patternfly/react-core';
 import { TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
 import { CheckCircleIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
 import { Skeleton } from '@redhat-cloud-services/frontend-components';
@@ -16,72 +16,75 @@ const styledConnectionStatus = (status) => ({
                 <CheckCircleIcon
                     className="ins-c-remediations-reboot-check-circle ins-c-remediations-connection-status"
                     aria-label="connection status" />
-            Ready
+                Ready
             </Text>
         </TextContent>),
     disconnected: (
         <TextContent>
             <Text component={ TextVariants.p }>
                 Connection issue
+                <Text component={ TextVariants.small } style={ { margin: '0px' } }>
+                    Receptor not responding
+                </Text>
+                { /* <Button
+                    style={ { padding: '0px' } }
+                    key="troubleshoot"
+                    // eslint-disable-next-line no-console
+                    variant='link' onClick={ () => console.log('TODO: add link') }>
+                    Troubleshoot
+                </Button> */ }
             </Text>
-            <Text component={ TextVariants.small }>
-                Receptor not responding
-            </Text>
-            { /* <Button
-                key="troubleshoot"
-                // eslint-disable-next-line no-console
-                variant='link' onClick={ () => console.log('TODO: add link') }>
-                Troubleshoot
-            </Button> */ }
         </TextContent>),
     no_executor: (
         <TextContent>
             <Text component={ TextVariants.p }>
-
                 Cannot remediate - Direct connection.
+                <Text component={ TextVariants.small } style={ { margin: '0px' } }>
+                    Connect your systems to Satellite to automatically remediate.
+                </Text>
+                <Button
+                    style={ { padding: '0px' } }
+                    key="download"
+                    variant='link'
+                    component='a'
+                    // eslint-disable-next-line max-len
+                    href='https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights'>
+                    Learn how to connect
+                </Button>
             </Text>
-            <Text component={ TextVariants.small }>
-                 Connect your systems to Satellite to automatically remediate.
-            </Text>
-            <Button
-                key="download"
-                variant='link'
-                component='a'
-                // eslint-disable-next-line max-len
-                href='https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights'>
-               Learn how to connect
-            </Button>
         </TextContent>),
     no_source: (<TextContent>
         <Text component={ TextVariants.p }>
             Cannot remediate - Satellite not configured
+            <Text component={ TextVariants.small } style={ { margin: '0px' } }>
+                Satellite not registered for Playbook execution
+            </Text>
+            { /* <Button
+                style={ { padding: '0px' } }
+                key="configure"
+                // eslint-disable-next-line no-console
+                variant='link' onClick={ () => console.log('TODO: add link') }>
+                Learn how to register Satellite
+            </Button> */ }
         </Text>
-        <Text component={ TextVariants.small }>
-           Satellite not registered for Playbook execution
-        </Text>
-        { /* <Button
-            key="register"
-            // eslint-disable-next-line no-console
-            variant='link' onClick={ () => console.log('TODO: add link') }>
-            Learn how to register Satellite
-        </Button> */ }
     </TextContent>),
     no_receptor: (<TextContent>
         <Text component={ TextVariants.p }>
             <ExclamationCircleIcon
-                className="ins-c-remediations-connection-status-error ins-c-remediations-connection-status"
+                className="ins-c-remediations-failure ins-c-remediations-connection-status"
                 aria-label="connection status" />
             Cannot remediate - Receptor not configured
+            <Text component={ TextVariants.small } style={ { margin: '0px' } }>
+                Configure Receptor to automatically remediate
+            </Text>
+            <Button
+                style={ { padding: '0px' } }
+                key="configure"
+                // eslint-disable-next-line no-console
+                variant='link' onClick={ () => console.log('TODO: add link') }>
+                Learn how to configure
+            </Button>
         </Text>
-        <Text component={ TextVariants.small }>
-            Configure Receptor to automatically remediate
-        </Text>
-        { /* <Button
-            key="configure"
-            // eslint-disable-next-line no-console
-            variant='link' onClick={ () => console.log('TODO: add link') }>
-            Learn how to configure
-        </Button> */ }
     </TextContent>)
 })[status];
 
@@ -122,7 +125,14 @@ const ExecuteButton = ({
 
     const rows = [ ...connected, ...disconnected ].map(con =>
         ({ cells: [
-            con.executor_name || 'Direct connection',
+            {
+                title: con.executor_name
+                    ? <Tooltip content={ `${con.executor_name}` }>
+                        <span>{ con.executor_name.length > 25 ? `${ con.executor_name.slice(0, 22)}...` : con.executor_name }</span>
+                    </Tooltip>
+                    : 'Direct connection'
+
+            },
             con.system_count,
             isUserEntitled && { title: styledConnectionStatus(con.connection_status) }
         ]})
@@ -158,7 +168,7 @@ const ExecuteButton = ({
                     </Button>,
                     <Button
                         key="download"
-                        variant='link' onClick={ () => downloadPlaybook(remediationId) }>
+                        variant='secondary' onClick={ () => downloadPlaybook(remediationId) }>
                         Download playbook
                     </Button>,
                     (isDebug()
@@ -179,7 +189,7 @@ const ExecuteButton = ({
                         { isLoading
                             ? <Skeleton size='lg'/>
                             : <Text component={ TextVariants.p }>
-                                Playbook contains <b>{ `${pluralize(issueCount, 'issue')}` }</b> affecting
+                                Playbook contains <b>{ `${pluralize(issueCount, 'action')}` }</b> affecting
                                 <b>  { `${pluralize(systemCount, 'system')}.` } </b>
                             </Text> }
                         <Text component={ TextVariants.p }>
