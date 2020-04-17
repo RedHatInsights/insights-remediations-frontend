@@ -165,7 +165,7 @@ const ExecutorDetails = ({
                         isLoaded={ playbookRunSystems.status !== 'pending' }
                         onRefresh={ onRefresh }
                         page={ page }
-                        total={ systems.filter(s => s[filter.key].includes(filter.value)).length }
+                        total={ playbookRunSystems.meta.total }
                         perPage={ pageSize }
                         tableProps={ { onSelect: undefined } }
                         expandable
