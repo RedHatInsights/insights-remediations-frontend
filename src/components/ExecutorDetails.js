@@ -95,7 +95,7 @@ const ExecutorDetails = ({
 
     const onRefresh = (options) => {
         if (inventory && inventory.current) {
-            getPlaybookRunSystems(id, run_id, executor_id, options.pageSize, options.pageSize * (options.page - 1));
+            getPlaybookRunSystems(id, run_id, executor_id, options.per_page, options.per_page * (options.page - 1));
             setPage(options.page);
             setPageSize(options.per_page);
             inventory.current.onRefreshData(options);
