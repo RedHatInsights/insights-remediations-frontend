@@ -95,6 +95,7 @@ const ExecutorDetails = ({
 
     const onRefresh = (options) => {
         if (inventory && inventory.current) {
+            getPlaybookRunSystems(id, run_id, executor_id, options.per_page, options.per_page * (options.page - 1));
             setPage(options.page);
             setPageSize(options.per_page);
             inventory.current.onRefreshData(options);
@@ -147,14 +148,6 @@ const ExecutorDetails = ({
         })));
     }, [ playbookRunSystems ]);
 
-    const systemsStatus =
-        playbookRunSystems.data.reduce((acc, { status }) => ({ ...acc, [normalizeStatus(status)]: acc[normalizeStatus(status)] + 1 })
-            , { pending: 0,
-                running: 0,
-                success: 0,
-                failure: 0,
-                canceled: 0 });
-
     const renderInventorycard = (status) => <Main>
         <Stack gutter="md">
             <Card className='ins-c-card__playbook-log'>
@@ -165,7 +158,7 @@ const ExecutorDetails = ({
                         isLoaded={ playbookRunSystems.status !== 'pending' }
                         onRefresh={ onRefresh }
                         page={ page }
-                        total={ systems.filter(s => s[filter.key].includes(filter.value)).length }
+                        total={ playbookRunSystems.meta.total }
                         perPage={ pageSize }
                         tableProps={ { onSelect: undefined } }
                         expandable
@@ -312,7 +305,7 @@ const ExecutorDetails = ({
                                     { executor.status
                                         ? <StatusSummary
                                             executorStatus={ executor.status }
-                                            counts={ systemsStatus }
+                                            counts={ executor.counts }
                                             permission={ permission } />
                                         : <Skeleton size='lg' />
 
