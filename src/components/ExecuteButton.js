@@ -26,13 +26,13 @@ const styledConnectionStatus = (status) => ({
                 <Text component={ TextVariants.small } style={ { margin: '0px' } }>
                     Receptor not responding
                 </Text>
-                <Button
+                { /* <Button
                     style={ { padding: '0px' } }
                     key="troubleshoot"
                     // eslint-disable-next-line no-console
                     variant='link' onClick={ () => console.log('TODO: add link') }>
                     Troubleshoot
-                </Button>
+                </Button> */ }
             </Text>
         </TextContent>),
     no_executor: (
@@ -45,8 +45,10 @@ const styledConnectionStatus = (status) => ({
                 <Button
                     style={ { padding: '0px' } }
                     key="download"
-                    // eslint-disable-next-line no-console
-                    variant='link' onClick={ () => console.log('TODO: add link') }>
+                    variant='link'
+                    component='a'
+                    // eslint-disable-next-line max-len
+                    href='https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights'>
                     Learn how to connect
                 </Button>
             </Text>
@@ -57,13 +59,13 @@ const styledConnectionStatus = (status) => ({
             <Text component={ TextVariants.small } style={ { margin: '0px' } }>
                 Satellite not registered for Playbook execution
             </Text>
-            <Button
+            { /* <Button
                 style={ { padding: '0px' } }
                 key="configure"
                 // eslint-disable-next-line no-console
                 variant='link' onClick={ () => console.log('TODO: add link') }>
                 Learn how to register Satellite
-            </Button>
+            </Button> */ }
         </Text>
     </TextContent>),
     no_receptor: (<TextContent>

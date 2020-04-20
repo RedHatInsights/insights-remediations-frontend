@@ -8,18 +8,18 @@ exports[`UpsellBanner component should render 1`] = `
     />
   }
   isInline={true}
-  title="Do more with Find it Fix it capabilities"
+  title="Put Insights into action"
   variant="info"
 >
   <Stack
     gutter="md"
   >
     <StackItem>
-      Upgrade to Red Hat Smart Management to remediate all your systems, across regions and geographies
+      Enable push-button remediation across your hybrid cloud environment with Red Hat Smart Management.
     </StackItem>
     <StackItem>
       <a
-        href="https://access.redhat.com/products/cloud_management_services_for_rhel/evaluation"
+        href="https://www.redhat.com/en/technologies/management/smart-management"
       >
         Learn more
       </a>

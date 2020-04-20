@@ -8,13 +8,13 @@ const UpsellBanner = ({ onClose, ...props }) => {
         <Alert
             variant="info"
             isInline
-            title="Do more with Find it Fix it capabilities"
+            title="Put Insights into action"
             action={ <AlertActionCloseButton onClose={ onClose }/> }
             { ...props }>
             <Stack gutter='md'>
-                <StackItem>Upgrade to Red Hat Smart Management to remediate all your systems, across regions and geographies</StackItem>
+                <StackItem>Enable push-button remediation across your hybrid cloud environment with Red Hat Smart Management.</StackItem>
                 <StackItem>
-                    <a href="https://access.redhat.com/products/cloud_management_services_for_rhel/evaluation">Learn more</a>
+                    <a href="https://www.redhat.com/en/technologies/management/smart-management">Learn more</a>
                 </StackItem>
             </Stack>
         </Alert>

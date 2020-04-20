@@ -221,7 +221,7 @@ const RemediationDetails = ({
                                 <UpsellBanner onClose={ () => handleUpsellToggle() }/>
                             </StackItem>
                         }
-                        { !context.isReceptorConfigured &&
+                        { context.hasSmartManagement && !context.isReceptorConfigured &&
                             <StackItem>
                                 <NoReceptorBanner/>
                             </StackItem>
