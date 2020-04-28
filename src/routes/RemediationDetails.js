@@ -60,7 +60,7 @@ const RemediationDetails = ({
 }) => {
 
     const id = match.params.id;
-    const [ upsellBannerVisible, setUpsellBannerVisible ] = useState(localStorage.getItem('remediations:bannerStatus') != 'dismissed');
+    const [ upsellBannerVisible, setUpsellBannerVisible ] = useState(localStorage.getItem('remediations:bannerStatus') !== 'dismissed');
     const [ activeTabKey, setActiveTabKey ] = useState(location.search.includes('?activity') ? 1 : 0);
 
     const context = useContext(PermissionContext);
@@ -71,7 +71,7 @@ const RemediationDetails = ({
 
     const handleUpsellToggle = () => {
         setUpsellBannerVisible(false);
-        localStorage.setItem('remediations:bannerStatus', 'dismissed') 
+        localStorage.setItem('remediations:bannerStatus', 'dismissed');
     };
 
     const handleTabClick = (event, tabIndex) => {

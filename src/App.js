@@ -83,7 +83,7 @@ class App extends Component {
                             execute: executePermission
                         },
                         isReceptorConfigured,
-                        hasSmartManagement: false
+                        hasSmartManagement
                     } }>
                     <NotificationsPortal />
                     <Routes childProps={ this.props } />
