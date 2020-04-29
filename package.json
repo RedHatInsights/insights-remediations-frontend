@@ -20,7 +20,8 @@
     "create-react-class": "^15.6.3",
     "react-hooks-testing-library": "^0.3.6",
     "urijs": "^1.19.1",
-    "react-syntax-highlighter": "12.2.1"
+    "react-syntax-highlighter": "12.2.1",
+    "awesome-debounce-promise": "2.1.0"
   },
   "sassIncludes": {
     "patternfly": "node_modules/patternfly/dist/sass",
