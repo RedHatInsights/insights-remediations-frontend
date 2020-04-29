@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef, useContext } from 'react';
 import { connect, useStore } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import * as pfReactTable from '@patternfly/react-table';
 import * as reactCore from '@patternfly/react-core';
 import * as reactIcons from '@patternfly/react-icons';
@@ -57,12 +58,13 @@ const ExecutorDetails = ({
 }) => {
     const [ executor, setExecutor ] = useState({});
     const [ systems, setSystems ] = useState([]);
-    const [ filter, setFilter ] = useState({ key: 'display_name', value: '' });
+    const [ filter, setFilter ] = useState('');
     const [ InventoryTable, setInventoryTable ] = useState();
     const [ page, setPage ] = useState(1);
     const [ pageSize, setPageSize ] = useState(50);
     const [ openId, setOpenId ] = useState();
     const [ firstExpand, setFirstExpand ] = useState(false);
+    const [ debouncedGetPlaybookRunSystems, setDebounce ] = useState();
     const inventory = useRef(null);
     const store = useStore();
 
@@ -106,6 +108,8 @@ const ExecutorDetails = ({
         loadInventory();
         loadRemediation(id);
         getPlaybookRun(id, run_id);
+        // eslint-disable-next-line new-cap
+        setDebounce(() => AwesomeDebouncePromise(getPlaybookRunSystems, 500));
 
         return () => {
             if (refreshInterval) {
@@ -121,7 +125,7 @@ const ExecutorDetails = ({
         }
 
         if (playbookRunSystems.status !== 'pending') {
-            getPlaybookRunSystems(id, run_id, executor_id, pageSize, pageSize * (page - 1));
+            getPlaybookRunSystems(id, run_id, executor_id, pageSize, pageSize * (page - 1), filter);
         }
 
     }, [ playbookRun ]);
@@ -154,13 +158,13 @@ const ExecutorDetails = ({
                 <CardBody>
                     { InventoryTable && <InventoryTable
                         ref={ inventory }
-                        items={ playbookRunSystems.status !== 'pending' ? systems.filter(s => s[filter.key].includes(filter.value)) : [] }
+                        items={ playbookRunSystems.status !== 'pending' ? systems : [] }
                         isLoaded={ playbookRunSystems.status !== 'pending' }
                         onRefresh={ onRefresh }
                         page={ page }
                         total={ playbookRunSystems.meta.total }
                         perPage={ pageSize }
-                        tableProps={ { onSelect: undefined } }
+                        hasCheckbox={ false }
                         expandable
                         showTags
                         onExpandClick={ status === 'running'
@@ -208,26 +212,16 @@ const ExecutorDetails = ({
                                                 label: 'Name',
                                                 filterValues: {
                                                     placeholder: 'Filter by name', type: conditionalFilterType.text,
-                                                    value: filter.value,
+                                                    value: filter,
                                                     onChange: (e, selected) => {
-                                                        setFilter({ ...filter, value: selected });
-                                                    }
-                                                }
-                                            },
-                                            {
-                                                value: 'status',
-                                                label: 'Status',
-                                                filterValues: {
-                                                    placeholder: 'Filter by status', type: conditionalFilterType.text,
-                                                    value: filter.value,
-                                                    onChange: (e, selected) => {
-                                                        setFilter({ ...filter, value: selected });
+                                                        setFilter(selected);
+                                                        setPage(1);
+                                                        debouncedGetPlaybookRunSystems(id, run_id, executor_id, pageSize, 0, selected);
+
                                                     }
                                                 }
                                             }
                                         ] }
-                                        value={ filter.key }
-                                        onChange={ (e, selected) => setFilter({ key: selected, value: '' }) }
                                     />
                                 </ToolbarItem>
                             </ToolbarGroup>
@@ -359,8 +353,8 @@ const connected = connect(
     (dispatch) => ({
         getPlaybookRuns: (id) => dispatch(getPlaybookRuns(id)),
         getPlaybookRun: (id, runId) => dispatch(getPlaybookRun(id, runId)),
-        getPlaybookRunSystems: (remediationId, runId, executorId, limit, offset) =>
-            dispatch(getPlaybookRunSystems(remediationId, runId, executorId, limit, offset)),
+        getPlaybookRunSystems: (remediationId, runId, executorId, limit, offset, ansibleHost) =>
+            dispatch(getPlaybookRunSystems(remediationId, runId, executorId, limit, offset, ansibleHost)),
         getPlaybookRunSystemDetails: (remediationId, runId, systemId) => dispatch(getPlaybookRunSystemDetails(remediationId, runId, systemId)),
         onCollapseInventory: (isOpen, id) => dispatch(expandInventoryTable(id, isOpen)),
         loadRemediation: id => dispatch(loadRemediation(id))

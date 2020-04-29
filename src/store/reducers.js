@@ -168,7 +168,7 @@ const reducers = {
                 columns: [
                     { key: 'display_name', title: 'Name',
                     // eslint-disable-next-line
-                        renderFunc: (name, id, { display_name }) => <div><a href={props.urlBuilder(id)}>{display_name}</a></div>
+                        renderFunc: (name, id, { fqdn }) => <div><a href={props.urlBuilder(id)}>{fqdn}</a></div>
                     },
                     state.columns.find(col => col.key === 'tags'),
                     { key: 'status', title: 'Status',
@@ -226,6 +226,11 @@ const reducers = {
         [ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEMS_PENDING]: (state) => ({
             ...state,
             status: 'pending'
+        }),
+        [ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEMS_REJECTED]: (state) => ({
+            ...state,
+            data: [],
+            status: 'rejected'
         })
     }, {
         data: [],
