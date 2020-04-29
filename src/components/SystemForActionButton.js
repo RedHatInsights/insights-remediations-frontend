@@ -93,7 +93,7 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
                         page={ page }
                         total={ issue.systems.length }
                         perPage={ pageSize }
-                        tableProps={ { onSelect: undefined } }
+                        hasCheckbox={ false }
                         actions= { [
                             {
                                 title: (

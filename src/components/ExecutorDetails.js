@@ -164,7 +164,7 @@ const ExecutorDetails = ({
                         page={ page }
                         total={ playbookRunSystems.meta.total }
                         perPage={ pageSize }
-                        tableProps={ { onSelect: undefined } }
+                        hasCheckbox={ false }
                         expandable
                         showTags
                         onExpandClick={ status === 'running'
