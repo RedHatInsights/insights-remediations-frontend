@@ -64,7 +64,7 @@ class Home extends Component {
     render() {
 
         const { isModalOpen } = this.state;
-        const { loadRemediations } = this.props;
+        const { loadRemediations, deleteRemediation } = this.props;
 
         // Wizard Content
         const ModalStepContent = [
@@ -83,7 +83,7 @@ class Home extends Component {
                                 <TestButtons onRemediationCreated={ this.onRemediationCreated } />
                             </PageHeader>
                             <Main>
-                                <ConnectedRemediationTable loadRemediations={ loadRemediations } />
+                                <ConnectedRemediationTable loadRemediations={ loadRemediations } deleteRemediation={ deleteRemediation }/>
                             </Main>
 
                             <Wizard
@@ -103,10 +103,12 @@ class Home extends Component {
 
 Home.propTypes = {
     loadRemediations: PropTypes.func,
+    deleteRemediation: PropTypes.func,
     addNotification: PropTypes.func
 };
 
 export default withRouter(connect(null, (dispatch) => ({
     loadRemediations: (...args)  => dispatch(actions.loadRemediations(...args)),
+    deleteRemediation: (id) => dispatch(actions.deleteRemediation(id)),
     addNotification: (data) => dispatch(addNotification(data))
 }))(Home));
