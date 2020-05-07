@@ -164,7 +164,9 @@ function RemediationTable (props) {
                 filterConfig={ { items: [{ label: 'Search playbooks', placeholder: 'Search playbooks' }]} }
                 bulkSelect={ { items: [{ title: 'Select all',
                     onClick: (e) => selector.props.onSelect(e, true, -1)
-                }], checked: selectedIds.length, count: selectedIds.length,
+                }],
+                checked: selectedIds.length && value.meta.total > selectedIds.length ? null : selectedIds.length,
+                count: selectedIds.length,
                 onSelect: (isSelected, e) => selector.props.onSelect(e, isSelected, -1) } }
                 actionsConfig={ { actions: [
                     { label: 'Download playbooks', props: { variant: 'secondary', isDisabled: !selectedIds.length,
