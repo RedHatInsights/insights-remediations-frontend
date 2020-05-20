@@ -30,3 +30,8 @@ SPANDX_CONFIG="./config/spandx.config.local.js" bash $PROXY_PATH/scripts/run.sh
 Run `npm run verify` to run build, linters and tests
 
 Use `remediations:debug` localStorage entry to unlock testing utilities in the UI (`localStorage.setItem('remediations:debug', true)`)
+
+### Releases
+
+Any change commited to the `master` branch is automatically promoted to `/beta` in all environments.
+Any change commited to the `stable` branch is automatically promoted to the main version of the application in all environments.
