@@ -60,7 +60,7 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
     };
 
     useEffect(() => {
-        if (open) {
+        if (open && inventory && !inventory.current) {
             loadInventory();
         }
 
