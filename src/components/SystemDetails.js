@@ -40,8 +40,12 @@ const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
 
 PlaybookSystemDetails.propTypes = {
     systemId: PropTypes.string,
+    status: PropTypes.string,
+    console: PropTypes.string,
     playbookRunSystemDetails: PropTypes.shape({
-        system_id: PropTypes.string
+        system_id: PropTypes.string,
+        status: PropTypes.string,
+        console: PropTypes.string
     })
 
 };
