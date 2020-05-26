@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { Link } from 'react-router-dom';
@@ -12,14 +12,15 @@ import {
 } from '@patternfly/react-core';
 import { sortable, Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
 import { EmptyTable, SimpleTableFilter, Skeleton, TableToolbar } from '@redhat-cloud-services/frontend-components';
+import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/components/PrimaryToolbar';
 import { WrenchIcon } from '@patternfly/react-icons';
 
 import { appUrl } from '../Utilities/urls';
 import { formatDate } from '../Utilities/model';
 import './RemediationTable.scss';
+import ConfirmationDialog from './ConfirmationDialog';
 
 import SkeletonTable from '../skeletons/SkeletonTable';
-import { ToolbarActions } from '../containers/ToolbarActions';
 import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
 import * as debug from '../Utilities/debug';
 import keyBy from 'lodash/keyBy';
@@ -113,6 +114,7 @@ function RemediationTable (props) {
     const selector = useSelector();
     const pagination = usePagination();
     const permission = useContext(PermissionContext);
+    const [ dialogOpen, setDialogOpen ] = useState(false);
 
     function loadRemediations () {
         const column = SORTING_ITERATEES[sorter.sortBy];
@@ -148,48 +150,39 @@ function RemediationTable (props) {
 
     return (
         <React.Fragment>
-            <TableToolbar className='ins-c-remediations-table__actions'>
-                <ToolbarGroup>
-                    <ToolbarItem>
-                        <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" { ...filter.props } />
-                    </ToolbarItem>
-                </ToolbarGroup>
-                <ToolbarGroup>
-                    {
-                        // <ToolbarItem><Button> Create Remediation </Button></ToolbarItem>
-                    }
-                    <ToolbarItem>
-                        <Button
-                            variant='link'
-                            isDisabled={ !selectedIds.length }
-                            onClick= { () => downloadAll(selectedIds, value.data) }
-                        >
-                            Download playbook
-                        </Button>
-                    </ToolbarItem>
-                    <ToolbarItem>
-                        { permission.permissions.write &&
-                            <ToolbarActions
-                                isDisabled={ !selectedIds.length }
-                                remediations={ selectedIds }
-                                afterDelete={ () => { selector.reset(); loadRemediations(); } }
-                            />
-                        }
-                    </ToolbarItem>
-                </ToolbarGroup>
-                <Pagination
-                    variant='top'
-                    dropDirection='down'
-                    itemCount={ value.meta.total }
-                    { ...pagination.props }
-                    { ...debug.pagination }
-                />
-            </TableToolbar>
+            { dialogOpen &&
+                <ConfirmationDialog
+                    text={ `You will not be able to recover ${selectedIds.length > 1 ? 'these remediations' : 'this remediation'}` }
+                    onClose={ async () => {
+                        setDialogOpen(false);
+                        await Promise.all(selectedIds.map(r => props.deleteRemediation(r)));
+                        selector.reset();
+                        loadRemediations();
+                    } } />
+            }
+            <PrimaryToolbar
+                filterConfig={ { items: [{ label: 'Search playbooks', placeholder: 'Search playbooks' }]} }
+                bulkSelect={ { items: [{ title: 'Select all',
+                    onClick: (e) => selector.props.onSelect(e, true, -1)
+                }],
+                checked: selectedIds.length && value.meta.total > selectedIds.length ? null : selectedIds.length,
+                count: selectedIds.length,
+                onSelect: (isSelected, e) => selector.props.onSelect(e, isSelected, -1) } }
+                actionsConfig={ { actions: [
+                    { label: 'Download playbooks', props: { variant: 'secondary', isDisabled: !selectedIds.length,
+                        onClick: () => downloadAll(selectedIds, value.data) }},
+                    { label: 'Delete playbooks',
+                        props: { isDisabled: !permission.permissions.write || !selectedIds.length },
+                        onClick: () => setDialogOpen(true)
+                    }]} }
+                pagination={ { ...pagination.props, itemCount: value.meta.total } }
+            />
             {
                 rows.length > 0 ?
                     <Table
                         variant={ TableVariant.compact }
                         aria-label="Playbooks"
+                        canSelectAll={ false }
                         cells={ [
                             {
                                 title: 'Playbook',
@@ -206,6 +199,17 @@ function RemediationTable (props) {
                             }]
                         }
                         rows={ rows }
+                        actions={
+                            [{
+                                title: 'Download playbook',
+                                onClick: (_e, _rowId, rowData) => downloadPlaybook(rowData.id)
+                            },
+                            {
+                                title: 'Delete playbook',
+                                props: { isDisabled: !permission.permissions.write },
+                                onClick: () => setDialogOpen(true)
+                            }]
+                        }
                         { ...sorter.props }
                         { ...selector.props }
                     >
