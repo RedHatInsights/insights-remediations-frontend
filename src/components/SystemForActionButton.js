@@ -99,14 +99,7 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
                         hasCheckbox={ false }
                         actions= { [
                             {
-                                title: (
-                                    <Button
-                                        onClick={ () => setDeleteDialogOpen(true) }
-                                        variant="link"
-                                    >
-                                    Remove system
-                                    </Button>
-                                ),
+                                title: ' Remove system',
                                 onClick: (event, rowId, rowData) => {
                                     setSystem(rowData);
                                     setDeleteDialogOpen(true);
