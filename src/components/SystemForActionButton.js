@@ -9,15 +9,17 @@ import orderBy from 'lodash/orderBy';
 
 import PropTypes from 'prop-types';
 import {
-    Button, Modal
+    Button, Modal, ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
 import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/Registry';
+import { TableToolbar, ConditionalFilter, conditionalFilterType } from '@redhat-cloud-services/frontend-components';
 import { inventoryUrlBuilder } from '../Utilities/urls';
 import reducers from '../store/reducers';
 import RemediationDetailsSystemDropdown from './RemediationDetailsSystemDropdown';
 import ConfirmationDialog from './ConfirmationDialog';
 import { deleteRemediationIssueSystem } from '../actions';
 import { getSystemName } from '../Utilities/model';
+import './SystemForActionButton.scss';
 
 const SystemForActionButton = ({ issue, remediation, onDelete }) => {
     const [ deleteDialogOpen, setDeleteDialogOpen ] = useState(false);
@@ -26,6 +28,7 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
     const [ system, setSystem ] = useState({});
     const [ page, setPage ] = useState(1);
     const [ pageSize, setPageSize ] = useState(50);
+    const [ filter, setFilter ] = useState('');
     const inventory = useRef(null);
     const store = useStore();
 
@@ -88,10 +91,10 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
                 onClose={ () => setOpen(false) }
                 isFooterLeftAligned
             >
-                <div>
+                <div className="ins-c-toolbar__filter">
                     { InventoryTable && <InventoryTable
                         ref={ inventory }
-                        items={ orderBy(issue.systems, [ s => getSystemName(s), s => s.id ]) }
+                        items={ orderBy(issue.systems.filter(s => getSystemName(s).includes(filter)), [ s => getSystemName(s), s => s.id ]) }
                         onRefresh={ onRefresh }
                         page={ page }
                         total={ issue.systems.length }
@@ -105,7 +108,27 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
                                     setDeleteDialogOpen(true);
                                 }
                             }] }
-                    /> }
+                    >
+                        <TableToolbar>
+                            <ToolbarGroup>
+                                <ToolbarItem>
+                                    <ConditionalFilter
+                                        items={ [
+                                            {
+                                                value: 'display_name',
+                                                label: 'Name',
+                                                filterValues: {
+                                                    placeholder: 'Filter by name', type: conditionalFilterType.text,
+                                                    value: filter,
+                                                    onChange: (e, selected) => setFilter(selected)
+                                                }
+                                            }
+                                        ] }
+                                    />
+                                </ToolbarItem>
+                            </ToolbarGroup>
+                        </TableToolbar>
+                    </InventoryTable> }
                 </div>
             </Modal>
             <ConfirmationDialog
