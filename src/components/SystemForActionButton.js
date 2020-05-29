@@ -110,7 +110,8 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
             </Modal>
             <ConfirmationDialog
                 isOpen={ deleteDialogOpen }
-                text={ `This playbook will not address ${issue.description} on ${getSystemName(system)}` }
+                text={ `Removing the system ${getSystemName(system)} from the action ${issue.description}
+                    will remove this system’s remediation from the playbook.` }
                 onClose={ value => {
                     setDeleteDialogOpen(false);
                     value && onDelete(remediation.id, issue.id, system.id);

@@ -8,7 +8,7 @@ import {
 
 export default function ConfirmationDialog ({
     isOpen = true,
-    title = 'Are you sure?',
+    title = 'Remove system?',
     text = 'This action cannot be undone',
     onClose = f=>f
 }) {
