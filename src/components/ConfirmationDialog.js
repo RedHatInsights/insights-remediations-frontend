@@ -22,8 +22,8 @@ export default function ConfirmationDialog ({
             onClose={ () => onClose(false) }
             isFooterLeftAligned
             actions={ [
-                <Button key="cancel" variant="secondary" onClick={ () => onClose(false) }>Cancel</Button>,
-                <Button key="confirm" variant="primary" onClick={ () => onClose(true) }>Confirm</Button>
+                <Button key="confirm" variant="danger" onClick={ () => onClose(true) }>Remove system</Button>,
+                <Button key="cancel" variant="secondary" onClick={ () => onClose(false) }>Cancel</Button>
             ] }
         >
             <h2>{ text }</h2>
