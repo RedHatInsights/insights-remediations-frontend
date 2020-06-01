@@ -10,7 +10,7 @@ import {
     ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
 
-import { sortable, TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
+import { sortable, TableHeader, Table, TableBody, TableVariant, expandable } from '@patternfly/react-table';
 import { SimpleTableFilter, TableToolbar, EmptyTable } from '@redhat-cloud-services/frontend-components';
 
 import { getIssueApplication, includesIgnoreCase } from '../Utilities/model';
@@ -22,7 +22,7 @@ import { DeleteActionsButton } from '../containers/DeleteButtons';
 import { isBeta } from '../config';
 import SystemForActionButton from './SystemForActionButton';
 
-import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
+import { useFilter, usePagination, useSelector, useSorter, useExpander } from '../hooks/table';
 import * as debug from '../Utilities/debug';
 
 import './RemediationDetailsTable.scss';
@@ -73,7 +73,7 @@ const SORTING_ITERATEES = [
     i => getIssueApplication(i)
 ];
 
-const buildRow = (remediation) => (issue) => {
+const buildRow = (remediation) => (issue, i) => {
     const row = [
         {
             isOpen: false,
@@ -96,6 +96,31 @@ const buildRow = (remediation) => (issue) => {
                     props: { className: 'ins-m-nowrap' }
                 }
             ]
+        },  {
+            parent: 2 * i,
+            fullWidth: true,
+            cells: [{
+                title: <Table
+                    aria-label="Compact expandable table"
+                    cells={ [ 'Connection type', 'Systems', 'Status' ] }
+                    rows={ [
+                        {
+                            cells: [
+                                {
+                                    title: 'sat666'
+                                },
+                                11,
+                                {
+                                    title: 'test'
+                                }
+                            ]
+                        }]
+                    }
+                >
+                    <TableHeader />
+                    <TableBody />
+                </Table>
+            }]
         }
     ];
 
@@ -107,6 +132,7 @@ function RemediationDetailsTable (props) {
     const sorter = useSorter(1, 'asc');
     const filter = useFilter();
     const selector = useSelector();
+    const expander = useExpander();
     const permission = useContext(PermissionContext);
 
     sorter.onChange(pagination.reset);
@@ -116,11 +142,19 @@ function RemediationDetailsTable (props) {
     const sorted = orderBy(filtered, [ SORTING_ITERATEES[ sorter.sortBy] ], [ sorter.sortDir ]);
     const paged = sorted.slice(pagination.offset, pagination.offset + pagination.pageSize);
 
-    const rows = flatMap(paged, buildRow(props.remediation));
+    props.getConnectionStatus(props.remediation.id);
+    const rows = paged.reduce((acc, issue, i) => (
+        [
+            ...acc,
+            ...buildRow(props.remediation)(issue, i)
+        ]
+    ), []);
 
     selector.register(rows);
+    expander.register(rows);
 
     const selectedIds = selector.getSelectedIds();
+
 
     return (
         <React.Fragment>
@@ -184,6 +218,7 @@ function RemediationDetailsTable (props) {
                         }
                         rows={ rows }
                         { ...sorter.props }
+                        { ...expander.props }
                         { ...(permission.permissions.write && { ... selector.props }) }
                     >
                         <TableHeader />

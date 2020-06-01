@@ -56,7 +56,8 @@ const RemediationDetails = ({
     loadRemediationStatus,
     switchAutoReboot,
     playbookRuns,
-    getPlaybookRuns
+    getPlaybookRuns,
+    getConnectionStatus
 }) => {
 
     const id = match.params.id;
@@ -286,7 +287,10 @@ const RemediationDetails = ({
                         <StackItem className='ins-c-playbookSummary__tabs'>
                             <Tabs activeKey={ activeTabKey } onSelect={ handleTabClick }>
                                 <Tab eventKey={ 0 } title='Actions'>
-                                    <RemediationDetailsTable remediation={ remediation } status={ selectedRemediationStatus }/>
+                                    <RemediationDetailsTable
+                                        remediation={ remediation }
+                                        status={ selectedRemediationStatus }
+                                        getConnectionStatus={ getConnectionStatus }/>
                                 </Tab>
                                 <Tab eventKey={ 1 } title='Activity'>
                                     { renderActivityState(
@@ -323,7 +327,8 @@ RemediationDetails.propTypes = {
     }),
     addNotification: PropTypes.func.isRequired,
     playbookRuns: PropTypes.array,
-    getPlaybookRuns: PropTypes.func
+    getPlaybookRuns: PropTypes.func,
+    getConnectionStatus: PropTypes.func
 };
 
 export default withRouter(
@@ -342,7 +347,8 @@ export default withRouter(
             switchAutoReboot: (id, auto_reboot) => dispatch(actions.patchRemediation(id, { auto_reboot })),
             deleteRemediation: id => dispatch(actions.deleteRemediation(id)),
             addNotification: (content) => dispatch(addNotification(content)),
-            getPlaybookRuns: (id) => dispatch(actions.getPlaybookRuns(id))
+            getPlaybookRuns: (id) => dispatch(actions.getPlaybookRuns(id)),
+            getConnectionStatus: (id) => dispatch(actions.getConnectionStatus(id))
         })
     )(RemediationDetails)
 );

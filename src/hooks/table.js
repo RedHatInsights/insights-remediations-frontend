@@ -104,14 +104,24 @@ export function useExpander (rowToId = row => row.id) {
                 }
             });
         },
+        getExpandedIds(possibleIds) {
+            const expanded = keys(pickBy(value, identity));
+            if (possibleIds) {
+                return intersection(expanded, possibleIds);
+            }
+
+            return expanded;
+        },
         props: {
             onCollapse (event, index, value) {
                 if (!rows) {
                     throw new Error('register() not called on useExpander()');
                 }
+                console.log('EXPAND', index, value)
 
                 const id = rowToId(rows[index]);
                 assertId(id);
+                console.log(id, value);
 
                 setValue(value ? id : false);
             }
@@ -162,6 +172,7 @@ function onSelectOne (selected, isSelected, id) {
         [id]: isSelected
     };
 
+    console.log('on Select ONE', result);
     return result;
 }
 
