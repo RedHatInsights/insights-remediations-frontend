@@ -99,7 +99,8 @@ export const StatusSummary = ({ executorStatus, permission, hasCancel, counts, r
             content={ <div>
                 Run: { capitalize(executorStatus) } <br/>
                 Success: { pluralize(counts.success, 'system') } <br/>
-                Failed, Canceled: { pluralize(counts.failure + counts.canceled, 'system') } <br />
+                Failed: { pluralize(counts.failure, 'system') } <br />
+                Canceled: { pluralize(counts.canceled, 'system') } <br />
                 { counts.acked && !counts.acked.isNaN()
                     ? `Pending, Running, Acked: ${pluralize(counts.pending + counts.running + counts.acked, 'system')}`
                     : `Pending, Running: ${pluralize(counts.pending + counts.running, 'system')}`
