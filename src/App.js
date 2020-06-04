@@ -9,7 +9,7 @@ import GlobalSkeleton from './skeletons/GlobalSkeleton';
 import { getIsReceptorConfigured } from './api';
 
 // Notifications
-import { NotificationsPortal } from '@redhat-cloud-services/frontend-components-notifications';
+import { NotificationsPortal } from '@redhat-cloud-services/frontend-components-notifications/';
 
 export const PermissionContext = createContext();
 
@@ -72,6 +72,8 @@ class App extends Component {
             arePermissionLoaded,
             isReceptorConfigured,
             hasSmartManagement } = this.state;
+        console.log('AAAAAA', NotificationsPortal);
+
 
         return (
             arePermissionLoaded ?

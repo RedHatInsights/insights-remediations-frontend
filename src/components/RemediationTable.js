@@ -11,7 +11,7 @@ import {
     ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
 import { sortable, Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
-import { EmptyTable, SimpleTableFilter, Skeleton, TableToolbar } from '@redhat-cloud-services/frontend-components';
+import { EmptyTable, SimpleTableFilter, Skeleton, TableToolbar, DateFormat } from '@redhat-cloud-services/frontend-components';
 import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/components/PrimaryToolbar';
 import { WrenchIcon } from '@patternfly/react-icons';
 

@@ -7,7 +7,8 @@
 const path = require('path');
 const webpack = require('webpack');
 const config = require('./webpack.common.js');
-const plugins = [];
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const plugins = [ new BundleAnalyzerPlugin() ];
 
 /**
  * Writes bundles to distribution folder.
