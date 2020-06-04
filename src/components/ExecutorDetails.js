@@ -6,8 +6,6 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import * as pfReactTable from '@patternfly/react-table';
-import * as reactCore from '@patternfly/react-core';
-import * as reactIcons from '@patternfly/react-icons';
 import * as reactRouterDom from 'react-router-dom';
 import {
     Main, PageHeader, PageHeaderTitle, DateFormat, Skeleton,
@@ -22,6 +20,7 @@ import {
     Split, SplitItem, ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
 import { InProgressIcon } from '@patternfly/react-icons/dist/esm/icons/in-progress-icon';
+
 
 import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/Registry';
 import reducers from '../store/reducers';
@@ -78,8 +77,6 @@ const ExecutorDetails = ({
         } = await insights.loadInventory({
             react: React,
             reactRouterDom,
-            reactCore,
-            reactIcons,
             pfReactTable
         });
 

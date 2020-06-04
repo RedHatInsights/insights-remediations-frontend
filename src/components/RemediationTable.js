@@ -16,7 +16,6 @@ import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/compo
 import { WrenchIcon } from '@patternfly/react-icons';
 
 import { appUrl } from '../Utilities/urls';
-import { formatDate } from '../Utilities/model';
 import './RemediationTable.scss';
 import ConfirmationDialog from './ConfirmationDialog';
 
@@ -141,7 +140,7 @@ function RemediationTable (props) {
             buildName(remediation.name, remediation.id),
             remediation.system_count,
             remediation.issue_count,
-            { title: formatDate(remediation.updated_at) }
+        { title: <DateFormat date={remediation.updated_at} /> }
         ]
     }));
 

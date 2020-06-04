@@ -49,7 +49,7 @@ module.exports = {
                         throw `File with importName ${importName} does not exist`;
 
                     },
-                    preventFullImport: false,
+                    preventFullImport: true,
                     skipDefaultConversion: true
                 }
             },
@@ -64,7 +64,7 @@ module.exports = {
                         .split(/(?=[A-Z])/)
                         .join('-')
                         .toLowerCase()}`,
-                    preventFullImport: false
+                    preventFullImport: true
                 }
             },
             'react-icons'
