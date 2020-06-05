@@ -1,6 +1,7 @@
 .ins-c-remediations-success { color: var(--pf-global--success-color--200); }
 .ins-c-remediations-failure { color: var(--pf-global--danger-color--100); }
 .ins-c-remediations-running { color: var(--pf-global--default-color--300); }
+.ins-c-remediations-canceled { color: var(--pf-global--default-color--300); }
 
 td .ins-c-remediations-status-text { display: inline-block; min-width: 85px; }
 

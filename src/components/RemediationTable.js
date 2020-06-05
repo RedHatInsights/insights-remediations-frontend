@@ -237,7 +237,8 @@ function RemediationTable (props) {
 RemediationTable.propTypes = {
     value: PropTypes.object,
     status: PropTypes.string.isRequired,
-    loadRemediations: PropTypes.func.isRequired
+    loadRemediations: PropTypes.func.isRequired,
+    deleteRemediation: PropTypes.func.isRequired
 };
 
 export default RemediationTable;
