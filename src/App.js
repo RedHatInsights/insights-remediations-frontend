@@ -72,8 +72,6 @@ class App extends Component {
             arePermissionLoaded,
             isReceptorConfigured,
             hasSmartManagement } = this.state;
-        console.log('AAAAAA', NotificationsPortal);
-
 
         return (
             arePermissionLoaded ?

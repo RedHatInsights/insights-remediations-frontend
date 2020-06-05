@@ -140,7 +140,7 @@ function RemediationTable (props) {
             buildName(remediation.name, remediation.id),
             remediation.system_count,
             remediation.issue_count,
-        { title: <DateFormat date={remediation.updated_at} /> }
+            { title: <DateFormat date={ remediation.updated_at } /> }
         ]
     }));
 

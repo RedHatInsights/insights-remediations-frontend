@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Skeleton } from '@redhat-cloud-services/frontend-components';
-import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light'
+import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
 import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
 import docco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';
 
@@ -30,7 +30,7 @@ const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
                 <SyntaxHighlighter
                     language="yaml"
                     showLineNumbers
-                    style={docco}
+                    style={ docco }
                     className={ outputClasses }>
                     { playbookRunSystemDetails && playbookRunSystemDetails.console || '' }
                 </SyntaxHighlighter>
