@@ -14,7 +14,7 @@ export const normalizeStatus = (status) => ({
     pending: 'running',
     acked: 'running',
     failure: 'failure',
-    canceled: 'failure',
+    canceled: 'canceled',
     success: 'success'
 })[status];
 
@@ -27,6 +27,9 @@ export const renderStatusIcon = (status) => ({
         aria-label="connection status" />,
     failure: <TimesCircleIcon
         className="ins-c-remediations-failure"
+        aria-label="connection status" />,
+    canceled: <TimesCircleIcon
+        className="ins-c-remediations-canceled"
         aria-label="connection status" />
 })[status];
 
@@ -42,6 +45,10 @@ export const renderStatus = (status, text) => ({
     failure: <Flex className="ins-c-remediations-failure" breakpointMods={ [{ modifier: FlexModifiers['space-items-sm'] }] }>
         <FlexItem><b>{ text || 'Failed' }</b></FlexItem>
         <FlexItem><TimesCircleIcon aria-label="connection status: failed"/></FlexItem>
+    </Flex>,
+    canceled: <Flex className="ins-c-remediations-canceled" breakpointMods={ [{ modifier: FlexModifiers['space-items-sm'] }] }>
+        <FlexItem><b>{ text || 'Canceled' }</b></FlexItem>
+        <FlexItem><TimesCircleIcon aria-label="connection status: canceled"/></FlexItem>
     </Flex>
 })[status];
 
@@ -52,7 +59,7 @@ export const statusText = (executorStatus) => ({
     acked: <b className={ `${statusTextClass} ins-c-remediations-running` }> Acked </b>,
     success: <b className={ `${statusTextClass} ins-c-remediations-success` }> Succeeded </b>,
     failure: <b className={ `${statusTextClass} ins-c-remediations-failure` }> Failed </b>,
-    canceled: <b className={ `${statusTextClass} ins-c-remediations-failure` }> Canceled </b>
+    canceled: <b className={ `${statusTextClass} ins-c-remediations-canceled` }> Canceled </b>
 })[executorStatus];
 
 export const StatusSummary = ({ executorStatus, permission, hasCancel, counts, remediationName, remediationId, playbookId }) => {
@@ -90,20 +97,23 @@ export const StatusSummary = ({ executorStatus, permission, hasCancel, counts, r
     );
 
     const pluralize = (number, str) => number === 1 ? `${number} ${str}` : `${number} ${str}s`;
-    const tooltipText = ` Run: ${capitalize(executorStatus)} |
-    Success: ${pluralize(counts.success, 'system')} |
-    Failed: ${pluralize(counts.failure, 'system')} |
-    Canceled: ${pluralize(counts.canceled, 'system')} |
-    Pending: ${pluralize(counts.pending, 'system')} |
-    Running: ${pluralize(counts.running, 'system')}
-    ${counts.acked && !counts.acked.isNaN() ? `| Acked: ${pluralize(counts.acked, 'system')}` : ''}`;
 
     if (executorStatus) {
         return <Tooltip
             position='right'
             className='ins-c-status-tooltip'
             enableFlip
-            content={ <span>{ tooltipText } </span> }>
+            content={ <div>
+                Run: { capitalize(executorStatus) } <br/>
+                Success: { pluralize(counts.success, 'system') } <br/>
+                Failed: { pluralize(counts.failure, 'system') } <br />
+                Canceled: { pluralize(counts.canceled, 'system') } <br />
+                { counts.acked && !counts.acked.isNaN()
+                    ? `Pending, Running, Acked: ${pluralize(counts.pending + counts.running + counts.acked, 'system')}`
+                    : `Pending, Running: ${pluralize(counts.pending + counts.running, 'system')}`
+                }
+            </div> }
+        >
             { statusBar }
         </Tooltip>;
     }

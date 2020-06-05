@@ -1,4 +1,4 @@
-/*global module, process*/
+/*global process*/
 
 const localhost = (process.env.PLATFORM === 'linux') ? 'localhost' : 'host.docker.internal';
 

@@ -244,6 +244,7 @@ const ExecutorDetails = ({
         running: renderInventorycard(status),
         success: renderInventorycard(status),
         failure: renderInventorycard(status),
+        canceled: renderInventorycard(status),
         epicFailure: <Main>
             <Stack gutter="md">
                 <Card>
