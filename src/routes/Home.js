@@ -9,7 +9,7 @@ import { Main, PageHeader, PageHeaderTitle, Wizard } from '@redhat-cloud-service
 import RemediationTable from '../components/RemediationTable';
 import TestButtons from '../components/TestButtons';
 
-import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/esm/actions';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
 
 // Wizard Steps
 import PlanName from '../components/CreatePlanModal/ModalSteps/PlanName';

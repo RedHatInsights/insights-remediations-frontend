@@ -10,7 +10,7 @@ import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown
 import { normalizeStatus, StatusSummary } from '../components/statusHelper';
 import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
-import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/esm/actions';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
 import UpsellBanner from '../components/Alerts/UpsellBanner';
 import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
 import NotConfigured from '../components/EmptyStates/NotConfigured';

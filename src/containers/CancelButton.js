@@ -6,7 +6,7 @@ import { WarningModal } from '../components/Modals/WarningModal';
 
 import { useDispatch } from 'react-redux';
 import { cancelPlaybookRuns } from '../actions';
-import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/esm/actions';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
 
 export const CancelButton = ({ remediationName, remediationId, playbookId }) => {
 

@@ -14,8 +14,12 @@ const mapper = {
 const FECMapper = {
     SkeletonSize: 'Skeleton',
     PageHeaderTitle: 'PageHeader',
-    conditionalFilterType: 'ConditionalFilter',
+    conditionalFilterType: 'ConditionalFilter'
 
+};
+
+const notificationMapper = {
+    addNotification: 'actions'
 };
 
 module.exports = {
@@ -86,7 +90,7 @@ module.exports = {
             {
                 '@redhat-cloud-services/frontend-components-notifications': {
                     transform: (importName) =>
-                        `@redhat-cloud-services/frontend-components-notifications/cjs/${importName}`,
+                        `@redhat-cloud-services/frontend-components-notifications/cjs/${ notificationMapper[importName] || importName}`,
                     preventFullImport: true
                 }
             },
