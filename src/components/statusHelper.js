@@ -97,20 +97,23 @@ export const StatusSummary = ({ executorStatus, permission, hasCancel, counts, r
     );
 
     const pluralize = (number, str) => number === 1 ? `${number} ${str}` : `${number} ${str}s`;
-    const tooltipText = ` Run: ${capitalize(executorStatus)} |
-    Success: ${pluralize(counts.success, 'system')} |
-    Failed: ${pluralize(counts.failure, 'system')} |
-    Canceled: ${pluralize(counts.canceled, 'system')} |
-    Pending: ${pluralize(counts.pending, 'system')} |
-    Running: ${pluralize(counts.running, 'system')}
-    ${counts.acked && !counts.acked.isNaN() ? `| Acked: ${pluralize(counts.acked, 'system')}` : ''}`;
 
     if (executorStatus) {
         return <Tooltip
             position='right'
             className='ins-c-status-tooltip'
             enableFlip
-            content={ <span>{ tooltipText } </span> }>
+            content={ <div>
+                Run: { capitalize(executorStatus) } <br/>
+                Success: { pluralize(counts.success, 'system') } <br/>
+                Failed: { pluralize(counts.failure, 'system') } <br />
+                Canceled: { pluralize(counts.canceled, 'system') } <br />
+                { counts.acked && !counts.acked.isNaN()
+                    ? `Pending, Running, Acked: ${pluralize(counts.pending + counts.running + counts.acked, 'system')}`
+                    : `Pending, Running: ${pluralize(counts.pending + counts.running, 'system')}`
+                }
+            </div> }
+        >
             { statusBar }
         </Tooltip>;
     }
