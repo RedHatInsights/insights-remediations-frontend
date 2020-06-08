@@ -5,14 +5,14 @@
   "repository": "https://github.com/RedHatInsights/insights-remediations-frontend",
   "dependencies": {
     "@patternfly/patternfly": "^2.71.6",
-    "@patternfly/react-core": "^3.158.1",
+    "@patternfly/react-core": "^3.158.2",
     "@patternfly/react-icons": "^3.15.17",
-    "@patternfly/react-table": "^2.28.47",
+    "@patternfly/react-table": "^2.28.48",
     "@patternfly/react-tokens": "^2.8.14",
-    "@redhat-cloud-services/frontend-components": "1.0.11",
-    "@redhat-cloud-services/frontend-components-notifications": "0.0.5",
-    "@redhat-cloud-services/frontend-components-remediations": "1.0.1",
-    "@redhat-cloud-services/frontend-components-utilities": "0.0.5",
+    "@redhat-cloud-services/frontend-components": "2.0.1",
+    "@redhat-cloud-services/frontend-components-notifications": "2.0.0",
+    "@redhat-cloud-services/frontend-components-remediations": "2.0.0",
+    "@redhat-cloud-services/frontend-components-utilities": "2.0.0",
     "@redhat-cloud-services/remediations-client": "^1.0.65",
     "awesome-debounce-promise": "2.1.0",
     "axios": "^0.18.1",
@@ -33,6 +33,9 @@
     "collectCoverageFrom": [
       "src/**/*.{js|jsx}",
       "!src/**/stories/*"
+    ],
+    "transformIgnorePatterns": [
+      "/node_modules/(?!@redhat-cloud-services)"
     ],
     "setupFiles": [
       "<rootDir>/config/setupTests.js"
@@ -59,6 +62,7 @@
     "babel-plugin-dual-import": "^1.2.1",
     "babel-plugin-lodash": "^3.3.2",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-imports": "^2.0.0",
     "clean-webpack-plugin": "^0.1.19",
     "connect-history-api-fallback": "^1.6.0",
     "copy-webpack-plugin": "^4.5.1",

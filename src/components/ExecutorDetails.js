@@ -6,8 +6,6 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import * as pfReactTable from '@patternfly/react-table';
-import * as reactCore from '@patternfly/react-core';
-import * as reactIcons from '@patternfly/react-icons';
 import * as reactRouterDom from 'react-router-dom';
 import {
     Main, PageHeader, PageHeaderTitle, DateFormat, Skeleton,
@@ -78,8 +76,6 @@ const ExecutorDetails = ({
         } = await insights.loadInventory({
             react: React,
             reactRouterDom,
-            reactCore,
-            reactIcons,
             pfReactTable
         });
 

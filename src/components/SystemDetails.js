@@ -3,13 +3,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Skeleton } from '@redhat-cloud-services/frontend-components';
-import SyntaxHighlighter from 'react-syntax-highlighter';
+import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
+import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
+import docco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';
+
 import { Spinner } from '@patternfly/react-core';
 import classnames from 'classnames';
 
 import { Title } from '@patternfly/react-core';
 
 import './SystemDetails.scss';
+
+SyntaxHighlighter.registerLanguage('yaml', yaml);
 
 const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
 
@@ -25,6 +30,7 @@ const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
                 <SyntaxHighlighter
                     language="yaml"
                     showLineNumbers
+                    style={ docco }
                     className={ outputClasses }>
                     { playbookRunSystemDetails && playbookRunSystemDetails.console || '' }
                 </SyntaxHighlighter>

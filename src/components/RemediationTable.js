@@ -11,12 +11,11 @@ import {
     ToolbarItem, ToolbarGroup
 } from '@patternfly/react-core';
 import { sortable, Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
-import { EmptyTable, SimpleTableFilter, Skeleton, TableToolbar } from '@redhat-cloud-services/frontend-components';
+import { EmptyTable, SimpleTableFilter, Skeleton, TableToolbar, DateFormat } from '@redhat-cloud-services/frontend-components';
 import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/components/PrimaryToolbar';
 import { WrenchIcon } from '@patternfly/react-icons';
 
 import { appUrl } from '../Utilities/urls';
-import { formatDate } from '../Utilities/model';
 import './RemediationTable.scss';
 import ConfirmationDialog from './ConfirmationDialog';
 
@@ -141,7 +140,7 @@ function RemediationTable (props) {
             buildName(remediation.name, remediation.id),
             remediation.system_count,
             remediation.issue_count,
-            { title: formatDate(remediation.updated_at) }
+            { title: <DateFormat date={ remediation.updated_at } /> }
         ]
     }));
 

@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 import * as pfReactTable from '@patternfly/react-table';
-import * as reactCore from '@patternfly/react-core';
-import * as reactIcons from '@patternfly/react-icons';
 import * as reactRouterDom from 'react-router-dom';
 import { connect, useStore } from 'react-redux';
 import orderBy from 'lodash/orderBy';
@@ -47,8 +45,6 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
         } = await insights.loadInventory({
             react: React,
             reactRouterDom,
-            reactCore,
-            reactIcons,
             pfReactTable
         });
 
