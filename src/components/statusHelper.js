@@ -2,7 +2,7 @@ import React from 'react';
 
 import { CheckCircleIcon, TimesCircleIcon, InProgressIcon } from '@patternfly/react-icons';
 import {
-    Flex, FlexItem, FlexModifiers, Tooltip
+    Flex, FlexItem, Tooltip
 } from '@patternfly/react-core';
 
 import { CancelButton } from '../containers/CancelButton';
@@ -34,19 +34,19 @@ export const renderStatusIcon = (status) => ({
 })[status];
 
 export const renderStatus = (status, text) => ({
-    running: <Flex className='ins-c-remediations-running' breakpointMods={ [{ modifier: FlexModifiers['space-items-sm'] }] }>
+    running: <Flex className='ins-c-remediations-running' spacer={ { default: 'space-items-sm' } } >
         <FlexItem><b>{ text || 'Running' }</b></FlexItem>
         <FlexItem><InProgressIcon aria-label="connection status: running"/></FlexItem>
     </Flex>,
-    success: <Flex className="ins-c-remediations-success" breakpointMods={ [{ modifier: FlexModifiers['space-items-sm'] }] }>
+    success: <Flex className="ins-c-remediations-success" spacer={ { default: 'space-items-sm' } }>
         <FlexItem><b>{ text || 'Success' }</b></FlexItem>
         <FlexItem><CheckCircleIcon aria-label="connection status: success"/></FlexItem>
     </Flex>,
-    failure: <Flex className="ins-c-remediations-failure" breakpointMods={ [{ modifier: FlexModifiers['space-items-sm'] }] }>
+    failure: <Flex className="ins-c-remediations-failure" spacer={ { default: 'space-items-sm' } }>
         <FlexItem><b>{ text || 'Failed' }</b></FlexItem>
         <FlexItem><TimesCircleIcon aria-label="connection status: failed"/></FlexItem>
     </Flex>,
-    canceled: <Flex className="ins-c-remediations-canceled" breakpointMods={ [{ modifier: FlexModifiers['space-items-sm'] }] }>
+    canceled: <Flex className="ins-c-remediations-canceled" spacer={ { default: 'space-items-sm' } }>
         <FlexItem><b>{ text || 'Canceled' }</b></FlexItem>
         <FlexItem><TimesCircleIcon aria-label="connection status: canceled"/></FlexItem>
     </Flex>
