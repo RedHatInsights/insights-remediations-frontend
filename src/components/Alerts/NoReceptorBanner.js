@@ -9,7 +9,7 @@ const NoReceptorBanner = ({ ...props }) => {
             isInline
             title="Do more with Find it Fix it capabilities"
             { ...props }>
-            <Stack gutter='md'>
+            <Stack hasGutter>
                 <StackItem>Configure your systems with Cloud Connector to fix systems across all your Satellite instances.</StackItem>
                 <StackItem>
                     { /* eslint-disable-next-line max-len */ }

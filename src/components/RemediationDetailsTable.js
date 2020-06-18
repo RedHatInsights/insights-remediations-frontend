@@ -7,7 +7,7 @@ import orderBy from 'lodash/orderBy';
 import {
     Button,
     Pagination,
-    ToolbarItem, ToolbarGroup
+    ToolbarItem, Toolbar, ToolbarContent
 } from '@patternfly/react-core';
 
 import { sortable, TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
@@ -123,22 +123,18 @@ function RemediationDetailsTable (props) {
     const selectedIds = selector.getSelectedIds();
 
     return (
-        <React.Fragment>
-            <TableToolbar className='ins-c-remediations-details-table__toolbar'>
-                <ToolbarGroup>
+        <div className='test'>
+            <Toolbar className='ins-c-remediations-details-table__toolbar'>
+                <ToolbarContent>
                     <ToolbarItem>
                         <SimpleTableFilter buttonTitle="" placeholder="Search actions" { ...filter.props } />
                     </ToolbarItem>
-                </ToolbarGroup>
-                {
-                    isBeta &&
-                    <ToolbarGroup>
+                    {
+                        isBeta &&
                         <ToolbarItem>
                             <Button isDisabled={ true }> Add Action </Button>
                         </ToolbarItem>
-                    </ToolbarGroup>
-                }
-                <ToolbarGroup>
+                    }
                     <ToolbarItem>
                         { permission.permissions.write &&
                             <DeleteActionsButton
@@ -150,15 +146,15 @@ function RemediationDetailsTable (props) {
                             />
                         }
                     </ToolbarItem>
-                </ToolbarGroup>
-                <Pagination
-                    variant='top'
-                    dropDirection='down'
-                    itemCount={ filtered.length }
-                    { ...pagination.props }
-                    { ...debug.pagination }
-                />
-            </TableToolbar>
+                    <Pagination
+                        variant='top'
+                        dropDirection='down'
+                        itemCount={ filtered.length }
+                        { ...pagination.props }
+                        { ...debug.pagination }
+                    />
+                </ToolbarContent>
+            </Toolbar>
             {
                 rows.length > 0 ?
                     <Table
@@ -205,7 +201,7 @@ function RemediationDetailsTable (props) {
                     />
                 </TableToolbar>
             }
-        </React.Fragment>
+        </div>
 
     );
 }

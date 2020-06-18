@@ -12,7 +12,7 @@ exports[`UpsellBanner component should render 1`] = `
   variant="info"
 >
   <Stack
-    gutter="md"
+    hasGutter
   >
     <StackItem>
       Enable push-button remediation across your hybrid cloud environment with Red Hat Smart Management.

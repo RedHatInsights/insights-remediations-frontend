@@ -49,7 +49,7 @@ const RemediationDetailsSkeleton = () => {
                         }/>
                     </LevelItem>
                     <LevelItem>
-                        <Split gutter="md">
+                        <Split hasGutter>
                             <SplitItem><Button isDisabled variant='link'> Download playbook </Button></SplitItem>
                             <SplitItem>
                                 <Dropdown
@@ -63,7 +63,7 @@ const RemediationDetailsSkeleton = () => {
                 </Level>
             </PageHeader>
             <Main>
-                <Stack gutter="md">
+                <Stack hasGutter>
                     <StackItem>
                         <Card>
                             <CardHeader className='ins-m-card__header-bold'>

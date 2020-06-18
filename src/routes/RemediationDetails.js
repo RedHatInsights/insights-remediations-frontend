@@ -192,7 +192,7 @@ const RemediationDetails = ({
                             <PageHeaderTitle title={ remediation.name }/>
                         </LevelItem>
                         <LevelItem>
-                            <Split gutter="md">
+                            <Split hasGutter>
                                 { context.hasSmartManagement && context.permissions.execute &&
                                     <SplitItem>
                                         <ExecutePlaybookButton
@@ -216,7 +216,7 @@ const RemediationDetails = ({
                     </Level>
                 </PageHeader>
                 <Main>
-                    <Stack gutter="md">
+                    <Stack hasGutter>
                         { !context.hasSmartManagement && upsellBannerVisible &&
                             <StackItem>
                                 <UpsellBanner onClose={ () => handleUpsellToggle() }/>
