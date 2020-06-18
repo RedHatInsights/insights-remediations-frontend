@@ -13,7 +13,6 @@ if (pathName[0] === 'beta') {
     release = `/${pathName.shift()}/`;
 }
 
-console.log('BBBBBBBBbB');
 ReactDOM.render(
     <Provider store={ init().getStore() }>
         <Router basename={ `${release}${pathName[0]}/${pathName[1]}` }>
