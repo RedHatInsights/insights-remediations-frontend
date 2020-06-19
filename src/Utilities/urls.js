@@ -22,7 +22,7 @@ export function buildInventoryUrl (systemId, tab) {
 export function getInventoryTabForIssue ({ id }) {
     switch (getIssuePrefix(id)) {
         case 'advisor':
-            return 'insights';
+            return 'advisor';
         case 'vulnerabilities':
             return 'vulnerabilities';
         case 'ssg':
@@ -60,7 +60,7 @@ export function buildIssueUrl (id) {
 export function appUrl (app) {
     switch (app) {
         case 'advisor':
-            return urijs(document.baseURI).segment('insights');
+            return urijs(document.baseURI).segment('insights').segment('advisor');
         case 'vulnerabilities':
             return urijs(document.baseURI).segment('insights').segment('vulnerability');
         case 'compliance':

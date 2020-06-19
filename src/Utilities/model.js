@@ -4,7 +4,7 @@ export function getIssuePrefix (id) {
 
 export function getIssueApplication ({ id }) {
     switch (getIssuePrefix(id)) {
-        case 'advisor': return 'Insights';
+        case 'advisor': return 'Advisor';
         case 'ssg': return 'Compliance';
         case 'vulnerabilities': return 'Vulnerability';
         case 'patch-advisory': return 'Patch';
