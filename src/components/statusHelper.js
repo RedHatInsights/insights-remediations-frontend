@@ -50,7 +50,7 @@ export const statusText = (executorStatus) => ({
     running: <b className={ `${statusTextClass} ins-c-remediations-running` }> Running </b>,
     pending: <b className={ `${statusTextClass} ins-c-remediations-running` }> Pending </b>,
     acked: <b className={ `${statusTextClass} ins-c-remediations-running` }> Acked </b>,
-    success: <b className={ `${statusTextClass} ins-c-remediations-success` }> Suceeded </b>,
+    success: <b className={ `${statusTextClass} ins-c-remediations-success` }> Succeeded </b>,
     failure: <b className={ `${statusTextClass} ins-c-remediations-failure` }> Failed </b>,
     canceled: <b className={ `${statusTextClass} ins-c-remediations-failure` }> Canceled </b>
 })[executorStatus];
