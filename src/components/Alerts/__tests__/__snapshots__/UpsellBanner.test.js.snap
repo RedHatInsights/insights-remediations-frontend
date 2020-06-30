@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`UpsellBanner component should render 1`] = `
-<Component
+<Alert
   actionClose={
     <Unknown
       onClose={[Function]}
@@ -11,19 +11,19 @@ exports[`UpsellBanner component should render 1`] = `
   title="Put Insights into action"
   variant="info"
 >
-  <Component
+  <Stack
     hasGutter={true}
   >
-    <Component>
+    <StackItem>
       Enable push-button remediation across your hybrid cloud environment with Red Hat Smart Management.
-    </Component>
-    <Component>
+    </StackItem>
+    <StackItem>
       <a
         href="https://www.redhat.com/en/technologies/management/smart-management"
       >
         Learn more
       </a>
-    </Component>
-  </Component>
-</Component>
+    </StackItem>
+  </Stack>
+</Alert>
 `;

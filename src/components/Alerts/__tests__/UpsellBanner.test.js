@@ -13,14 +13,14 @@ describe('UpsellBanner component', () => {
     it('should call default prop', () => {
         const mockCallBack = jest.fn();
         const wrapper = mount(<UpsellBanner/>);
-        wrapper.find('AlertActionCloseButton').simulate('click');
+        wrapper.find('Button').simulate('click');
         expect(mockCallBack.mock.results[0]).toBeUndefined();
     });
 
     it('should click close', () => {
         const mockCallBack = jest.fn();
         const wrapper = mount(<UpsellBanner onClose={ mockCallBack }/>);
-        wrapper.find('AlertActionCloseButton').simulate('click');
+        wrapper.find('Button').simulate('click');
         expect(mockCallBack.mock.calls.length).toEqual(1);
     });
 });
