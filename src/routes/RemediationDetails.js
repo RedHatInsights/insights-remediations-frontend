@@ -32,7 +32,7 @@ import {
     Breadcrumb, BreadcrumbItem,
     Button,
     Split, SplitItem,
-    Flex, FlexItem, FlexModifiers,
+    Flex, FlexItem,
     Tabs, Tab,
     Title
 } from '@patternfly/react-core';
@@ -123,7 +123,7 @@ const RemediationDetails = ({
     const renderLatestActivity = (playbookRuns) => {
         if (playbookRuns.length) {
             const mostRecent = playbookRuns[0];
-            return <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+            return <FlexItem spacer={ { default: 'spacer-xl' } }>
                 <DescriptionList
                     needsPointer
                     className='ins-c-latest-activity'
@@ -192,7 +192,7 @@ const RemediationDetails = ({
                             <PageHeaderTitle title={ remediation.name }/>
                         </LevelItem>
                         <LevelItem>
-                            <Split gutter="md">
+                            <Split hasGutter>
                                 { context.hasSmartManagement && context.permissions.execute &&
                                     <SplitItem>
                                         <ExecutePlaybookButton
@@ -216,7 +216,7 @@ const RemediationDetails = ({
                     </Level>
                 </PageHeader>
                 <Main>
-                    <Stack gutter="md">
+                    <Stack hasGutter>
                         { !context.hasSmartManagement && upsellBannerVisible &&
                             <StackItem>
                                 <UpsellBanner onClose={ () => handleUpsellToggle() }/>
@@ -233,9 +233,9 @@ const RemediationDetails = ({
                                     <Title headingLevel="h4" size="xl">Playbook summary</Title>
                                 </CardHeader>
                                 <CardBody>
-                                    <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
+                                    <Flex className='ins-c-playbookSummary' direction={ { default: 'column' } }>
                                         <Flex className='ins-c-playbookSummary__overview'>
-                                            <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                            <FlexItem spacer={ { default: 'spacer-xl' } }>
                                                 <DescriptionList
                                                     isBold
                                                     title='Total systems'>
@@ -258,7 +258,7 @@ const RemediationDetails = ({
                                                         },
                                                         { 'ins-c-reboot-status__disabled': !remediation.auto_reboot }
                                                     ) }
-                                                    breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                                    spacer={ { default: 'spacer-xl' } }>
                                                     Auto reboot:&nbsp;
                                                     <b>
                                                         { generateAutoRebootStatus(

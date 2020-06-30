@@ -9,9 +9,9 @@ const UpsellBanner = ({ onClose, ...props }) => {
             variant="info"
             isInline
             title="Put Insights into action"
-            action={ <AlertActionCloseButton onClose={ onClose }/> }
+            actionClose={ <AlertActionCloseButton onClose={ onClose }/> }
             { ...props }>
-            <Stack gutter='md'>
+            <Stack hasGutter>
                 <StackItem>Enable push-button remediation across your hybrid cloud environment with Red Hat Smart Management.</StackItem>
                 <StackItem>
                     <a href="https://www.redhat.com/en/technologies/management/smart-management">Learn more</a>

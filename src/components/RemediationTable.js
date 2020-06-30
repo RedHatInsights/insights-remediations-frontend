@@ -8,7 +8,7 @@ import {
     Dropdown, KebabToggle,
     Pagination,
     Title, Button,
-    ToolbarItem, ToolbarGroup
+    ToolbarItem, ToolbarGroup, Card
 } from '@patternfly/react-core';
 import { sortable, Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
 import { EmptyTable, SimpleTableFilter, Skeleton, TableToolbar, DateFormat } from '@redhat-cloud-services/frontend-components';
@@ -148,7 +148,7 @@ function RemediationTable (props) {
     const selectedIds = selector.getSelectedIds();
 
     return (
-        <React.Fragment>
+        <Card>
             { dialogOpen &&
                 <ConfirmationDialog
                     text={ `You will not be able to recover ${selectedIds.length > 1 ? 'these remediations' : 'this remediation'}` }
@@ -229,7 +229,7 @@ function RemediationTable (props) {
                     />
                 </TableToolbar>
             }
-        </React.Fragment>
+        </Card>
     );
 }
 

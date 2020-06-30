@@ -3,7 +3,6 @@ const path = require('path');
 const glob = require('glob');
 
 const mapper = {
-    FlexModifiers: 'FlexUtils',
     TextVariants: 'Text',
     DropdownPosition: 'dropdownConstants',
     EmptyStateVariant: 'EmptyState',

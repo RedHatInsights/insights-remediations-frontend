@@ -33,7 +33,7 @@ const ActivityDetailsSkeleton = () => {
                     <PageHeaderTitle title={ <Skeleton size='lg' /> } />
                 </StackItem>
                 <StackItem>
-                    <Split gutter="md">
+                    <Split hasGutter>
                         <SplitItem>
                             <DescriptionList className='ins-c-playbookSummary__settings' title='Run on'>
                                 <Skeleton size='lg' />
@@ -54,7 +54,7 @@ const ActivityDetailsSkeleton = () => {
             </Stack>
         </PageHeader>
         <Main>
-            <Stack gutter="md">
+            <Stack hasGutter>
                 <Card>
                     <CardHeader className='ins-m-card__header-bold'>
                         <Title headingLevel="h4" size="xl">Results by connection</Title>
