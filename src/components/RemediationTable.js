@@ -147,7 +147,7 @@ function RemediationTable (props) {
     selector.register(rows);
     const selectedIds = selector.getSelectedIds();
 
-    const actionResolver= (rowData, { rowIndex }) => {
+    const actionResolver = (rowData, { rowIndex }) => {
         return [
             {
                 title: 'Download playbook',
@@ -157,12 +157,13 @@ function RemediationTable (props) {
                 title: 'Delete playbook',
                 isDisabled: !permission.permissions.write,
                 onClick: (e) => {
-                    selector.props.onSelect(e, true, rowIndex)
-                    setDialogOpen(true)
+                    selector.reset();
+                    selector.props.onSelect(e, true, rowIndex);
+                    setDialogOpen(true);
                 }
             }
-        ]
-    }
+        ];
+    };
 
     return (
         <Card>
@@ -171,10 +172,12 @@ function RemediationTable (props) {
                     text={ `You will not be able to recover ${selectedIds.length > 1 ? 'these remediations' : 'this remediation'}` }
                     onClose={ async (del) => {
                         setDialogOpen(false);
+
                         if (del) {
                             await Promise.all(selectedIds.map(r => props.deleteRemediation(r)));
                             loadRemediations();
                         }
+
                         selector.reset();
                     } } />
             }
