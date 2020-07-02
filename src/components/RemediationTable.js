@@ -148,7 +148,6 @@ function RemediationTable (props) {
     const selectedIds = selector.getSelectedIds();
 
     const actionResolver= (rowData, { rowIndex }) => {
-        console.log(rowData, rowIndex);
         return [
             {
                 title: 'Download playbook',
