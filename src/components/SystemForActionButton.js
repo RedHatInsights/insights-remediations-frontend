@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import * as pfReactTable from '@patternfly/react-table';
 import * as reactRouterDom from 'react-router-dom';
+import * as ReactRedux from 'react-redux';
 import { connect, useStore } from 'react-redux';
 import orderBy from 'lodash/orderBy';
 
@@ -43,6 +44,7 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
             mergeWithEntities,
             INVENTORY_ACTION_TYPES
         } = await insights.loadInventory({
+            ReactRedux,
             react: React,
             reactRouterDom,
             pfReactTable
