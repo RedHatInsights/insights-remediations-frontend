@@ -172,13 +172,11 @@ function RemediationTable (props) {
                     text={ `You will not be able to recover ${selectedIds.length > 1 ? 'these remediations' : 'this remediation'}` }
                     onClose={ async (del) => {
                         setDialogOpen(false);
-
                         if (del) {
                             await Promise.all(selectedIds.map(r => props.deleteRemediation(r)));
                             loadRemediations();
+                            selector.reset();
                         }
-
-                        selector.reset();
                     } } />
             }
             <PrimaryToolbar
