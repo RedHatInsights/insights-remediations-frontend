@@ -70,7 +70,7 @@ function empty () {
         <Bullseye>
             <EmptyState className='ins-c-no-remediations'>
                 <EmptyStateIcon icon={ WrenchIcon } size='sm' />
-                <Title size="lg">You haven&apos;t created any remediation Playbooks yet</Title>
+                <Title size="lg" headingLevel="h5">You haven&apos;t created any remediation Playbooks yet</Title>
                 <EmptyStateBody>
                     Create an Ansible Playbook to remediate or mitigate vulnerabilities or configuration issues.
                     <br />
@@ -147,16 +147,36 @@ function RemediationTable (props) {
     selector.register(rows);
     const selectedIds = selector.getSelectedIds();
 
+    const actionResolver = (rowData, { rowIndex }) => {
+        return [
+            {
+                title: 'Download playbook',
+                onClick: () => downloadPlaybook(rowData.id)
+            },
+            {
+                title: 'Delete playbook',
+                isDisabled: !permission.permissions.write,
+                onClick: (e) => {
+                    selector.reset();
+                    selector.props.onSelect(e, true, rowIndex);
+                    setDialogOpen(true);
+                }
+            }
+        ];
+    };
+
     return (
         <Card>
             { dialogOpen &&
                 <ConfirmationDialog
                     text={ `You will not be able to recover ${selectedIds.length > 1 ? 'these remediations' : 'this remediation'}` }
-                    onClose={ async () => {
+                    onClose={ async (del) => {
                         setDialogOpen(false);
-                        await Promise.all(selectedIds.map(r => props.deleteRemediation(r)));
-                        selector.reset();
-                        loadRemediations();
+                        if (del) {
+                            await Promise.all(selectedIds.map(r => props.deleteRemediation(r)));
+                            loadRemediations();
+                            selector.reset();
+                        }
                     } } />
             }
             <PrimaryToolbar
@@ -198,17 +218,7 @@ function RemediationTable (props) {
                             }]
                         }
                         rows={ rows }
-                        actions={
-                            [{
-                                title: 'Download playbook',
-                                onClick: (_e, _rowId, rowData) => downloadPlaybook(rowData.id)
-                            },
-                            {
-                                title: 'Delete playbook',
-                                props: { isDisabled: !permission.permissions.write },
-                                onClick: () => setDialogOpen(true)
-                            }]
-                        }
+                        actionResolver={ actionResolver }
                         { ...sorter.props }
                         { ...selector.props }
                     >
