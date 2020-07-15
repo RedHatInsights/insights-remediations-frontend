@@ -3,6 +3,9 @@
 .ins-c-remediations-running { color: var(--pf-global--default-color--300); }
 .ins-c-remediations-canceled { color: var(--pf-global--default-color--300); }
 
+.ins-c-remediations-connection-status { margin-right: var(--pf-global--spacer--xs); }
+.ins-c-remediations-connection-status-error { color: var(--pf-chart-global--danger--Color--100); }
+
 td .ins-c-remediations-status-text { display: inline-block; min-width: 85px; }
 
 .ins-c-latest-activity .ins-l-description-list__description {

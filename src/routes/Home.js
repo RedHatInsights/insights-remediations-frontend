@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { StackItem, Stack } from '@patternfly/react-core';
 
 import * as actions from '../actions';
 
@@ -19,6 +20,7 @@ import './Home.scss';
 
 import { PermissionContext } from '../App';
 import DeniedState from '../components/DeniedState';
+import NoReceptorBanner from '../components/Alerts/NoReceptorBanner';
 
 const ConnectedRemediationTable = connect(({ remediations }) => ({ ...remediations }))(RemediationTable);
 
@@ -28,8 +30,16 @@ class Home extends Component {
         super(props, ctx);
         this.state = {
             isModalOpen: false,
+            noReceptorBannerVisible: (localStorage.getItem('remediations:receptorBannerStatus') !== 'dismissed'),
             selected: []
         };
+    };
+
+    handleNoReceptorToggle = () => {
+        this.setState({
+            noReceptorBannerVisible: false
+        });
+        localStorage.setItem('remediations:receptorBannerStatus', 'dismissed');
     };
 
     openModal = () => this.setState({ isModalOpen: true });
@@ -83,7 +93,16 @@ class Home extends Component {
                                 <TestButtons onRemediationCreated={ this.onRemediationCreated } />
                             </PageHeader>
                             <Main>
-                                <ConnectedRemediationTable loadRemediations={ loadRemediations } deleteRemediation={ deleteRemediation }/>
+                                <Stack hasGutter>
+                                    { value.hasSmartManagement && !value.isReceptorConfigured && this.state.noReceptorBannerVisible &&
+                                        <StackItem>
+                                            <NoReceptorBanner onClose={ () => this.handleNoReceptorToggle() }/>
+                                        </StackItem>
+                                    }
+                                    <StackItem>
+                                        <ConnectedRemediationTable loadRemediations={ loadRemediations } deleteRemediation={ deleteRemediation }/>
+                                    </StackItem>
+                                </Stack>
                             </Main>
 
                             <Wizard
