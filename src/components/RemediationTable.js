@@ -174,7 +174,7 @@ function RemediationTable (props) {
 
     const actionResolver = (rowData, { rowIndex }) => {
         const current = value.data[rowIndex];
-        
+
         return [
             {
                 title: 'Execute remedation',
