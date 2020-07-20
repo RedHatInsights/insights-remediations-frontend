@@ -126,7 +126,7 @@ ExecuteModal.propTypes = {
     onClose: PropTypes.func,
     showRefresh: PropTypes.bool,
     isLoading: PropTypes.bool,
-    data: PropTypes.object,
+    data: PropTypes.array,
     remediationId: PropTypes.string,
     issueCount: PropTypes.number,
     runRemediation: PropTypes.func,

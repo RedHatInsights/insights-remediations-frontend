@@ -38,7 +38,7 @@ const ExecuteButton = ({
     const buttonWithTooltip = (isDisabled) => {
         return (
             isDisabled
-                ? <Tooltip content='Your account must be configured with Cloud Connector to execute.'
+                ? <Tooltip content='Your account must be configured with Cloud Connector to execute playbooks.'
                     position='auto'>
                     <Button
                         isAriaDisabled={ isDisabled }
