@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React from 'react';
 import { shallow } from 'enzyme';
 import toJson from 'enzyme-to-json';
@@ -56,5 +57,5 @@ describe('Execute modal', () => {
         expect(container.find(Modal)).toHaveLength(1);
         expect(container.find(Alert)).toHaveLength(1);
         expect(toJson(container)).toMatchSnapshot();
-    })
+    });
 });
