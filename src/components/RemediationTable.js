@@ -179,7 +179,7 @@ function RemediationTable (props) {
             {
                 title: 'Execute remedation',
                 isDisabled: !permission.isReceptorConfigured,
-                className: `${(!permission.hasSmartManagement || !permission.permissions.execute) && 'isNotEntitled'}`,
+                className: `${(!permission.hasSmartManagement || !permission.permissions.execute) && 'ins-m-not-entitled'}`,
                 onClick: (e) => {
                     selector.reset();
                     selector.props.onSelect(e, true, rowIndex);

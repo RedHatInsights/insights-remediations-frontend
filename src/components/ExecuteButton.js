@@ -40,14 +40,11 @@ const ExecuteButton = ({
             isDisabled
                 ? <Tooltip content='Your account must be configured with Cloud Connector to execute playbooks.'
                     position='auto'>
-                    <Button
-                        isAriaDisabled={ isDisabled }
-                        onClick={ () => { setOpen(true); getConnectionStatus(remediationId); } }>
+                    <Button isAriaDisabled>
                     Execute playbook
                     </Button>
                 </Tooltip>
                 : <Button
-                    isAriaDisabled={ isDisabled }
                     onClick={ () => { setOpen(true); getConnectionStatus(remediationId); } }>
                 Execute playbook
                 </Button>
