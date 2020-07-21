@@ -7,7 +7,8 @@ const mapper = {
     DropdownPosition: 'dropdownConstants',
     EmptyStateVariant: 'EmptyState',
     TextListItemVariants: 'TextListItem',
-    TextListVariants: 'TextList'
+    TextListVariants: 'TextList',
+    ModalVariant: 'Modal'
 };
 
 const FECMapper = {

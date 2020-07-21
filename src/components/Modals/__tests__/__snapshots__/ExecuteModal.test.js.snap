@@ -1,0 +1,310 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Execute modal renders ExecuteModal component when given data 1`] = `
+<Modal
+  actions={
+    Array [
+      <Button
+        isDisabled={false}
+        onClick={[Function]}
+        variant="primary"
+      >
+        Execute playbook on 1 system
+      </Button>,
+      <Button
+        onClick={[Function]}
+        variant="secondary"
+      >
+        Download playbook
+      </Button>,
+      null,
+    ]
+  }
+  appendTo={<body />}
+  aria-describedby=""
+  aria-label=""
+  aria-labelledby=""
+  className="ins-c-dialog"
+  hasNoBodyWrapper={false}
+  isFooterLeftAligned={true}
+  isOpen={true}
+  onClose={[MockFunction]}
+  ouiaSafe={true}
+  showClose={true}
+  title="Execute playbook"
+  variant="small"
+>
+  <div>
+    <TextContent>
+      <Text
+        component="p"
+      >
+        Playbook contains 
+        <b>
+          1 action
+        </b>
+         affecting
+        <b>
+            
+          5 systems.
+           
+        </b>
+      </Text>
+      <Text
+        component="p"
+      >
+        Systems connected to a Satellite instance and configured with Receptor can be automatically remediated. To remediate other systems, download the Ansible Playbook.
+      </Text>
+      <Text
+        component="h4"
+      >
+        Connection status of systems
+      </Text>
+    </TextContent>
+    <Table
+      aria-label="Systems"
+      borders={true}
+      canSelectAll={true}
+      cells={
+        Array [
+          Object {
+            "title": "Connection type",
+            "value": "type",
+          },
+          Object {
+            "title": "Systems",
+            "value": "count",
+          },
+          false,
+        ]
+      }
+      className=""
+      contentId="expanded-content"
+      dropdownDirection="down"
+      dropdownPosition="right"
+      expandId="expandable-toggle"
+      gridBreakPoint="grid-md"
+      ouiaSafe={true}
+      role="grid"
+      rowLabeledBy="simple-node"
+      rows={
+        Array [
+          Object {
+            "cells": Array [
+              Object {
+                "title": <Tooltip
+                  appendTo={[Function]}
+                  aria="describedby"
+                  boundary="window"
+                  className=""
+                  content="Satellite 1 (connected)"
+                  distance={15}
+                  enableFlip={true}
+                  entryDelay={500}
+                  exitDelay={500}
+                  flipBehavior={
+                    Array [
+                      "top",
+                      "right",
+                      "bottom",
+                      "left",
+                      "top",
+                      "right",
+                      "bottom",
+                    ]
+                  }
+                  id=""
+                  isAppLauncher={false}
+                  isContentLeftAligned={false}
+                  isVisible={false}
+                  maxWidth="18.75rem"
+                  position="top"
+                  tippyProps={Object {}}
+                  trigger="mouseenter focus"
+                  zIndex={9999}
+                >
+                  <span>
+                    Satellite 1 (connected)
+                  </span>
+                </Tooltip>,
+              },
+              1,
+              false,
+            ],
+          },
+          Object {
+            "cells": Array [
+              Object {
+                "title": "Direct connection",
+              },
+              4,
+              false,
+            ],
+          },
+        ]
+      }
+      variant="compact"
+    >
+      <TableHeader />
+      <Component />
+    </Table>
+  </div>
+</Modal>
+`;
+
+exports[`Execute modal renders ExecuteModal with refresh message when showRefresh is true 1`] = `
+<Modal
+  actions={
+    Array [
+      <Button
+        isDisabled={false}
+        onClick={[Function]}
+        variant="primary"
+      >
+        Execute playbook on 1 system
+      </Button>,
+      <Button
+        onClick={[Function]}
+        variant="secondary"
+      >
+        Download playbook
+      </Button>,
+      null,
+    ]
+  }
+  appendTo={<body />}
+  aria-describedby=""
+  aria-label=""
+  aria-labelledby=""
+  className="ins-c-dialog"
+  hasNoBodyWrapper={false}
+  isFooterLeftAligned={true}
+  isOpen={true}
+  onClose={[MockFunction]}
+  ouiaSafe={true}
+  showClose={true}
+  title="Execute playbook"
+  variant="small"
+>
+  <div>
+    <Alert
+      isInline={true}
+      title="The connection status of systems associated with this Playbook has changed. Please review again."
+      variant="warning"
+    />
+    <TextContent>
+      <Text
+        component="p"
+      >
+        Playbook contains 
+        <b>
+          1 action
+        </b>
+         affecting
+        <b>
+            
+          5 systems.
+           
+        </b>
+      </Text>
+      <Text
+        component="p"
+      >
+        Systems connected to a Satellite instance and configured with Receptor can be automatically remediated. To remediate other systems, download the Ansible Playbook.
+      </Text>
+      <Text
+        component="h4"
+      >
+        Connection status of systems
+      </Text>
+    </TextContent>
+    <Table
+      aria-label="Systems"
+      borders={true}
+      canSelectAll={true}
+      cells={
+        Array [
+          Object {
+            "title": "Connection type",
+            "value": "type",
+          },
+          Object {
+            "title": "Systems",
+            "value": "count",
+          },
+          false,
+        ]
+      }
+      className=""
+      contentId="expanded-content"
+      dropdownDirection="down"
+      dropdownPosition="right"
+      expandId="expandable-toggle"
+      gridBreakPoint="grid-md"
+      ouiaSafe={true}
+      role="grid"
+      rowLabeledBy="simple-node"
+      rows={
+        Array [
+          Object {
+            "cells": Array [
+              Object {
+                "title": <Tooltip
+                  appendTo={[Function]}
+                  aria="describedby"
+                  boundary="window"
+                  className=""
+                  content="Satellite 1 (connected)"
+                  distance={15}
+                  enableFlip={true}
+                  entryDelay={500}
+                  exitDelay={500}
+                  flipBehavior={
+                    Array [
+                      "top",
+                      "right",
+                      "bottom",
+                      "left",
+                      "top",
+                      "right",
+                      "bottom",
+                    ]
+                  }
+                  id=""
+                  isAppLauncher={false}
+                  isContentLeftAligned={false}
+                  isVisible={false}
+                  maxWidth="18.75rem"
+                  position="top"
+                  tippyProps={Object {}}
+                  trigger="mouseenter focus"
+                  zIndex={9999}
+                >
+                  <span>
+                    Satellite 1 (connected)
+                  </span>
+                </Tooltip>,
+              },
+              1,
+              false,
+            ],
+          },
+          Object {
+            "cells": Array [
+              Object {
+                "title": "Direct connection",
+              },
+              4,
+              false,
+            ],
+          },
+        ]
+      }
+      variant="compact"
+    >
+      <TableHeader />
+      <Component />
+    </Table>
+  </div>
+</Modal>
+`;

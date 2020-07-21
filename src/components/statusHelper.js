@@ -1,8 +1,10 @@
 import React from 'react';
 
-import { CheckCircleIcon, TimesCircleIcon, InProgressIcon } from '@patternfly/react-icons';
 import {
-    Flex, FlexItem, Tooltip
+    CheckCircleIcon, ExclamationCircleIcon, TimesCircleIcon, InProgressIcon
+} from '@patternfly/react-icons';
+import {
+    Button, Flex, FlexItem, TextContent, Text, TextVariants, Tooltip
 } from '@patternfly/react-core';
 
 import { CancelButton } from '../containers/CancelButton';
@@ -120,3 +122,88 @@ export const StatusSummary = ({ executorStatus, permission, hasCancel, counts, r
 
     return statusBar;
 };
+
+export const styledConnectionStatus = (status) => ({
+    connected: (
+        <TextContent>
+            <Text component={ TextVariants.p }>
+                <CheckCircleIcon
+                    className="ins-c-remediations-reboot-check-circle ins-c-remediations-connection-status"
+                    aria-label="connection status" />
+                Ready
+            </Text>
+        </TextContent>),
+    disconnected: (
+        <TextContent>
+            <Text component={ TextVariants.p }>
+                Connection issue
+                <Text component={ TextVariants.small } style={ { margin: '0px' } }>
+                    Receptor not responding
+                </Text>
+                { /* <Button
+                    style={ { padding: '0px' } }
+                    key="troubleshoot"
+                    // eslint-disable-next-line no-console
+                    variant='link' onClick={ () => console.log('TODO: add link') }>
+                    Troubleshoot
+                </Button> */ }
+            </Text>
+        </TextContent>),
+    // eslint-disable-next-line camelcase
+    no_executor: (
+        <TextContent>
+            <Text component={ TextVariants.p }>
+                Cannot remediate - Direct connection.
+                <Text component={ TextVariants.small } style={ { margin: '0px' } }>
+                    Connect your systems to Satellite to automatically remediate.
+                </Text>
+                <Button
+                    style={ { padding: '0px' } }
+                    key="download"
+                    variant='link'
+                    component='a'
+                    // eslint-disable-next-line max-len
+                    href='https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights'>
+                    Learn how to connect
+                </Button>
+            </Text>
+        </TextContent>),
+    // eslint-disable-next-line camelcase
+    no_source: (
+        <TextContent>
+            <Text component={ TextVariants.p }>
+                Cannot remediate - Satellite not configured
+                <Text component={ TextVariants.small } style={ { margin: '0px' } }>
+                    Satellite not registered for Playbook execution
+                </Text>
+                { /* <Button
+                    style={ { padding: '0px' } }
+                    key="configure"
+                    // eslint-disable-next-line no-console
+                    variant='link' onClick={ () => console.log('TODO: add link') }>
+                    Learn how to register Satellite
+                </Button> */ }
+            </Text>
+        </TextContent>),
+    // eslint-disable-next-line camelcase
+    no_receptor: (
+        <TextContent>
+            <Text component={ TextVariants.p }>
+                <ExclamationCircleIcon
+                    className="ins-c-remediations-failure ins-c-remediations-connection-status"
+                    aria-label="connection status" />
+                Cannot remediate - Receptor not configured
+                <Text component={ TextVariants.small } style={ { margin: '0px' } }>
+                    Configure Receptor to automatically remediate
+                </Text>
+                <Button
+                    style={ { padding: '0px' } }
+                    key="configure"
+                    variant='link'
+                    // eslint-disable-next-line max-len
+                    href='https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights'>
+                    Learn how to configure
+                </Button>
+            </Text>
+        </TextContent>)
+})[status];

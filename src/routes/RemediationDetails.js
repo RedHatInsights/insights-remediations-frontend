@@ -60,7 +60,12 @@ const RemediationDetails = ({
 }) => {
 
     const id = match.params.id;
-    const [ upsellBannerVisible, setUpsellBannerVisible ] = useState(localStorage.getItem('remediations:bannerStatus') !== 'dismissed');
+    const [ upsellBannerVisible, setUpsellBannerVisible ] = useState(
+        localStorage.getItem('remediations:bannerStatus') !== 'dismissed'
+    );
+    const [ noReceptorBannerVisible, setNoReceptorBannerVisible ] = useState(
+        localStorage.getItem('remediations:receptorBannerStatus') !== 'dismissed'
+    );
     const [ activeTabKey, setActiveTabKey ] = useState(location.search.includes('?activity') ? 1 : 0);
 
     const context = useContext(PermissionContext);
@@ -72,6 +77,11 @@ const RemediationDetails = ({
     const handleUpsellToggle = () => {
         setUpsellBannerVisible(false);
         localStorage.setItem('remediations:bannerStatus', 'dismissed');
+    };
+
+    const handleNoReceptorToggle = () => {
+        setNoReceptorBannerVisible(false);
+        localStorage.setItem('remediations:receptorBannerStatus', 'dismissed');
     };
 
     const handleTabClick = (event, tabIndex) => {
@@ -193,10 +203,10 @@ const RemediationDetails = ({
                         </LevelItem>
                         <LevelItem>
                             <Split hasGutter>
-                                { context.hasSmartManagement && context.permissions.execute &&
+                                { context.hasSmartManagement &&
                                     <SplitItem>
                                         <ExecutePlaybookButton
-                                            isDisabled={ !context.isReceptorConfigured }
+                                            isDisabled={ !context.isReceptorConfigured || !context.permissions.execute }
                                             remediationId={ remediation.id }>
                                         </ExecutePlaybookButton>
                                     </SplitItem>
@@ -222,9 +232,9 @@ const RemediationDetails = ({
                                 <UpsellBanner onClose={ () => handleUpsellToggle() }/>
                             </StackItem>
                         }
-                        { context.hasSmartManagement && !context.isReceptorConfigured &&
+                        { context.hasSmartManagement && !context.isReceptorConfigured && noReceptorBannerVisible &&
                             <StackItem>
-                                <NoReceptorBanner/>
+                                <NoReceptorBanner onClose={ () => handleNoReceptorToggle() }/>
                             </StackItem>
                         }
                         <StackItem>

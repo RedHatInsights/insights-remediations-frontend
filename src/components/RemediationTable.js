@@ -1,4 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react';
+import { useDispatch, useSelector as reduxSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { Link } from 'react-router-dom';
@@ -25,8 +26,10 @@ import * as debug from '../Utilities/debug';
 import keyBy from 'lodash/keyBy';
 
 import { downloadPlaybook } from '../api';
+import { getConnectionStatus, runRemediation, setEtag, getPlaybookRuns, loadRemediation } from '../actions';
 
 import { PermissionContext } from '../App';
+import { ExecuteModal } from './Modals/ExecuteModal';
 
 function buildName (name, id) {
     return ({
@@ -114,6 +117,12 @@ function RemediationTable (props) {
     const pagination = usePagination();
     const permission = useContext(PermissionContext);
     const [ dialogOpen, setDialogOpen ] = useState(false);
+    const [ executeOpen, setExecuteOpen ] = useState(false);
+    const [ showRefreshMessage, setShowRefreshMessage ] = useState(false);
+    const selectedRemediation = reduxSelector(state => state.selectedRemediation);
+    const connectionStatus = reduxSelector(state => state.connectionStatus);
+    const runningRemediation = reduxSelector(state => state.runRemediation);
+    const dispatch = useDispatch();
 
     function loadRemediations () {
         const column = SORTING_ITERATEES[sorter.sortBy];
@@ -121,6 +130,15 @@ function RemediationTable (props) {
     }
 
     useEffect(loadRemediations, [ sorter.sortBy, sorter.sortDir, filter.value, pagination.pageSize, pagination.pageDebounced ]);
+
+    useEffect(() => {
+        if (runningRemediation.status === 'changed') {
+            getConnectionStatus(selectedRemediation.remediation.id);
+            setShowRefreshMessage(true);
+        } else if (runningRemediation.status === 'fulfilled') {
+            setExecuteOpen(false);
+        }
+    }, [ runningRemediation.status ]);
 
     // Skeleton Loading
     if (status !== 'fulfilled') {
@@ -147,8 +165,31 @@ function RemediationTable (props) {
     selector.register(rows);
     const selectedIds = selector.getSelectedIds();
 
+    const actionWrapper = (actionsList, callback) => {
+        Promise.all(actionsList.map((event) => {
+            dispatch(event);
+            return event.payload;
+        })).then(callback);
+    };
+
     const actionResolver = (rowData, { rowIndex }) => {
+        const current = value.data[rowIndex];
+
         return [
+            {
+                title: 'Execute remedation',
+                isDisabled: !permission.isReceptorConfigured,
+                className: `${(!permission.hasSmartManagement || !permission.permissions.execute) && 'ins-m-not-entitled'}`,
+                onClick: (e) => {
+                    selector.reset();
+                    selector.props.onSelect(e, true, rowIndex);
+                    setExecuteOpen(false);
+                    actionWrapper([
+                        loadRemediation(current.id),
+                        getConnectionStatus(current.id)
+                    ], () => { setExecuteOpen(true); });
+                }
+            },
             {
                 title: 'Download playbook',
                 onClick: () => downloadPlaybook(rowData.id)
@@ -178,6 +219,23 @@ function RemediationTable (props) {
                             selector.reset();
                         }
                     } } />
+            }
+            { executeOpen &&
+                <ExecuteModal
+                    isOpen = { executeOpen }
+                    onClose = { () => { setShowRefreshMessage(false); setExecuteOpen(false); } }
+                    showRefresh = { showRefreshMessage }
+                    remediationId = { selectedRemediation.remediation.id }
+                    data = { connectionStatus.data }
+                    etag = { connectionStatus.etag }
+                    isLoading = { (connectionStatus.status !== 'fulfilled') }
+                    issueCount = { selectedRemediation.remediation.issues.length }
+                    remediationStatus = { runningRemediation.status }
+                    runRemediation = { (id, etag) => {
+                        dispatch(runRemediation(id, etag)).then(() => dispatch(getPlaybookRuns(id)));
+                    } }
+                    setEtag = { (etag) => { dispatch(setEtag(etag)); } }
+                />
             }
             <PrimaryToolbar
                 filterConfig={ { items: [{ label: 'Search playbooks', placeholder: 'Search playbooks' }]} }
