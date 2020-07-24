@@ -4,12 +4,12 @@ import PropTypes from 'prop-types';
 
 import { Link } from 'react-router-dom';
 import {
-    Bullseye,
+    Bullseye, Card, CardHeader, CardActions, CardBody, CardFooter, CardTitle,
     EmptyState, EmptyStateIcon, EmptyStateBody,
-    Dropdown, KebabToggle,
-    Pagination,
+    Dropdown, Grid, GridItem, KebabToggle,
+    Pagination, Stack,
     Title, Button,
-    ToolbarItem, ToolbarGroup, Card
+    ToolbarItem, ToolbarGroup, StackItem, DropdownItem, DropdownToggleAction
 } from '@patternfly/react-core';
 import { sortable, Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
 import { EmptyTable, SimpleTableFilter, Skeleton, TableToolbar, DateFormat } from '@redhat-cloud-services/frontend-components';
@@ -17,7 +17,6 @@ import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/compo
 import { WrenchIcon } from '@patternfly/react-icons';
 
 import { appUrl } from '../Utilities/urls';
-import './RemediationTable.scss';
 import ConfirmationDialog from './ConfirmationDialog';
 
 import SkeletonTable from '../skeletons/SkeletonTable';
@@ -30,11 +29,12 @@ import { getConnectionStatus, runRemediation, setEtag, getPlaybookRuns, loadReme
 
 import { PermissionContext } from '../App';
 import { ExecuteModal } from './Modals/ExecuteModal';
+import './RemediationTable.scss';
 
 function buildName (name, id) {
-    return ({
-        title: <Link to={ `/${id}` }>{ name }</Link>
-    });
+    return (
+        <Link to={ `/${id}` }>{ name }</Link>
+    );
 }
 
 function skeleton () {
@@ -111,6 +111,8 @@ function RemediationTable (props) {
 
     const { value, status } = props;
 
+    console.log('VALUE: ', value);
+
     const sorter = useSorter(4, 'desc');
     const filter = useFilter();
     const selector = useSelector();
@@ -163,6 +165,33 @@ function RemediationTable (props) {
         ]
     }));
 
+    function dropdownItems (id) {
+        return [
+            <DropdownItem key='execute'
+                isDisabled= {!permission.isReceptorConfigured}
+                className= {`${(!permission.hasSmartManagement || !permission.permissions.execute) && 'ins-m-not-entitled'}`}
+                onClick={ (e) => {
+                        selector.reset();
+                        //selector.props.onSelect(e, true, rowIndex);
+                        setExecuteOpen(false);
+                        actionWrapper([
+                            loadRemediation(id),
+                            getConnectionStatus(id)
+                        ], () => { setExecuteOpen(true); });
+                }}>
+            Execute playbook
+            </DropdownItem>,
+            <DropdownItem key='download'
+                onClick={ () => downloadPlaybook(id) }>
+            Download playbook
+            </DropdownItem>,
+            <DropdownItem key='archive'
+                onClick={ () => console.log('ARCHIVING PLAYBOOK') }>
+            Archive
+            </DropdownItem>
+        ]
+    }
+
     selector.register(rows);
     const selectedIds = selector.getSelectedIds();
 
@@ -173,149 +202,92 @@ function RemediationTable (props) {
         })).then(callback);
     };
 
-    const actionResolver = (rowData, { rowIndex }) => {
-        const current = value.data[rowIndex];
-
-        return [
-            {
-                title: 'Execute remedation',
-                isDisabled: !permission.isReceptorConfigured,
-                className: `${(!permission.hasSmartManagement || !permission.permissions.execute) && 'ins-m-not-entitled'}`,
-                onClick: (e) => {
-                    selector.reset();
-                    selector.props.onSelect(e, true, rowIndex);
-                    setExecuteOpen(false);
-                    actionWrapper([
-                        loadRemediation(current.id),
-                        getConnectionStatus(current.id)
-                    ], () => { setExecuteOpen(true); });
-                }
-            },
-            {
-                title: 'Download playbook',
-                onClick: () => downloadPlaybook(rowData.id)
-            },
-            {
-                title: 'Delete playbook',
-                isDisabled: !permission.permissions.write,
-                onClick: (e) => {
-                    selector.reset();
-                    selector.props.onSelect(e, true, rowIndex);
-                    setDialogOpen(true);
-                }
-            }
-        ];
-    };
-
     return (
-        <Card>
-            { dialogOpen &&
-                <ConfirmationDialog
-                    text={ `You will not be able to recover ${selectedIds.length > 1 ? 'these remediations' : 'this remediation'}` }
-                    onClose={ async (del) => {
-                        setDialogOpen(false);
-                        if (del) {
-                            await Promise.all(selectedIds.map(r => props.deleteRemediation(r)));
-                            loadRemediations();
-                            selector.reset();
-                        }
-                    } } />
-            }
-            { executeOpen &&
-                <ExecuteModal
-                    isOpen = { executeOpen }
-                    onClose = { () => { setShowRefreshMessage(false); setExecuteOpen(false); } }
-                    showRefresh = { showRefreshMessage }
-                    remediationId = { selectedRemediation.remediation.id }
-                    data = { connectionStatus.data }
-                    etag = { connectionStatus.etag }
-                    isLoading = { (connectionStatus.status !== 'fulfilled') }
-                    issueCount = { selectedRemediation.remediation.issues.length }
-                    remediationStatus = { runningRemediation.status }
-                    runRemediation = { (id, etag) => {
-                        dispatch(runRemediation(id, etag)).then(() => dispatch(getPlaybookRuns(id)));
-                    } }
-                    setEtag = { (etag) => { dispatch(setEtag(etag)); } }
-                />
-            }
-            <PrimaryToolbar
-                filterConfig={ {
-                    items: [{
-                        label: 'Search playbooks',
-                        type: 'text',
-                        filterValues: {
-                            id: 'filter-by-string',
-                            key: 'filter-by-string',
-                            placeholder: 'Search playbooks',
-                            value: filterText,
-                            onChange: (_e, value) => {
-                                setFilterText(value);
-                            },
-                            onSubmit: (_e, value) => {
-                                filter.setValue(value);
+        <Stack hasGutter>
+            <StackItem>
+                { dialogOpen &&
+                    <ConfirmationDialog
+                        text={ `You will not be able to recover ${selectedIds.length > 1 ? 'these remediations' : 'this remediation'}` }
+                        onClose={ async (del) => {
+                            setDialogOpen(false);
+                            if (del) {
+                                await Promise.all(selectedIds.map(r => props.deleteRemediation(r)));
+                                loadRemediations();
+                                selector.reset();
                             }
-                        }
-                    }]
-                } }
-                bulkSelect={ { items: [{ title: 'Select all',
-                    onClick: (e) => selector.props.onSelect(e, true, -1)
-                }],
-                checked: selectedIds.length && value.meta.total > selectedIds.length ? null : selectedIds.length,
-                count: selectedIds.length,
-                onSelect: (isSelected, e) => selector.props.onSelect(e, isSelected, -1) } }
-                actionsConfig={ { actions: [
-                    { label: 'Download playbooks', props: { variant: 'secondary', isDisabled: !selectedIds.length },
-                        onClick: () => downloadAll(selectedIds, value.data) },
-                    { label: 'Delete playbooks',
-                        props: { isDisabled: !permission.permissions.write || !selectedIds.length },
-                        onClick: () => setDialogOpen(true)
-                    }]} }
-                pagination={ { ...pagination.props, itemCount: value.meta.total } }
-            />
-            {
-                rows.length > 0 ?
-                    <Table
-                        variant={ TableVariant.compact }
-                        aria-label="Playbooks"
-                        canSelectAll={ false }
-                        cells={ [
-                            {
-                                title: 'Playbook',
-                                transforms: [ sortable ]
-                            }, {
-                                title: 'Systems',
-                                transforms: [ sortable ]
-                            }, {
-                                title: 'Actions',
-                                transforms: [ sortable ]
-                            }, {
-                                title: 'Last modified',
-                                transforms: [ sortable ]
-                            }]
-                        }
-                        rows={ rows }
-                        actionResolver={ actionResolver }
-                        { ...sorter.props }
-                        { ...selector.props }
-                    >
-                        <TableHeader/>
-                        <TableBody { ...selector.tbodyProps } />
-                    </Table> :
-                    <EmptyTable centered className='ins-c-remediations-table--empty'>No Playbooks found</EmptyTable>
-            }
-            {
-                rows.length > 0 &&
-                <TableToolbar isFooter>
-                    <Pagination
-                        variant='bottom'
-                        dropDirection='up'
-                        itemCount={ value.meta.total }
-                        { ...pagination.props }
-                        { ...debug.pagination }
+                        } } />
+                }
+                { executeOpen &&
+                    <ExecuteModal
+                        isOpen = { executeOpen }
+                        onClose = { () => { setShowRefreshMessage(false); setExecuteOpen(false); } }
+                        showRefresh = { showRefreshMessage }
+                        remediationId = { selectedRemediation.remediation.id }
+                        data = { connectionStatus.data }
+                        etag = { connectionStatus.etag }
+                        isLoading = { (connectionStatus.status !== 'fulfilled') }
+                        issueCount = { selectedRemediation.remediation.issues.length }
+                        remediationStatus = { runningRemediation.status }
+                        runRemediation = { (id, etag) => {
+                            dispatch(runRemediation(id, etag)).then(() => dispatch(getPlaybookRuns(id)));
+                        } }
+                        setEtag = { (etag) => { dispatch(setEtag(etag)); } }
                     />
-                </TableToolbar>
-            }
-        </Card>
+                }
+                <PrimaryToolbar
+                    filterConfig={ { items: [{ label: 'Search playbooks', placeholder: 'Search playbooks' }]} }
+                    bulkSelect={ { items: [{ title: 'Select all',
+                        onClick: (e) => selector.props.onSelect(e, true, -1)
+                    }],
+                    checked: selectedIds.length && value.meta.total > selectedIds.length ? null : selectedIds.length,
+                    count: selectedIds.length,
+                    onSelect: (isSelected, e) => selector.props.onSelect(e, isSelected, -1) } }
+                    actionsConfig={ { actions: [
+                        { label: 'Download playbooks', props: { variant: 'secondary', isDisabled: !selectedIds.length,
+                            onClick: () => downloadAll(selectedIds, value.data) }},
+                        { label: 'Delete playbooks',
+                            props: { isDisabled: !permission.permissions.write || !selectedIds.length },
+                            onClick: () => setDialogOpen(true)
+                        }]} }
+                    pagination={ { ...pagination.props, itemCount: value.meta.total } }
+                />
+            </StackItem>
+            <StackItem>
+                <Grid sm={ 12 } md={ 6 } lg={ 4 } hasGutter>
+                    { value.data.map(remediation => {
+                        return (
+                            <GridItem>
+                                <Card classname='ins-c-playbook-card'>
+                                    <CardHeader>
+                                        <CardActions>
+                                            <Dropdown
+                                                onSelect={console.log('selected dropdown')}
+                                                toggle={<KebabToggle onToggle={console.log('selected toggle?')} />}
+                                                isOpen={false}
+                                                isPlain
+                                                dropdownItems={dropdownItems(remediation.id)}
+                                                position={'right'}
+                                            />
+                                            <input
+                                                type="checkbox" 
+                                                isChecked={console.log('selected checkbox')}
+                                                onChange={console.log('changing textbox?')}
+                                                aria-label="card checkbox example"
+                                                id="check-3"
+                                                name="check3"
+                                            />
+                                        </CardActions>
+                                    <CardTitle>{buildName(remediation.name, remediation.id)}</CardTitle>
+                                    </CardHeader>
+                                    <CardBody>Last modified: <DateFormat date={ remediation.updated_at } /></CardBody>
+                                    <CardFooter>Footer</CardFooter>
+                                </Card>
+                            </GridItem>
+                        );
+                    })}
+                </Grid>
+            </StackItem>
+        </Stack>
     );
 }
 
