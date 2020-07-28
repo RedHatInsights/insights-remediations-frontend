@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-    CheckCircleIcon, ExclamationCircleIcon, TimesCircleIcon, InProgressIcon
+    CheckCircleIcon, ExclamationCircleIcon, TimesCircleIcon, InProgressIcon, SyncIcon
 } from '@patternfly/react-icons';
 import {
     Button, Flex, FlexItem, TextContent, Text, TextVariants, Tooltip
@@ -133,6 +133,15 @@ export const styledConnectionStatus = (status, err) => ({
                 Ready
             </Text>
         </TextContent>),
+    available: (
+        <TextContent>
+            <Text component={ TextVariants.p }>
+                <CheckCircleIcon
+                    className="ins-c-remediations-reboot-check-circle ins-c-remediations-connection-status"
+                    aria-label="connection status" />
+                Ready
+            </Text>
+        </TextContent>),
     disconnected: (
         <TextContent>
             <Text component={ TextVariants.p }>
@@ -223,6 +232,15 @@ export const styledConnectionStatus = (status, err) => ({
                     href='https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights'>
                     Learn how to configure
                 </Button>
+            </Text>
+        </TextContent>),
+    loading: (
+        <TextContent>
+            <Text component={ TextVariants.small }>
+                <SyncIcon
+                    className="ins-c-remediations-connection-status"
+                    aria-label="connection status" />
+                Checking
             </Text>
         </TextContent>)
 })[status];

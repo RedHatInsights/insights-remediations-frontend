@@ -74,13 +74,13 @@ export const ExecuteModal = ({
         setDisconnected(dis);
     }, [ sources ]);
 
-    const rows = [...connected, ...disconnected].map(con =>
+    const rows = [ ...connected, ...disconnected ].map(con =>
         ({
             cells: [
                 {
                     title: con.executor_name
-                        ? <Tooltip content={`${con.executor_name}`}>
-                            <span>{con.executor_name.length > 25 ? `${con.executor_name.slice(0, 22)}...` : con.executor_name}</span>
+                        ? <Tooltip content={ `${con.executor_name}` }>
+                            <span>{ con.executor_name.length > 25 ? `${con.executor_name.slice(0, 22)}...` : con.executor_name }</span>
                         </Tooltip>
                         : 'Direct connection'
 
@@ -114,7 +114,7 @@ export const ExecuteModal = ({
                     key="confirm"
                     variant="primary"
                     isDisabled={ connected.length === 0 }
-                    onClick={() => { runRemediation(remediationId, etag, disconnected.map(e => e.executor_id).filter(e => e)); } }>
+                    onClick={ () => { runRemediation(remediationId, etag, disconnected.map(e => e.executor_id).filter(e => e)); } }>
                     { isLoading ? 'Execute playbook' : `Execute playbook on ${pluralize(connectedCount, 'system')}` }
                 </Button>,
                 <Button
