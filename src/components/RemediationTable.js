@@ -4,15 +4,15 @@ import PropTypes from 'prop-types';
 
 import { Link } from 'react-router-dom';
 import {
-    Bullseye, Card, CardHeader, CardActions, CardBody, CardFooter, CardTitle,
+    Bullseye, Card, CardHeader, CardActions, CardBody, CardTitle,
     EmptyState, EmptyStateIcon, EmptyStateBody,
     Dropdown, Grid, GridItem, KebabToggle,
-    Pagination, Stack,
+    Progress, ProgressMeasureLocation, ProgressVariant, Stack, Split,
     Title, Button,
-    ToolbarItem, ToolbarGroup, StackItem, DropdownItem, DropdownToggleAction
+    ToolbarItem, ToolbarGroup, StackItem, DropdownItem, SplitItem
 } from '@patternfly/react-core';
-import { sortable, Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
-import { EmptyTable, SimpleTableFilter, Skeleton, TableToolbar, DateFormat } from '@redhat-cloud-services/frontend-components';
+import { CheckCircleIcon } from '@patternfly/react-icons';
+import { SimpleTableFilter, Skeleton, TableToolbar, DateFormat } from '@redhat-cloud-services/frontend-components';
 import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/components/PrimaryToolbar';
 import { WrenchIcon } from '@patternfly/react-icons';
 
@@ -21,7 +21,6 @@ import ConfirmationDialog from './ConfirmationDialog';
 
 import SkeletonTable from '../skeletons/SkeletonTable';
 import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
-import * as debug from '../Utilities/debug';
 import keyBy from 'lodash/keyBy';
 
 import { downloadPlaybook } from '../api';
@@ -111,8 +110,6 @@ function RemediationTable (props) {
 
     const { value, status } = props;
 
-    console.log('VALUE: ', value);
-
     const sorter = useSorter(4, 'desc');
     const filter = useFilter();
     const selector = useSelector();
@@ -121,7 +118,8 @@ function RemediationTable (props) {
     const [ dialogOpen, setDialogOpen ] = useState(false);
     const [ executeOpen, setExecuteOpen ] = useState(false);
     const [ showRefreshMessage, setShowRefreshMessage ] = useState(false);
-    const [ filterText, setFilterText ] = useState('');
+    const [ actionsOpen, setActionsOpen ] = useState(false);
+    const [ showArchived, setShowArchived ] = useState(false);
     const selectedRemediation = reduxSelector(state => state.selectedRemediation);
     const connectionStatus = reduxSelector(state => state.connectionStatus);
     const runningRemediation = reduxSelector(state => state.runRemediation);
@@ -155,30 +153,38 @@ function RemediationTable (props) {
     filter.onChange(pagination.reset);
     sorter.onChange(pagination.reset);
 
-    const rows = value.data.map(remediation => ({
+    const cards = value.data.map(remediation => ({
         id: remediation.id,
-        cells: [
-            buildName(remediation.name, remediation.id),
-            remediation.system_count,
-            remediation.issue_count,
-            { title: <DateFormat date={ remediation.updated_at } /> }
-        ]
+        archived: false,
+        // cells: [
+        //     buildName(remediation.name, remediation.id),
+        //     remediation.system_count,
+        //     remediation.issue_count,
+        //     { title: <DateFormat date={ remediation.updated_at } /> }
+        // ]
     }));
 
-    function dropdownItems (id) {
+    const actionWrapper = (actionsList, callback) => {
+        Promise.all(actionsList.map((event) => {
+            dispatch(event);
+            return event.payload;
+        })).then(callback);
+    };
+
+    const dropdownItems = (id) => {
         return [
             <DropdownItem key='execute'
-                isDisabled= {!permission.isReceptorConfigured}
-                className= {`${(!permission.hasSmartManagement || !permission.permissions.execute) && 'ins-m-not-entitled'}`}
+                isDisabled= { !permission.isReceptorConfigured }
+                className= { `${(!permission.hasSmartManagement || !permission.permissions.execute) && 'ins-m-not-entitled'}` }
                 onClick={ (e) => {
-                        selector.reset();
-                        //selector.props.onSelect(e, true, rowIndex);
-                        setExecuteOpen(false);
-                        actionWrapper([
-                            loadRemediation(id),
-                            getConnectionStatus(id)
-                        ], () => { setExecuteOpen(true); });
-                }}>
+                    selector.reset();
+                    selector.props.onSelect(e, true, id);
+                    setExecuteOpen(false);
+                    actionWrapper([
+                        loadRemediation(id),
+                        getConnectionStatus(id)
+                    ], () => { setExecuteOpen(true); });
+                } }>
             Execute playbook
             </DropdownItem>,
             <DropdownItem key='download'
@@ -189,17 +195,35 @@ function RemediationTable (props) {
                 onClick={ () => console.log('ARCHIVING PLAYBOOK') }>
             Archive
             </DropdownItem>
-        ]
-    }
+        ];
+    };
 
-    selector.register(rows);
+    selector.register(cards);
     const selectedIds = selector.getSelectedIds();
 
-    const actionWrapper = (actionsList, callback) => {
-        Promise.all(actionsList.map((event) => {
-            dispatch(event);
-            return event.payload;
-        })).then(callback);
+    console.log(selectedIds);
+
+    const handleActionToggle = () => {
+        actionsOpen ? setActionsOpen(false) : setActionsOpen(true)
+    }
+
+    const renderActionStatus = (complete, total) => {
+        return (complete === total
+            ? <div><CheckCircleIcon className='ins-c-remediations-success'/> { complete } of { total }</div>
+            : `${complete} of ${total}`
+        );
+    };
+
+    const renderProgress = (complete, total) => {
+        return (complete === total
+            ? <Progress className='ins-c-progress'
+                value={ 100 }
+                measureLocation={ ProgressMeasureLocation.none }
+                variant={ ProgressVariant.success }/>
+            : <Progress className='ins-c-progress'
+                value={ (complete / total * 10) }
+                measureLocation={ ProgressMeasureLocation.none }/>
+        );
     };
 
     return (
@@ -256,35 +280,67 @@ function RemediationTable (props) {
                 <Grid sm={ 12 } md={ 6 } lg={ 4 } hasGutter>
                     { value.data.map(remediation => {
                         return (
-                            <GridItem>
-                                <Card classname='ins-c-playbook-card'>
+                            <GridItem key={ remediation.id }>
+                                <Card className='ins-c-playbook-card' isCompact>
                                     <CardHeader>
                                         <CardActions>
                                             <Dropdown
-                                                onSelect={console.log('selected dropdown')}
-                                                toggle={<KebabToggle onToggle={console.log('selected toggle?')} />}
-                                                isOpen={false}
+                                                onSelect={ () => {if (actionsOpen) {setActionsOpen(false)}} }
+                                                toggle={ <KebabToggle onToggle={ () =>
+                                                    handleActionToggle() }/> }
+                                                isOpen={ actionsOpen }
                                                 isPlain
-                                                dropdownItems={dropdownItems(remediation.id)}
-                                                position={'right'}
+                                                dropdownItems={ dropdownItems(remediation.id) }
+                                                position={ 'right' }
                                             />
                                             <input
-                                                type="checkbox" 
-                                                isChecked={console.log('selected checkbox')}
-                                                onChange={console.log('changing textbox?')}
+                                                type="checkbox"
+                                                isChecked={ console.log('selected checkbox') }
+                                                onChange={ console.log('changing textbox?') }
                                                 aria-label="card checkbox example"
                                                 id="check-3"
-                                                name="check3"
                                             />
                                         </CardActions>
-                                    <CardTitle>{buildName(remediation.name, remediation.id)}</CardTitle>
+                                        <CardTitle>
+                                            <Stack>
+                                                <StackItem className='ins-c-playbook-title'>
+                                                    { buildName(remediation.name, remediation.id) }
+                                                </StackItem>
+                                                <StackItem className='ins-c-playbook-last-modified'>
+                                                Last modified: <DateFormat date={ remediation.updated_at } />
+                                                </StackItem>
+                                            </Stack>
+                                        </CardTitle>
                                     </CardHeader>
-                                    <CardBody>Last modified: <DateFormat date={ remediation.updated_at } /></CardBody>
-                                    <CardFooter>Footer</CardFooter>
+                                    <CardBody className='ins-c-playbook-body'>
+                                        <Split hasGutter className='ins-c-playbook-split'>
+                                            <SplitItem>
+                                                <Stack>
+                                                    <StackItem className='ins-c-playbook-body'>
+                                                    Systems
+                                                    </StackItem>
+                                                    <StackItem className='ins-c-playbook-body-values'>
+                                                        { remediation.system_count }
+                                                    </StackItem>
+                                                </Stack>
+                                            </SplitItem>
+                                            <SplitItem>
+                                                <Stack>
+                                                    <StackItem className='ins-c-playbook-body'>
+                                                    Complete actions
+                                                    </StackItem>
+                                                    <StackItem className='ins-c-playbook-body-values'>
+                                                        { renderActionStatus(remediation.resolved_count, remediation.issue_count) }
+                                                    </StackItem>
+                                                </Stack>
+                                            </SplitItem>
+                                        </Split>
+                                    </CardBody>
+                                    { renderProgress(remediation.resolved_count, remediation.issue_count) }
                                 </Card>
                             </GridItem>
                         );
-                    })}
+                    }) }
                 </Grid>
             </StackItem>
         </Stack>

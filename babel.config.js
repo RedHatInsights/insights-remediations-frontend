@@ -8,7 +8,9 @@ const mapper = {
     EmptyStateVariant: 'EmptyState',
     TextListItemVariants: 'TextListItem',
     TextListVariants: 'TextList',
-    ModalVariant: 'Modal'
+    ModalVariant: 'Modal',
+    ProgressVariant: 'ProgressContainer',
+    ProgressMeasureLocation: 'ProgressContainer'
 };
 
 const FECMapper = {

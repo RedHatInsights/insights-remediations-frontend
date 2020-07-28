@@ -33,4 +33,41 @@
 
 .ins-c-playbook-card {
     height: 100%;
+    word-wrap: anywhere;
+}
+
+.ins-c-playbook-title {
+    font-weight: normal;
+    font-size: large;
+}
+
+.ins-c-playbook-last-modified {
+    font-weight: normal;
+    font-size: small;
+}
+
+.ins-c-playbook-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.ins-c-playbook-body-values {
+    font-weight: bold;
+    font-size: large;
+}
+
+.ins-c-remediations-success { color: var(--pf-global--success-color--100); }
+
+.ins-c-playbook-split {
+    --pf-l-split--m-gutter--MarginRight: var(--pf-global--spacer--2xl);
+    margin-top: 12px;
+}
+
+.ins-c-progress {
+    display: block;
+    --pf-c-progress__bar--before--BackgroundColor: var(--pf-global--BackgroundColor--dark-100);
+    .pf-c-progress__status-icon {
+        display: none
+    }
 }
