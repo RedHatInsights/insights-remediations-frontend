@@ -106,6 +106,29 @@ function downloadAll (selectedIds, data) {
 
 const SORTING_ITERATEES = [ null, 'name', 'system_count', 'issue_count', 'updated_at' ];
 
+const PlaybookActions = ({
+    remediation,
+    dropdownItems
+}) => {
+    const [ isOpen, setIsOpen ] = useState(false);
+
+    return (
+        <Dropdown
+            key='dropdown'
+            id={`${remediation.id}-dropdown`}
+            isOpen={ isOpen }
+            isPlain
+            onSelect={ f => f }
+            toggle={
+                <KebabToggle
+                    id={`${remediation.id}-toggle`}
+                    onToggle={ (isOpen) => setIsOpen(isOpen) }/> }
+            dropdownItems={ dropdownItems(remediation.id) }
+            position={ 'right' }
+        />
+    )
+}
+
 function RemediationTable (props) {
 
     const { value, status } = props;
@@ -289,18 +312,9 @@ function RemediationTable (props) {
                                 <Card className='ins-c-playbook-card' isCompact>
                                     <CardHeader>
                                         <CardActions>
-                                            <Dropdown
-                                                key='dropdown'
-                                                id={`${remediation.id}-dropdown`}
-                                                isOpen={ actionsOpen }
-                                                isPlain
-                                                onSelect={ f => f }
-                                                toggle={
-                                                    <KebabToggle
-                                                        id={`${remediation.id}-toggle`}
-                                                        onToggle={ () => {console.log('TOGGLED'); handleActionToggle()} }/> }
-                                                dropdownItems={ dropdownItems(remediation.id) }
-                                                position={ 'right' }
+                                            <PlaybookActions
+                                                remediation={ remediation }
+                                                dropdownItems= { dropdownItems }
                                             />
                                             <input
                                                 type="checkbox"
