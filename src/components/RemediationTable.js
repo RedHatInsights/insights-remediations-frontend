@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState, useRef } from 'react';
 import { useDispatch, useSelector as reduxSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -110,6 +110,8 @@ function RemediationTable (props) {
 
     const { value, status } = props;
 
+    console.log('VALUE: ', value);
+
     const sorter = useSorter(4, 'desc');
     const filter = useFilter();
     const selector = useSelector();
@@ -123,6 +125,7 @@ function RemediationTable (props) {
     const selectedRemediation = reduxSelector(state => state.selectedRemediation);
     const connectionStatus = reduxSelector(state => state.connectionStatus);
     const runningRemediation = reduxSelector(state => state.runRemediation);
+    const toggled = useRef();
     const dispatch = useDispatch();
 
     function loadRemediations () {
@@ -153,15 +156,15 @@ function RemediationTable (props) {
     filter.onChange(pagination.reset);
     sorter.onChange(pagination.reset);
 
-    const cards = value.data.map(remediation => ({
+    const rows = value.data.map(remediation => ({
         id: remediation.id,
         archived: false,
-        // cells: [
-        //     buildName(remediation.name, remediation.id),
-        //     remediation.system_count,
-        //     remediation.issue_count,
-        //     { title: <DateFormat date={ remediation.updated_at } /> }
-        // ]
+        cells: [
+            buildName(remediation.name, remediation.id),
+            remediation.system_count,
+            remediation.issue_count,
+            { title: <DateFormat date={ remediation.updated_at } /> }
+        ]
     }));
 
     const actionWrapper = (actionsList, callback) => {
@@ -173,17 +176,20 @@ function RemediationTable (props) {
 
     const dropdownItems = (id) => {
         return [
-            <DropdownItem key='execute'
+            <DropdownItem
+                key='execute'
+                id='execute'
                 isDisabled= { !permission.isReceptorConfigured }
                 className= { `${(!permission.hasSmartManagement || !permission.permissions.execute) && 'ins-m-not-entitled'}` }
                 onClick={ (e) => {
+                    console.log('EXECUTING NOW');
                     selector.reset();
-                    selector.props.onSelect(e, true, id);
+                    //selector.props.onSelect(e, true, id);
                     setExecuteOpen(false);
                     actionWrapper([
                         loadRemediation(id),
                         getConnectionStatus(id)
-                    ], () => { setExecuteOpen(true); });
+                    ], () => { setExecuteOpen(true); setActionsOpen(false)});
                 } }>
             Execute playbook
             </DropdownItem>,
@@ -198,13 +204,12 @@ function RemediationTable (props) {
         ];
     };
 
-    selector.register(cards);
+    selector.register(rows);
     const selectedIds = selector.getSelectedIds();
 
-    console.log(selectedIds);
-
-    const handleActionToggle = () => {
-        actionsOpen ? setActionsOpen(false) : setActionsOpen(true)
+    const handleActionToggle = (toggled) => {
+        executeOpen ? setActionsOpen(false) : setActionsOpen(true)
+        console.log('ACTIONS OPEN AFTER TOGGLE HANDLE?: ', actionsOpen);
     }
 
     const renderActionStatus = (complete, total) => {
@@ -285,11 +290,15 @@ function RemediationTable (props) {
                                     <CardHeader>
                                         <CardActions>
                                             <Dropdown
-                                                onSelect={ () => {if (actionsOpen) {setActionsOpen(false)}} }
-                                                toggle={ <KebabToggle onToggle={ () =>
-                                                    handleActionToggle() }/> }
+                                                key='dropdown'
+                                                id={`${remediation.id}-dropdown`}
                                                 isOpen={ actionsOpen }
                                                 isPlain
+                                                onSelect={ f => f }
+                                                toggle={
+                                                    <KebabToggle
+                                                        id={`${remediation.id}-toggle`}
+                                                        onToggle={ () => {console.log('TOGGLED'); handleActionToggle()} }/> }
                                                 dropdownItems={ dropdownItems(remediation.id) }
                                                 position={ 'right' }
                                             />
