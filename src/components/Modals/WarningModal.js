@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Button, Title } from '@patternfly/react-core';
+import { Modal, ModalVariant, Button, Title } from '@patternfly/react-core';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import './WarningModal.scss';
 
@@ -12,7 +12,7 @@ export const WarningModal = ({ isOpen, onModalCancel, onConfirmCancel }) => (
         </Title> }
         title='Cancel remediation process'
         hideTitle
-        isSmall
+        variant={ ModalVariant.small }
         className='ins-c-modal__cancel-run-warning'
         isOpen={ isOpen }
         onClose={ onModalCancel }
