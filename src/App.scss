@@ -6,3 +6,9 @@
 .pf-c-form__helper-text.pf-m-error {
     color: var(--pf-global--danger-color--100);
 }
+
+.ins-c-dialog {
+    .pf-c-modal-box__title {
+        display: block;
+    }
+}

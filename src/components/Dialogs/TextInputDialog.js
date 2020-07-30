@@ -5,7 +5,8 @@ import {
     Button,
     FormGroup,
     Modal,
-    TextInput
+    TextInput,
+    ModalVariant
 } from '@patternfly/react-core';
 
 export default function TextInputDialog (props) {
@@ -34,7 +35,7 @@ export default function TextInputDialog (props) {
                     Save
                 </Button>
             ] }
-            isSmall
+            variant={ ModalVariant.small }
             className = { className }
         >
             <FormGroup
