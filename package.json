@@ -14,6 +14,7 @@
     "@redhat-cloud-services/frontend-components-remediations": "2.1.0-beta2",
     "@redhat-cloud-services/frontend-components-utilities": "2.1.0-beta",
     "@redhat-cloud-services/remediations-client": "^1.0.65",
+    "@redhat-cloud-services/sources-client": "^1.0.68",
     "awesome-debounce-promise": "2.1.0",
     "axios": "^0.18.1",
     "babel-polyfill": "^6.26.0",

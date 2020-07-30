@@ -5,11 +5,11 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
   actions={
     Array [
       <Button
-        isDisabled={false}
+        isDisabled={true}
         onClick={[Function]}
         variant="primary"
       >
-        Execute playbook on 1 system
+        Execute playbook on 0 system
       </Button>,
       <Button
         onClick={[Function]}
@@ -87,62 +87,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       ouiaSafe={true}
       role="grid"
       rowLabeledBy="simple-node"
-      rows={
-        Array [
-          Object {
-            "cells": Array [
-              Object {
-                "title": <Tooltip
-                  appendTo={[Function]}
-                  aria="describedby"
-                  boundary="window"
-                  className=""
-                  content="Satellite 1 (connected)"
-                  distance={15}
-                  enableFlip={true}
-                  entryDelay={500}
-                  exitDelay={500}
-                  flipBehavior={
-                    Array [
-                      "top",
-                      "right",
-                      "bottom",
-                      "left",
-                      "top",
-                      "right",
-                      "bottom",
-                    ]
-                  }
-                  id=""
-                  isAppLauncher={false}
-                  isContentLeftAligned={false}
-                  isVisible={false}
-                  maxWidth="18.75rem"
-                  position="top"
-                  tippyProps={Object {}}
-                  trigger="mouseenter focus"
-                  zIndex={9999}
-                >
-                  <span>
-                    Satellite 1 (connected)
-                  </span>
-                </Tooltip>,
-              },
-              1,
-              false,
-            ],
-          },
-          Object {
-            "cells": Array [
-              Object {
-                "title": "Direct connection",
-              },
-              4,
-              false,
-            ],
-          },
-        ]
-      }
+      rows={Array []}
       variant="compact"
     >
       <TableHeader />
@@ -157,11 +102,11 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
   actions={
     Array [
       <Button
-        isDisabled={false}
+        isDisabled={true}
         onClick={[Function]}
         variant="primary"
       >
-        Execute playbook on 1 system
+        Execute playbook on 0 system
       </Button>,
       <Button
         onClick={[Function]}
@@ -244,62 +189,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       ouiaSafe={true}
       role="grid"
       rowLabeledBy="simple-node"
-      rows={
-        Array [
-          Object {
-            "cells": Array [
-              Object {
-                "title": <Tooltip
-                  appendTo={[Function]}
-                  aria="describedby"
-                  boundary="window"
-                  className=""
-                  content="Satellite 1 (connected)"
-                  distance={15}
-                  enableFlip={true}
-                  entryDelay={500}
-                  exitDelay={500}
-                  flipBehavior={
-                    Array [
-                      "top",
-                      "right",
-                      "bottom",
-                      "left",
-                      "top",
-                      "right",
-                      "bottom",
-                    ]
-                  }
-                  id=""
-                  isAppLauncher={false}
-                  isContentLeftAligned={false}
-                  isVisible={false}
-                  maxWidth="18.75rem"
-                  position="top"
-                  tippyProps={Object {}}
-                  trigger="mouseenter focus"
-                  zIndex={9999}
-                >
-                  <span>
-                    Satellite 1 (connected)
-                  </span>
-                </Tooltip>,
-              },
-              1,
-              false,
-            ],
-          },
-          Object {
-            "cells": Array [
-              Object {
-                "title": "Direct connection",
-              },
-              4,
-              false,
-            ],
-          },
-        ]
-      }
+      rows={Array []}
       variant="compact"
     >
       <TableHeader />

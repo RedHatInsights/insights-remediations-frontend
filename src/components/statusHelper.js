@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-    CheckCircleIcon, ExclamationCircleIcon, TimesCircleIcon, InProgressIcon
+    CheckCircleIcon, ExclamationCircleIcon, TimesCircleIcon, InProgressIcon, SyncIcon
 } from '@patternfly/react-icons';
 import {
     Button, Flex, FlexItem, TextContent, Text, TextVariants, Tooltip
@@ -123,8 +123,17 @@ export const StatusSummary = ({ executorStatus, permission, hasCancel, counts, r
     return statusBar;
 };
 
-export const styledConnectionStatus = (status) => ({
+export const styledConnectionStatus = (status, err) => ({
     connected: (
+        <TextContent>
+            <Text component={ TextVariants.p }>
+                <CheckCircleIcon
+                    className="ins-c-remediations-reboot-check-circle ins-c-remediations-connection-status"
+                    aria-label="connection status" />
+                Ready
+            </Text>
+        </TextContent>),
+    available: (
         <TextContent>
             <Text component={ TextVariants.p }>
                 <CheckCircleIcon
@@ -147,6 +156,25 @@ export const styledConnectionStatus = (status) => ({
                     variant='link' onClick={ () => console.log('TODO: add link') }>
                     Troubleshoot
                 </Button> */ }
+            </Text>
+        </TextContent>),
+    unavailable: (
+        <TextContent>
+            <Text component={ TextVariants.p }>
+                <ExclamationCircleIcon
+                    className="ins-c-remediations-failure ins-c-remediations-connection-status"
+                    aria-label="connection status" />
+                Connection issue
+                <Text component={ TextVariants.small } style={ { margin: '0px' } }>
+                    { err ? err : 'Receptor not responding' }
+                </Text>
+                <Button
+                    style={ { padding: '0px' } }
+                    key="troubleshoot"
+                    // eslint-disable-next-line no-console
+                    variant='link' onClick={ () => console.log('TODO: add link') }>
+                    Troubleshoot
+                </Button>
             </Text>
         </TextContent>),
     // eslint-disable-next-line camelcase
@@ -204,6 +232,15 @@ export const styledConnectionStatus = (status) => ({
                     href='https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights'>
                     Learn how to configure
                 </Button>
+            </Text>
+        </TextContent>),
+    loading: (
+        <TextContent>
+            <Text component={ TextVariants.small }>
+                <SyncIcon
+                    className="ins-c-remediations-connection-status"
+                    aria-label="connection status" />
+                Checking
             </Text>
         </TextContent>)
 })[status];
