@@ -119,6 +119,7 @@ function RemediationTable (props) {
     const [ dialogOpen, setDialogOpen ] = useState(false);
     const [ executeOpen, setExecuteOpen ] = useState(false);
     const [ showRefreshMessage, setShowRefreshMessage ] = useState(false);
+    const [ filterText, setFilterText ] = useState('');
     const selectedRemediation = reduxSelector(state => state.selectedRemediation);
     const connectionStatus = reduxSelector(state => state.connectionStatus);
     const runningRemediation = reduxSelector(state => state.runRemediation);
@@ -238,7 +239,24 @@ function RemediationTable (props) {
                 />
             }
             <PrimaryToolbar
-                filterConfig={ { items: [{ label: 'Search playbooks', placeholder: 'Search playbooks' }]} }
+                filterConfig={ {
+                    items: [{
+                        label: 'Search playbooks',
+                        type: 'text',
+                        filterValues: {
+                            id: 'filter-by-string',
+                            key: 'filter-by-string',
+                            placeholder: 'Search playbooks',
+                            value: filterText,
+                            onChange: (_e, value) => {
+                                setFilterText(value);
+                            },
+                            onSubmit: (_e, value) => {
+                                filter.setValue(value);
+                            }
+                        }
+                    }]
+                } }
                 bulkSelect={ { items: [{ title: 'Select all',
                     onClick: (e) => selector.props.onSelect(e, true, -1)
                 }],
