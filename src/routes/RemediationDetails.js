@@ -32,7 +32,7 @@ import {
     Breadcrumb, BreadcrumbItem,
     Button,
     Split, SplitItem,
-    Flex, FlexItem, FlexModifiers,
+    Flex, FlexItem,
     Tabs, Tab,
     Title
 } from '@patternfly/react-core';
@@ -60,7 +60,12 @@ const RemediationDetails = ({
 }) => {
 
     const id = match.params.id;
-    const [ upsellBannerVisible, setUpsellBannerVisible ] = useState(true);
+    const [ upsellBannerVisible, setUpsellBannerVisible ] = useState(
+        localStorage.getItem('remediations:bannerStatus') !== 'dismissed'
+    );
+    const [ noReceptorBannerVisible, setNoReceptorBannerVisible ] = useState(
+        localStorage.getItem('remediations:receptorBannerStatus') !== 'dismissed'
+    );
     const [ activeTabKey, setActiveTabKey ] = useState(location.search.includes('?activity') ? 1 : 0);
 
     const context = useContext(PermissionContext);
@@ -71,6 +76,12 @@ const RemediationDetails = ({
 
     const handleUpsellToggle = () => {
         setUpsellBannerVisible(false);
+        localStorage.setItem('remediations:bannerStatus', 'dismissed');
+    };
+
+    const handleNoReceptorToggle = () => {
+        setNoReceptorBannerVisible(false);
+        localStorage.setItem('remediations:receptorBannerStatus', 'dismissed');
     };
 
     const handleTabClick = (event, tabIndex) => {
@@ -122,7 +133,7 @@ const RemediationDetails = ({
     const renderLatestActivity = (playbookRuns) => {
         if (playbookRuns.length) {
             const mostRecent = playbookRuns[0];
-            return <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+            return <FlexItem spacer={ { default: 'spacer-xl' } }>
                 <DescriptionList
                     needsPointer
                     className='ins-c-latest-activity'
@@ -191,11 +202,11 @@ const RemediationDetails = ({
                             <PageHeaderTitle title={ remediation.name }/>
                         </LevelItem>
                         <LevelItem>
-                            <Split gutter="md">
-                                { context.hasSmartManagement && context.permissions.execute &&
+                            <Split hasGutter>
+                                { context.hasSmartManagement &&
                                     <SplitItem>
                                         <ExecutePlaybookButton
-                                            isDisabled={ !context.isReceptorConfigured }
+                                            isDisabled={ !context.isReceptorConfigured || !context.permissions.execute }
                                             remediationId={ remediation.id }>
                                         </ExecutePlaybookButton>
                                     </SplitItem>
@@ -215,15 +226,15 @@ const RemediationDetails = ({
                     </Level>
                 </PageHeader>
                 <Main>
-                    <Stack gutter="md">
+                    <Stack hasGutter>
                         { !context.hasSmartManagement && upsellBannerVisible &&
                             <StackItem>
                                 <UpsellBanner onClose={ () => handleUpsellToggle() }/>
                             </StackItem>
                         }
-                        { context.hasSmartManagement && !context.isReceptorConfigured &&
+                        { context.hasSmartManagement && !context.isReceptorConfigured && noReceptorBannerVisible &&
                             <StackItem>
-                                <NoReceptorBanner/>
+                                <NoReceptorBanner onClose={ () => handleNoReceptorToggle() }/>
                             </StackItem>
                         }
                         <StackItem>
@@ -232,9 +243,9 @@ const RemediationDetails = ({
                                     <Title headingLevel="h4" size="xl">Playbook summary</Title>
                                 </CardHeader>
                                 <CardBody>
-                                    <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
+                                    <Flex className='ins-c-playbookSummary' direction={ { default: 'column' } }>
                                         <Flex className='ins-c-playbookSummary__overview'>
-                                            <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                            <FlexItem spacer={ { default: 'spacer-xl' } }>
                                                 <DescriptionList
                                                     isBold
                                                     title='Total systems'>
@@ -257,7 +268,7 @@ const RemediationDetails = ({
                                                         },
                                                         { 'ins-c-reboot-status__disabled': !remediation.auto_reboot }
                                                     ) }
-                                                    breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                                    spacer={ { default: 'spacer-xl' } }>
                                                     Auto reboot:&nbsp;
                                                     <b>
                                                         { generateAutoRebootStatus(

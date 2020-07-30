@@ -6,7 +6,7 @@ import { DateFormat } from '@redhat-cloud-services/frontend-components';
 
 import {
     Popover, PopoverPosition,
-    Flex, FlexItem, FlexModifiers
+    Flex, FlexItem
 } from '@patternfly/react-core';
 
 import { normalizeStatus, StatusSummary } from '../statusHelper';
@@ -19,7 +19,7 @@ export const LatestActivityPopover = ({ mostRecent, children }) => {
             position={ PopoverPosition.bottom }
             headerContent={ <div>Latest Activity</div> }
             bodyContent={
-                <Flex breakpointMods={ [{ modifier: FlexModifiers.column }] }>
+                <Flex direction={ { default: 'column', sm: 'row' } }>
                     <Flex>
                         <FlexItem>
                             <DescriptionList

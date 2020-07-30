@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`UpsellBanner component should render 1`] = `
-<Component
-  action={
-    <AlertActionCloseButton
+<Alert
+  actionClose={
+    <Unknown
       onClose={[Function]}
     />
   }
@@ -12,7 +12,7 @@ exports[`UpsellBanner component should render 1`] = `
   variant="info"
 >
   <Stack
-    gutter="md"
+    hasGutter={true}
   >
     <StackItem>
       Enable push-button remediation across your hybrid cloud environment with Red Hat Smart Management.
@@ -25,5 +25,5 @@ exports[`UpsellBanner component should render 1`] = `
       </a>
     </StackItem>
   </Stack>
-</Component>
+</Alert>
 `;

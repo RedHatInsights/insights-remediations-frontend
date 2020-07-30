@@ -161,9 +161,9 @@ class TestButtons extends React.Component {
 
         return (
             <React.Fragment>
-                <Stack gutter='sm'>
+                <Stack hasGutter>
                     <StackItem>
-                        <Split gutter='sm'>
+                        <Split hasGutter>
                             {
                                 [ 'ping', 'alwaysFail', 'failHalfTheTime', 'pause1m', 'pause5m', 'pause15m', 'pauseRandom15m', 'pause1h', 'pause6h' ]
                                 .map(name =>
@@ -185,7 +185,7 @@ class TestButtons extends React.Component {
                     </StackItem>
 
                     <StackItem>
-                        <Split gutter='sm'>
+                        <Split hasGutter>
                             <RemediationBtn dataProvider={ this.dataProviderA1 }>A1</RemediationBtn>
                             <RemediationBtn dataProvider={ this.dataProviderA2 }>A2</RemediationBtn>
 
