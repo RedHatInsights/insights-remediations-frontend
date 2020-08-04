@@ -264,8 +264,8 @@ function RemediationTable (props) {
                 count: selectedIds.length,
                 onSelect: (isSelected, e) => selector.props.onSelect(e, isSelected, -1) } }
                 actionsConfig={ { actions: [
-                    { label: 'Download playbooks', props: { variant: 'secondary', isDisabled: !selectedIds.length,
-                        onClick: () => downloadAll(selectedIds, value.data) }},
+                    { label: 'Download playbooks', props: { variant: 'secondary', isDisabled: !selectedIds.length },
+                        onClick: () => downloadAll(selectedIds, value.data) },
                     { label: 'Delete playbooks',
                         props: { isDisabled: !permission.permissions.write || !selectedIds.length },
                         onClick: () => setDialogOpen(true)
