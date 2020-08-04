@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
 import React from 'react';
 import { mount } from 'enzyme';
-import ExecuteButton from './ExecuteButton';
+import ExecuteButton from '../ExecuteButton';
 import toJson from 'enzyme-to-json';
-import * as api from '../api';
+import * as api from '../../api';
 
 api.downloadPlaybook = jest.fn();
 global.insights = { chrome: { auth: { getUser: () => new Promise(() => ({ entitlements: { smart_management: { isEntitled: true }}})) }}};
@@ -24,6 +24,8 @@ describe('Execute button', () => {
             issueCount={ 1 }
             remediationId='id'
             isDisabled={ false }
+            getEndpoint={ () => null }
+            sources={ { data: {}} }
             getConnectionStatus={ () => null }/>);
         expect(toJson(tree)).toMatchSnapshot();
     });
@@ -36,6 +38,7 @@ describe('Execute button', () => {
             issueCount={ 1 }
             remediationId='id'
             isDisabled={ false }
+            sources={ { data: {}} }
             getConnectionStatus={ () => null } />);
         expect(toJson(tree)).toMatchSnapshot();
     });

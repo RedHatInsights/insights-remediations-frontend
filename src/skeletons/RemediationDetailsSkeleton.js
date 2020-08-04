@@ -13,7 +13,7 @@ import {
 import SkeletonTable from './SkeletonTable';
 
 import {
-    Flex, FlexItem, FlexModifiers,
+    Flex, FlexItem,
     Card, CardHeader, CardBody,
     Dropdown, KebabToggle,
     // Progress, ProgressMeasureLocation,
@@ -49,7 +49,7 @@ const RemediationDetailsSkeleton = () => {
                         }/>
                     </LevelItem>
                     <LevelItem>
-                        <Split gutter="md">
+                        <Split hasGutter>
                             <SplitItem><Button isDisabled variant='link'> Download playbook </Button></SplitItem>
                             <SplitItem>
                                 <Dropdown
@@ -63,16 +63,16 @@ const RemediationDetailsSkeleton = () => {
                 </Level>
             </PageHeader>
             <Main>
-                <Stack gutter="md">
+                <Stack hasGutter>
                     <StackItem>
                         <Card>
                             <CardHeader className='ins-m-card__header-bold'>
                                 <Title headingLevel="h4" size="xl">Playbook summary</Title>
                             </CardHeader>
                             <CardBody>
-                                <Flex className='ins-c-playbookSummary' breakpointMods={ [{ modifier: FlexModifiers.column }] }>
+                                <Flex className='ins-c-playbookSummary' direction={ { default: 'column' } }>
                                     <Flex className='ins-c-playbookSummary__overview'>
-                                        <FlexItem breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                        <FlexItem spacer={ { default: 'spacer-xl' } }>
                                             <DescriptionList
                                                 isBold
                                                 title='Total systems'
@@ -83,7 +83,7 @@ const RemediationDetailsSkeleton = () => {
                                     </Flex>
                                     <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
                                         <Flex>
-                                            <FlexItem className='ins-m-inline-flex' breakpointMods={ [{ modifier: FlexModifiers['spacer-xl'] }] }>
+                                            <FlexItem className='ins-m-inline-flex' spacer={ { default: 'spacer-xl' } }>
                                                 Auto reboot: <Skeleton className='ins-m-isInline-md' size='md'/>
                                             </FlexItem>
                                             <FlexItem className='ins-m-inline-flex'>

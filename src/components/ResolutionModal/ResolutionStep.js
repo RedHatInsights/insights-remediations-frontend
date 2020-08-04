@@ -97,10 +97,10 @@ class ResolutionStep extends Component {
         }
 
         return (
-            <Stack gutter='sm'>
+            <Stack hasGutter>
                 <StackItem><div>Select resolution for this action.</div></StackItem>
                 <StackItem>
-                    <Split gutter='sm'>
+                    <Split hasGutter>
                         <SplitItem>
                             <Label>Action</Label>
                         </SplitItem>

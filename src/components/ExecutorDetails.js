@@ -6,12 +6,11 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import * as pfReactTable from '@patternfly/react-table';
-import * as reactCore from '@patternfly/react-core';
-import * as reactIcons from '@patternfly/react-icons';
 import * as reactRouterDom from 'react-router-dom';
+import * as ReactRedux from 'react-redux';
 import {
     Main, PageHeader, PageHeaderTitle, DateFormat, Skeleton,
-    TableToolbar, ConditionalFilter, conditionalFilterType
+    ConditionalFilter, conditionalFilterType
 } from '@redhat-cloud-services/frontend-components';
 
 import {
@@ -19,7 +18,7 @@ import {
     Card, CardHeader, CardBody,
     Stack, StackItem,
     Breadcrumb, BreadcrumbItem,
-    Split, SplitItem, ToolbarItem, ToolbarGroup
+    Split, SplitItem, ToolbarItem, Toolbar, ToolbarContent
 } from '@patternfly/react-core';
 import { InProgressIcon } from '@patternfly/react-icons';
 
@@ -76,10 +75,9 @@ const ExecutorDetails = ({
             mergeWithEntities,
             INVENTORY_ACTION_TYPES
         } = await insights.loadInventory({
+            ReactRedux,
             react: React,
             reactRouterDom,
-            reactCore,
-            reactIcons,
             pfReactTable
         });
 
@@ -153,7 +151,7 @@ const ExecutorDetails = ({
     }, [ playbookRunSystems ]);
 
     const renderInventorycard = (status) => <Main>
-        <Stack gutter="md">
+        <Stack hasGutter>
             <Card className='ins-c-card__playbook-log'>
                 <CardBody>
                     { InventoryTable && <InventoryTable
@@ -202,8 +200,8 @@ const ExecutorDetails = ({
 
                             } }
                     >
-                        <TableToolbar>
-                            <ToolbarGroup>
+                        <Toolbar>
+                            <ToolbarContent>
                                 <ToolbarItem>
                                     <ConditionalFilter
                                         items={ [
@@ -224,16 +222,14 @@ const ExecutorDetails = ({
                                         ] }
                                     />
                                 </ToolbarItem>
-                            </ToolbarGroup>
-                            <ToolbarGroup>
                                 <ToolbarItem>
                                     <Button
                                         variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
                                 Download playbook
                                     </Button>
                                 </ToolbarItem>
-                            </ToolbarGroup>
-                        </TableToolbar>
+                            </ToolbarContent>
+                        </Toolbar>
                     </InventoryTable> }
                 </CardBody>
             </Card>
@@ -244,8 +240,9 @@ const ExecutorDetails = ({
         running: renderInventorycard(status),
         success: renderInventorycard(status),
         failure: renderInventorycard(status),
+        canceled: renderInventorycard(status),
         epicFailure: <Main>
-            <Stack gutter="md">
+            <Stack hasGutter>
                 <Card>
                     <CardHeader className='ins-m-card__header-bold'>
                         <Button
@@ -279,7 +276,7 @@ const ExecutorDetails = ({
                     </BreadcrumbItem>
                     <BreadcrumbItem isActive> { executor.executor_name } </BreadcrumbItem>
                 </Breadcrumb>
-                <Stack gutter="md">
+                <Stack hasGutter>
                     <StackItem>
                         <PageHeaderTitle title={
                             normalizeStatus(executor.status) === 'Running'
@@ -293,7 +290,7 @@ const ExecutorDetails = ({
                         } />
                     </StackItem>
                     <StackItem>
-                        <Split gutter="md">
+                        <Split hasGutter>
                             <SplitItem>
                                 <DescriptionList className='ins-c-playbookSummary__settings' title='Run status'>
                                     { executor.status

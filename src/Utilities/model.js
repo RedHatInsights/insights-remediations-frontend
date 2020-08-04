@@ -1,14 +1,10 @@
-import React from 'react';
-import moment from 'moment';
-import { Tooltip } from '@patternfly/react-core';
-
 export function getIssuePrefix (id) {
     return id.split(':')[0];
 }
 
 export function getIssueApplication ({ id }) {
     switch (getIssuePrefix(id)) {
-        case 'advisor': return 'Insights';
+        case 'advisor': return 'Advisor';
         case 'ssg': return 'Compliance';
         case 'vulnerabilities': return 'Vulnerability';
         case 'patch-advisory': return 'Patch';
@@ -38,13 +34,3 @@ export function includesIgnoreCase(text, included) {
 }
 
 export const DATE_FORMAT = 'DD MMM YYYY, hh:mm UTC';
-
-export function formatDate (date) {
-    return (
-        <Tooltip content={ moment.utc(date).format(DATE_FORMAT) } >
-            <span>
-                { moment.utc(date).fromNow() }
-            </span>
-        </Tooltip>
-    );
-}

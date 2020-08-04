@@ -1,7 +1,8 @@
-import { API_BASE } from './config';
+import { API_BASE, SOURCES_BASE } from './config';
 
 import axios from 'axios';
 import { RemediationsApi, ResolutionsApi, RemediationsApiAxiosParamCreator } from '@redhat-cloud-services/remediations-client';
+import { DefaultApi } from '@redhat-cloud-services/sources-client';
 
 /*
  * TODO: replace these with generated clients
@@ -82,6 +83,7 @@ instance.interceptors.response.use(null, errorInterceptor);
 
 export const remediations = new RemediationsApi(undefined, API_BASE, instance);
 export const resolutions = new ResolutionsApi(undefined, API_BASE, instance);
+export const sources = new DefaultApi(undefined, SOURCES_BASE, instance);
 
 export function downloadPlaybook (id) {
     return new Promise((resolve, reject) => {
