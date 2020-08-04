@@ -14,5 +14,10 @@
 }
 
 .ins-c-remediations-reboot-check-circle {
-    fill: var(--pf-global--success-color--200);
+    fill: var(--pf-global--success-color--100);
+}
+
+.test {
+    .pf-c-toolbar { padding-left: 0; padding-right: 0; }
+    .pf-c-data-toolbar__content { padding: 0px; }
 }

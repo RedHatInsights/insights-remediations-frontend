@@ -32,5 +32,7 @@ DescriptionList.propTypes = {
     title: propTypes.string,
     children: propTypes.any,
     isBold: propTypes.bool,
-    className: propTypes.string
+    className: propTypes.string,
+    hasGutter: propTypes.bool,
+    needsPointer: propTypes.bool
 };
