@@ -23,7 +23,7 @@ import DeniedState from '../components/DeniedState';
 import NoReceptorBanner from '../components/Alerts/NoReceptorBanner';
 import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
 import ConfirmationDialog from '../components/ConfirmationDialog';
-import { keyBy } from 'lodash/keyBy';
+import keyBy from 'lodash/keyBy';
 
 function skeleton () {
     return (
