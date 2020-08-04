@@ -27,23 +27,9 @@
     margin-left: auto;
 }
 
-.ins-m-not-entitled {
-    display: none;
-}
-
 .ins-c-playbook-card {
     height: 100%;
     word-wrap: anywhere;
-}
-
-.ins-c-playbook-title {
-    font-weight: normal;
-    font-size: large;
-}
-
-.ins-c-playbook-last-modified {
-    font-weight: normal;
-    font-size: small;
 }
 
 .ins-c-playbook-body {
@@ -75,10 +61,4 @@
     .pf-c-progress__status-icon {
         display: none;
     }
-}
-
-.ins-c-playbook-badge {
-    font-weight: normal;
-    margin-inline-end: 8px;
-    vertical-align: text-top;
 }
