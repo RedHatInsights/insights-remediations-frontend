@@ -18,7 +18,13 @@ const NotConfigured = () => (
                 Satellite instances and execute remediation across all regions,
                 geographies, and Satellites in one place.
             </EmptyStateBody>
-            <Button variant="link">Learn how to configure</Button>
+            <Button
+                variant="link"
+                component="a"
+                // eslint-disable-next-line max-len
+                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/pr01">
+                    Learn how to configure
+            </Button>
         </EmptyState>
     </Bullseye>
 );
