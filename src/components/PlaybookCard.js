@@ -15,7 +15,7 @@ import './PlaybookCard.scss';
 
 function buildName (name, id) {
     return (
-        <Link to={ `/${id}` }>{ name }</Link>
+        <Link to={ `/${id}` } className='ins-c-playbook-card__header--name'>{ name }</Link>
     );
 }
 
@@ -82,7 +82,7 @@ const PlaybookCardHeader = ({
         );
 
     return (
-        <CardHeader>
+        <CardHeader className='ins-c-playbook-card__header'>
             <CardActions>
                 <Dropdown
                     key='dropdown'
@@ -112,15 +112,15 @@ const PlaybookCardHeader = ({
             </CardActions>
             <CardTitle>
                 <Stack>
-                    <StackItem className='ins-c-playbook-title'>
+                    <StackItem className='ins-c-playbook-card__header--title'>
                         { isArchived &&
-                            <Badge isRead className='ins-c-playbook-badge'>
+                            <Badge isRead className='ins-c-playbook-card__header--badge'>
                             Archived
                             </Badge>
                         }
                         { buildName(remediation.name, remediation.id) }
                     </StackItem>
-                    <StackItem className='ins-c-playbook-last-modified'>
+                    <StackItem className='ins-c-playbook-card__header--last-modified'>
                     Last modified: <DateFormat date={ remediation.updated_at } />
                     </StackItem>
                 </Stack>
@@ -150,11 +150,11 @@ const renderActionStatus = (complete, total) => {
 
 const renderProgress = (complete, total) => {
     return (complete === total
-        ? <Progress className='ins-c-progress-success'
+        ? <Progress className='ins-c-playbook-card__progress ins-c-playbook-card__progress--success'
             value={ 100 }
             measureLocation={ ProgressMeasureLocation.none }
             variant={ ProgressVariant.success }/>
-        : <Progress className='ins-c-progress'
+        : <Progress className='ins-c-playbook-card__progress'
             value={ (complete / total * 100) }
             measureLocation={ ProgressMeasureLocation.none }/>
     );
@@ -184,24 +184,24 @@ export const PlaybookCard = ({
                 downloadPlaybook={ downloadPlaybook }
                 permission={ permission }
             />
-            <CardBody className='ins-c-playbook-body'>
-                <Split hasGutter className='ins-c-playbook-split'>
+            <CardBody className='ins-c-playbook-card__body'>
+                <Split hasGutter className='ins-c-playbook-card__body--split'>
                     <SplitItem>
                         <Stack>
-                            <StackItem className='ins-c-playbook-body'>
+                            <StackItem className='ins-c-playbook-card__body--titles'>
                             Systems
                             </StackItem>
-                            <StackItem className='ins-c-playbook-body-values'>
+                            <StackItem className='ins-c-playbook-card__body--values'>
                                 { remediation.system_count }
                             </StackItem>
                         </Stack>
                     </SplitItem>
                     <SplitItem>
                         <Stack>
-                            <StackItem className='ins-c-playbook-body'>
+                            <StackItem className='ins-c-playbook-card__body--titles'>
                             Complete actions
                             </StackItem>
-                            <StackItem className='ins-c-playbook-body-values'>
+                            <StackItem className='ins-c-playbook-card__body--values'>
                                 { renderActionStatus(1, remediation.issue_count) }
                             </StackItem>
                         </Stack>
