@@ -2,16 +2,14 @@ import React, { useEffect, useContext, useState } from 'react';
 import { useDispatch, useSelector as reduxSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-    Bullseye, Dropdown, EmptyState, EmptyStateIcon, EmptyStateBody,
-    Grid, GridItem, KebabToggle,
-    Stack, StackItem, Title, Button, ToolbarItem, ToolbarGroup
+    Bullseye, EmptyState, EmptyStateIcon, EmptyStateBody,
+    Grid, GridItem, Stack, StackItem, Title
 } from '@patternfly/react-core';
-import { SimpleTableFilter, Skeleton, TableToolbar } from '@redhat-cloud-services/frontend-components';
+import { Main, Spinner } from '@redhat-cloud-services/frontend-components';
 import { WrenchIcon } from '@patternfly/react-icons';
 import { appUrl } from '../Utilities/urls';
-import SkeletonTable from '../skeletons/SkeletonTable';
 import { downloadPlaybook } from '../api';
-import { getConnectionStatus, runRemediation, setEtag, getPlaybookRuns, loadRemediation } from '../actions';
+import { getConnectionStatus, runRemediation, setEtag, getPlaybookRuns, loadRemediation, getEndpoint } from '../actions';
 import { PermissionContext } from '../App';
 import { ExecuteModal } from './Modals/ExecuteModal';
 import { PlaybookCard } from './PlaybookCard';
@@ -20,30 +18,9 @@ import './RemediationTable.scss';
 function skeleton () {
     return (
         <React.Fragment>
-            <TableToolbar className='ins-c-remediations-details-table__toolbar'>
-                <ToolbarGroup>
-                    <ToolbarItem>
-                        <SimpleTableFilter buttonTitle="" placeholder="Search Playbooks" aria-label="Search Playbooks Loading" />
-                    </ToolbarItem>
-                </ToolbarGroup>
-                <ToolbarGroup>
-                    {
-                        // <ToolbarItem><Button isDisabled> Create Remediation </Button></ToolbarItem>
-                    }
-                    <ToolbarItem>
-                        <Button variant='secondary' isDisabled> Download playbook </Button>
-                    </ToolbarItem>
-                    <ToolbarItem>
-                        <Dropdown
-                            toggle={ <KebabToggle/> }
-                            isPlain
-                        >
-                        </Dropdown>
-                    </ToolbarItem>
-                </ToolbarGroup>
-                <Skeleton size='sm'/>
-            </TableToolbar>
-            <SkeletonTable/>
+            <Main>
+                <Spinner centered/>
+            </Main>
         </React.Fragment>
     );
 }
@@ -82,7 +59,8 @@ function RemediationTable ({
     selector,
     pagination,
     shouldUpdateGrid,
-    setShouldUpdateGrid
+    setShouldUpdateGrid,
+    setRemediationCount
 }) {
 
     const { value, status } = remediations;
@@ -94,6 +72,7 @@ function RemediationTable ({
     const selectedRemediation = reduxSelector(state => state.selectedRemediation);
     const connectionStatus = reduxSelector(state => state.connectionStatus);
     const runningRemediation = reduxSelector(state => state.runRemediation);
+    const sources = reduxSelector(state => state.sources);
     const dispatch = useDispatch();
 
     function load () {
@@ -116,6 +95,12 @@ function RemediationTable ({
             setExecuteOpen(false);
         }
     }, [ runningRemediation.status ]);
+
+    useEffect(() => {
+        if (remediations.value) {
+            setRemediationCount(remediations.value.meta.total);
+        }
+    }, [ remediations ]);
 
     // Skeleton Loading
     if (status !== 'fulfilled') {
@@ -152,6 +137,8 @@ function RemediationTable ({
                                 dispatch(runRemediation(id, etag)).then(() => dispatch(getPlaybookRuns(id)));
                             } }
                             setEtag = { (etag) => { dispatch(setEtag(etag)); } }
+                            getEndpoint = { (id) => { dispatch(getEndpoint(id)); } }
+                            sources = { sources }
                         />
                     }
                 </StackItem>
@@ -189,7 +176,8 @@ RemediationTable.propTypes = {
     selector: PropTypes.object.isRequired,
     pagination: PropTypes.object.isRequired,
     shouldUpdateGrid: PropTypes.bool.isRequired,
-    setShouldUpdateGrid: PropTypes.func.isRequired
+    setShouldUpdateGrid: PropTypes.func.isRequired,
+    setRemediationCount: PropTypes.func.isRequired
 };
 
 export default RemediationTable;

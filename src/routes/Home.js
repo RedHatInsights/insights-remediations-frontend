@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector as reduxSelector } from 'react-redux';
 import { StackItem, Stack } from '@patternfly/react-core';
-import GlobalSkeleton from '../skeletons/GlobalSkeleton';
 
 import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
@@ -24,12 +23,6 @@ import NoReceptorBanner from '../components/Alerts/NoReceptorBanner';
 import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
 import ConfirmationDialog from '../components/ConfirmationDialog';
 import keyBy from 'lodash/keyBy';
-
-function skeleton () {
-    return (
-        <GlobalSkeleton></GlobalSkeleton>
-    );
-}
 
 function downloadAll (selectedIds, data) {
     const byId = keyBy(data, r => r.id);
@@ -55,6 +48,7 @@ function Home () {
     const filter = useFilter();
     const selector = useSelector();
     const pagination = usePagination();
+    const [ remediationCount, setRemediationCount ] = useState(1);
     const [ filterText, setFilterText ] = useState('');
     const [ dialogOpen, setDialogOpen ] = useState(false);
     const [ showArchived, setShowArchived ] = useState(false);
@@ -72,14 +66,14 @@ function Home () {
     useEffect(load, []);
 
     useEffect(() => {
-        if (remediations.status === 'fulfilled') {
+        if (remediations.status === 'fulfilled' && filter.value === filterText) {
             setShouldUpdateGrid(true);
         }
     }, [ sorter.sortBy, sorter.sortDir, filter.value, pagination.pageSize, pagination.pageDebounced ]);
 
-    if (remediations.status !== 'fulfilled') {
-        return skeleton();
-    }
+    useEffect(() => {
+        filter.setValue(filterText);
+    }, [ filterText ]);
 
     filter.onChange(pagination.reset);
     sorter.onChange(pagination.reset);
@@ -120,6 +114,11 @@ function Home () {
         <PlanSystems key='PlanSystems'/>
     ];
 
+    const activeFiltersConfig = {
+        filters: filterText.length ? [{ category: 'Name', chips: [{ name: filterText }]}] : [],
+        onDelete: () => {setFilterText(''); filter.setValue('');}
+    };
+
     return (
         <PermissionContext.Consumer>
             { permission =>
@@ -142,9 +141,6 @@ function Home () {
                                         value: filterText,
                                         onChange: (_e, value) => {
                                             setFilterText(value);
-                                        },
-                                        onSubmit: (_e, value) => {
-                                            filter.setValue(value);
                                         }
                                     }
                                 }]
@@ -152,13 +148,13 @@ function Home () {
                             bulkSelect={ { items: [{ title: 'Select all',
                                 onClick: (e) => selector.props.onSelect(e, true, -1)
                             }],
-                            checked: selectedIds.length && remediations.value.meta.total > selectedIds.length ? null : selectedIds.length,
+                            checked: selectedIds.length && remediationCount > selectedIds.length ? null : selectedIds.length,
                             count: selectedIds.length,
                             onSelect: (isSelected, e) => selector.props.onSelect(e, isSelected, -1) } }
                             actionsConfig={ { actions: [
                                 { label: 'Download playbooks',
                                     props: { variant: 'secondary', isDisabled: !selectedIds.length },
-                                    onClick: () => downloadAll(selectedIds, remediations.value.data)
+                                    onClick: () => downloadAll(selectedIds, remediations.value.data) // TODO state for downloads?
                                 },
                                 { label: 'Delete playbooks',
                                     props: { isDisabled: !permission.permissions.write || !selectedIds.length },
@@ -167,7 +163,8 @@ function Home () {
                                 { label: showArchived ? 'Hide archived playbooks' : 'Show archived playbooks',
                                     onClick: showArchived ? () => setShowArchived(false) : () => setShowArchived(true)
                                 }]} }
-                            pagination={ { ...pagination.props, itemCount: remediations.value.meta.total } }
+                            pagination={ { ...pagination.props, itemCount: remediationCount } }
+                            activeFiltersConfig={ activeFiltersConfig }
                         />
                         <Main>
                             <Stack hasGutter>
@@ -199,6 +196,7 @@ function Home () {
                                         pagination={ pagination }
                                         shouldUpdateGrid={ shouldUpdateGrid }
                                         setShouldUpdateGrid={ setShouldUpdateGrid }
+                                        setRemediationCount={ setRemediationCount }
                                     />
                                 </StackItem>
                             </Stack>

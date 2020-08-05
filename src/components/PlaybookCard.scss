@@ -2,24 +2,26 @@
     height: 100%;
 
     &__header {
-        font-size: large;
-        * { font-weight: normal; }
-        &--last-modified { font-size: small;}
+        * { font-weight: var(--pf-global--FontWeight--normal); }
+        &--last-modified { font-size: var(--pf-global--FontSize--sm);}
         &--badge {
             margin-right: var(--pf-global--spacer--sm);
             position: relative;
             bottom: 2px; // because we want to have this inline with the text, we can't use flex
         }
-        &--name { word-break: break-all; }
+        &--name { 
+            word-break: break-word;
+            font-size: var(--pf-global--FontSize--lg);
+        }
     }
 
     &__body {
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
+        font-size: var(--pf-global--FontSize--md);
         &--values {
-            font-weight: bold;
-            font-size: large;
+            font-weight: var(--pf-global--FontWeight--bold);
         }
         &--split {
             --pf-l-split--m-gutter--MarginRight: var(--pf-global--spacer--2xl);
@@ -29,6 +31,8 @@
 
     &__progress {
         display: block;
+        --pf-c-progress__bar--before--BackgroundColor: var(--pf-global--BackgroundColor--dark-100);
+        --pf-c-progress__indicator--BackgroundColor: var(--pf-global--primary-color--100);
         &--success {
             --pf-c-progress__indicator--BackgroundColor: var(--pf-global--success-color--100);
             .pf-c-progress__status-icon {
