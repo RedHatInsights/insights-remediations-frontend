@@ -26,7 +26,7 @@ import * as debug from '../Utilities/debug';
 import keyBy from 'lodash/keyBy';
 
 import { downloadPlaybook } from '../api';
-import { getConnectionStatus, runRemediation, setEtag, getPlaybookRuns, loadRemediation } from '../actions';
+import { getConnectionStatus, runRemediation, setEtag, getPlaybookRuns, loadRemediation, getEndpoint } from '../actions';
 
 import { PermissionContext } from '../App';
 import { ExecuteModal } from './Modals/ExecuteModal';
@@ -123,6 +123,7 @@ function RemediationTable (props) {
     const selectedRemediation = reduxSelector(state => state.selectedRemediation);
     const connectionStatus = reduxSelector(state => state.connectionStatus);
     const runningRemediation = reduxSelector(state => state.runRemediation);
+    const sources = reduxSelector(state => state.sources);
     const dispatch = useDispatch();
 
     function loadRemediations () {
@@ -236,6 +237,8 @@ function RemediationTable (props) {
                         dispatch(runRemediation(id, etag)).then(() => dispatch(getPlaybookRuns(id)));
                     } }
                     setEtag = { (etag) => { dispatch(setEtag(etag)); } }
+                    getEndpoint = { (id) => { dispatch(getEndpoint(id)); } }
+                    sources = { sources }
                 />
             }
             <PrimaryToolbar

@@ -61,17 +61,19 @@ export const ExecuteModal = ({
             )
         }));
 
-        const [ con, dis ] = updatedData.reduce(
-            ([ pass, fail ], e) => (
-                isAvailable(e.connection_status, sources.status, sources.data[`${e.endpoint_id}`])
-                    ? [
-                        [ ...pass, { ...e }], fail ]
-                    : [ pass, [ ...fail, { ...e }] ]
-            )
-            , [ [], [] ]
-        );
-        setConnected(con);
-        setDisconnected(dis);
+        if (sources.status === 'fulfilled') {
+            const [ con, dis ] = updatedData.reduce(
+                ([ pass, fail ], e) => (
+                    isAvailable(e.connection_status, sources.status, sources.data[`${e.endpoint_id}`])
+                        ? [
+                            [ ...pass, { ...e }], fail ]
+                        : [ pass, [ ...fail, { ...e }] ]
+                )
+                , [ [], [] ]
+            );
+            setConnected(con);
+            setDisconnected(dis);
+        }
     }, [ sources ]);
 
     const rows = [ ...connected, ...disconnected ].map(con =>
