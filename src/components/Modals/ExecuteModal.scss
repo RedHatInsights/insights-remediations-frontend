@@ -1,2 +1,13 @@
+@import '@patternfly/patternfly/sass-utilities/_all';
+
 .ins-c-remediations-connection-status { margin-right: var(--pf-global--spacer--xs); }
 .ins-c-remediations-connection-status-error { color: var(--pf-chart-global--danger--Color--100); }
+
+@media only screen and (max-width: $pf-global--breakpoint--sm) {
+    .pf-c-modal-box__footer {
+        flex-wrap: wrap;
+        .pf-c-button {
+            margin-bottom: var(--pf-c-modal-box__footer--c-button--MarginRight);
+        }
+    }
+}
