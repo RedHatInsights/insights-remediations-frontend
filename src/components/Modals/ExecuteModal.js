@@ -105,8 +105,8 @@ export const ExecuteModal = ({
 
     return (
         <Modal
-            className="ins-c-dialog"
-            variant={ ModalVariant.small }
+            className="ins-c-execute-modal"
+            variant={ isDebug() ? ModalVariant.large : ModalVariant.small }
             title={ 'Execute playbook' }
             isOpen={ isOpen }
             onClose={ onClose }
