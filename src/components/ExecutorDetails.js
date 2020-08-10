@@ -8,6 +8,7 @@ import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import * as pfReactTable from '@patternfly/react-table';
 import * as reactRouterDom from 'react-router-dom';
 import * as ReactRedux from 'react-redux';
+import { reactCore } from '@redhat-cloud-services/frontend-components-utilities/files/inventoryDependencies';
 import {
     Main, PageHeader, PageHeaderTitle, DateFormat, Skeleton,
     ConditionalFilter, conditionalFilterType
@@ -78,7 +79,8 @@ const ExecutorDetails = ({
             ReactRedux,
             react: React,
             reactRouterDom,
-            pfReactTable
+            pfReactTable,
+            pfReact: reactCore
         });
 
         getRegistry().register({

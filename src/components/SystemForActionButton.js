@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import * as pfReactTable from '@patternfly/react-table';
 import * as reactRouterDom from 'react-router-dom';
 import * as ReactRedux from 'react-redux';
+import { reactCore } from '@redhat-cloud-services/frontend-components-utilities/files/inventoryDependencies';
 import { connect, useStore } from 'react-redux';
 import orderBy from 'lodash/orderBy';
 
@@ -47,7 +48,8 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
             ReactRedux,
             react: React,
             reactRouterDom,
-            pfReactTable
+            pfReactTable,
+            pfReact: reactCore
         });
 
         getRegistry().register({
