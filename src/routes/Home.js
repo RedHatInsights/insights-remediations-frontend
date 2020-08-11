@@ -48,10 +48,11 @@ function Home () {
     const filter = useFilter();
     const selector = useSelector();
     const pagination = usePagination();
-    const [ remediationCount, setRemediationCount ] = useState(1);
+    const [ remediationCount, setRemediationCount ] = useState(0);
     const [ filterText, setFilterText ] = useState('');
     const [ dialogOpen, setDialogOpen ] = useState(false);
-    const [ showArchived, setShowArchived ] = useState(false);
+    const [ showArchived, setShowArchived ] = useState(
+        false || localStorage.getItem('remediations:showArchived') === 'true');
     const [ shouldUpdateGrid, setShouldUpdateGrid ] = useState(false);
     const remediations = reduxSelector(state => state.remediations);
     const dispatch = useDispatch();
@@ -161,7 +162,15 @@ function Home () {
                                     onClick: () => setDialogOpen(true)
                                 },
                                 { label: showArchived ? 'Hide archived playbooks' : 'Show archived playbooks',
-                                    onClick: showArchived ? () => setShowArchived(false) : () => setShowArchived(true)
+                                    onClick: showArchived ?
+                                        () => {
+                                            setShowArchived(false);
+                                            localStorage.setItem('remediations:showArchived', 'false');
+                                        } :
+                                        () => {
+                                            setShowArchived(true);
+                                            localStorage.setItem('remediations:showArchived', 'true');
+                                        }
                                 }]} }
                             pagination={ { ...pagination.props, itemCount: remediationCount } }
                             activeFiltersConfig={ activeFiltersConfig }
@@ -197,6 +206,7 @@ function Home () {
                                         shouldUpdateGrid={ shouldUpdateGrid }
                                         setShouldUpdateGrid={ setShouldUpdateGrid }
                                         setRemediationCount={ setRemediationCount }
+                                        showArchived= { showArchived }
                                     />
                                 </StackItem>
                             </Stack>

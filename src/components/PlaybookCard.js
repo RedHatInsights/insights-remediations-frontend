@@ -8,8 +8,10 @@ import {
 } from '@patternfly/react-core';
 import { CheckCircleIcon } from '@patternfly/react-icons';
 import { DateFormat } from '@redhat-cloud-services/frontend-components';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/esm/actions';
 import { Link } from 'react-router-dom';
 import { PropTypes } from 'prop-types';
+import { patchRemediation } from '../actions.js';
 
 import './PlaybookCard.scss';
 
@@ -25,6 +27,7 @@ const PlaybookCardHeader = ({
     archived,
     selector,
     setExecuteOpen,
+    update,
     loadRemediation,
     getConnectionStatus,
     downloadPlaybook,
@@ -41,6 +44,12 @@ const PlaybookCardHeader = ({
             dispatch(event);
             return event.payload;
         })).then(callback);
+    };
+
+    const archiveHandler = () => {
+        actionWrapper([
+            patchRemediation(remediation.id, { archived: !isArchived })
+        ], () => { setIsArchived(!isArchived); update(true); });
     };
 
     dropdownItems.push(
@@ -70,13 +79,31 @@ const PlaybookCardHeader = ({
     isArchived
         ? dropdownItems.push(
             <DropdownItem key='restore'
-                onClick={ () => { setIsArchived(false); setIsOpen(false); } }>
+                onClick={ () => {
+                    archiveHandler();
+                    setIsOpen(false);
+                    dispatch(
+                        addNotification({
+                            variant: 'info',
+                            title: 'Restored Playbook'
+                        })
+                    );
+                } }>
             Restore
             </DropdownItem>
         )
         : dropdownItems.push(
             <DropdownItem key='archive'
-                onClick={ () => { setIsArchived(true); setIsOpen(false); } }>
+                onClick={ () => {
+                    archiveHandler();
+                    setIsOpen(false);
+                    dispatch(
+                        addNotification({
+                            variant: 'info',
+                            title: 'Archived Playbook'
+                        })
+                    );
+                } }>
             Archive
             </DropdownItem>
         );
@@ -135,6 +162,7 @@ PlaybookCardHeader.propTypes = {
     archived: PropTypes.bool.isRequired,
     selector: PropTypes.object.isRequired,
     setExecuteOpen: PropTypes.func.isRequired,
+    update: PropTypes.func.isRequired,
     loadRemediation: PropTypes.func.isRequired,
     getConnectionStatus: PropTypes.func.isRequired,
     downloadPlaybook: PropTypes.func.isRequired,
@@ -166,6 +194,7 @@ export const PlaybookCard = ({
     archived,
     selector,
     setExecuteOpen,
+    update,
     loadRemediation,
     getConnectionStatus,
     downloadPlaybook,
@@ -179,6 +208,7 @@ export const PlaybookCard = ({
                 archived={ archived }
                 selector={ selector }
                 setExecuteOpen={ setExecuteOpen }
+                update={ update }
                 loadRemediation={ loadRemediation }
                 getConnectionStatus={ getConnectionStatus }
                 downloadPlaybook={ downloadPlaybook }
@@ -219,6 +249,7 @@ PlaybookCard.propTypes = {
     archived: PropTypes.bool.isRequired,
     selector: PropTypes.object.isRequired,
     setExecuteOpen: PropTypes.func.isRequired,
+    update: PropTypes.func.isRequired,
     loadRemediation: PropTypes.func.isRequired,
     getConnectionStatus: PropTypes.func.isRequired,
     downloadPlaybook: PropTypes.func.isRequired,

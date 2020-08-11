@@ -60,15 +60,16 @@ function RemediationTable ({
     pagination,
     shouldUpdateGrid,
     setShouldUpdateGrid,
-    setRemediationCount
+    setRemediationCount,
+    showArchived
 }) {
 
     const { value, status } = remediations;
+    let cards = [];
 
     const permission = useContext(PermissionContext);
     const [ executeOpen, setExecuteOpen ] = useState(false);
     const [ showRefreshMessage, setShowRefreshMessage ] = useState(false);
-    // const [ showArchived, setShowArchived ] = useState(false);
     const selectedRemediation = reduxSelector(state => state.selectedRemediation);
     const connectionStatus = reduxSelector(state => state.connectionStatus);
     const runningRemediation = reduxSelector(state => state.runRemediation);
@@ -98,9 +99,9 @@ function RemediationTable ({
 
     useEffect(() => {
         if (remediations.value) {
-            setRemediationCount(remediations.value.meta.total);
+            setRemediationCount(cards.length);
         }
-    }, [ remediations ]);
+    }, [ remediations, showArchived ]);
 
     // Skeleton Loading
     if (status !== 'fulfilled') {
@@ -111,10 +112,27 @@ function RemediationTable ({
         return empty();
     }
 
-    const cards = value.data.map(remediation => ({
-        id: remediation.id,
-        archived: false
-    }));
+    if (!showArchived) {
+        cards = value.data.reduce((result, remediation) => {
+            if (remediation.archived !== true) {
+                result.push({
+                    id: remediation.id,
+                    archived: remediation.archived
+                });
+            }
+
+            return result;
+        }, []);
+    } else {
+        cards = value.data.map(remediation => ({
+            id: remediation.id,
+            archived: remediation.archived
+        }));
+    }
+
+    if (cards.length === 0) {
+        return empty();
+    }
 
     selector.register(cards);
 
@@ -146,19 +164,22 @@ function RemediationTable ({
                     <Grid sm={ 12 } md={ 6 } lg={ 4 } hasGutter>
                         { value.data.map((remediation, idx) => {
                             return (
-                                <GridItem key={ remediation.id }>
-                                    <PlaybookCard
-                                        remediation={ remediation }
-                                        remediationIdx={ idx }
-                                        archived={ false }
-                                        selector={ selector }
-                                        setExecuteOpen={ setExecuteOpen }
-                                        loadRemediation={ loadRemediation }
-                                        getConnectionStatus={ getConnectionStatus }
-                                        downloadPlaybook={ downloadPlaybook }
-                                        permission={ permission }
-                                    />
-                                </GridItem>
+                                !showArchived && remediation.archived
+                                    ? null
+                                    : <GridItem key={ remediation.id }>
+                                        <PlaybookCard
+                                            remediation={ remediation }
+                                            remediationIdx={ idx }
+                                            archived={ remediation.archived }
+                                            selector={ selector }
+                                            setExecuteOpen={ setExecuteOpen }
+                                            update={ setShouldUpdateGrid }
+                                            loadRemediation={ loadRemediation }
+                                            getConnectionStatus={ getConnectionStatus }
+                                            downloadPlaybook={ downloadPlaybook }
+                                            permission={ permission }
+                                        />
+                                    </GridItem>
                             );
                         }) }
                     </Grid>
@@ -177,7 +198,8 @@ RemediationTable.propTypes = {
     pagination: PropTypes.object.isRequired,
     shouldUpdateGrid: PropTypes.bool.isRequired,
     setShouldUpdateGrid: PropTypes.func.isRequired,
-    setRemediationCount: PropTypes.func.isRequired
+    setRemediationCount: PropTypes.func.isRequired,
+    showArchived: PropTypes.bool.isRequired
 };
 
 export default RemediationTable;
