@@ -2,7 +2,10 @@
     height: 100%;
 
     &__header {
-        * { font-weight: var(--pf-global--FontWeight--normal); }
+        * { 
+            font-weight: var(--pf-global--FontWeight--normal);
+            --pf-l-stack--m-gutter--MarginBottom: var(--pf-global--spacer--xs);
+        }
         &--last-modified { font-size: var(--pf-global--FontSize--sm);}
         &--badge {
             margin-right: var(--pf-global--spacer--sm);

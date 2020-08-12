@@ -85,11 +85,11 @@ const PlaybookCardHeader = ({
                     dispatch(
                         addNotification({
                             variant: 'info',
-                            title: 'Restored Playbook'
+                            title: `Restored playbook ${remediation.name}`
                         })
                     );
                 } }>
-            Restore
+            Restore playbook
             </DropdownItem>
         )
         : dropdownItems.push(
@@ -100,11 +100,11 @@ const PlaybookCardHeader = ({
                     dispatch(
                         addNotification({
                             variant: 'info',
-                            title: 'Archived Playbook'
+                            title: `Archived playbook ${remediation.name}`
                         })
                     );
                 } }>
-            Archive
+            Archive playbook
             </DropdownItem>
         );
 
@@ -138,7 +138,7 @@ const PlaybookCardHeader = ({
                 />
             </CardActions>
             <CardTitle>
-                <Stack>
+                <Stack hasGutter>
                     <StackItem className='ins-c-playbook-card__header--title'>
                         { isArchived &&
                             <Badge isRead className='ins-c-playbook-card__header--badge'>
