@@ -138,7 +138,7 @@ describe('table hooks', () => {
             const { result } = renderHook(() => usePagination());
 
             expect(result.current.page).toEqual(1);
-            expect(result.current.pageSize).toEqual(10);
+            expect(result.current.pageSize).toEqual(20);
             expect(result.current.offset).toEqual(0);
         });
 
@@ -148,8 +148,8 @@ describe('table hooks', () => {
             act(() => result.current.props.onSetPage(event, 3));
 
             expect(result.current.page).toEqual(3);
-            expect(result.current.pageSize).toEqual(10);
-            expect(result.current.offset).toEqual(20);
+            expect(result.current.pageSize).toEqual(20);
+            expect(result.current.offset).toEqual(40);
         });
 
         test('reset', () => {
