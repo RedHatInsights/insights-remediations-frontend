@@ -1,18 +1,14 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useDispatch, useSelector as reduxSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-    Bullseye, EmptyState, EmptyStateIcon, EmptyStateBody,
-    Grid, GridItem, Stack, StackItem, Title
-} from '@patternfly/react-core';
+import { Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
 import { Main, Spinner } from '@redhat-cloud-services/frontend-components';
-import { WrenchIcon } from '@patternfly/react-icons';
-import { appUrl } from '../Utilities/urls';
 import { downloadPlaybook } from '../api';
 import { getConnectionStatus, runRemediation, setEtag, getPlaybookRuns, loadRemediation, getEndpoint } from '../actions';
 import { PermissionContext } from '../App';
 import { ExecuteModal } from './Modals/ExecuteModal';
 import { PlaybookCard } from './PlaybookCard';
+import { EmptyRemediations } from './EmptyStates/EmptyRemediations';
 import './RemediationTable.scss';
 
 function skeleton () {
@@ -22,30 +18,6 @@ function skeleton () {
                 <Spinner centered/>
             </Main>
         </React.Fragment>
-    );
-}
-
-function empty () {
-    return (
-        <Bullseye>
-            <EmptyState className='ins-c-no-remediations'>
-                <EmptyStateIcon icon={ WrenchIcon } size='sm' />
-                <Title size="lg" headingLevel="h5">You haven&apos;t created any remediation Playbooks yet</Title>
-                <EmptyStateBody>
-                    Create an Ansible Playbook to remediate or mitigate vulnerabilities or configuration issues.
-                    <br />
-                    <br />
-                    To create a new remediation Playbook, select issues identified in
-                    <br />
-                    <a href={ appUrl('advisor').toString() }>Recommendations</a>,&nbsp;
-                    <a href={ appUrl('compliance').toString() }>Compliance</a> or&nbsp;
-                    <a href={ appUrl('vulnerabilities').toString() }>Vulnerability</a>&nbsp;
-                    and select
-                    <br />
-                    <strong>Remediate with Ansible.</strong>
-                </EmptyStateBody>
-            </EmptyState>
-        </Bullseye>
     );
 }
 
@@ -61,7 +33,8 @@ function RemediationTable ({
     shouldUpdateGrid,
     setShouldUpdateGrid,
     setRemediationCount,
-    showArchived
+    showArchived,
+    setShowArchived
 }) {
 
     const { value, status } = remediations;
@@ -108,10 +81,6 @@ function RemediationTable ({
         return skeleton();
     }
 
-    if (!value.data.length && !filter.value) {
-        return empty();
-    }
-
     if (!showArchived) {
         cards = value.data.reduce((result, remediation) => {
             if (remediation.archived !== true) {
@@ -131,7 +100,12 @@ function RemediationTable ({
     }
 
     if (cards.length === 0) {
-        return empty();
+        return (
+            <EmptyRemediations
+                archivedCount = { value.data.length }
+                setShowArchived = { setShowArchived }
+            />
+        );
     }
 
     selector.register(cards);
@@ -199,7 +173,8 @@ RemediationTable.propTypes = {
     shouldUpdateGrid: PropTypes.bool.isRequired,
     setShouldUpdateGrid: PropTypes.func.isRequired,
     setRemediationCount: PropTypes.func.isRequired,
-    showArchived: PropTypes.bool.isRequired
+    showArchived: PropTypes.bool.isRequired,
+    setShowArchived: PropTypes.func.isRequired
 };
 
 export default RemediationTable;

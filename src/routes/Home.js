@@ -206,7 +206,8 @@ function Home () {
                                         shouldUpdateGrid={ shouldUpdateGrid }
                                         setShouldUpdateGrid={ setShouldUpdateGrid }
                                         setRemediationCount={ setRemediationCount }
-                                        showArchived= { showArchived }
+                                        showArchived={ showArchived }
+                                        setShowArchived={ setShowArchived }
                                     />
                                 </StackItem>
                             </Stack>

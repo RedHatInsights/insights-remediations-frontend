@@ -16,13 +16,6 @@
     .ins-c-system-card + .ins-c-system-card { @include rem('margin-top', 5px); }
 }
 
-// No remediations
-.ins-c-no-remediations {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
 .ins-c-table__toolbar .ins-c-skeleton {
     margin-left: auto;
 }
