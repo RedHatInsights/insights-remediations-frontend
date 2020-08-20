@@ -1,0 +1,103 @@
+@import '@redhat-cloud-services/frontend-components-utilities/files/Utilities/_mixins.scss';
+
+
+.page__remediation-details {
+
+    // Make all cards the same height
+    .ins-c-summary-cards .pf-c-card{
+        min-height: 100%
+    }
+
+    .pf-c-card__header .ins-m-card__header-bold,
+    .pf-c-card__header.ins-m-card__header-bold {
+        font-weight: 600;
+    }
+
+    .ins-m-text-emphesis, .pf-c-progress__measure {
+        @include rem('font-size', 24px);
+        font-weight: 600;
+    }
+
+    .ins-c-subheader-small {
+        @include rem('font-size', 12px);
+    }
+
+    // Actions Resolved Card
+    .ins-c-card__actions-resolved {
+        .pf-c-card__header .pf-l-grid {
+            align-items: center;
+        }
+    }
+
+    // Systems Reboot Card
+    .ins-c-card__system-reboot {
+        .pf-l-stack, .pf-l-stack__item {
+            align-items: center;
+            text-align: center;
+        }
+        .ins-c-reboot-switch {
+            @include rem('margin-bottom', 10px);
+        }
+    }
+    // Remediations Details Card
+    .ins-c-card__plan-details {
+        .pf-l-stack__item:not(.ins-m-border-top){
+            @include rem('margin-bottom', 5px);
+        }
+        .pf-l-stack__item .ins-m-border-top{
+            @include rem('margin-top', 7.5px);
+            @include rem('padding-top', 7.5px);
+            border-top: 1px solid #efefef;
+        }
+    }
+
+    .ins-c-playbookSummary {
+        &__overview { margin-bottom: var(--pf-global--spacer--lg); }
+        &__settings { margin-bottom: var(--pf-global--spacer--sm); }
+        button {
+            width: min-content;
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .ins-c-reboot-status {
+            &__enabled b { color: var(--pf-global--success-color--100); }
+            &__disabled b { color: var(--pf-global--danger-color--200); }
+        }
+        &__tabs {
+            background: white;
+            padding: var(--pf-global--spacer--md);
+        }
+    }
+}
+
+.ins-c-remediation-summary {
+    //height: 100%;
+
+    &__chart {
+        
+    }
+
+    &__body {
+        padding-top: var(--pf-global--spacer--lg);
+    }
+
+    &__reboot {
+        &--enabled {
+            color: var(--pf-global--success-color--100);
+        }
+        &--disabled {
+            font-weight: var(--pf-global--FontWeight--normal);
+            &--warning {
+                font-weight: var(--pf-global--FontWeight--normal);
+                padding-right: var(--pf-global--spacer--md);
+            }
+        }
+        &--required {
+            color: var(--pf-global--warning-color--200);
+            padding: var(--pf-global--spacer--xs);
+            &--icon {
+                color: var(--pf-global--warning-color--100);
+            }
+        }
+    }
+}

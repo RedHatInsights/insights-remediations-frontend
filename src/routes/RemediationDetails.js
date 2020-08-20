@@ -7,7 +7,7 @@ import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import RemediationActivityTable from '../components/RemediationActivityTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
-import { normalizeStatus, StatusSummary } from '../components/statusHelper';
+import { normalizeStatus } from '../components/statusHelper';
 import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
@@ -15,36 +15,30 @@ import UpsellBanner from '../components/Alerts/UpsellBanner';
 import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
 import NotConfigured from '../components/EmptyStates/NotConfigured';
 import DeniedState from '../components/DeniedState';
-import classnames from 'classnames';
 import SkeletonTable from '../skeletons/SkeletonTable';
 import '../components/Status.scss';
 
 import {
-    Main,
-    PageHeader, PageHeaderTitle,
-    DateFormat
+    Main, PageHeader, PageHeaderTitle
 } from '@redhat-cloud-services/frontend-components';
 
 import {
-    Card, CardHeader, CardBody,
     Stack, StackItem,
     Level, LevelItem,
     Breadcrumb, BreadcrumbItem,
     Button,
     Split, SplitItem,
-    Flex, FlexItem,
-    Tabs, Tab,
-    Title
+    Tabs, Tab
 } from '@patternfly/react-core';
 
 import RemediationDetailsSkeleton from '../skeletons/RemediationDetailsSkeleton';
-import DescriptionList from '../components/Layouts/DescriptionList';
 import EmptyActivityTable from '../components/EmptyStates/EmptyActivityTable';
 
 import { PermissionContext } from '../App';
 
 import './RemediationDetails.scss';
 import NoReceptorBanner from '../components/Alerts/NoReceptorBanner';
+import { RemediationSummary } from '../components/RemediationSummary';
 
 const RemediationDetails = ({
     match,
@@ -69,10 +63,6 @@ const RemediationDetails = ({
     const [ activeTabKey, setActiveTabKey ] = useState(location.search.includes('?activity') ? 1 : 0);
 
     const context = useContext(PermissionContext);
-
-    const handleRebootChange = autoReboot => {
-        switchAutoReboot(id, autoReboot);
-    };
 
     const handleUpsellToggle = () => {
         setUpsellBannerVisible(false);
@@ -118,45 +108,6 @@ const RemediationDetails = ({
         }
     }, [ playbookRuns ]);
 
-    const generateNumRebootString = (num) => {
-        return `${num} system${num === 1 ? '' : 's'} require${num === 1 ? 's' : ''} reboot`;
-    };
-
-    const generateAutoRebootStatus = (status, needsReboot) => {
-        if (!needsReboot) {
-            return 'Not required';
-        }
-
-        return (status ? 'Enabled' : 'Disabled');
-    };
-
-    const renderLatestActivity = (playbookRuns) => {
-        if (playbookRuns.length) {
-            const mostRecent = playbookRuns[0];
-            return <FlexItem spacer={ { default: 'spacer-xl' } }>
-                <DescriptionList
-                    needsPointer
-                    className='ins-c-latest-activity'
-                    title='Latest activity'>
-                    <StatusSummary
-                        executorStatus={ mostRecent.status }
-                        counts={ mostRecent.executors.reduce((acc, ex) => (
-                            {
-                                pending: acc.pending + ex.counts.pending,
-                                running: acc.running + ex.counts.running,
-                                success: acc.success + ex.counts.success,
-                                failure: acc.failure + ex.counts.failure,
-                                canceled: acc.canceled + ex.counts.canceled,
-                                acked: acc.acked + ex.counts.acked
-                            }), { pending: 0, running: 0, success: 0, failure: 0, canceled: 0, acked: 0 }) }
-                        permission={ {} } />
-                    <span className='ins-c-latest-activity__date'><DateFormat type='relative' date={ mostRecent.updated_at } /></span>
-                    <Link to={ `/${mostRecent.remediation_id}/${mostRecent.id}` }>View</Link>
-                </DescriptionList>
-            </FlexItem>;
-        }
-    };
-
     const renderActivityState = (isEntitled, isReceptorConfigured, playbookRuns, remediation) => {
         if (!isReceptorConfigured) {return <NotConfigured/>;}
 
@@ -178,12 +129,6 @@ const RemediationDetails = ({
     if (status !== 'fulfilled') {
         return <RemediationDetailsSkeleton/>;
     }
-
-    const { stats } = remediation;
-
-    const totalSystems = stats.systemsWithReboot + stats.systemsWithoutReboot;
-
-    const pluralize = (number, str) => number === 1 ? `${number} ${str}` : `${number} ${str}s`;
 
     return (
         context.permissions.read === false
@@ -224,6 +169,12 @@ const RemediationDetails = ({
                             </Split>
                         </LevelItem>
                     </Level>
+                    <RemediationSummary
+                        remediation={ remediation }
+                        playbookRuns={ playbookRuns }
+                        switchAutoReboot={ switchAutoReboot }
+                        context={ context }
+                    />
                 </PageHeader>
                 <Main>
                     <Stack hasGutter>
@@ -237,62 +188,6 @@ const RemediationDetails = ({
                                 <NoReceptorBanner onClose={ () => handleNoReceptorToggle() }/>
                             </StackItem>
                         }
-                        <StackItem>
-                            <Card>
-                                <CardHeader className='ins-m-card__header-bold'>
-                                    <Title headingLevel="h4" size="xl">Playbook summary</Title>
-                                </CardHeader>
-                                <CardBody>
-                                    <Flex className='ins-c-playbookSummary' direction={ { default: 'column' } }>
-                                        <Flex className='ins-c-playbookSummary__overview'>
-                                            <FlexItem spacer={ { default: 'spacer-xl' } }>
-                                                <DescriptionList
-                                                    isBold
-                                                    title='Total systems'>
-                                                    { pluralize(totalSystems, 'system') }
-                                                </DescriptionList>
-                                            </FlexItem>
-
-                                        </Flex>
-                                        { playbookRuns &&
-                                            renderLatestActivity(playbookRuns)
-                                        }
-
-                                        <DescriptionList className='ins-c-playbookSummary__settings' title='Playbook settings'>
-                                            <Flex>
-                                                <FlexItem
-                                                    className={ classnames(
-                                                        'ins-c-reboot-status',
-                                                        { 'ins-c-reboot-status__enabled':
-                                                            remediation.auto_reboot && remediation.needs_reboot
-                                                        },
-                                                        { 'ins-c-reboot-status__disabled': !remediation.auto_reboot }
-                                                    ) }
-                                                    spacer={ { default: 'spacer-xl' } }>
-                                                    Auto reboot:&nbsp;
-                                                    <b>
-                                                        { generateAutoRebootStatus(
-                                                            remediation.auto_reboot,
-                                                            remediation.needs_reboot)
-                                                        }
-                                                    </b>
-                                                </FlexItem>
-                                                <FlexItem>{ generateNumRebootString(stats.systemsWithReboot) }</FlexItem>
-                                            </Flex>
-                                        </DescriptionList>
-                                        { remediation.needs_reboot && context.permissions.write &&
-                                            <Button
-                                                variant='link'
-                                                onClick={ () => handleRebootChange(!remediation.auto_reboot) }>
-                                                Turn {
-                                                    remediation.auto_reboot && remediation.needs_reboot ? 'off' : 'on'
-                                                } auto reboot
-                                            </Button>
-                                        }
-                                    </Flex>
-                                </CardBody>
-                            </Card>
-                        </StackItem>
                         <StackItem className='ins-c-playbookSummary__tabs'>
                             <Tabs activeKey={ activeTabKey } onSelect={ handleTabClick }>
                                 <Tab eventKey={ 0 } title='Actions'>
