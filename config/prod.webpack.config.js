@@ -1,9 +1,10 @@
-/* global require, module */
+const { resolve } = require('path');
+const config = require('@redhat-cloud-services/frontend-components-config');
+const { config: webpackConfig, plugins } = config({
+    rootFolder: resolve(__dirname, '../')
+});
 
-const _ = require('lodash');
-const webpackConfig = require('./base.webpack.config');
-
-module.exports = _.merge({},
-    webpackConfig,
-    require('./base.webpack.plugins.js')
-);
+module.exports = {
+    ...webpackConfig,
+    plugins
+};
