@@ -232,13 +232,13 @@ export const PlaybookCard = ({
                             Complete actions
                             </StackItem>
                             <StackItem className='ins-c-playbook-card__body--values'>
-                                { renderActionStatus(1, remediation.issue_count) }
+                                { renderActionStatus(remediation.resolved_count, remediation.issue_count) }
                             </StackItem>
                         </Stack>
                     </SplitItem>
                 </Split>
             </CardBody>
-            { renderProgress(1, remediation.issue_count) }
+            { renderProgress(remediation.resolved_count, remediation.issue_count) }
         </Card>
     );
 };
