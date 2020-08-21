@@ -80,6 +80,7 @@ const SystemForActionButton = ({ issue, remediation, onDelete }) => {
     return (
         <React.Fragment>
             <Button
+                className="ins-c-systems-button"
                 variant='link' onClick={ () => setOpen(true) }>
                 { issue.systems.length }
             </Button>

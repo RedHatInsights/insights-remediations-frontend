@@ -11,7 +11,8 @@ import {
 } from '@patternfly/react-core';
 
 import { sortable, TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
-import { SimpleTableFilter, TableToolbar, EmptyTable } from '@redhat-cloud-services/frontend-components';
+import { RedoIcon, TimesIcon } from '@patternfly/react-icons';
+import { TableToolbar, EmptyTable, PrimaryToolbar } from '@redhat-cloud-services/frontend-components';
 
 import { getIssueApplication, includesIgnoreCase } from '../Utilities/model';
 import {  buildIssueUrl } from '../Utilities/urls';
@@ -54,10 +55,18 @@ function issueDescriptionCell (issue) {
 
 function needsRebootCell (needsReboot) {
     if (needsReboot) {
-        return <CheckCircleIcon className="ins-c-remediations-reboot-check-circle" aria-label="reboot required"/>;
+        return (
+            <div>
+                <RedoIcon/>{ ' ' }Yes
+            </div>
+        );
     }
 
-    return ('No');
+    return (
+        <div>
+            <TimesIcon/>{ ' ' }No
+        </div>
+    );
 }
 
 function systemsForAction(issue, remediation) {
@@ -124,7 +133,41 @@ function RemediationDetailsTable (props) {
 
     return (
         <div className='test'>
-            <Toolbar className='ins-c-remediations-details-table__toolbar'>
+            <PrimaryToolbar
+                filterConfig={ {
+                    items: [{
+                        label: 'Search actions',
+                        type: 'text',
+                        filterValues: {
+                            id: 'filter-by-string',
+                            key: 'filter-by-string',
+                            placeholder: 'Search',
+                            value: filterText,
+                            onChange: (_e, value) => {
+                                setFilterText(value);
+                            }
+                        }
+                    }]
+                } }
+                bulkSelect={ { items: [{ title: 'Select all',
+                    onClick: (e) => selector.props.onSelect(e, true, -1)
+                }],
+                checked: selectedIds.length && filtered.length > selectedIds.length ? null : selectedIds.length,
+                count: selectedIds.length,
+                onSelect: (isSelected, e) => selector.props.onSelect(e, isSelected, -1) } }
+                actionsConfig={ { actions: [
+                    <DeleteActionsButton key={ props.remediation.id }
+                        variant='secondary'
+                        isDisabled={ !selectedIds.length }
+                        remediation={ props.remediation }
+                        issues={ selectedIds }
+                        afterDelete={ selector.reset }
+                    />
+                ]} }
+                pagination={ { ...pagination.props, itemCount: filtered.length } }
+                activeFiltersConfig={ activeFiltersConfig }
+            />
+            {/* { /* <Toolbar className='ins-c-remediations-details-table__toolbar'>
                 <ToolbarContent>
                     <ToolbarItem>
                         <SimpleTableFilter buttonTitle="" placeholder="Search actions" { ...filter.props } />
@@ -154,12 +197,13 @@ function RemediationDetailsTable (props) {
                         { ...debug.pagination }
                     />
                 </ToolbarContent>
-            </Toolbar>
+            </Toolbar> */}
             {
                 rows.length > 0 ?
                     <Table
                         variant={ TableVariant.compact }
                         aria-label="Actions"
+                        canSelectAll={ false }
                         className='ins-c-remediations-details-table'
                         cells={ [
                             {
