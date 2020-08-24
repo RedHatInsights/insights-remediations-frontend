@@ -139,7 +139,7 @@ function RemediationTable ({
                         { value.data.map((remediation, idx) => {
                             return (
                                 !showArchived && remediation.archived
-                                    ? null
+                                    ? <React.Fragment/>
                                     : <GridItem key={ remediation.id }>
                                         <PlaybookCard
                                             remediation={ remediation }
