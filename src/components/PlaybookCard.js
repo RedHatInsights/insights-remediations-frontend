@@ -211,7 +211,7 @@ export const PlaybookCard = ({
                         loadRemediation(remediation.id)
                     ], () => { setLoaded(true); }, dispatch);
                 }
-            }, 60000);
+            }, 15000);
             return () => clearInterval(interval);
         }
     }, [ poll ]);
