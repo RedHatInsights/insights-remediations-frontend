@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector as reduxSelector } from 'react-redux';
 import {
     Badge, Card, CardBody, CardHeader, CardActions, CardTitle,
     Dropdown, DropdownItem, KebabToggle,
@@ -21,6 +21,13 @@ function buildName (name, id) {
     );
 }
 
+function actionWrapper (actionsList, callback, dispatch) {
+    Promise.all(actionsList.map((event) => {
+        dispatch(event);
+        return event.payload;
+    })).then(callback);
+}
+
 const PlaybookCardHeader = ({
     remediation,
     remediationIdx,
@@ -39,17 +46,10 @@ const PlaybookCardHeader = ({
     const dispatch = useDispatch();
     const dropdownItems = [];
 
-    const actionWrapper = (actionsList, callback) => {
-        Promise.all(actionsList.map((event) => {
-            dispatch(event);
-            return event.payload;
-        })).then(callback);
-    };
-
     const archiveHandler = () => {
         actionWrapper([
             patchRemediation(remediation.id, { archived: !isArchived })
-        ], () => { setIsArchived(!isArchived); update(true); });
+        ], () => { setIsArchived(!isArchived); update(true); }, dispatch);
     };
 
     dropdownItems.push(
@@ -63,7 +63,7 @@ const PlaybookCardHeader = ({
                 actionWrapper([
                     loadRemediation(remediation.id),
                     getConnectionStatus(remediation.id)
-                ], () => { setExecuteOpen(true); setIsOpen(false); });
+                ], () => { setExecuteOpen(true); setIsOpen(false); }, dispatch);
             } }>
         Execute playbook
         </DropdownItem>
@@ -194,12 +194,48 @@ export const PlaybookCard = ({
     archived,
     selector,
     setExecuteOpen,
+    executeOpen,
     update,
     loadRemediation,
     getConnectionStatus,
     downloadPlaybook,
     permission
 }) => {
+    const [ poll, setPoll ] = useState(executeOpen => !executeOpen);
+    const [ curResolved, setCurResolved ] = useState(remediation.resolved_count);
+    const selected = reduxSelector(state => state.selectedRemediation);
+    const [ loaded, setLoaded ] = useState(false);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (poll && !archived) {
+            const interval = setInterval(() => {
+                if (poll) {
+                    actionWrapper([
+                        loadRemediation(remediation.id)
+                    ], () => { setLoaded(true); }, dispatch);
+                }
+            }, 15000);
+            return () => clearInterval(interval);
+        }
+    }, [ poll ]);
+
+    useEffect(() => {
+        if (loaded) {
+            if (curResolved !== selected.remediation.resolved_count) {
+                setCurResolved(selected.remediation.resolved_count);
+            }
+        }
+    }, [ loaded ]);
+
+    useEffect(() => {
+        if (executeOpen) {
+            setPoll(false);
+        } else {
+            setPoll(true);
+        }
+    }, [ executeOpen ]);
+
     return (
         <Card className='ins-c-playbook-card' isCompact>
             <PlaybookCardHeader
@@ -232,13 +268,13 @@ export const PlaybookCard = ({
                             Complete actions
                             </StackItem>
                             <StackItem className='ins-c-playbook-card__body--values'>
-                                { renderActionStatus(remediation.resolved_count, remediation.issue_count) }
+                                { renderActionStatus(curResolved, remediation.issue_count) }
                             </StackItem>
                         </Stack>
                     </SplitItem>
                 </Split>
             </CardBody>
-            { renderProgress(remediation.resolved_count, remediation.issue_count) }
+            { renderProgress(curResolved, remediation.issue_count) }
         </Card>
     );
 };
@@ -249,6 +285,7 @@ PlaybookCard.propTypes = {
     archived: PropTypes.bool.isRequired,
     selector: PropTypes.object.isRequired,
     setExecuteOpen: PropTypes.func.isRequired,
+    executeOpen: PropTypes.bool.isRequired,
     update: PropTypes.func.isRequired,
     loadRemediation: PropTypes.func.isRequired,
     getConnectionStatus: PropTypes.func.isRequired,

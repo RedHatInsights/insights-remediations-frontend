@@ -147,6 +147,7 @@ function RemediationTable ({
                                             archived={ remediation.archived }
                                             selector={ selector }
                                             setExecuteOpen={ setExecuteOpen }
+                                            executeOpen={ executeOpen }
                                             update={ setShouldUpdateGrid }
                                             loadRemediation={ loadRemediation }
                                             getConnectionStatus={ getConnectionStatus }
