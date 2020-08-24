@@ -84,19 +84,13 @@ function RemediationTable ({
     if (!showArchived) {
         cards = value.data.reduce((result, remediation) => {
             if (remediation.archived !== true) {
-                result.push({
-                    id: remediation.id,
-                    archived: remediation.archived
-                });
+                result.push(remediation);
             }
 
             return result;
         }, []);
     } else {
-        cards = value.data.map(remediation => ({
-            id: remediation.id,
-            archived: remediation.archived
-        }));
+        cards = value.data.map(remediation => (remediation));
     }
 
     if (cards.length === 0) {
@@ -136,25 +130,23 @@ function RemediationTable ({
                 </StackItem>
                 <StackItem>
                     <Grid sm={ 12 } md={ 6 } lg={ 4 } hasGutter>
-                        { value.data.map((remediation, idx) => {
+                        { cards.map((remediation, idx) => {
                             return (
-                                !showArchived && remediation.archived
-                                    ? <React.Fragment/>
-                                    : <GridItem key={ remediation.id }>
-                                        <PlaybookCard
-                                            remediation={ remediation }
-                                            remediationIdx={ idx }
-                                            archived={ remediation.archived }
-                                            selector={ selector }
-                                            setExecuteOpen={ setExecuteOpen }
-                                            executeOpen={ executeOpen }
-                                            update={ setShouldUpdateGrid }
-                                            loadRemediation={ loadRemediation }
-                                            getConnectionStatus={ getConnectionStatus }
-                                            downloadPlaybook={ downloadPlaybook }
-                                            permission={ permission }
-                                        />
-                                    </GridItem>
+                                <GridItem key={ remediation.id }>
+                                    <PlaybookCard
+                                        remediation={ remediation }
+                                        remediationIdx={ idx }
+                                        archived={ remediation.archived }
+                                        selector={ selector }
+                                        setExecuteOpen={ setExecuteOpen }
+                                        executeOpen={ executeOpen }
+                                        update={ setShouldUpdateGrid }
+                                        loadRemediation={ loadRemediation }
+                                        getConnectionStatus={ getConnectionStatus }
+                                        downloadPlaybook={ downloadPlaybook }
+                                        permission={ permission }
+                                    />
+                                </GridItem>
                             );
                         }) }
                     </Grid>

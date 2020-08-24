@@ -41,7 +41,6 @@ const PlaybookCardHeader = ({
     permission
 }) => {
     const [ isOpen, setIsOpen ] = useState(false);
-    const [ isChecked, setIsChecked ] = useState(false);
     const [ isArchived, setIsArchived ] = useState(archived);
     const dispatch = useDispatch();
     const dropdownItems = [];
@@ -129,10 +128,7 @@ const PlaybookCardHeader = ({
                     name={ `${remediation.id}-checkbox` }
                     checked={ selector.getSelectedIds().includes(remediation.id) }
                     onChange={ (e) => {
-                        setIsChecked(e.target.checked);
-                        isChecked
-                            ? selector.props.onSelect(e, false, remediationIdx)
-                            : selector.props.onSelect(e, true, remediationIdx);
+                        selector.props.onSelect(e, e.target.checked, remediationIdx);
                     } }
                     aria-label={ `${remediation.id}-checkbox` }
                 />
@@ -215,7 +211,7 @@ export const PlaybookCard = ({
                         loadRemediation(remediation.id)
                     ], () => { setLoaded(true); }, dispatch);
                 }
-            }, 15000);
+            }, 60000);
             return () => clearInterval(interval);
         }
     }, [ poll ]);
