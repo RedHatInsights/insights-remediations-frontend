@@ -122,7 +122,7 @@ export function useExpander (rowToId = row => row.id) {
 export function usePagination () {
     const [ page, setPage ] = useState(1);
     const [ pageDebounced, setPageDebounced ] = useState(1);
-    const [ pageSize, setPageSize ] = useState(10);
+    const [ pageSize, setPageSize ] = useState(20);
 
     const reset = () => setPage(1);
     const cb = callbacks();
