@@ -4,7 +4,7 @@ import {
     Button, Flex, FlexItem, Split, SplitItem, Stack, StackItem
 } from '@patternfly/react-core';
 import { Link } from 'react-router-dom';
-import { ChartDonutUtilization, ChartDonut } from '@patternfly/react-charts';
+import { ChartDonutUtilization, ChartLabel } from '@patternfly/react-charts';
 import { CheckCircleIcon, OffIcon, ExclamationTriangleIcon } from '@patternfly/react-icons';
 import DescriptionList from '../components/Layouts/DescriptionList';
 import classnames from 'classnames';
@@ -152,17 +152,18 @@ export const RemediationSummary = ({
     return (
         <Split>
             <SplitItem>
-                <ChartDonut
+                <ChartDonutUtilization
                     ariaDesc='Resolved issues count'
                     ariaTitle='Resolved issues chart'
                     constrainToVisibleArea={ true }
-                    data={ [
-                        { x: 'Resolved', y: remediation.resolved_count / remediation.issues.length },
-                        { x: 'Unresolved', y: (remediation.issues.length - remediation.resolved_count) / remediation.issues.length }
-                    ] }
+                    data={
+                        { x: 'Resolved', y: remediation.resolved_count / remediation.issues.length * 100 }
+                    }
                     labels={ ({ data }) => data.x ? `${data.x}: ${data.y}%` : null }
                     title={ `${remediation.resolved_count}/${remediation.issues.length}` }
                     subTitle='Issues resolved'
+                    subTitleComponent={ <ChartLabel y={ 102 } /> }
+                    thresholds={ [{ value: 100, color: '#3E8635' }] }
                     height={ 175 }
                     width={ 175 }
                     padding={ {
