@@ -11,7 +11,7 @@ import {
 } from '@patternfly/react-core';
 
 import { sortable, TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
-import { SimpleTableFilter, TableToolbar, EmptyTable } from '@redhat-cloud-services/frontend-components';
+import { SimpleTableFilter, TableToolbar } from '@redhat-cloud-services/frontend-components';
 
 import { getIssueApplication, includesIgnoreCase } from '../Utilities/model';
 import {  buildIssueUrl } from '../Utilities/urls';
@@ -28,6 +28,7 @@ import * as debug from '../Utilities/debug';
 import './RemediationDetailsTable.scss';
 import { CheckCircleIcon } from '@patternfly/react-icons';
 import { PermissionContext } from '../App';
+import { EmptyActions } from './EmptyStates/EmptyActions';
 
 function resolutionDescriptionCell (remediation, issue) {
     if (issue.resolutions_available <= 1) {
@@ -186,8 +187,8 @@ function RemediationDetailsTable (props) {
                         <TableBody { ...selector.tbodyProps } />
                     </Table> :
                     filter.value ?
-                        <EmptyTable centered className='ins-c-remediation-details-table--empty'>No Actions found</EmptyTable> :
-                        <EmptyTable centered className='ins-c-remediation-details-table--empty'>This Playbook is empty</EmptyTable>
+                        <EmptyActions filtered={ true }/> :
+                        <EmptyActions filtered={ false }/>
             }
             {
                 rows.length > 0 &&
