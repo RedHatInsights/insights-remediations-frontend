@@ -165,10 +165,12 @@ function Home () {
                                     onClick: showArchived ?
                                         () => {
                                             setShowArchived(false);
+                                            selector.reset();
                                             localStorage.setItem('remediations:showArchived', 'false');
                                         } :
                                         () => {
                                             setShowArchived(true);
+                                            selector.reset();
                                             localStorage.setItem('remediations:showArchived', 'true');
                                         }
                                 }]} }
