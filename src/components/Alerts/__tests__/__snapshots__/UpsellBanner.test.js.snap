@@ -3,7 +3,7 @@
 exports[`UpsellBanner component should render 1`] = `
 <Alert
   actionClose={
-    <Unknown
+    <AlertActionCloseButton
       onClose={[Function]}
     />
   }

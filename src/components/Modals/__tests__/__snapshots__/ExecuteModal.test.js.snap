@@ -20,7 +20,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       null,
     ]
   }
-  appendTo={<body />}
+  appendTo={[Function]}
   aria-describedby=""
   aria-label=""
   aria-labelledby=""
@@ -84,6 +84,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       dropdownPosition="right"
       expandId="expandable-toggle"
       gridBreakPoint="grid-md"
+      isStickyHeader={false}
       ouiaSafe={true}
       role="grid"
       rowLabeledBy="simple-node"
@@ -117,7 +118,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       null,
     ]
   }
-  appendTo={<body />}
+  appendTo={[Function]}
   aria-describedby=""
   aria-label=""
   aria-labelledby=""
@@ -186,6 +187,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       dropdownPosition="right"
       expandId="expandable-toggle"
       gridBreakPoint="grid-md"
+      isStickyHeader={false}
       ouiaSafe={true}
       role="grid"
       rowLabeledBy="simple-node"
