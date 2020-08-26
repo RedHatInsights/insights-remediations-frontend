@@ -12,6 +12,7 @@ export default function ConfirmationDialog ({
     isOpen = true,
     title = 'Remove system?',
     text = 'This action cannot be undone',
+    confirmText = 'Remove system',
     onClose = f=>f
 }) {
 
@@ -24,7 +25,7 @@ export default function ConfirmationDialog ({
             onClose={ () => onClose(false) }
             isFooterLeftAligned
             actions={ [
-                <Button key="confirm" variant="danger" onClick={ () => onClose(true) }>Remove system</Button>,
+                <Button key="confirm" variant="danger" onClick={ () => onClose(true) }>{ confirmText }</Button>,
                 <Button key="cancel" variant="link" onClick={ () => onClose(false) }>Cancel</Button>
             ] }
         >
@@ -37,5 +38,6 @@ ConfirmationDialog.propTypes = {
     isOpen: PropTypes.bool,
     title: PropTypes.string,
     text: PropTypes.string,
+    confirmText: PropTypes.string,
     onClose: PropTypes.func
 };
