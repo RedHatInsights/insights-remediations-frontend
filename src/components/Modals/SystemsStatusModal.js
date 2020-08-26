@@ -6,6 +6,7 @@ import * as ReactRedux from 'react-redux';
 import { reactCore } from '@redhat-cloud-services/frontend-components-utilities/files/inventoryDependencies';
 import { useStore } from 'react-redux';
 import orderBy from 'lodash/orderBy';
+import { CheckIcon, TimesIcon } from '@patternfly/react-icons';
 
 import PropTypes from 'prop-types';
 import {
@@ -29,11 +30,26 @@ export const SystemsStatusModal = ({
     const [ deleteDialogOpen, setDeleteDialogOpen ] = useState(false);
     const [ InventoryTable, setInventoryTable ] = useState();
     const [ system, setSystem ] = useState({});
+    const [ systemStatuses, setSystemStatuses ] = useState({});
     const [ page, setPage ] = useState(1);
     const [ pageSize, setPageSize ] = useState(50);
     const [ filterText, setFilterText ] = useState('');
     const inventory = useRef(null);
     const store = useStore();
+
+    useEffect(() => {
+        const statuses = {};
+        issue.systems.map(system => {
+            statuses[system.id] = system.hostname === true //placeholder!
+                ? <div>
+                    <CheckIcon/>{ ' ' }Remediated
+                </div>
+                : <div>
+                    <TimesIcon/>{ ' ' }Not remediated
+                </div>;
+        });
+        setSystemStatuses(statuses);
+    }, []);
 
     // eslint-disable-next-line react/display-name
     const detailDropdown = (remediation, issue) => (system) => (
@@ -41,6 +57,12 @@ export const SystemsStatusModal = ({
     );
 
     const urlBuilder = inventoryUrlBuilder(issue);
+
+    const generateStatus = (id) => {
+        return (
+            systemStatuses[id]
+        );
+    };
 
     const loadInventory = async () => {
         const {
@@ -57,7 +79,10 @@ export const SystemsStatusModal = ({
 
         getRegistry().register({
             ...mergeWithEntities(reducers.inventoryEntitiesReducer({
-                INVENTORY_ACTION_TYPES, detailDropdown: detailDropdown(remediation, issue), urlBuilder
+                INVENTORY_ACTION_TYPES,
+                detailDropdown: detailDropdown(remediation, issue),
+                urlBuilder,
+                generateStatus
             })())
         });
 
@@ -122,7 +147,7 @@ export const SystemsStatusModal = ({
                                                 value: 'display_name',
                                                 label: 'Name',
                                                 filterValues: {
-                                                    placeholder: 'Filter by name', type: conditionalFilterType.text,
+                                                    placeholder: 'Search by name', type: conditionalFilterType.text,
                                                     value: filterText,
                                                     onChange: (e, selected) => setFilterText(selected)
                                                 }
@@ -147,9 +172,6 @@ export const SystemsStatusModal = ({
                                                 setFilterText(value);
                                             }
                                         }
-                                    },
-                                    {
-                                        label: 'Status'
                                     }
                                 ]
                             } }
