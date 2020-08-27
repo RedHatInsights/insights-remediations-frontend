@@ -76,6 +76,16 @@ function systemsForAction(issue, remediation, title) {
     );
 }
 
+function getResolvedSystems(issue) {
+    let count = 0;
+    issue.systems.map(system => {
+        if (system.resolved) {
+            count++;
+        }
+    });
+    return count;
+}
+
 const SORTING_ITERATEES = [
     null, // checkboxes
     i => i.description,
@@ -106,7 +116,7 @@ const buildRow = (remediation) => (issue) => {
                 },
                 {
                     title: systemsForAction(issue, remediation,
-                        `${remediation.resolved_count}/${issue.systems.length} remediated`) // PLACEHOLDER VALUE
+                        `${getResolvedSystems(issue)}/${issue.systems.length} remediated`)
                 }
             ]
         }

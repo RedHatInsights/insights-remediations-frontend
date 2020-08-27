@@ -40,7 +40,7 @@ export const SystemsStatusModal = ({
     useEffect(() => {
         const statuses = {};
         issue.systems.map(system => {
-            statuses[system.id] = system.hostname === true //placeholder!
+            statuses[system.id] = system.resolved === true
                 ? <div>
                     <CheckIcon/>{ ' ' }Remediated
                 </div>
