@@ -16,7 +16,6 @@ import './RemediationTable.scss';
 
 import { ConnectResolutionEditButton } from '../containers/ConnectedComponents';
 import { DeleteActionsButton } from '../containers/DeleteButtons';
-//import { isBeta } from '../config';
 import { SystemForActionButton } from './SystemForActionButton';
 
 import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
@@ -191,37 +190,6 @@ function RemediationDetailsTable (props) {
                 pagination={ { ...pagination.props, itemCount: filtered.length } }
                 activeFiltersConfig={ activeFiltersConfig }
             />
-            { /* <Toolbar className='ins-c-remediations-details-table__toolbar'>
-                <ToolbarContent>
-                    <ToolbarItem>
-                        <SimpleTableFilter buttonTitle="" placeholder="Search actions" { ...filter.props } />
-                    </ToolbarItem>
-                    {
-                        isBeta &&
-                        <ToolbarItem>
-                            <Button isDisabled={ true }> Add Action </Button>
-                        </ToolbarItem>
-                    }
-                    <ToolbarItem>
-                        { permission.permissions.write &&
-                            <DeleteActionsButton
-                                variant='secondary'
-                                isDisabled={ !selectedIds.length }
-                                remediation={ props.remediation }
-                                issues={ selectedIds }
-                                afterDelete={ selector.reset }
-                            />
-                        }
-                    </ToolbarItem>
-                    <Pagination
-                        variant='top'
-                        dropDirection='down'
-                        itemCount={ filtered.length }
-                        { ...pagination.props }
-                        { ...debug.pagination }
-                    />
-                </ToolbarContent>
-            </Toolbar> */ }
             {
                 rows.length > 0 ?
                     <Table
