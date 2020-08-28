@@ -1,6 +1,8 @@
-td[data-label="Actions"] {
-    display: flex;
-    flex-direction: column;
+.ins-c-remediation-details-table {
+    td[data-label="Actions"] {
+        display: flex;
+        flex-direction: column;
+    }
 }
 
 .ins-c-remediations-reboot-check-circle {

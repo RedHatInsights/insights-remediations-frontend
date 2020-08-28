@@ -193,7 +193,7 @@ function RemediationDetailsTable (props) {
                         variant={ TableVariant.compact }
                         aria-label="Actions"
                         canSelectAll={ false }
-                        className='ins-c-remediations-details-table'
+                        className='ins-c-remediation-details-table'
                         cells={ [
                             {
                                 title: 'Actions',
