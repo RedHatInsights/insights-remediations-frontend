@@ -42,8 +42,8 @@ export const SystemsStatusModal = ({
         const statuses = {};
         issue.systems.map(system => {
             statuses[system.id] = system.resolved === true
-                ? <IconInline icon={ <CheckIcon/> } text={ 'Remediated' }/>
-                : <IconInline icon={ <TimesIcon/> } text={ 'Not remediated' }/>;
+                ? <IconInline icon={ <CheckIcon/> } text='Remediated'/>
+                : <IconInline icon={ <TimesIcon/> } text='Not remediated'/>;
         });
         setSystemStatuses(statuses);
     }, []);

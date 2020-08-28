@@ -54,12 +54,12 @@ function resolutionDescriptionCell (remediation, issue) {
 function needsRebootCell (needsReboot) {
     if (needsReboot) {
         return (
-            <IconInline icon={ <RedoIcon/> } text={ 'Yes' }/>
+            <IconInline icon={ <RedoIcon/> } text='Yes'/>
         );
     }
 
     return (
-        <IconInline icon={ <TimesIcon/> } text={ 'No' }/>
+        <IconInline icon={ <TimesIcon/> } text='No'/>
     );
 }
 
