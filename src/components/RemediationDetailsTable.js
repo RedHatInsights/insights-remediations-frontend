@@ -23,6 +23,7 @@ import * as debug from '../Utilities/debug';
 
 import './RemediationDetailsTable.scss';
 import { PermissionContext } from '../App';
+import { IconInline } from './Layouts/IconInline';
 
 function resolutionDescriptionCell (remediation, issue) {
     const url = buildIssueUrl(issue.id);
@@ -53,16 +54,12 @@ function resolutionDescriptionCell (remediation, issue) {
 function needsRebootCell (needsReboot) {
     if (needsReboot) {
         return (
-            <div>
-                <RedoIcon/>{ ' ' }Yes
-            </div>
+            <IconInline icon={ <RedoIcon/> } text={ 'Yes' }/>
         );
     }
 
     return (
-        <div>
-            <TimesIcon/>{ ' ' }No
-        </div>
+        <IconInline icon={ <TimesIcon/> } text={ 'No' }/>
     );
 }
 

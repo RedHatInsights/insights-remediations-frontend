@@ -19,6 +19,7 @@ import reducers from '../../store/reducers';
 import RemediationDetailsSystemDropdown from '../RemediationDetailsSystemDropdown';
 import ConfirmationDialog from '../ConfirmationDialog';
 import { getSystemName } from '../../Utilities/model';
+import { IconInline } from '../Layouts/IconInline';
 
 export const SystemsStatusModal = ({
     isOpen,
@@ -41,12 +42,8 @@ export const SystemsStatusModal = ({
         const statuses = {};
         issue.systems.map(system => {
             statuses[system.id] = system.resolved === true
-                ? <div>
-                    <CheckIcon/>{ ' ' }Remediated
-                </div>
-                : <div>
-                    <TimesIcon/>{ ' ' }Not remediated
-                </div>;
+                ? <IconInline icon={ <CheckIcon/> } text={ 'Remediated' }/>
+                : <IconInline icon={ <TimesIcon/> } text={ 'Not remediated' }/>;
         });
         setSystemStatuses(statuses);
     }, []);
