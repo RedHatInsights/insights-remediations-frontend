@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Split, SplitItem } from '@patternfly/react-core';
 import './IconInline.scss';
 
 export const IconInline = ({
@@ -9,19 +8,15 @@ export const IconInline = ({
 }) => {
 
     return (
-        <Split hasGutter className='ins-c-icon-inline__split'>
-            <SplitItem>
-                { icon }
-            </SplitItem>
-            <SplitItem>
-                { text }
-            </SplitItem>
-        </Split>
+        <div className='ins-c-icon-inline'>
+            { icon }
+            <span className='ins-c-icon-inline__text'>{ text }</span>
+        </div>
     );
 
 };
 
 IconInline.propTypes = {
-    icon: PropTypes.object,
-    text: PropTypes.string
+    icon: PropTypes.object.isRequired,
+    text: PropTypes.string.isRequired
 };
