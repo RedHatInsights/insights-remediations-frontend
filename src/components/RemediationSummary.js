@@ -40,58 +40,50 @@ export const RemediationSummary = ({
 
     const pluralize = (number, str) => number === 1 ? `${number} ${str}` : `${number} ${str}s`;
 
+    const rebootEnabled = () => {
+        return (
+            <div>
+                <CheckCircleIcon className='ins-c-remediations-success'/>
+                <b className='ins-c-remediation-summary__reboot--enabled'> Enabled </b>
+                { context.permissions.write &&
+                    <Button
+                        variant='link'
+                        onClick={ () => handleRebootChange(!remediation.auto_reboot) }>
+                        Turn off
+                    </Button>
+                }
+            </div>
+        );
+    };
+
+    const rebootDisabled = (required) => {
+        return (
+            <div>
+                <OffIcon/>
+                <b className={ `ins-c-remediation-summary__reboot--disabled${required ? '--warning' : ''}` }> Off </b>
+                { required &&
+                    <React.Fragment>
+                        <ExclamationTriangleIcon className='ins-c-remediation-summary__reboot--required--icon'/>
+                        <b className='ins-c-remediation-summary__reboot--required'>
+                            { generateNumRebootString(generateNumIssuesReboot()) }
+                        </b>
+                    </React.Fragment>
+                }
+                { context.permissions.write &&
+                    <Button
+                        variant='link'
+                        onClick={ () => handleRebootChange(!remediation.auto_reboot) }>
+                        Turn on
+                    </Button>
+                }
+            </div>
+        );
+    };
+
     const generateAutoRebootStatus = (status, needsReboot) => {
-        return (needsReboot
-            ? status
-                ? <div>
-                    <CheckCircleIcon className='ins-c-remediations-success'/>
-                    <b className='ins-c-remediation-summary__reboot--enabled'> Enabled </b>
-                    { context.permissions.write &&
-                        <Button
-                            variant='link'
-                            onClick={ () => handleRebootChange(!remediation.auto_reboot) }>
-                            Turn off
-                        </Button>
-                    }
-                </div>
-                : <div>
-                    <OffIcon/>
-                    <b className='ins-c-remediation-summary__reboot--disabled--warning'> Off </b>
-                    <ExclamationTriangleIcon className='ins-c-remediation-summary__reboot--required--icon'/>
-                    <b className='ins-c-remediation-summary__reboot--required'>
-                        { generateNumRebootString(generateNumIssuesReboot()) }
-                    </b>
-                    { context.permissions.write &&
-                        <Button
-                            variant='link'
-                            onClick={ () => handleRebootChange(!remediation.auto_reboot) }>
-                            Turn on
-                        </Button>
-                    }
-                </div>
-            : status
-                ? <div>
-                    <CheckCircleIcon className='ins-c-remediations-success'/>
-                    <b className='ins-c-remediation-summary__reboot--enabled'> Enabled </b>
-                    { context.permissions.write &&
-                        <Button
-                            variant='link'
-                            onClick={ () => handleRebootChange(!remediation.auto_reboot) }>
-                            Turn Off
-                        </Button>
-                    }
-                </div>
-                : <div>
-                    <OffIcon/>
-                    <b className='ins-c-remediation-summary__reboot--disabled'> Off </b>
-                    { context.permissions.write &&
-                        <Button
-                            variant='link'
-                            onClick={ () => handleRebootChange(!remediation.auto_reboot) }>
-                            Turn on
-                        </Button>
-                    }
-                </div>
+        return (status
+            ? rebootEnabled()
+            : rebootDisabled(needsReboot)
         );
     };
 

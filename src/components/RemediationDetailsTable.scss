@@ -1,16 +1,6 @@
-@import '@redhat-cloud-services/frontend-components-utilities/files/Utilities/_mixins.scss';
-
-.ins-c-remediation-details-table--empty {
-    text-align: center;
-}
-
-.ins-c-remediations-details-table-systems-table {
-
-    table-layout: fixed;
-
-    thead tr th:nth-child(2) {
-        @include rem('width', 72px);
-    }
+td[data-label="Actions"] {
+    display: flex;
+    flex-direction: column;
 }
 
 .ins-c-remediations-reboot-check-circle {
