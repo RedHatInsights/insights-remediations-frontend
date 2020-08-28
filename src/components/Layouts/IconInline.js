@@ -17,6 +17,6 @@ export const IconInline = ({
 };
 
 IconInline.propTypes = {
-    icon: PropTypes.object.isRequired,
+    icon: PropTypes.node.isRequired,
     text: PropTypes.string.isRequired
 };
