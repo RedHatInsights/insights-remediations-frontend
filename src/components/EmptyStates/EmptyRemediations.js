@@ -11,8 +11,8 @@ export const EmptyRemediations = ({
     setShowArchived
 }) => {
     return (
-        <Bullseye>
-            <EmptyState className='ins-c-no-remediations'>
+        <Bullseye className='ins-c-no-remediations'>
+            <EmptyState>
                 <EmptyStateIcon icon={ WrenchIcon } size='sm' />
                 <Title size="lg" headingLevel="h5">No remediation playbooks</Title>
                 <EmptyStateBody>

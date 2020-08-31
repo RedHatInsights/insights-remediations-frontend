@@ -8,7 +8,7 @@ import { Pagination } from '@patternfly/react-core';
 
 import { sortable, TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
 import { RedoIcon, TimesIcon } from '@patternfly/react-icons';
-import { TableToolbar, EmptyTable, PrimaryToolbar } from '@redhat-cloud-services/frontend-components';
+import { TableToolbar, PrimaryToolbar } from '@redhat-cloud-services/frontend-components';
 
 import { getIssueApplication, includesIgnoreCase } from '../Utilities/model';
 import {  buildIssueUrl } from '../Utilities/urls';
@@ -23,6 +23,7 @@ import * as debug from '../Utilities/debug';
 
 import './RemediationDetailsTable.scss';
 import { PermissionContext } from '../App';
+import { EmptyActions } from './EmptyStates/EmptyActions';
 import { IconInline } from './Layouts/IconInline';
 
 function resolutionDescriptionCell (remediation, issue) {
@@ -220,8 +221,8 @@ function RemediationDetailsTable (props) {
                         <TableBody { ...selector.tbodyProps } />
                     </Table> :
                     filter.value ?
-                        <EmptyTable centered className='ins-c-remediation-details-table--empty'>No Actions found</EmptyTable> :
-                        <EmptyTable centered className='ins-c-remediation-details-table--empty'>This Playbook is empty</EmptyTable>
+                        <EmptyActions filtered={ true }/> :
+                        <EmptyActions filtered={ false }/>
             }
             {
                 rows.length > 0 &&
