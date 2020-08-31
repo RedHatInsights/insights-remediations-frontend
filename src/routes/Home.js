@@ -186,8 +186,10 @@ function Home () {
                                 }
                                 { dialogOpen &&
                                     <ConfirmationDialog
-                                        text={ `You will not be able to recover ${selectedIds.length > 1
-                                            ? 'these remediations' : 'this remediation'}` }
+                                        title={ selectedIds.length === 1 ? 'Remove playbook' : 'Remove playbooks' }
+                                        text={ `${selectedIds.length} ${selectedIds.length > 1 ? 'playbooks' : 'playbook'} 
+                                            will be removed from Remediations. This is permanent and cannot be undone.` }
+                                        confirmText={ 'Remove' }
                                         onClose={ async (del) => {
                                             setDialogOpen(false);
                                             if (del) {
