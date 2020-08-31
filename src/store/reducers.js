@@ -152,9 +152,13 @@ const reducers = {
             return {
                 ...state,
                 columns: [
-                    { key: 'display_name', title: 'System name',
+                    { key: 'display_name', title: 'Name',
                     // eslint-disable-next-line
                         renderFunc: (name, id, { display_name }) => <div><a href={props.urlBuilder(id)}>{display_name}</a></div>
+                    },
+                    { key: 'system_status', title: 'Status',
+                    // eslint-disable-next-line
+                        renderFunc: (name, id) => <div>{props.generateStatus(id)}</div>
                     }
                 ]
             };
