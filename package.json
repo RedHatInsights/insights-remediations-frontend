@@ -9,6 +9,7 @@
     "@patternfly/react-table": "^4.8.6",
     "@patternfly/patternfly": "^4.16.7",
     "@patternfly/react-tokens": "^4.5.2",
+    "@patternfly/react-charts": "^6.9.4",
     "@redhat-cloud-services/frontend-components": "2.3.14",
     "@redhat-cloud-services/frontend-components-notifications": "2.1.2",
     "@redhat-cloud-services/frontend-components-remediations": "2.1.5",
