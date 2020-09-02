@@ -11,6 +11,7 @@
             margin-right: var(--pf-global--spacer--sm);
             position: relative;
             bottom: 2px; // because we want to have this inline with the text, we can't use flex
+            font-weight: var(--pf-global--FontWeight--normal) !important;
         }
         &--name { 
             word-break: break-word;
@@ -33,7 +34,7 @@
     }
 
     &__progress {
-        display: block;
+        display: block !important;
         --pf-c-progress__bar--before--BackgroundColor: var(--pf-global--BackgroundColor--dark-100);
         --pf-c-progress__indicator--BackgroundColor: var(--pf-global--primary-color--100);
         &--success {
