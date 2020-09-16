@@ -51,7 +51,7 @@ function RemediationTable ({
 
     function load () {
         const column = SORTING_ITERATEES[sorter.sortBy];
-        loadRemediations(column, sorter.sortDir, filter.value, pagination.pageSize, pagination.offset);
+        loadRemediations(column, sorter.sortDir, filter.value, pagination.pageSize, pagination.offset, showArchived);
     }
 
     useEffect(() => {
@@ -72,7 +72,11 @@ function RemediationTable ({
 
     useEffect(() => {
         if (remediations.value) {
-            setRemediationCount(cards.length);
+            if (!showArchived) {
+                setRemediationCount(value.meta.total);
+            } else {
+                setRemediationCount(value.meta.total);
+            }
         }
     }, [ remediations, showArchived ]);
 

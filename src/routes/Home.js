@@ -61,7 +61,7 @@ function Home () {
 
     function load () {
         const column = SORTING_ITERATEES[sorter.sortBy];
-        loadRemediations(column, sorter.sortDir, filter.value, pagination.pageSize, pagination.offset);
+        loadRemediations(column, sorter.sortDir, filter.value, pagination.pageSize, pagination.offset, showArchived);
     }
 
     useEffect(load, []);
