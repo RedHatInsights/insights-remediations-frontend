@@ -61,7 +61,12 @@ function Home () {
 
     function load () {
         const column = SORTING_ITERATEES[sorter.sortBy];
-        loadRemediations(column, sorter.sortDir, filter.value, pagination.pageSize, pagination.offset);
+        if (showArchived) {
+            loadRemediations(column, sorter.sortDir, filter.value, pagination.pageSize, pagination.offset);
+        } else {
+            const hideArchived = true;
+            loadRemediations(column, sorter.sortDir, filter.value, pagination.pageSize, pagination.offset, undefined, hideArchived);
+        }
     }
 
     useEffect(load, []);
@@ -70,7 +75,7 @@ function Home () {
         if (remediations.status === 'fulfilled' && filter.value === filterText) {
             setShouldUpdateGrid(true);
         }
-    }, [ sorter.sortBy, sorter.sortDir, filter.value, pagination.pageSize, pagination.pageDebounced ]);
+    }, [ sorter.sortBy, sorter.sortDir, filter.value, pagination.pageSize, pagination.pageDebounced, showArchived ]);
 
     useEffect(() => {
         filter.setValue(filterText);

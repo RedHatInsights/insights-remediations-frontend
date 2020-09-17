@@ -51,7 +51,12 @@ function RemediationTable ({
 
     function load () {
         const column = SORTING_ITERATEES[sorter.sortBy];
-        loadRemediations(column, sorter.sortDir, filter.value, pagination.pageSize, pagination.offset);
+        if (showArchived) {
+            loadRemediations(column, sorter.sortDir, filter.value, pagination.pageSize, pagination.offset);
+        } else {
+            const hideArchived = true;
+            loadRemediations(column, sorter.sortDir, filter.value, pagination.pageSize, pagination.offset, undefined, hideArchived);
+        }
     }
 
     useEffect(() => {
@@ -72,9 +77,9 @@ function RemediationTable ({
 
     useEffect(() => {
         if (remediations.value) {
-            setRemediationCount(cards.length);
+            setRemediationCount(value.meta.total);
         }
-    }, [ remediations, showArchived ]);
+    }, [ remediations ]);
 
     // Skeleton Loading
     if (status !== 'fulfilled') {

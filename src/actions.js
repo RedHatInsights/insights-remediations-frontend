@@ -1,9 +1,9 @@
 import { ACTION_TYPES } from './constants';
 import { remediations, resolutions, getRemediationStatus, sources } from './api';
 
-export const loadRemediations = (sortBy = 'updated_at', sortDir = 'desc', filter, limit, offset) => ({
+export const loadRemediations = (sortBy = 'updated_at', sortDir = 'desc', filter, limit, offset, system, hideArchived) => ({
     type: ACTION_TYPES.LOAD_REMEDIATIONS,
-    payload: remediations.getRemediations(`${sortDir === 'desc' ? '-' : ''}${sortBy}`, filter, limit, offset)
+    payload: remediations.getRemediations(`${sortDir === 'desc' ? '-' : ''}${sortBy}`, filter, limit, offset, system, hideArchived)
 });
 
 export const loadRemediation = (id) => ({
