@@ -9,7 +9,7 @@ import { Main, PageHeader, PageHeaderTitle, PrimaryToolbar, Wizard } from '@redh
 import RemediationTable from '../components/RemediationTable';
 import TestButtons from '../components/TestButtons';
 
-import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/esm/actions';
 
 // Wizard Steps
 import PlanName from '../components/CreatePlanModal/ModalSteps/PlanName';
@@ -24,17 +24,60 @@ import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table
 import ConfirmationDialog from '../components/ConfirmationDialog';
 import keyBy from 'lodash/keyBy';
 
-function downloadAll (selectedIds, data) {
+function verifyDownload (selectedIds, data) {
+    let valid = [];
     const byId = keyBy(data, r => r.id);
-    selectedIds.reduce((result, id) => {
+
+    valid = selectedIds.reduce((result, id) => {
         const remediation = byId[id];
 
-        if (remediation && remediation.issue_count === 0) {
-            return result;
+        if (remediation && remediation.issue_count > 0) {
+            result.push(remediation.id);
         }
 
-        return result.then(() => downloadPlaybook(id));
-    }, Promise.resolve());
+        return result;
+    }, []);
+
+    return valid;
+}
+
+function download (selectedIds, data, dispatch) {
+    const valid = verifyDownload(selectedIds, data);
+
+    if (valid.length === 0) {
+        dispatch(
+            addNotification({
+                variant: 'danger',
+                title: `No playbooks downloaded.`,
+                description: selectedIds.length > 1
+                    ? 'Selected remediations do not contain any issues to remediate.'
+                    : 'Selected remediation does not contain any issues to remediate.'
+            })
+        );
+    } else if (valid.length < selectedIds.length) {
+        downloadPlaybook(valid);
+        dispatch(
+            addNotification({
+                variant: 'info',
+                title: valid.length > 1
+                    ? `${valid.length} playbooks downloaded.`
+                    : `1 playbook downloaded`,
+                description: selectedIds.length - valid.length > 1
+                    ? `${selectedIds.length - valid.length} remediations with no issues were not downloaded.`
+                    : `1 remediation with no issues was not downloaded.`
+            })
+        );
+    } else {
+        downloadPlaybook(valid);
+        dispatch(
+            addNotification({
+                variant: 'success',
+                title: valid.length > 1
+                    ? `${valid.length} playbooks downloaded.`
+                    : `1 playbook downloaded.`
+            })
+        );
+    }
 }
 
 const SORTING_ITERATEES = [ null, 'name', 'system_count', 'issue_count', 'updated_at' ];
@@ -158,9 +201,9 @@ function Home () {
                             count: selectedIds.length,
                             onSelect: (isSelected, e) => selector.props.onSelect(e, isSelected, -1) } }
                             actionsConfig={ { actions: [
-                                { label: 'Download playbooks',
+                                { label: selectedIds.length > 1 ? 'Download playbooks' : 'Download playbook',
                                     props: { variant: 'secondary', isDisabled: !selectedIds.length },
-                                    onClick: () => downloadAll(selectedIds, remediations.value.data) // TODO state for downloads?
+                                    onClick: () => download(selectedIds, remediations.value.data, dispatch) // TODO state for downloads?
                                 },
                                 { label: 'Delete playbooks',
                                     props: { isDisabled: !permission.permissions.write || !selectedIds.length },

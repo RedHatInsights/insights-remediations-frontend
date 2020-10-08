@@ -51,7 +51,7 @@ export function buildIssueUrl (id) {
         case 'vulnerabilities':
             return appUrl(parts[0]).segment('cves').segment(parts[1]).toString();
         case 'patch-advisory':
-            return appUrl(parts[0]).segment('advisories').segment(parts[1]).toString();
+            return appUrl(parts[0]).segment('advisories').segment(parts[1] + ':' + parts[2]).toString();
         default:
             return null;
     }
