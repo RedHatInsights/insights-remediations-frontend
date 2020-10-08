@@ -105,10 +105,6 @@ export function downloadPlaybook (selectedIds) {
     });
 }
 
-// export function bulkDownloadPlaybooks (selectedIds) {
-//     return doGet(`${window.location.origin}/api/remediations/v1/remediations/download?selected_remediations=${selectedIds}`);
-// }
-
 export function getIsReceptorConfigured() {
     return doGet(`${window.location.origin}/api/sources/v2.0/endpoints?filter[receptor_node][not_nil]`);
 }
