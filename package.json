@@ -14,7 +14,7 @@
     "@redhat-cloud-services/frontend-components-notifications": "2.1.2",
     "@redhat-cloud-services/frontend-components-remediations": "2.1.5",
     "@redhat-cloud-services/frontend-components-utilities": "2.1.5",
-    "@redhat-cloud-services/remediations-client": "^1.0.74",
+    "@redhat-cloud-services/remediations-client": "^1.0.78",
     "@redhat-cloud-services/sources-client": "^1.0.68",
     "awesome-debounce-promise": "2.1.0",
     "axios": "^0.18.1",
