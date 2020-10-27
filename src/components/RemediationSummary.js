@@ -139,18 +139,7 @@ export const RemediationSummary = ({
 
     const getResolvedCount = (issues) => {
         let count = 0;
-        issues.forEach(i => {
-            let resolved = true;
-            i.systems.forEach(s => {
-                if (s.resolved === false) {
-                    resolved = false;
-                }
-            });
-            if (resolved) {
-                count = count + 1;
-            }
-        });
-
+        issues.map(i => i.systems.every(s => s.resolved) && count++);
         return count;
     };
 
