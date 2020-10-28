@@ -9,7 +9,7 @@ export const EmptyActions = (filtered) => {
     return (
         <Bullseye className='ins-c-no-actions'>
             <EmptyState>
-                { filtered === true
+                { filtered.filtered === true
                     ? <Title size="lg" headingLevel="h5">No actions found</Title>
                     : <Title size="lg" headingLevel="h5">This playbook is empty</Title> }
                 <EmptyStateBody>
