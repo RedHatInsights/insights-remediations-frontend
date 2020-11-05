@@ -124,7 +124,7 @@ const RemediationDetails = ({
     };
 
     const { status, remediation } = selectedRemediation;
-  
+
     if (remediation) {
         document.title = `${ remediation.name } | Remediations | Red Hat Insights`;
     }
@@ -139,24 +139,31 @@ const RemediationDetails = ({
 
     if (status === 'fulfilled') {
         return (
-        context.permissions.read === false
-            ? <DeniedState/>
-            :
-            <React.Fragment>
-                <PageHeader>
-                    <Breadcrumb>
-                        <BreadcrumbItem>
-                            <Link to='/'> Remediations </Link>
-                        </BreadcrumbItem>
-                        <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
-                    </Breadcrumb>
-                    <Level className="ins-c-level">
-                        <LevelItem>
-                            <PageHeaderTitle title={ remediation.name }/>
-                        </LevelItem>
-                        <LevelItem>
-                            <Split hasGutter>
-                                { context.hasSmartManagement &&
+            context.permissions.read === false
+                ? <DeniedState/>
+                :
+                <React.Fragment>
+                    <PageHeader>
+                        <Breadcrumb>
+                            <BreadcrumbItem>
+                                <Link to='/'> Remediations </Link>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
+                        </Breadcrumb>
+                        <Level className="ins-c-level">
+                            <LevelItem>
+                                <PageHeaderTitle title={ remediation.name }/>
+                            </LevelItem>
+                            <LevelItem>
+                                <Split hasGutter>
+                                    { context.hasSmartManagement &&
+                                        <SplitItem>
+                                            <ExecutePlaybookButton
+                                                isDisabled={ !context.isReceptorConfigured || !context.permissions.execute }
+                                                remediationId={ remediation.id }>
+                                            </ExecutePlaybookButton>
+                                        </SplitItem>
+                                    }
                                     <SplitItem>
                                         <Button
                                             isDisabled={ !remediation.issues.length }
