@@ -52,7 +52,6 @@ const RemediationDetails = ({
     playbookRuns,
     getPlaybookRuns
 }) => {
-
     const id = match.params.id;
     const [ upsellBannerVisible, setUpsellBannerVisible ] = useState(
         localStorage.getItem('remediations:bannerStatus') !== 'dismissed'
@@ -125,6 +124,10 @@ const RemediationDetails = ({
     };
 
     const { status, remediation } = selectedRemediation;
+  
+    if (remediation) {
+        document.title = `${ remediation.name } | Remediations | Red Hat Insights`;
+    }
 
     if (status !== 'fulfilled' && status !== 'rejected') {
         return <RemediationDetailsSkeleton/>;
@@ -136,31 +139,24 @@ const RemediationDetails = ({
 
     if (status === 'fulfilled') {
         return (
-            context.permissions.read === false
-                ? <DeniedState/>
-                :
-                <React.Fragment>
-                    <PageHeader>
-                        <Breadcrumb>
-                            <BreadcrumbItem>
-                                <Link to='/'> Remediations </Link>
-                            </BreadcrumbItem>
-                            <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
-                        </Breadcrumb>
-                        <Level className="ins-c-level">
-                            <LevelItem>
-                                <PageHeaderTitle title={ remediation.name }/>
-                            </LevelItem>
-                            <LevelItem>
-                                <Split hasGutter>
-                                    { context.hasSmartManagement &&
-                                        <SplitItem>
-                                            <ExecutePlaybookButton
-                                                isDisabled={ !context.isReceptorConfigured || !context.permissions.execute }
-                                                remediationId={ remediation.id }>
-                                            </ExecutePlaybookButton>
-                                        </SplitItem>
-                                    }
+        context.permissions.read === false
+            ? <DeniedState/>
+            :
+            <React.Fragment>
+                <PageHeader>
+                    <Breadcrumb>
+                        <BreadcrumbItem>
+                            <Link to='/'> Remediations </Link>
+                        </BreadcrumbItem>
+                        <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
+                    </Breadcrumb>
+                    <Level className="ins-c-level">
+                        <LevelItem>
+                            <PageHeaderTitle title={ remediation.name }/>
+                        </LevelItem>
+                        <LevelItem>
+                            <Split hasGutter>
+                                { context.hasSmartManagement &&
                                     <SplitItem>
                                         <Button
                                             isDisabled={ !remediation.issues.length }
