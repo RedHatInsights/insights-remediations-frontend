@@ -52,7 +52,6 @@ const RemediationDetails = ({
     playbookRuns,
     getPlaybookRuns
 }) => {
-
     const id = match.params.id;
     const [ upsellBannerVisible, setUpsellBannerVisible ] = useState(
         localStorage.getItem('remediations:bannerStatus') !== 'dismissed'
@@ -128,6 +127,10 @@ const RemediationDetails = ({
 
     if (status !== 'fulfilled') {
         return <RemediationDetailsSkeleton/>;
+    }
+
+    if (remediation) {
+        document.title = `${ remediation.name } | Remediations | Red Hat Insights`;
     }
 
     return (
