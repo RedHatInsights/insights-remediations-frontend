@@ -14,13 +14,12 @@ import { addNotification } from '@redhat-cloud-services/frontend-components-noti
 import UpsellBanner from '../components/Alerts/UpsellBanner';
 import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
 import NotConfigured from '../components/EmptyStates/NotConfigured';
-import NoRemediation from '../components/EmptyStates/NoRemediation';
 import DeniedState from '../components/DeniedState';
 import SkeletonTable from '../skeletons/SkeletonTable';
 import '../components/Status.scss';
 
 import {
-    Main, PageHeader, PageHeaderTitle
+    Main, PageHeader, PageHeaderTitle, InvalidObject
 } from '@redhat-cloud-services/frontend-components';
 
 import {
@@ -132,7 +131,7 @@ const RemediationDetails = ({
     }
 
     if (status === 'rejected') {
-        return <NoRemediation/>;
+        return <InvalidObject/>;
     }
 
     if (status === 'fulfilled') {
