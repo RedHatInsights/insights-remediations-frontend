@@ -84,6 +84,8 @@ const SORTING_ITERATEES = [ null, 'name', 'system_count', 'issue_count', 'update
 
 function Home () {
 
+    document.title = 'Remediations | Red Hat Insights';
+
     const [ isModalOpen, setIsModalOpen ] = useState(false);
     const [ noReceptorBannerVisible, setNoReceptorBannerVisible ] = useState(
         localStorage.getItem('remediations:receptorBannerStatus') !== 'dismissed');
