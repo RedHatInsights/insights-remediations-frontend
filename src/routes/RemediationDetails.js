@@ -19,7 +19,7 @@ import SkeletonTable from '../skeletons/SkeletonTable';
 import '../components/Status.scss';
 
 import {
-    Main, PageHeader, PageHeaderTitle
+    Main, PageHeader, PageHeaderTitle, InvalidObject
 } from '@redhat-cloud-services/frontend-components';
 
 import {
@@ -125,91 +125,97 @@ const RemediationDetails = ({
 
     const { status, remediation } = selectedRemediation;
 
-    if (status !== 'fulfilled') {
-        return <RemediationDetailsSkeleton/>;
-    }
-
     if (remediation) {
         document.title = `${ remediation.name } | Remediations | Red Hat Insights`;
     }
 
-    return (
-        context.permissions.read === false
-            ? <DeniedState/>
-            :
-            <React.Fragment>
-                <PageHeader>
-                    <Breadcrumb>
-                        <BreadcrumbItem>
-                            <Link to='/'> Remediations </Link>
-                        </BreadcrumbItem>
-                        <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
-                    </Breadcrumb>
-                    <Level className="ins-c-level">
-                        <LevelItem>
-                            <PageHeaderTitle title={ remediation.name }/>
-                        </LevelItem>
-                        <LevelItem>
-                            <Split hasGutter>
-                                { context.hasSmartManagement &&
-                                    <SplitItem>
-                                        <ExecutePlaybookButton
-                                            isDisabled={ !context.isReceptorConfigured || !context.permissions.execute }
-                                            remediationId={ remediation.id }>
-                                        </ExecutePlaybookButton>
-                                    </SplitItem>
-                                }
-                                <SplitItem>
-                                    <Button
-                                        isDisabled={ !remediation.issues.length }
-                                        variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
-                                        Download playbook
-                                    </Button>
-                                </SplitItem>
-                                <SplitItem>
-                                    <RemediationDetailsDropdown remediation={ remediation } />
-                                </SplitItem>
-                            </Split>
-                        </LevelItem>
-                    </Level>
-                    <RemediationSummary
-                        remediation={ remediation }
-                        playbookRuns={ playbookRuns }
-                        switchAutoReboot={ switchAutoReboot }
-                        context={ context }
-                    />
-                </PageHeader>
-                <Main>
-                    <Stack hasGutter>
-                        { !context.hasSmartManagement && upsellBannerVisible &&
-                            <StackItem>
-                                <UpsellBanner onClose={ () => handleUpsellToggle() }/>
-                            </StackItem>
-                        }
-                        { context.hasSmartManagement && !context.isReceptorConfigured && noReceptorBannerVisible &&
-                            <StackItem>
-                                <NoReceptorBanner onClose={ () => handleNoReceptorToggle() }/>
-                            </StackItem>
-                        }
-                        <StackItem className='ins-c-playbookSummary__tabs'>
-                            <Tabs activeKey={ activeTabKey } onSelect={ handleTabClick }>
-                                <Tab eventKey={ 0 } title='Actions'>
-                                    <RemediationDetailsTable remediation={ remediation } status={ selectedRemediationStatus }/>
-                                </Tab>
-                                <Tab eventKey={ 1 } title='Activity'>
-                                    { renderActivityState(
-                                        context.hasSmartManagement,
-                                        context.isReceptorConfigured,
-                                        playbookRuns,
-                                        remediation)
+    if (status !== 'fulfilled' && status !== 'rejected') {
+        return <RemediationDetailsSkeleton/>;
+    }
+
+    if (status === 'rejected') {
+        return <InvalidObject/>;
+    }
+
+    if (status === 'fulfilled') {
+        return (
+            context.permissions.read === false
+                ? <DeniedState/>
+                :
+                <React.Fragment>
+                    <PageHeader>
+                        <Breadcrumb>
+                            <BreadcrumbItem>
+                                <Link to='/'> Remediations </Link>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem isActive> { remediation.name } </BreadcrumbItem>
+                        </Breadcrumb>
+                        <Level className="ins-c-level">
+                            <LevelItem>
+                                <PageHeaderTitle title={ remediation.name }/>
+                            </LevelItem>
+                            <LevelItem>
+                                <Split hasGutter>
+                                    { context.hasSmartManagement &&
+                                        <SplitItem>
+                                            <ExecutePlaybookButton
+                                                isDisabled={ !context.isReceptorConfigured || !context.permissions.execute }
+                                                remediationId={ remediation.id }>
+                                            </ExecutePlaybookButton>
+                                        </SplitItem>
                                     }
-                                </Tab>
-                            </Tabs>
-                        </StackItem>
-                    </Stack>
-                </Main>
-            </React.Fragment>
-    );
+                                    <SplitItem>
+                                        <Button
+                                            isDisabled={ !remediation.issues.length }
+                                            variant='secondary' onClick={ () => downloadPlaybook(remediation.id) }>
+                                            Download playbook
+                                        </Button>
+                                    </SplitItem>
+                                    <SplitItem>
+                                        <RemediationDetailsDropdown remediation={ remediation } />
+                                    </SplitItem>
+                                </Split>
+                            </LevelItem>
+                        </Level>
+                        <RemediationSummary
+                            remediation={ remediation }
+                            playbookRuns={ playbookRuns }
+                            switchAutoReboot={ switchAutoReboot }
+                            context={ context }
+                        />
+                    </PageHeader>
+                    <Main>
+                        <Stack hasGutter>
+                            { !context.hasSmartManagement && upsellBannerVisible &&
+                                <StackItem>
+                                    <UpsellBanner onClose={ () => handleUpsellToggle() }/>
+                                </StackItem>
+                            }
+                            { context.hasSmartManagement && !context.isReceptorConfigured && noReceptorBannerVisible &&
+                                <StackItem>
+                                    <NoReceptorBanner onClose={ () => handleNoReceptorToggle() }/>
+                                </StackItem>
+                            }
+                            <StackItem className='ins-c-playbookSummary__tabs'>
+                                <Tabs activeKey={ activeTabKey } onSelect={ handleTabClick }>
+                                    <Tab eventKey={ 0 } title='Actions'>
+                                        <RemediationDetailsTable remediation={ remediation } status={ selectedRemediationStatus }/>
+                                    </Tab>
+                                    <Tab eventKey={ 1 } title='Activity'>
+                                        { renderActivityState(
+                                            context.hasSmartManagement,
+                                            context.isReceptorConfigured,
+                                            playbookRuns,
+                                            remediation)
+                                        }
+                                    </Tab>
+                                </Tabs>
+                            </StackItem>
+                        </Stack>
+                    </Main>
+                </React.Fragment>
+        );
+    }
 };
 
 RemediationDetails.propTypes = {
