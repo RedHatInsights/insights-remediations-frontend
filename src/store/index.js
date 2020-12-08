@@ -19,7 +19,7 @@ export function init(...middleware) {
       errorTitleKey: 'message',
       errorDescriptionKey: 'description',
     }),
-    ...middleware,
+    ...middleware.filter((item) => typeof item !== 'undefined'),
   ]);
 
   registry.register(reducers);
