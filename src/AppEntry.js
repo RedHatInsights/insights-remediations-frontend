@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { init } from './store';
@@ -10,19 +10,19 @@ pathName.shift();
 
 let release = '/';
 if (pathName[0] === 'beta') {
-    release = `/${pathName.shift()}/`;
+  release = `/${pathName.shift()}/`;
 }
 
-const Remediations = ({logger}) => (
-    <Provider store={ init(logger).getStore() }>
-        <Router basename={ `${release}${pathName[0]}/${pathName[1]}` }>
-            <App/>
-        </Router>
-    </Provider>
-)
+const Remediations = ({ logger }) => (
+  <Provider store={init(logger).getStore()}>
+    <Router basename={`${release}${pathName[0]}/${pathName[1]}`}>
+      <App />
+    </Router>
+  </Provider>
+);
 
 Remediations.propTypes = {
-  logger: PropTypes.func
-}
+  logger: PropTypes.func,
+};
 
-export default Remediations
+export default Remediations;

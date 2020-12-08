@@ -6,19 +6,33 @@ import orderBy from 'lodash/orderBy';
 
 import { Pagination } from '@patternfly/react-core';
 
-import { sortable, TableHeader, Table, TableBody, TableVariant } from '@patternfly/react-table';
+import {
+  sortable,
+  TableHeader,
+  Table,
+  TableBody,
+  TableVariant,
+} from '@patternfly/react-table';
 import { RedoIcon, TimesIcon } from '@patternfly/react-icons';
-import { TableToolbar, PrimaryToolbar } from '@redhat-cloud-services/frontend-components';
+import {
+  TableToolbar,
+  PrimaryToolbar,
+} from '@redhat-cloud-services/frontend-components';
 
 import { getIssueApplication, includesIgnoreCase } from '../Utilities/model';
-import {  buildIssueUrl } from '../Utilities/urls';
+import { buildIssueUrl } from '../Utilities/urls';
 import './RemediationTable.scss';
 
 import { ConnectResolutionEditButton } from '../containers/ConnectedComponents';
 import { DeleteActionsButton } from '../containers/DeleteButtons';
 import { SystemForActionButton } from './SystemForActionButton';
 
-import { useFilter, usePagination, useSelector, useSorter } from '../hooks/table';
+import {
+  useFilter,
+  usePagination,
+  useSelector,
+  useSorter,
+} from '../hooks/table';
 import * as debug from '../Utilities/debug';
 
 import './RemediationDetailsTable.scss';
@@ -26,224 +40,261 @@ import { PermissionContext } from '../App';
 import { EmptyActions } from './EmptyStates/EmptyActions';
 import { IconInline } from './Layouts/IconInline';
 
-function resolutionDescriptionCell (remediation, issue) {
-    const url = buildIssueUrl(issue.id);
+function resolutionDescriptionCell(remediation, issue) {
+  const url = buildIssueUrl(issue.id);
 
-    if (issue.resolutions_available <= 1) {
-        return (url
-            ? <React.Fragment>
-                <a href={ url }>{ issue.description }</a>
-                { issue.resolution.description }
-            </React.Fragment>
-            : issue.resolution.description
-        );
-    }
-
-    return (url
-        ? <React.Fragment>
-            <a href={ url }>{ issue.description }</a>
-            { issue.resolution.description }
-            <ConnectResolutionEditButton issue={ issue } remediation={ remediation } />
-        </React.Fragment>
-        : <React.Fragment>
-            { issue.resolution.description }
-            <ConnectResolutionEditButton issue={ issue } remediation={ remediation } />
-        </React.Fragment>
+  if (issue.resolutions_available <= 1) {
+    return url ? (
+      <React.Fragment>
+        <a href={url}>{issue.description}</a>
+        {issue.resolution.description}
+      </React.Fragment>
+    ) : (
+      issue.resolution.description
     );
+  }
+
+  return url ? (
+    <React.Fragment>
+      <a href={url}>{issue.description}</a>
+      {issue.resolution.description}
+      <ConnectResolutionEditButton issue={issue} remediation={remediation} />
+    </React.Fragment>
+  ) : (
+    <React.Fragment>
+      {issue.resolution.description}
+      <ConnectResolutionEditButton issue={issue} remediation={remediation} />
+    </React.Fragment>
+  );
 }
 
-function needsRebootCell (needsReboot) {
-    if (needsReboot) {
-        return (
-            <IconInline icon={ <RedoIcon/> } text='Yes'/>
-        );
-    }
+function needsRebootCell(needsReboot) {
+  if (needsReboot) {
+    return <IconInline icon={<RedoIcon />} text="Yes" />;
+  }
 
-    return (
-        <IconInline icon={ <TimesIcon/> } text='No'/>
-    );
+  return <IconInline icon={<TimesIcon />} text="No" />;
 }
 
 function systemsForAction(issue, remediation, title) {
-    return (
-        <SystemForActionButton key={ issue.id }
-            remediation={ remediation }
-            issue={ issue }
-            title={ title } />
-    );
+  return (
+    <SystemForActionButton
+      key={issue.id}
+      remediation={remediation}
+      issue={issue}
+      title={title}
+    />
+  );
 }
 
 function getResolvedSystems(issue) {
-    let count = 0;
-    issue.systems.map(system => {
-        if (system.resolved) {
-            count++;
-        }
-    });
-    return count;
+  let count = 0;
+  issue.systems.map((system) => {
+    if (system.resolved) {
+      count++;
+    }
+  });
+  return count;
 }
 
 const SORTING_ITERATEES = [
-    null, // checkboxes
-    i => i.description,
-    null, // resolution steps
-    i => i.resolution.needs_reboot,
-    i => i.systems.length,
-    i => getIssueApplication(i)
+  null, // checkboxes
+  (i) => i.description,
+  null, // resolution steps
+  (i) => i.resolution.needs_reboot,
+  (i) => i.systems.length,
+  (i) => getIssueApplication(i),
 ];
 
 const buildRow = (remediation) => (issue) => {
-    const row = [
+  const row = [
+    {
+      isOpen: false,
+      id: issue.id,
+      cells: [
         {
-            isOpen: false,
-            id: issue.id,
-            cells: [
-                {
-                    title: resolutionDescriptionCell(remediation, issue)
-                },
-                {
-                    title: needsRebootCell(issue.resolution.needs_reboot)
-                },
-                {
-                    title: systemsForAction(issue, remediation, `${issue.systems.length}`)
-                },
-                {
-                    title: getIssueApplication(issue),
-                    props: { className: 'ins-m-nowrap' }
-                },
-                {
-                    title: systemsForAction(issue, remediation,
-                        `${getResolvedSystems(issue)}/${issue.systems.length} remediated`)
-                }
-            ]
-        }
-    ];
+          title: resolutionDescriptionCell(remediation, issue),
+        },
+        {
+          title: needsRebootCell(issue.resolution.needs_reboot),
+        },
+        {
+          title: systemsForAction(
+            issue,
+            remediation,
+            `${issue.systems.length}`
+          ),
+        },
+        {
+          title: getIssueApplication(issue),
+          props: { className: 'ins-m-nowrap' },
+        },
+        {
+          title: systemsForAction(
+            issue,
+            remediation,
+            `${getResolvedSystems(issue)}/${issue.systems.length} remediated`
+          ),
+        },
+      ],
+    },
+  ];
 
-    return row;
+  return row;
 };
 
-function RemediationDetailsTable (props) {
-    const pagination = usePagination();
-    const sorter = useSorter(1, 'asc');
-    const filter = useFilter();
-    const selector = useSelector();
-    const permission = useContext(PermissionContext);
-    const [ filterText, setFilterText ] = useState('');
+function RemediationDetailsTable(props) {
+  const pagination = usePagination();
+  const sorter = useSorter(1, 'asc');
+  const filter = useFilter();
+  const selector = useSelector();
+  const permission = useContext(PermissionContext);
+  const [filterText, setFilterText] = useState('');
 
-    useEffect(() => {
-        filter.setValue(filterText);
-    }, [ filterText ]);
+  useEffect(() => {
+    filter.setValue(filterText);
+  }, [filterText]);
 
-    sorter.onChange(pagination.reset);
-    filter.onChange(pagination.reset);
+  sorter.onChange(pagination.reset);
+  filter.onChange(pagination.reset);
 
-    const filtered = props.remediation.issues.filter(i => includesIgnoreCase(i.description, filter.value.trim()));
-    const sorted = orderBy(filtered, [ SORTING_ITERATEES[ sorter.sortBy] ], [ sorter.sortDir ]);
-    const paged = sorted.slice(pagination.offset, pagination.offset + pagination.pageSize);
+  const filtered = props.remediation.issues.filter((i) =>
+    includesIgnoreCase(i.description, filter.value.trim())
+  );
+  const sorted = orderBy(
+    filtered,
+    [SORTING_ITERATEES[sorter.sortBy]],
+    [sorter.sortDir]
+  );
+  const paged = sorted.slice(
+    pagination.offset,
+    pagination.offset + pagination.pageSize
+  );
 
-    const rows = flatMap(paged, buildRow(props.remediation));
+  const rows = flatMap(paged, buildRow(props.remediation));
 
-    selector.register(rows);
+  selector.register(rows);
 
-    const selectedIds = selector.getSelectedIds();
+  const selectedIds = selector.getSelectedIds();
 
-    const activeFiltersConfig = {
-        filters: filterText.length ? [{ category: 'Action', chips: [{ name: filterText }]}] : [],
-        onDelete: () => {setFilterText(''); filter.setValue('');}
-    };
+  const activeFiltersConfig = {
+    filters: filterText.length
+      ? [{ category: 'Action', chips: [{ name: filterText }] }]
+      : [],
+    onDelete: () => {
+      setFilterText('');
+      filter.setValue('');
+    },
+  };
 
-    return (
-        <div className='test'>
-            <PrimaryToolbar
-                filterConfig={ {
-                    items: [{
-                        label: 'Search actions',
-                        type: 'text',
-                        filterValues: {
-                            id: 'filter-by-string',
-                            key: 'filter-by-string',
-                            placeholder: 'Search',
-                            value: filterText,
-                            onChange: (_e, value) => {
-                                setFilterText(value);
-                            }
-                        }
-                    }]
-                } }
-                bulkSelect={ { items: [{ title: 'Select all',
-                    onClick: (e) => selector.props.onSelect(e, true, -1)
-                }],
-                checked: selectedIds.length && filtered.length > selectedIds.length ? null : selectedIds.length,
-                count: selectedIds.length,
-                onSelect: (isSelected, e) => selector.props.onSelect(e, isSelected, -1) } }
-                actionsConfig={ { actions: [
-                    <DeleteActionsButton key={ props.remediation.id }
-                        variant='secondary'
-                        isDisabled={ !selectedIds.length }
-                        remediation={ props.remediation }
-                        issues={ selectedIds }
-                        afterDelete={ selector.reset }
-                    />
-                ]} }
-                pagination={ { ...pagination.props, itemCount: filtered.length } }
-                activeFiltersConfig={ activeFiltersConfig }
-            />
+  return (
+    <div className="test">
+      <PrimaryToolbar
+        filterConfig={{
+          items: [
             {
-                rows.length > 0 ?
-                    <Table
-                        variant={ TableVariant.compact }
-                        aria-label="Actions"
-                        canSelectAll={ false }
-                        className='ins-c-remediation-details-table'
-                        cells={ [
-                            {
-                                title: 'Actions',
-                                transforms: [ sortable ]
-                            }, {
-                                title: 'Reboot required',
-                                transforms: [ sortable ]
-                            }, {
-                                title: 'Systems',
-                                transforms: [ sortable ]
-                            }, {
-                                title: 'Type',
-                                transforms: [ sortable ]
-                            }, {
-                                title: 'Status',
-                                transforms: [ sortable ]
-                            }]
-                        }
-                        rows={ rows }
-                        { ...sorter.props }
-                        { ...(permission.permissions.write && { ... selector.props }) }
-                    >
-                        <TableHeader />
-                        <TableBody { ...selector.tbodyProps } />
-                    </Table> :
-                    filter.value ?
-                        <EmptyActions filtered={ true }/> :
-                        <EmptyActions filtered={ false }/>
-            }
+              label: 'Search actions',
+              type: 'text',
+              filterValues: {
+                id: 'filter-by-string',
+                key: 'filter-by-string',
+                placeholder: 'Search',
+                value: filterText,
+                onChange: (_e, value) => {
+                  setFilterText(value);
+                },
+              },
+            },
+          ],
+        }}
+        bulkSelect={{
+          items: [
             {
-                rows.length > 0 &&
-                <TableToolbar isFooter>
-                    <Pagination
-                        variant='bottom'
-                        dropDirection='up'
-                        itemCount={ filtered.length }
-                        { ...pagination.props }
-                        { ...debug.pagination }
-                    />
-                </TableToolbar>
-            }
-        </div>
-
-    );
+              title: 'Select all',
+              onClick: (e) => selector.props.onSelect(e, true, -1),
+            },
+          ],
+          checked:
+            selectedIds.length && filtered.length > selectedIds.length
+              ? null
+              : selectedIds.length,
+          count: selectedIds.length,
+          onSelect: (isSelected, e) =>
+            selector.props.onSelect(e, isSelected, -1),
+        }}
+        actionsConfig={{
+          actions: [
+            <DeleteActionsButton
+              key={props.remediation.id}
+              variant="secondary"
+              isDisabled={!selectedIds.length}
+              remediation={props.remediation}
+              issues={selectedIds}
+              afterDelete={selector.reset}
+            />,
+          ],
+        }}
+        pagination={{ ...pagination.props, itemCount: filtered.length }}
+        activeFiltersConfig={activeFiltersConfig}
+      />
+      {rows.length > 0 ? (
+        <Table
+          variant={TableVariant.compact}
+          aria-label="Actions"
+          canSelectAll={false}
+          className="ins-c-remediation-details-table"
+          cells={[
+            {
+              title: 'Actions',
+              transforms: [sortable],
+            },
+            {
+              title: 'Reboot required',
+              transforms: [sortable],
+            },
+            {
+              title: 'Systems',
+              transforms: [sortable],
+            },
+            {
+              title: 'Type',
+              transforms: [sortable],
+            },
+            {
+              title: 'Status',
+              transforms: [sortable],
+            },
+          ]}
+          rows={rows}
+          {...sorter.props}
+          {...(permission.permissions.write && { ...selector.props })}
+        >
+          <TableHeader />
+          <TableBody {...selector.tbodyProps} />
+        </Table>
+      ) : filter.value ? (
+        <EmptyActions filtered={true} />
+      ) : (
+        <EmptyActions filtered={false} />
+      )}
+      {rows.length > 0 && (
+        <TableToolbar isFooter>
+          <Pagination
+            variant="bottom"
+            dropDirection="up"
+            itemCount={filtered.length}
+            {...pagination.props}
+            {...debug.pagination}
+          />
+        </TableToolbar>
+      )}
+    </div>
+  );
 }
 
 RemediationDetailsTable.propTypes = {
-    remediation: PropTypes.object.isRequired,
-    status: PropTypes.object.isRequired
+  remediation: PropTypes.object.isRequired,
+  status: PropTypes.object.isRequired,
 };
 
 export default RemediationDetailsTable;

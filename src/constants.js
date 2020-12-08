@@ -1,7 +1,8 @@
 import keyBy from 'lodash/keyBy';
 import flatMap from 'lodash/flatMap';
 
-const asyncActions = flatMap([
+const asyncActions = flatMap(
+  [
     'LOAD_REMEDIATIONS',
     'CREATE_REMEDIATIONS',
     'LOAD_REMEDIATION',
@@ -22,11 +23,12 @@ const asyncActions = flatMap([
     'GET_PLAYBOOK_RUN_SYSTEMS',
     'GET_PLAYBOOK_RUN_SYSTEM_DETAILS',
     'CANCEL_PLAYBOOK_RUNS',
-    'GET_ENDPOINT'
+    'GET_ENDPOINT',
+  ],
+  (a) => [a, `${a}_PENDING`, `${a}_FULFILLED`, `${a}_REJECTED`]
+);
 
-], a => [ a, `${a}_PENDING`, `${a}_FULFILLED`, `${a}_REJECTED` ]);
-
-const actions = [ 'SET_ETAG', 'EXPAND_INVENTORY_TABLE' ];
-export const ACTION_TYPES = keyBy([ ...asyncActions, ...actions ], k => k);
+const actions = ['SET_ETAG', 'EXPAND_INVENTORY_TABLE'];
+export const ACTION_TYPES = keyBy([...asyncActions, ...actions], (k) => k);
 
 export const SEARCH_DEBOUNCE_DELAY = 500;

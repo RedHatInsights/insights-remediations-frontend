@@ -43,9 +43,9 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
         <b>
           1 action
         </b>
-         affecting
+         affecting
         <b>
-            
+           
           5 systems.
            
         </b>
@@ -146,9 +146,9 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
         <b>
           1 action
         </b>
-         affecting
+         affecting
         <b>
-            
+           
           5 systems.
            
         </b>
