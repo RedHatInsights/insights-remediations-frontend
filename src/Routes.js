@@ -6,18 +6,20 @@ import RemediationDetails from './routes/RemediationDetails';
 import ActivityDetails from './components/ActivityDetails';
 import ExecutorDetails from './components/ExecutorDetails';
 
-const InsightsRoute = ({ component: Component, rootClass, ...rest }) => {
+const InsightsRoute = ({ component: Component, rootClass, pageType, ...rest }) => {
     const root = document.getElementById('root');
     root.removeAttribute('class');
     root.classList.add(`page__${rootClass}`, 'pf-l-page__main');
     root.classList.add(`page__${rootClass}`, 'pf-c-page__main');
+    root.setAttribute('data-ouia-page-type', pageType);
 
     return (<Route component={ Component } { ...rest } />);
 };
 
 InsightsRoute.propTypes = {
     component: PropTypes.func,
-    rootClass: PropTypes.string
+    rootClass: PropTypes.string,
+    pageType: PropTypes.string
 };
 
 export const routes = {
@@ -29,8 +31,8 @@ export const routes = {
 
 export const Routes = () => (
     <Switch>
-        <InsightsRoute exact path={ routes.home } component={ Home } rootClass='remediations' />
-        <InsightsRoute exact path={ routes.details } component={ RemediationDetails } rootClass='remediation-details' />
+        <InsightsRoute exact path={ routes.home } component={ Home } rootClass='remediations' pageType='home' />
+        <InsightsRoute exact path={ routes.details } component={ RemediationDetails } rootClass='remediation-details' pageType='details' />
         <InsightsRoute exact path={ routes.runDetails } render={ (props) => (<ActivityDetails  remediation={ {} } { ...props } />) } />
         <InsightsRoute exact path={ routes.executorDetails } render={ (props) => (<ExecutorDetails   { ...props } />) } />
         <Redirect path='*' to={ routes.home } push />

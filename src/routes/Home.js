@@ -184,6 +184,7 @@ function Home () {
                             filterConfig={ {
                                 items: [{
                                     label: 'Search playbooks',
+                                    name: 'Search playbooks',
                                     type: 'text',
                                     filterValues: {
                                         id: 'filter-by-string',
@@ -204,14 +205,23 @@ function Home () {
                             onSelect: (isSelected, e) => selector.props.onSelect(e, isSelected, -1) } }
                             actionsConfig={ { actions: [
                                 { label: selectedIds.length > 1 ? 'Download playbooks' : 'Download playbook',
-                                    props: { variant: 'secondary', isDisabled: !selectedIds.length },
+                                    props: {
+                                        variant: 'secondary', isDisabled: !selectedIds.length,
+                                        'data-ouia-component-id': 'download-playbooks'
+                                    },
                                     onClick: () => download(selectedIds, remediations.value.data, dispatch) // TODO state for downloads?
                                 },
                                 { label: 'Delete playbooks',
-                                    props: { isDisabled: !permission.permissions.write || !selectedIds.length },
+                                    props: {
+                                        isDisabled: !permission.permissions.write || !selectedIds.length,
+                                        'data-ouia-component-id': 'delete-playbooks'
+                                    },
                                     onClick: () => setDialogOpen(true)
                                 },
                                 { label: showArchived ? 'Hide archived playbooks' : 'Show archived playbooks',
+                                    props: {
+                                        'data-ouia-component-id': 'toggle-archived-playbooks'
+                                    },
                                     onClick: showArchived ?
                                         () => {
                                             setShowArchived(false);

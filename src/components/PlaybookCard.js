@@ -53,6 +53,7 @@ const PlaybookCardHeader = ({
 
     dropdownItems.push(
         <DropdownItem
+            data-ouia-component-id='execute-playbook'
             key='execute'
             id='execute'
             isDisabled= { !permission.isReceptorConfigured || isArchived }
@@ -69,7 +70,9 @@ const PlaybookCardHeader = ({
     );
 
     dropdownItems.push(
-        <DropdownItem key='download'
+        <DropdownItem
+            data-ouia-component-id='download-playbook'
+            key='download'
             onClick={ () => { downloadPlaybook(remediation.id); setIsOpen(false); } }>
         Download playbook
         </DropdownItem>
@@ -77,7 +80,9 @@ const PlaybookCardHeader = ({
 
     isArchived
         ? dropdownItems.push(
-            <DropdownItem key='restore'
+            <DropdownItem
+                data-ouia-component-id='restore-playbook'
+                key='restore'
                 onClick={ () => {
                     archiveHandler();
                     setIsOpen(false);
@@ -92,7 +97,9 @@ const PlaybookCardHeader = ({
             </DropdownItem>
         )
         : dropdownItems.push(
-            <DropdownItem key='archive'
+            <DropdownItem
+                data-ouia-component-id='archive-playbook'
+                key='archive'
                 onClick={ () => {
                     archiveHandler();
                     setIsOpen(false);
@@ -111,6 +118,7 @@ const PlaybookCardHeader = ({
         <CardHeader className='ins-c-playbook-card__header'>
             <CardActions>
                 <Dropdown
+                    data-ouia-component-id='playbook-actions'
                     key='dropdown'
                     id={ `${remediation.id}-dropdown` }
                     isOpen={ isOpen }

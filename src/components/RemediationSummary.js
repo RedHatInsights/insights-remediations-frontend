@@ -47,6 +47,7 @@ export const RemediationSummary = ({
                 <b className='ins-c-remediation-summary__reboot--enabled'> Enabled </b>
                 { context.permissions.write &&
                     <Button
+                        data-ouia-component-name='disable-reboot'
                         variant='link'
                         onClick={ () => handleRebootChange(!remediation.auto_reboot) }>
                         Turn off
@@ -71,6 +72,7 @@ export const RemediationSummary = ({
                 }
                 { context.permissions.write &&
                     <Button
+                        data-ouia-component-name='enable-reboot'
                         variant='link'
                         onClick={ () => handleRebootChange(!remediation.auto_reboot) }>
                         Turn on
