@@ -1,18 +1,3 @@
-require.extensions['.css'] = () => undefined;
-const path = require('path');
-const glob = require('glob');
-
-const mapper = {
-  TextVariants: 'Text',
-  DropdownPosition: 'dropdownConstants',
-  EmptyStateVariant: 'EmptyState',
-  TextListItemVariants: 'TextListItem',
-  TextListVariants: 'TextList',
-  ModalVariant: 'Modal',
-  ProgressVariant: 'ProgressContainer',
-  ProgressMeasureLocation: 'ProgressContainer',
-};
-
 const FECMapper = {
   SkeletonSize: 'Skeleton',
   PageHeaderTitle: 'PageHeader',

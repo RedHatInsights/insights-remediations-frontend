@@ -1,14 +1,9 @@
-/* eslint-disable react/display-name */
-/* eslint-disable camelcase */
 import React, { useEffect, useState, useRef, useContext } from 'react';
-import { connect, useStore } from 'react-redux';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import * as pfReactTable from '@patternfly/react-table';
-import * as reactRouterDom from 'react-router-dom';
-import * as ReactRedux from 'react-redux';
-import { reactCore } from '@redhat-cloud-services/frontend-components-utilities/files/inventoryDependencies';
+import { InventoryTable } from '@redhat-cloud-services/frontend-components/components/esm/Inventory';
 import {
   Main,
   PageHeader,
@@ -36,7 +31,7 @@ import {
 } from '@patternfly/react-core';
 import { InProgressIcon } from '@patternfly/react-icons';
 
-import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/Registry';
+import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/esm/Registry';
 import reducers from '../store/reducers';
 import DescriptionList from './Layouts/DescriptionList';
 import {
@@ -74,47 +69,14 @@ const ExecutorDetails = ({
   const [executor, setExecutor] = useState({});
   const [systems, setSystems] = useState([]);
   const [filter, setFilter] = useState('');
-  const [InventoryTable, setInventoryTable] = useState();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const [openId, setOpenId] = useState();
   const [firstExpand, setFirstExpand] = useState(false);
   const [debouncedGetPlaybookRunSystems, setDebounce] = useState();
   const inventory = useRef(null);
-  const store = useStore();
 
   const urlBuilder = inventoryUrlBuilder({ id: 'default' });
-
-  const loadInventory = async () => {
-    const {
-      inventoryConnector,
-      mergeWithEntities,
-      INVENTORY_ACTION_TYPES,
-    } = await insights.loadInventory({
-      ReactRedux,
-      react: React,
-      reactRouterDom,
-      pfReactTable,
-      pfReact: reactCore,
-    });
-
-    getRegistry().register({
-      ...mergeWithEntities(
-        reducers.playbookActivityIntentory({
-          INVENTORY_ACTION_TYPES,
-          renderStatus: (status) => (
-            <div className="ins-c-remediations-status-bar">
-              {renderStatus(normalizeStatus(status))}
-            </div>
-          ),
-          urlBuilder,
-        })()
-      ),
-    });
-
-    const { InventoryTable } = inventoryConnector(store);
-    setInventoryTable(() => InventoryTable);
-  };
 
   const onRefresh = (options) => {
     if (inventory && inventory.current) {
@@ -132,10 +94,8 @@ const ExecutorDetails = ({
   };
 
   useEffect(() => {
-    loadInventory();
     loadRemediation(id);
     getPlaybookRun(id, run_id);
-    // eslint-disable-next-line new-cap
     setDebounce(() => AwesomeDebouncePromise(getPlaybookRunSystems, 500));
 
     return () => {
@@ -197,108 +157,114 @@ const ExecutorDetails = ({
       <Stack hasGutter>
         <Card className="ins-c-card__playbook-log">
           <CardBody>
-            {InventoryTable && (
-              <InventoryTable
-                ref={inventory}
-                items={playbookRunSystems.status !== 'pending' ? systems : []}
-                isLoaded={playbookRunSystems.status !== 'pending'}
-                onRefresh={onRefresh}
-                page={page}
-                total={playbookRunSystems.meta.total}
-                perPage={pageSize}
-                hasCheckbox={false}
-                expandable
-                showTags
-                onExpandClick={
-                  status === 'running'
-                    ? (_e, _i, isOpen, { id }) => {
-                        setFirstExpand(true);
-                        if (isOpen) {
-                          setOpenId(id);
-                          if (refreshInterval) {
-                            clearInterval(refreshInterval);
-                          }
-
-                          getPlaybookRunSystemDetails(
-                            remediation.id,
-                            run_id,
-                            id
-                          );
-                          refreshInterval = setInterval(
-                            () =>
-                              getPlaybookRunSystemDetails(
-                                remediation.id,
-                                run_id,
-                                id
-                              ),
-                            5000
-                          );
-                        } else {
-                          setOpenId(undefined);
+            <InventoryTable
+              ref={inventory}
+              onLoad={({ INVENTORY_ACTION_TYPES, mergeWithEntities }) =>
+                getRegistry().register({
+                  ...mergeWithEntities(
+                    reducers.playbookActivityIntentory({
+                      INVENTORY_ACTION_TYPES,
+                      // eslint-disable-next-line react/display-name
+                      renderStatus: (status) => (
+                        <div className="ins-c-remediations-status-bar">
+                          {renderStatus(normalizeStatus(status))}
+                        </div>
+                      ),
+                      urlBuilder,
+                    })()
+                  ),
+                })
+              }
+              items={playbookRunSystems.status !== 'pending' ? systems : []}
+              isLoaded={playbookRunSystems.status !== 'pending'}
+              onRefresh={onRefresh}
+              page={page}
+              total={playbookRunSystems.meta.total}
+              perPage={pageSize}
+              hasCheckbox={false}
+              expandable
+              showTags
+              onExpandClick={
+                status === 'running'
+                  ? (_e, _i, isOpen, { id }) => {
+                      setFirstExpand(true);
+                      if (isOpen) {
+                        setOpenId(id);
+                        if (refreshInterval) {
                           clearInterval(refreshInterval);
                         }
 
-                        onCollapseInventory(isOpen, id);
-                      }
-                    : (_e, _i, isOpen, { id }) => {
-                        setFirstExpand(true);
-                        if (isOpen) {
-                          setOpenId(id);
-                          getPlaybookRunSystemDetails(
-                            remediation.id,
-                            run_id,
-                            id
-                          );
-                        } else {
-                          setOpenId(undefined);
-                        }
-
+                        getPlaybookRunSystemDetails(remediation.id, run_id, id);
+                        refreshInterval = setInterval(
+                          () =>
+                            getPlaybookRunSystemDetails(
+                              remediation.id,
+                              run_id,
+                              id
+                            ),
+                          5000
+                        );
+                      } else {
+                        setOpenId(undefined);
                         clearInterval(refreshInterval);
-                        onCollapseInventory(isOpen, id);
                       }
-                }
-              >
-                <Toolbar>
-                  <ToolbarContent>
-                    <ToolbarItem>
-                      <ConditionalFilter
-                        items={[
-                          {
-                            value: 'display_name',
-                            label: 'Name',
-                            filterValues: {
-                              placeholder: 'Filter by name',
-                              type: conditionalFilterType.text,
-                              value: filter,
-                              onChange: (e, selected) => {
-                                setFilter(selected);
-                                setPage(1);
-                                debouncedGetPlaybookRunSystems(
-                                  id,
-                                  run_id,
-                                  executor_id,
-                                  pageSize,
-                                  0,
-                                  selected
-                                );
-                              },
+
+                      onCollapseInventory(isOpen, id);
+                    }
+                  : (_e, _i, isOpen, { id }) => {
+                      setFirstExpand(true);
+                      if (isOpen) {
+                        setOpenId(id);
+                        getPlaybookRunSystemDetails(remediation.id, run_id, id);
+                      } else {
+                        setOpenId(undefined);
+                      }
+
+                      clearInterval(refreshInterval);
+                      onCollapseInventory(isOpen, id);
+                    }
+              }
+            >
+              <Toolbar>
+                <ToolbarContent>
+                  <ToolbarItem>
+                    <ConditionalFilter
+                      items={[
+                        {
+                          value: 'display_name',
+                          label: 'Name',
+                          filterValues: {
+                            placeholder: 'Filter by name',
+                            type: conditionalFilterType.text,
+                            value: filter,
+                            onChange: (e, selected) => {
+                              setFilter(selected);
+                              setPage(1);
+                              debouncedGetPlaybookRunSystems(
+                                id,
+                                run_id,
+                                executor_id,
+                                pageSize,
+                                0,
+                                selected
+                              );
                             },
                           },
-                        ]}
-                      />
-                    </ToolbarItem>
-                    <ToolbarItem>
-                      <Button
-                        variant="secondary"
-                        onClick={() => downloadPlaybook(remediation.id)}
-                      >
-                        Download playbook
-                      </Button>
-                    </ToolbarItem>
-                  </ToolbarContent>
-                </Toolbar>
-              </InventoryTable>
-            )}
+                        },
+                      ]}
+                    />
+                  </ToolbarItem>
+                  <ToolbarItem>
+                    <Button
+                      variant="secondary"
+                      onClick={() => downloadPlaybook(remediation.id)}
+                    >
+                      Download playbook
+                    </Button>
+                  </ToolbarItem>
+                </ToolbarContent>
+              </Toolbar>
+            </InventoryTable>
           </CardBody>
         </Card>
       </Stack>

@@ -169,7 +169,7 @@ const RemediationDetails = ({
     return context.permissions.read === false ? (
       <DeniedState />
     ) : (
-      <React.Fragment>
+      <div className="page__remediation-details">
         <PageHeader>
           <Breadcrumb>
             <BreadcrumbItem>
@@ -250,7 +250,7 @@ const RemediationDetails = ({
             </StackItem>
           </Stack>
         </Main>
-      </React.Fragment>
+      </div>
     );
   }
 };

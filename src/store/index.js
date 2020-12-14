@@ -1,4 +1,4 @@
-import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/Registry';
+import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/esm/Registry';
 import {
   notifications,
   notificationsMiddleware,
