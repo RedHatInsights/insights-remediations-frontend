@@ -7,52 +7,53 @@ import ConfirmationDialog from './ConfirmationDialog';
 import './DeleteButton.scss';
 
 class DeleteButton extends Component {
+  state = {
+    dialogOpen: false,
+  };
 
-    state = {
-        dialogOpen: false
-    };
+  onButtonClicked = () => {
+    this.setState({ dialogOpen: true });
+  };
 
-    onButtonClicked = () => {
-        this.setState({ dialogOpen: true });
-    }
+  onDialogClose = (result) => {
+    this.setState({ dialogOpen: false });
+    result && this.props.onDelete();
+  };
 
-    onDialogClose = (result) => {
-        this.setState({ dialogOpen: false });
-        result && this.props.onDelete();
-    }
+  render() {
+    const { dialogOpen } = this.state;
 
-    render() {
-
-        const { dialogOpen } = this.state;
-
-        return (
-            <React.Fragment>
-                <Button
-                    onClick={ this.onButtonClicked }
-                    isDisabled={ this.props.isDisabled }
-                    variant={ this.props.variant }>
-                    { this.props.label }
-                </Button>
-                {
-                    dialogOpen &&
-                    <ConfirmationDialog text={ this.props.dialogMessage } onClose={ this.onDialogClose } />
-                }
-            </React.Fragment>
-        );
-    }
-};
+    return (
+      <React.Fragment>
+        <Button
+          onClick={this.onButtonClicked}
+          isDisabled={this.props.isDisabled}
+          variant={this.props.variant}
+        >
+          {this.props.label}
+        </Button>
+        {dialogOpen && (
+          <ConfirmationDialog
+            text={this.props.dialogMessage}
+            onClose={this.onDialogClose}
+          />
+        )}
+      </React.Fragment>
+    );
+  }
+}
 
 DeleteButton.propTypes = {
-    label: PropTypes.string,
-    dialogMessage: PropTypes.string,
-    isDisabled: PropTypes.bool,
-    onDelete: PropTypes.func.isRequired,
-    variant: PropTypes.string
+  label: PropTypes.string,
+  dialogMessage: PropTypes.string,
+  isDisabled: PropTypes.bool,
+  onDelete: PropTypes.func.isRequired,
+  variant: PropTypes.string,
 };
 
 DeleteButton.defaultProps = {
-    label: 'Delete',
-    variant: 'link'
+  label: 'Delete',
+  variant: 'link',
 };
 
 export default DeleteButton;

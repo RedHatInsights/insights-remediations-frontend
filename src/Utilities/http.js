@@ -1,88 +1,94 @@
 const HEADERS = {
-    'Content-Type': 'application/json; charset=utf-8'
+  'Content-Type': 'application/json; charset=utf-8',
 };
 
 class HttpError extends Error {
-    constructor(description) {
-        super('Error communicating with the server');
-        this.description = description;
-    }
+  constructor(description) {
+    super('Error communicating with the server');
+    this.description = description;
+  }
 }
 
-async function checkResponse (r) {
-    if (r.ok) {
-        return r;
+async function checkResponse(r) {
+  if (r.ok) {
+    return r;
+  }
+
+  if (r.status === 401) {
+    window.insights.chrome.auth.logout();
+    return;
+  }
+
+  if (r.headers.get('content-type').includes('application/json')) {
+    // let's try to extract some more info
+    let data = false;
+    try {
+      data = await r.json();
+    } catch (e) {} // eslint-disable-line no-empty
+
+    if (data.errors && data.errors.length) {
+      const error = data.errors[0];
+
+      if (error.details && error.details.name) {
+        throw new HttpError(`${error.title} (${error.details.name})`);
+      }
+
+      throw new HttpError(error.title);
     }
+  }
 
-    if (r.status === 401) {
-        window.insights.chrome.auth.logout();
-        return;
-    }
-
-    if (r.headers.get('content-type').includes('application/json')) {
-        // let's try to extract some more info
-        let data = false;
-        try {
-            data = await r.json();
-        } catch (e) {} // eslint-disable-line no-empty
-
-        if (data.errors && data.errors.length) {
-            const error = data.errors[0];
-
-            if (error.details && error.details.name) {
-                throw new HttpError(`${error.title} (${error.details.name})`);
-            }
-
-            throw new HttpError(error.title);
-        }
-    }
-
-    throw new HttpError(`Unexpected response code ${r.status}`);
+  throw new HttpError(`Unexpected response code ${r.status}`);
 }
 
-async function json (r) {
-    if (!r) {
-        return;
-    }
+async function json(r) {
+  if (!r) {
+    return;
+  }
 
-    const type = r.headers.get('content-type');
-    if (!type.includes('application/json')) {
-        throw new HttpError(`Unexpected response type (${type}) returned`);
-    }
+  const type = r.headers.get('content-type');
+  if (!type.includes('application/json')) {
+    throw new HttpError(`Unexpected response type (${type}) returned`);
+  }
 
-    return r.json();
+  return r.json();
 }
 
-function doFetch (uri, method = 'GET', data = false, headers = false, options = {}) {
-    const opts = {
-        credentials: 'same-origin',
-        method,
-        ...options
-    };
+function doFetch(
+  uri,
+  method = 'GET',
+  data = false,
+  headers = false,
+  options = {}
+) {
+  const opts = {
+    credentials: 'same-origin',
+    method,
+    ...options,
+  };
 
-    if (headers) {
-        opts.headers = headers;
-    }
+  if (headers) {
+    opts.headers = headers;
+  }
 
-    if (data) {
-        opts.body = JSON.stringify(data);
-    }
+  if (data) {
+    opts.body = JSON.stringify(data);
+  }
 
-    return fetch(uri, opts);
+  return fetch(uri, opts);
 }
 
-export function doGet (uri) {
-    return doFetch(uri.toString()).then(checkResponse).then(json);
+export function doGet(uri) {
+  return doFetch(uri.toString()).then(checkResponse).then(json);
 }
 
-export function doPost (uri, data) {
-    return doFetch(uri, 'POST', data, HEADERS).then(checkResponse).then(json);
+export function doPost(uri, data) {
+  return doFetch(uri, 'POST', data, HEADERS).then(checkResponse).then(json);
 }
 
-export function doPatch (uri, data) {
-    return doFetch(uri, 'PATCH', data, HEADERS).then(checkResponse);
+export function doPatch(uri, data) {
+  return doFetch(uri, 'PATCH', data, HEADERS).then(checkResponse);
 }
 
-export function doDelete (uri) {
-    return doFetch(uri, 'DELETE').then(checkResponse);
+export function doDelete(uri) {
+  return doFetch(uri, 'DELETE').then(checkResponse);
 }
