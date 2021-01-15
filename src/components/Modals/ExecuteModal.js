@@ -197,8 +197,8 @@ export const ExecuteModal = ({
             </Text>
           )}
           <Text component={TextVariants.p}>
-            Systems connected to a Satellite instance and configured with
-            Receptor can be automatically remediated. To remediate other
+            Systems connected to a Satellite instance and configured with Cloud
+            Connector can be automatically remediated. To remediate other
             systems, download the Ansible Playbook.
           </Text>
           <Text component={TextVariants.h4}>Connection status of systems</Text>

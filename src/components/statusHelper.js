@@ -266,7 +266,7 @@ export const styledConnectionStatus = (status, err) =>
           />
           Connection issue
           <Text component={TextVariants.small} style={{ margin: '0px' }}>
-            {err ? err : 'Receptor not responding'}
+            {err ? err : 'Cloud Connector not responding'}
           </Text>
           <Button
             style={{ padding: '0px' }}
