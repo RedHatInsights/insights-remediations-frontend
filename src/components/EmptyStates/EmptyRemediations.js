@@ -37,7 +37,11 @@ export const EmptyRemediations = ({ archivedCount, setShowArchived }) => {
         </EmptyStateBody>
         <br />
         {archivedCount > 0 && (
-          <Button variant="link" onClick={() => setShowArchived(true)}>
+          <Button
+            variant="link"
+            onClick={() => setShowArchived(true)}
+            ouiaId="show-archived-playbooks"
+          >
             Show {archivedCount} archived playbooks
           </Button>
         )}

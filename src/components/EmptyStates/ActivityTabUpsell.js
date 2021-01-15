@@ -26,6 +26,7 @@ const ActivityTabUpsell = () => (
       <Button
         variant="link"
         component="a"
+        ouiaId="learn_more"
         href="https://www.redhat.com/en/technologies/management/smart-management"
       >
         Learn more

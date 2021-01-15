@@ -7,12 +7,14 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       <Button
         isDisabled={true}
         onClick={[Function]}
+        ouiaId="etag"
         variant="primary"
       >
         Execute playbook on 0 system
       </Button>,
       <Button
         onClick={[Function]}
+        ouiaId="download-playbook"
         variant="secondary"
       >
         Download playbook
@@ -105,12 +107,14 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       <Button
         isDisabled={true}
         onClick={[Function]}
+        ouiaId="etag"
         variant="primary"
       >
         Execute playbook on 0 system
       </Button>,
       <Button
         onClick={[Function]}
+        ouiaId="download-playbook"
         variant="secondary"
       >
         Download playbook
