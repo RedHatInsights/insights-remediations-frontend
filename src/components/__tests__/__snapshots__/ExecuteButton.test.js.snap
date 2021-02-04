@@ -32,7 +32,25 @@ exports[`Execute button fullfiled request 1`] = `
     }
   }
   status="fullfiled"
-/>
+>
+  <Button
+    onClick={[Function]}
+  >
+    <button
+      aria-disabled={false}
+      aria-label={null}
+      className="pf-c-button pf-m-primary"
+      data-ouia-component-id={0}
+      data-ouia-component-type="PF4/Button"
+      data-ouia-safe={true}
+      disabled={false}
+      onClick={[Function]}
+      type="button"
+    >
+      Execute playbook
+    </button>
+  </Button>
+</ExecuteButton>
 `;
 
 exports[`Execute button pending request 1`] = `
@@ -49,5 +67,23 @@ exports[`Execute button pending request 1`] = `
     }
   }
   status="pending"
-/>
+>
+  <Button
+    onClick={[Function]}
+  >
+    <button
+      aria-disabled={false}
+      aria-label={null}
+      className="pf-c-button pf-m-primary"
+      data-ouia-component-id={1}
+      data-ouia-component-type="PF4/Button"
+      data-ouia-safe={true}
+      disabled={false}
+      onClick={[Function]}
+      type="button"
+    >
+      Execute playbook
+    </button>
+  </Button>
+</ExecuteButton>
 `;

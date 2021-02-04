@@ -56,7 +56,7 @@ const ExecuteButton = ({
 
   return isEnabled() ? (
     <React.Fragment>
-      {buttonWithTooltip(isDisabled)}
+      {buttonWithTooltip()}
       {open && (
         <ExecuteModal
           isOpen={open}
