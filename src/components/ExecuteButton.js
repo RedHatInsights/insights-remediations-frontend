@@ -10,6 +10,7 @@ import './Status.scss';
 const ExecuteButton = ({
   isLoading,
   isDisabled,
+  disabledStateText,
   data,
   getConnectionStatus,
   remediationId,
@@ -22,19 +23,10 @@ const ExecuteButton = ({
   setEtag,
 }) => {
   const [open, setOpen] = useState(false);
-  const [isUserEntitled, setIsUserEntitled] = useState(false);
   const [showRefreshMessage, setShowRefreshMessage] = useState(false);
 
   const isEnabled = () =>
     true || localStorage.getItem('remediations:fifi:debug') === 'true';
-
-  useEffect(() => {
-    window.insights.chrome.auth
-      .getUser()
-      .then((user) =>
-        setIsUserEntitled(user.entitlements.smart_management.is_entitled)
-      );
-  }, []);
 
   useEffect(() => {
     if (remediationStatus === 'changed') {
@@ -45,12 +37,9 @@ const ExecuteButton = ({
     }
   }, [remediationStatus]);
 
-  const buttonWithTooltip = (isDisabled) => {
+  const buttonWithTooltip = () => {
     return isDisabled ? (
-      <Tooltip
-        content="Your account must be configured with Cloud Connector to execute playbooks."
-        position="auto"
-      >
+      <Tooltip content={disabledStateText} position="auto">
         <Button isAriaDisabled>Execute playbook</Button>
       </Tooltip>
     ) : (
@@ -65,9 +54,9 @@ const ExecuteButton = ({
     );
   };
 
-  return isUserEntitled && isEnabled() ? (
+  return isEnabled() ? (
     <React.Fragment>
-      {buttonWithTooltip(isDisabled)}
+      {buttonWithTooltip()}
       {open && (
         <ExecuteModal
           isOpen={open}
@@ -102,6 +91,7 @@ ExecuteButton.propTypes = {
   etag: PropTypes.string,
   setEtag: PropTypes.func,
   isDisabled: PropTypes.bool,
+  disabledStateText: PropTypes.string,
   getEndpoint: PropTypes.func,
   sources: PropTypes.object,
 };
