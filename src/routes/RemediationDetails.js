@@ -88,6 +88,17 @@ const RemediationDetails = ({
     history.push(tabIndex === 1 ? '?activity' : '?issues');
   };
 
+  const getDisabledStateText = () => {
+    if (!context.isReceptorConfigured) {
+      return 'Your account must be configured with Cloud Connector to execute playbooks.';
+    } else if (!context.permissions.execute) {
+      return 'You do not have the required execute permissions to perform this action.';
+    } else if (!context.hasSmartManagement) {
+      return 'Your account must be entitled to Smart Management to execute playbooks.';
+    }
+    return 'Unable to execute playbook.';
+  };
+
   useEffect(() => {
     loadRemediation(id).catch((e) => {
       if (e && e.response && e.response.status === 404) {
@@ -188,8 +199,10 @@ const RemediationDetails = ({
                     <ExecutePlaybookButton
                       isDisabled={
                         !context.isReceptorConfigured ||
-                        !context.permissions.execute
+                        !context.permissions.execute ||
+                        !context.hasSmartManagement
                       }
+                      disabledStateText={getDisabledStateText()}
                       remediationId={remediation.id}
                     ></ExecutePlaybookButton>
                   </SplitItem>
