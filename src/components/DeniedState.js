@@ -13,8 +13,8 @@ import { LockIcon } from '@patternfly/react-icons';
 import {
   PageHeader,
   PageHeaderTitle,
-  Main,
-} from '@redhat-cloud-services/frontend-components';
+} from '@redhat-cloud-services/frontend-components/PageHeader';
+import { Main } from '@redhat-cloud-services/frontend-components/Main';
 
 const DeniedState = () => {
   return (

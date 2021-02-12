@@ -1,4 +1,4 @@
-import { renderHook, cleanup, act } from 'react-hooks-testing-library';
+import { renderHook, act, cleanup } from '@testing-library/react-hooks';
 import {
   useExpander,
   useFilter,

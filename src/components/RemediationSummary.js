@@ -19,7 +19,7 @@ import {
 import DescriptionList from '../components/Layouts/DescriptionList';
 import classnames from 'classnames';
 import { StatusSummary } from '../components/statusHelper';
-import { DateFormat } from '@redhat-cloud-services/frontend-components';
+import { DateFormat } from '@redhat-cloud-services/frontend-components/DateFormat';
 import './RemediationSummary.scss';
 
 export const RemediationSummary = ({

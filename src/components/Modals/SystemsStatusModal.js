@@ -4,13 +4,14 @@ import { CheckIcon, TimesIcon } from '@patternfly/react-icons';
 
 import PropTypes from 'prop-types';
 import { Modal, ToolbarItem, ToolbarGroup } from '@patternfly/react-core';
-import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/esm/Registry';
-import { InventoryTable } from '@redhat-cloud-services/frontend-components/components/esm/Inventory';
+import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/Registry';
+import { InventoryTable } from '@redhat-cloud-services/frontend-components/Inventory';
 import {
-  TableToolbar,
   ConditionalFilter,
   conditionalFilterType,
-} from '@redhat-cloud-services/frontend-components';
+} from '@redhat-cloud-services/frontend-components/ConditionalFilter';
+
+import { TableToolbar } from '@redhat-cloud-services/frontend-components/TableToolbar';
 import { inventoryUrlBuilder } from '../../Utilities/urls';
 import reducers from '../../store/reducers';
 import RemediationDetailsSystemDropdown from '../RemediationDetailsSystemDropdown';

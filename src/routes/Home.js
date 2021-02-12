@@ -6,16 +6,16 @@ import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
 
 import {
-  Main,
   PageHeader,
   PageHeaderTitle,
-  PrimaryToolbar,
-  Wizard,
-} from '@redhat-cloud-services/frontend-components';
+} from '@redhat-cloud-services/frontend-components/PageHeader';
+import { Main } from '@redhat-cloud-services/frontend-components/Main';
+import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/PrimaryToolbar';
+import { Wizard } from '@redhat-cloud-services/frontend-components/Wizard';
 import RemediationTable from '../components/RemediationTable';
 import TestButtons from '../components/TestButtons';
 
-import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/esm/actions';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
 
 // Wizard Steps
 import PlanName from '../components/CreatePlanModal/ModalSteps/PlanName';

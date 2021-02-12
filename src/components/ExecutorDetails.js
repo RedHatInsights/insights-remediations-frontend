@@ -3,16 +3,18 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { InventoryTable } from '@redhat-cloud-services/frontend-components/components/esm/Inventory';
+import { InventoryTable } from '@redhat-cloud-services/frontend-components/Inventory';
+import { Main } from '@redhat-cloud-services/frontend-components/Main';
 import {
-  Main,
   PageHeader,
   PageHeaderTitle,
-  DateFormat,
-  Skeleton,
+} from '@redhat-cloud-services/frontend-components/PageHeader';
+import { DateFormat } from '@redhat-cloud-services/frontend-components/DateFormat';
+import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
+import {
   ConditionalFilter,
   conditionalFilterType,
-} from '@redhat-cloud-services/frontend-components';
+} from '@redhat-cloud-services/frontend-components/ConditionalFilter';
 
 import {
   Button,
@@ -30,8 +32,6 @@ import {
   ToolbarContent,
 } from '@patternfly/react-core';
 import { InProgressIcon } from '@patternfly/react-icons';
-
-import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/esm/Registry';
 import reducers from '../store/reducers';
 import DescriptionList from './Layouts/DescriptionList';
 import {
@@ -50,6 +50,7 @@ import RunFailed from './Alerts/RunFailed';
 import { inventoryUrlBuilder } from '../Utilities/urls';
 import './ExecutorDetails.scss';
 import { PermissionContext } from '../App';
+import { register } from '../store';
 let refreshInterval;
 
 const ExecutorDetails = ({
@@ -160,7 +161,7 @@ const ExecutorDetails = ({
             <InventoryTable
               ref={inventory}
               onLoad={({ INVENTORY_ACTION_TYPES, mergeWithEntities }) =>
-                getRegistry().register({
+                register({
                   ...mergeWithEntities(
                     reducers.playbookActivityIntentory({
                       INVENTORY_ACTION_TYPES,

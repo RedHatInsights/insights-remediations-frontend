@@ -6,13 +6,13 @@ const { config: webpackConfig, plugins } = config({
   https: true,
 });
 
-const modulesConfig = require('@redhat-cloud-services/frontend-components-config/federated-modules')(
-  {
-    root: resolve(__dirname, '../'),
-  }
+plugins.push(
+  require('@redhat-cloud-services/frontend-components-config/federated-modules')(
+    {
+      root: resolve(__dirname, '../'),
+    }
+  )
 );
-
-plugins.push(modulesConfig);
 
 module.exports = {
   ...webpackConfig,

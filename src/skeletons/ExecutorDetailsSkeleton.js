@@ -1,12 +1,11 @@
 import React from 'react';
 
 import {
-  Main,
   PageHeader,
   PageHeaderTitle,
-  Skeleton,
-} from '@redhat-cloud-services/frontend-components';
-
+} from '@redhat-cloud-services/frontend-components/PageHeader';
+import { Main } from '@redhat-cloud-services/frontend-components/Main';
+import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import SkeletonTable from './SkeletonTable';
 
 import {

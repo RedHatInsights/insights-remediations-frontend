@@ -1,20 +1,14 @@
-import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/esm/Registry';
-import {
-  notifications,
-  notificationsMiddleware,
-} from '@redhat-cloud-services/frontend-components-notifications';
+import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/Registry';
+import { notificationsReducer } from '@redhat-cloud-services/frontend-components-notifications/redux';
+import notificationsMiddleware from '@redhat-cloud-services/frontend-components-notifications/notificationsMiddleware';
 import promiseMiddleware from 'redux-promise-middleware';
 import reducers from './reducers';
 
 let registry;
 
 export function init(...middleware) {
-  if (registry) {
-    throw new Error('store already initialized');
-  }
-
   registry = getRegistry({}, [
-    promiseMiddleware(),
+    promiseMiddleware,
     notificationsMiddleware({
       errorTitleKey: 'message',
       errorDescriptionKey: 'description',
@@ -23,7 +17,7 @@ export function init(...middleware) {
   ]);
 
   registry.register(reducers);
-  registry.register({ notifications });
+  registry.register({ notifications: notificationsReducer });
 
   return registry;
 }

@@ -32,6 +32,8 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
   ouiaSafe={true}
   showClose={true}
   title="Execute playbook"
+  titleIconVariant={null}
+  titleLabel=""
   variant="small"
 >
   <div>
@@ -65,6 +67,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       aria-label="Systems"
       borders={true}
       canSelectAll={true}
+      canSortFavorites={true}
       cells={
         Array [
           Object {
@@ -89,6 +92,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       role="grid"
       rowLabeledBy="simple-node"
       rows={Array []}
+      selectVariant="checkbox"
       variant="compact"
     >
       <TableHeader />
@@ -130,6 +134,8 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
   ouiaSafe={true}
   showClose={true}
   title="Execute playbook"
+  titleIconVariant={null}
+  titleLabel=""
   variant="small"
 >
   <div>
@@ -168,6 +174,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       aria-label="Systems"
       borders={true}
       canSelectAll={true}
+      canSortFavorites={true}
       cells={
         Array [
           Object {
@@ -192,6 +199,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       role="grid"
       rowLabeledBy="simple-node"
       rows={Array []}
+      selectVariant="checkbox"
       variant="compact"
     >
       <TableHeader />

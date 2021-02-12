@@ -4,12 +4,12 @@ import React, { useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { Main } from '@redhat-cloud-services/frontend-components/Main';
 import {
-  Main,
   PageHeader,
   PageHeaderTitle,
-  DateFormat,
-} from '@redhat-cloud-services/frontend-components';
+} from '@redhat-cloud-services/frontend-components/PageHeader';
+import { DateFormat } from '@redhat-cloud-services/frontend-components/DateFormat';
 
 import {
   Card,

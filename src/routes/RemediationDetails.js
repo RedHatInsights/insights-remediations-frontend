@@ -10,7 +10,7 @@ import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown
 import { normalizeStatus } from '../components/statusHelper';
 import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
-import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
 import UpsellBanner from '../components/Alerts/UpsellBanner';
 import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
 import NotConfigured from '../components/EmptyStates/NotConfigured';
@@ -19,11 +19,11 @@ import SkeletonTable from '../skeletons/SkeletonTable';
 import '../components/Status.scss';
 
 import {
-  Main,
   PageHeader,
   PageHeaderTitle,
-  InvalidObject,
-} from '@redhat-cloud-services/frontend-components';
+} from '@redhat-cloud-services/frontend-components/PageHeader';
+import { Main } from '@redhat-cloud-services/frontend-components/Main';
+import { InvalidObject } from '@redhat-cloud-services/frontend-components/InvalidObject';
 
 import {
   Stack,

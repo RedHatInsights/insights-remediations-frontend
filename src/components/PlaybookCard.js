@@ -19,8 +19,8 @@ import {
   StackItem,
 } from '@patternfly/react-core';
 import { CheckCircleIcon } from '@patternfly/react-icons';
-import { DateFormat } from '@redhat-cloud-services/frontend-components';
-import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/esm/actions';
+import { DateFormat } from '@redhat-cloud-services/frontend-components/DateFormat';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
 import { Link } from 'react-router-dom';
 import { PropTypes } from 'prop-types';
 import { patchRemediation } from '../actions.js';

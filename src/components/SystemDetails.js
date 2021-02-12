@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Skeleton } from '@redhat-cloud-services/frontend-components';
+import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
 import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
 import docco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';

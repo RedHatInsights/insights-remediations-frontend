@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { init } from './store';
 import App from './App';
 
+window.remReact = React;
 const pathName = window.location.pathname.split('/');
 pathName.shift();
 
