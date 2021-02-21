@@ -1,11 +1,11 @@
 import React from 'react';
 
 import {
-  Main,
   PageHeader,
   PageHeaderTitle,
-  Spinner,
-} from '@redhat-cloud-services/frontend-components';
+} from '@redhat-cloud-services/frontend-components/PageHeader';
+import { Main } from '@redhat-cloud-services/frontend-components/Main';
+import { Spinner } from '@redhat-cloud-services/frontend-components/Spinner';
 
 const GlobalSkeleton = () => (
   <React.Fragment>

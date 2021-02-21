@@ -2,7 +2,8 @@ import React, { useEffect, useContext, useState } from 'react';
 import { useDispatch, useSelector as reduxSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
-import { Main, Spinner } from '@redhat-cloud-services/frontend-components';
+import { Main } from '@redhat-cloud-services/frontend-components/Main';
+import { Spinner } from '@redhat-cloud-services/frontend-components/Spinner';
 import { downloadPlaybook } from '../api';
 import {
   getConnectionStatus,

@@ -14,10 +14,8 @@ import {
   TableVariant,
 } from '@patternfly/react-table';
 import { RedoIcon, TimesIcon } from '@patternfly/react-icons';
-import {
-  TableToolbar,
-  PrimaryToolbar,
-} from '@redhat-cloud-services/frontend-components';
+import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/PrimaryToolbar';
+import { TableToolbar } from '@redhat-cloud-services/frontend-components/TableToolbar';
 
 import { getIssueApplication, includesIgnoreCase } from '../Utilities/model';
 import { buildIssueUrl } from '../Utilities/urls';

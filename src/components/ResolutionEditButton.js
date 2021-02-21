@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { Wizard } from '@redhat-cloud-services/frontend-components';
+import { Wizard } from '@redhat-cloud-services/frontend-components/Wizard';
 import ResolutionStep from './ResolutionModal/ResolutionStep';
 
 class ResolutionEditButton extends Component {
