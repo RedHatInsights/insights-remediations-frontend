@@ -116,7 +116,7 @@ function RemediationTable({
   }
 
   if (!showArchived) {
-    cards = value.data.reduce((result, remediation) => {
+    cards = value?.data?.reduce((result, remediation) => {
       if (remediation.archived !== true) {
         result.push(remediation);
       }
@@ -124,7 +124,7 @@ function RemediationTable({
       return result;
     }, []);
   } else {
-    cards = value.data.map((remediation) => remediation);
+    cards = value?.data?.map((remediation) => remediation);
   }
 
   if (cards.length === 0) {
