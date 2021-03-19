@@ -3,7 +3,12 @@ import orderBy from 'lodash/orderBy';
 import { CheckIcon, TimesIcon } from '@patternfly/react-icons';
 
 import PropTypes from 'prop-types';
-import { Modal, ToolbarItem, ToolbarGroup } from '@patternfly/react-core';
+import {
+  Modal,
+  ModalVariant,
+  ToolbarItem,
+  ToolbarGroup,
+} from '@patternfly/react-core';
 import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/Registry';
 import { InventoryTable } from '@redhat-cloud-services/frontend-components/Inventory';
 import {
@@ -73,7 +78,7 @@ export const SystemsStatusModal = ({
     <React.Fragment>
       <Modal
         className="ins-c-dialog"
-        width={'50%'}
+        variant={ModalVariant.small}
         title={`System${issue.systems.length > 1 ? 's' : ''} for action ${
           issue.description
         }`}
