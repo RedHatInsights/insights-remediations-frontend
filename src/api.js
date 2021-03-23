@@ -98,18 +98,12 @@ export function downloadPlaybook(selectedIds) {
   return new Promise((resolve, reject) => {
     const tab =
       selectedIds.length > 1
-        ? window.open(
-            API_BASE +
-              new RemediationsApiAxiosParamCreator().downloadPlaybooks(
-                selectedIds
-              ).url
-          )
-        : window.open(
-            API_BASE +
-              new RemediationsApiAxiosParamCreator().getRemediationPlaybook(
-                selectedIds[0]
-              ).url
-          );
+        ? new RemediationsApiAxiosParamCreator()
+            .downloadPlaybooks(selectedIds)
+            .then((value) => window.open(API_BASE + value.url))
+        : new RemediationsApiAxiosParamCreator()
+            .getRemediationPlaybook(selectedIds[0])
+            .then((value) => window.open(API_BASE + value.url));
 
     if (!tab) {
       return reject();
