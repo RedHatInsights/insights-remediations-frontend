@@ -142,6 +142,9 @@ export const statusText = (executorStatus) =>
     ),
   }[executorStatus]);
 
+export const pluralize = (number, str) =>
+  number === 1 ? `${number} ${str}` : `${number} ${str}s`;
+
 export const StatusSummary = ({
   executorStatus,
   permission,
@@ -180,9 +183,6 @@ export const StatusSummary = ({
         )}
     </Flex>
   );
-
-  const pluralize = (number, str) =>
-    number === 1 ? `${number} ${str}` : `${number} ${str}s`;
 
   if (executorStatus) {
     return (

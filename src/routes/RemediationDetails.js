@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
+import SystemsTable from '../components/SystemsTable/SystemsTable';
 import RemediationActivityTable from '../components/RemediationActivityTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
 import { normalizeStatus } from '../components/statusHelper';
@@ -48,6 +49,8 @@ import './RemediationDetails.scss';
 import NoReceptorBanner from '../components/Alerts/NoReceptorBanner';
 import { RemediationSummary } from '../components/RemediationSummary';
 
+const tabMapper = ['issues', 'systems', 'activity'];
+
 const RemediationDetails = ({
   match,
   location,
@@ -67,9 +70,7 @@ const RemediationDetails = ({
   const [noReceptorBannerVisible, setNoReceptorBannerVisible] = useState(
     localStorage.getItem('remediations:receptorBannerStatus') !== 'dismissed'
   );
-  const [activeTabKey, setActiveTabKey] = useState(
-    location.search.includes('?activity') ? 1 : 0
-  );
+  const [activeTabKey, setActiveTabKey] = useState(0);
 
   const context = useContext(PermissionContext);
 
@@ -85,7 +86,7 @@ const RemediationDetails = ({
 
   const handleTabClick = (event, tabIndex) => {
     setActiveTabKey(tabIndex);
-    history.push(tabIndex === 1 ? '?activity' : '?issues');
+    history.push(`?${tabMapper[tabIndex]}`);
   };
 
   const getDisabledStateText = () => {
@@ -108,6 +109,12 @@ const RemediationDetails = ({
 
       throw e;
     });
+
+    const tabIndex = tabMapper.findIndex(
+      (item) => item === location.search.split('?')[1]
+    );
+    setActiveTabKey(tabIndex !== -1 ? tabIndex : 0);
+    history.push(`?${tabMapper[tabIndex !== -1 ? tabIndex : 0]}`);
 
     if (isBeta) {
       loadRemediationStatus(id);
@@ -251,7 +258,10 @@ const RemediationDetails = ({
                     status={selectedRemediationStatus}
                   />
                 </Tab>
-                <Tab eventKey={1} title="Activity">
+                <Tab eventKey={1} title="Systems">
+                  <SystemsTable remediation={remediation} />
+                </Tab>
+                <Tab eventKey={2} title="Activity">
                   {renderActivityState(
                     context.hasSmartManagement,
                     context.isReceptorConfigured,
