@@ -4,8 +4,8 @@ export const calculateChecked = (rows = [], selected) =>
     : rows.some(({ id }) => selected?.has(id)) && null;
 
 export const calculateSystems = (remediation) =>
-  remediation.issues.reduce((acc, curr) => {
-    curr.systems.forEach((host) => {
+  remediation?.issues?.reduce((acc, curr) => {
+    curr?.systems?.forEach((host) => {
       const found = acc.find(({ id }) => host.id === id);
       const issue = {
         id: curr.id,
@@ -18,33 +18,33 @@ export const calculateSystems = (remediation) =>
           { ...issue, resolved: found.resolved },
         ];
         found.rebootRequired = found.issues.some(
-          ({ resolution }) => resolution.needs_reboot
+          ({ resolution }) => resolution?.needs_reboot
         );
       } else {
         acc.push({
           ...host,
           issues: [{ ...issue, resolved: host.resolved }],
-          rebootRequired: curr.resolution.needs_reboot,
+          rebootRequired: curr?.resolution?.needs_reboot,
         });
       }
     });
     return acc;
-  }, []);
+  }, []) || [];
 
 export const fetchInventoryData = async (
-  { page, ...config },
+  { page = 0, ...config } = {},
   systems,
   getEntities
 ) => {
-  const currSystems = systems
-    .filter(({ display_name }) =>
-      config.filters.hostnameOrId
-        ? display_name.includes(config.filters.hostnameOrId)
-        : true
-    )
-    .slice((page - 1) * config.per_page, page * config.per_page);
+  const currSystems = systems.filter(({ display_name }) =>
+    config.filters?.hostnameOrId
+      ? display_name.includes(config.filters.hostnameOrId)
+      : true
+  );
   const data = await getEntities(
-    currSystems.map(({ id }) => id),
+    currSystems
+      .slice((page - 1) * config.per_page, page * config.per_page)
+      .map(({ id }) => id),
     { ...config, hasItems: true },
     true
   );
@@ -55,6 +55,6 @@ export const fetchInventoryData = async (
       ...currSystems.find(({ id }) => id === host.id),
       ...host,
     })),
-    total: systems.length,
+    total: currSystems.length,
   };
 };
