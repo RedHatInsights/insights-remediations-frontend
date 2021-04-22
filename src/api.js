@@ -123,3 +123,17 @@ export function getIsReceptorConfigured() {
     `${window.location.origin}/api/sources/v2.0/endpoints?filter[receptor_node][not_nil]`
   );
 }
+
+export function deleteSystemsFromRemediation(systems, remediation) {
+  return Promise.all(
+    systems.flatMap((system) =>
+      system.issues.map((issue) =>
+        remediations.deleteRemediationIssueSystem(
+          remediation.id,
+          issue.id,
+          system.id
+        )
+      )
+    )
+  );
+}
