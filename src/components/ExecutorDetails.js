@@ -159,6 +159,7 @@ const ExecutorDetails = ({
         <Card className="ins-c-card__playbook-log">
           <CardBody>
             <InventoryTable
+              disableDefaultColumns
               ref={inventory}
               onLoad={({ INVENTORY_ACTION_TYPES, mergeWithEntities }) =>
                 register({

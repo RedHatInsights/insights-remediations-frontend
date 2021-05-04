@@ -88,6 +88,7 @@ export const SystemsStatusModal = ({
       >
         <div className="ins-c-toolbar__filter">
           <InventoryTable
+            disableDefaultColumns
             onLoad={({ mergeWithEntities, INVENTORY_ACTION_TYPES }) =>
               getRegistry().register({
                 ...mergeWithEntities(

@@ -52,6 +52,7 @@ const SystemsTableWrapper = ({ remediation, registry, refreshRemediation }) => {
 
   return (
     <InventoryTable
+      disableDefaultColumns
       variant="compact"
       showTags
       noDetail
