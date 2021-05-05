@@ -229,6 +229,7 @@ export const styledConnectionStatus = (status, err) =>
         </Text>
       </TextContent>
     ),
+    // TODO: delete?
     available: (
       <TextContent>
         <Text component={TextVariants.p}>
@@ -257,6 +258,7 @@ export const styledConnectionStatus = (status, err) =>
         </Text>
       </TextContent>
     ),
+    // TODO: delete?
     unavailable: (
       <TextContent>
         <Text component={TextVariants.p}>
@@ -327,9 +329,9 @@ export const styledConnectionStatus = (status, err) =>
             className="ins-c-remediations-failure ins-c-remediations-connection-status"
             aria-label="connection status"
           />
-          Cannot remediate - Receptor not configured
+          Cannot remediate - Cloud connector not defined
           <Text component={TextVariants.small} style={{ margin: '0px' }}>
-            Configure Receptor to automatically remediate
+            Configure Cloud connector to automatically remediate
           </Text>
           <Button
             style={{ padding: '0px' }}
@@ -337,6 +339,87 @@ export const styledConnectionStatus = (status, err) =>
             variant="link"
             // eslint-disable-next-line max-len
             href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+          >
+            Learn how to configure
+          </Button>
+        </Text>
+      </TextContent>
+    ),
+    no_rhc: (
+      <TextContent>
+        <Text component={TextVariants.p}>
+          Cannot remediate - Cloud connector not defined
+          <Text component={TextVariants.small} style={{ margin: '0px' }}>
+            Remediation from Insights requires Cloud connector. Cloud connector
+            can be enabled via Satelite, or through
+            <Button
+              style={{ padding: '0px' }}
+              key="configure"
+              variant="link"
+              // eslint-disable-next-line max-len
+              href="LINK HERE"
+            >
+              RHC (Red Hat connector)
+            </Button>
+          </Text>
+          <Button
+            style={{ padding: '0px' }}
+            key="download"
+            variant="link"
+            component="a"
+            // eslint-disable-next-line max-len
+            href="LINK HERE"
+          >
+            Learn how to configure
+          </Button>
+        </Text>
+      </TextContent>
+    ),
+    no_smart_management: (
+      <TextContent>
+        <Text component={TextVariants.p}>
+          Cannot remediate - Not entitled
+          <Text component={TextVariants.small} style={{ margin: '0px' }}>
+            Remediation from Insights is supported only for systems with Cloud
+            connector, a feature of Smart Management
+          </Text>
+          <Button
+            style={{ padding: '0px' }}
+            key="download"
+            variant="link"
+            component="a"
+            // eslint-disable-next-line max-len
+            href="LINK HERE"
+          >
+            Learn about Smart Management
+          </Button>
+        </Text>
+      </TextContent>
+    ),
+    disabled: (
+      <TextContent>
+        <Text component={TextVariants.p}>
+          Cannot remediate - Cloud connector not defined
+          <Text component={TextVariants.small} style={{ margin: '0px' }}>
+            Remediation from Insights requires Cloud connector. Cloud connector
+            can be enabled via Satelite, or through
+            <Button
+              style={{ padding: '0px' }}
+              key="configure"
+              variant="link"
+              // eslint-disable-next-line max-len
+              href="LINK HERE"
+            >
+              RHC (Red Hat connector)
+            </Button>
+          </Text>
+          <Button
+            style={{ padding: '0px' }}
+            key="download"
+            variant="link"
+            component="a"
+            // eslint-disable-next-line max-len
+            href="LINK HERE"
           >
             Learn how to configure
           </Button>

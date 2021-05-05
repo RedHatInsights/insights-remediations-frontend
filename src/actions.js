@@ -176,3 +176,8 @@ export const deleteSystems = (systems, remediation) => ({
   type: ACTION_TYPES.DELTE_SYSTEMS,
   payload: deleteSystemsFromRemediation(systems, remediation),
 });
+
+export const checkExecutable = (id) => ({
+  type: ACTION_TYPES.CHECK_EXECUTABLE,
+  payload: remediations.checkExecutable(id),
+});

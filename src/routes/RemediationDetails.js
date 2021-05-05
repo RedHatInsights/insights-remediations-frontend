@@ -62,6 +62,8 @@ const RemediationDetails = ({
   switchAutoReboot,
   playbookRuns,
   getPlaybookRuns,
+  checkExecutable,
+  executable,
 }) => {
   const id = match.params.id;
   const [upsellBannerVisible, setUpsellBannerVisible] = useState(
@@ -94,7 +96,7 @@ const RemediationDetails = ({
       return 'Your account must be configured with Cloud Connector to execute playbooks.';
     } else if (!context.permissions.execute) {
       return 'You do not have the required execute permissions to perform this action.';
-    } else if (!context.hasSmartManagement) {
+    } else if (!executable) {
       return 'Your account must be entitled to Smart Management to execute playbooks.';
     }
     return 'Unable to execute playbook.';
@@ -119,6 +121,7 @@ const RemediationDetails = ({
     if (isBeta) {
       loadRemediationStatus(id);
     }
+    checkExecutable(id);
   }, []);
 
   useEffect(() => {
@@ -201,19 +204,17 @@ const RemediationDetails = ({
             </LevelItem>
             <LevelItem>
               <Split hasGutter>
-                {context.hasSmartManagement && (
-                  <SplitItem>
-                    <ExecutePlaybookButton
-                      isDisabled={
-                        !context.isReceptorConfigured ||
-                        !context.permissions.execute ||
-                        !context.hasSmartManagement
-                      }
-                      disabledStateText={getDisabledStateText()}
-                      remediationId={remediation.id}
-                    ></ExecutePlaybookButton>
-                  </SplitItem>
-                )}
+                <SplitItem>
+                  <ExecutePlaybookButton
+                    isDisabled={
+                      !context.isReceptorConfigured ||
+                      !context.permissions.execute ||
+                      !executable
+                    }
+                    disabledStateText={getDisabledStateText()}
+                    remediationId={remediation.id}
+                  ></ExecutePlaybookButton>
+                </SplitItem>
                 <SplitItem>
                   <Button
                     isDisabled={!remediation.issues.length}
@@ -238,12 +239,12 @@ const RemediationDetails = ({
         </PageHeader>
         <Main>
           <Stack hasGutter>
-            {!context.hasSmartManagement && upsellBannerVisible && (
+            {!executable && upsellBannerVisible && (
               <StackItem>
                 <UpsellBanner onClose={() => handleUpsellToggle()} />
               </StackItem>
             )}
-            {context.hasSmartManagement &&
+            {executable &&
               !context.isReceptorConfigured &&
               noReceptorBannerVisible && (
                 <StackItem>
@@ -263,7 +264,7 @@ const RemediationDetails = ({
                 </Tab>
                 <Tab eventKey={2} title="Activity">
                   {renderActivityState(
-                    context.hasSmartManagement,
+                    executable,
                     context.isReceptorConfigured,
                     playbookRuns,
                     remediation
@@ -298,6 +299,7 @@ RemediationDetails.propTypes = {
   addNotification: PropTypes.func.isRequired,
   playbookRuns: PropTypes.array,
   getPlaybookRuns: PropTypes.func,
+  checkExecutable: PropTypes.func,
 };
 
 export default withRouter(
@@ -307,12 +309,14 @@ export default withRouter(
       selectedRemediationStatus,
       executePlaybookBanner,
       playbookRuns,
+      executable,
     }) => ({
       selectedRemediation,
       selectedRemediationStatus,
       executePlaybookBanner,
       playbookRuns: playbookRuns.data,
       remediation: selectedRemediation.remediation,
+      executable,
     }),
     (dispatch) => ({
       loadRemediation: (id) => dispatch(actions.loadRemediation(id)),
@@ -324,6 +328,7 @@ export default withRouter(
       deleteRemediation: (id) => dispatch(actions.deleteRemediation(id)),
       addNotification: (content) => dispatch(addNotification(content)),
       getPlaybookRuns: (id) => dispatch(actions.getPlaybookRuns(id)),
+      checkExecutable: (id) => dispatch(actions.checkExecutable(id)),
     })
   )(RemediationDetails)
 );
