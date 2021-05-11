@@ -67,14 +67,10 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
               Are connected to Insights via a Satellite instance which has Receptor/Cloud Connector enabled, or 
               <br />
               <Button
+                className="pf-u-p-0"
                 component="a"
                 href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
                 key="download"
-                style={
-                  Object {
-                    "padding": "0px",
-                  }
-                }
                 variant="link"
               >
                 How to configure Receptor/Cloud Connector on Red Hat Satellite
@@ -84,13 +80,9 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
               Are directly connected to Insights via Red Hat connector, and Cloud Connector is enabled 
               <br />
               <Button
-                href="LINK HERE"
+                className="pf-u-p-0"
+                href="#"
                 key="configure"
-                style={
-                  Object {
-                    "padding": "0px",
-                  }
-                }
                 variant="link"
               >
                 How to enable Cloud Connector with Red Hat connect
@@ -105,13 +97,9 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
         Executed Ansible Playbooks run on eligible systems with Cloud Connector. The playbook will be pushed immediately after selecting “Execute playbook”. If the playbook has “Auto reboot” on, systems requiring reboot to complete an action will reboot.
       </Text>
       <Button
-        href="LINK HERE"
+        className="pf-u-p-0"
+        href="#"
         key="configure"
-        style={
-          Object {
-            "padding": "0px",
-          }
-        }
         variant="link"
       >
         Learn more about Cloud Connector
@@ -233,14 +221,10 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
               Are connected to Insights via a Satellite instance which has Receptor/Cloud Connector enabled, or 
               <br />
               <Button
+                className="pf-u-p-0"
                 component="a"
                 href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
                 key="download"
-                style={
-                  Object {
-                    "padding": "0px",
-                  }
-                }
                 variant="link"
               >
                 How to configure Receptor/Cloud Connector on Red Hat Satellite
@@ -250,13 +234,9 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
               Are directly connected to Insights via Red Hat connector, and Cloud Connector is enabled 
               <br />
               <Button
-                href="LINK HERE"
+                className="pf-u-p-0"
+                href="#"
                 key="configure"
-                style={
-                  Object {
-                    "padding": "0px",
-                  }
-                }
                 variant="link"
               >
                 How to enable Cloud Connector with Red Hat connect
@@ -271,13 +251,9 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
         Executed Ansible Playbooks run on eligible systems with Cloud Connector. The playbook will be pushed immediately after selecting “Execute playbook”. If the playbook has “Auto reboot” on, systems requiring reboot to complete an action will reboot.
       </Text>
       <Button
-        href="LINK HERE"
+        className="pf-u-p-0"
+        href="#"
         key="configure"
-        style={
-          Object {
-            "padding": "0px",
-          }
-        }
         variant="link"
       >
         Learn more about Cloud Connector

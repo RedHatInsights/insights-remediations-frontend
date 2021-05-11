@@ -201,7 +201,7 @@ export const ExecuteModal = ({
                   Are connected to Insights via a Satellite instance which has
                   Receptor/Cloud Connector enabled, or <br />
                   <Button
-                    style={{ padding: '0px' }}
+                    className="pf-u-p-0"
                     key="download"
                     variant="link"
                     component="a"
@@ -216,11 +216,11 @@ export const ExecuteModal = ({
                   Are directly connected to Insights via Red Hat connector, and
                   Cloud Connector is enabled <br />
                   <Button
-                    style={{ padding: '0px' }}
+                    className="pf-u-p-0"
                     key="configure"
                     variant="link"
                     // eslint-disable-next-line max-len
-                    href="LINK HERE"
+                    href="#"
                   >
                     How to enable Cloud Connector with Red Hat connect
                   </Button>
@@ -235,11 +235,11 @@ export const ExecuteModal = ({
             requiring reboot to complete an action will reboot.
           </Text>
           <Button
-            style={{ padding: '0px' }}
+            className="pf-u-p-0"
             key="configure"
             variant="link"
             // eslint-disable-next-line max-len
-            href="LINK HERE"
+            href="#"
           >
             Learn more about Cloud Connector
           </Button>
