@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { Button, Modal, ModalVariant } from '@patternfly/react-core';
@@ -20,7 +20,7 @@ export default function ConfirmationDialog({
           {title}
         </div>
       }
-      className="ins-c-dialog"
+      className="remediations ins-c-dialog"
       variant={ModalVariant.small}
       isOpen={isOpen}
       onClose={() => onClose(false)}
