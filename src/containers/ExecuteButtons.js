@@ -7,6 +7,7 @@ import {
   setEtag,
   getPlaybookRuns,
   getEndpoint,
+  checkExecutable,
 } from '../actions';
 
 import ExecuteButton from '../components/ExecuteButton';
@@ -18,6 +19,7 @@ export const ExecutePlaybookButton = withRouter(
       selectedRemediation,
       runRemediation,
       sources,
+      executable,
     }) => ({
       data,
       isLoading: status !== 'fulfilled',
@@ -25,6 +27,7 @@ export const ExecutePlaybookButton = withRouter(
       etag,
       remediationStatus: runRemediation.status,
       sources,
+      executable,
     }),
     (dispatch) => ({
       getConnectionStatus: (id) => {
@@ -40,6 +43,9 @@ export const ExecutePlaybookButton = withRouter(
       },
       getEndpoint: (id) => {
         dispatch(getEndpoint(id));
+      },
+      checkExecutable: (id) => {
+        dispatch(checkExecutable(id));
       },
     })
   )(ExecuteButton)

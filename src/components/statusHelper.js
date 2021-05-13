@@ -21,6 +21,11 @@ import { CancelButton } from '../containers/CancelButton';
 
 import { capitalize } from '../Utilities/utils';
 
+const connectorUrl = () =>
+  insights.chrome.isBeta()
+    ? 'https://cloud.redhat.com/beta/settings/connector'
+    : 'https://cloud.redhat.com/settings/connector';
+
 export const normalizeStatus = (status) =>
   ({
     running: 'running',
@@ -229,6 +234,7 @@ export const styledConnectionStatus = (status, err) =>
         </Text>
       </TextContent>
     ),
+    // TODO: delete?
     available: (
       <TextContent>
         <Text component={TextVariants.p}>
@@ -257,6 +263,7 @@ export const styledConnectionStatus = (status, err) =>
         </Text>
       </TextContent>
     ),
+    // TODO: delete?
     unavailable: (
       <TextContent>
         <Text component={TextVariants.p}>
@@ -269,7 +276,7 @@ export const styledConnectionStatus = (status, err) =>
             {err ? err : 'Cloud Connector not responding'}
           </Text>
           <Button
-            style={{ padding: '0px' }}
+            className="pf-u-p-0"
             key="troubleshoot"
             // eslint-disable-next-line no-console
             variant="link"
@@ -289,7 +296,7 @@ export const styledConnectionStatus = (status, err) =>
             Connect your systems to Satellite to automatically remediate.
           </Text>
           <Button
-            style={{ padding: '0px' }}
+            className="pf-u-p-0"
             key="download"
             variant="link"
             component="a"
@@ -327,16 +334,100 @@ export const styledConnectionStatus = (status, err) =>
             className="ins-c-remediations-failure ins-c-remediations-connection-status"
             aria-label="connection status"
           />
-          Cannot remediate - Receptor not configured
+          Cannot remediate - Cloud connector not defined
           <Text component={TextVariants.small} style={{ margin: '0px' }}>
-            Configure Receptor to automatically remediate
+            Configure Cloud connector to automatically remediate
           </Text>
           <Button
-            style={{ padding: '0px' }}
+            className="pf-u-p-0"
             key="configure"
             variant="link"
+            component="a"
             // eslint-disable-next-line max-len
             href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+          >
+            Learn how to configure
+          </Button>
+        </Text>
+      </TextContent>
+    ),
+    no_rhc: (
+      <TextContent>
+        <Text component={TextVariants.p}>
+          Cannot remediate - Cloud connector not defined
+          <Text component={TextVariants.small} style={{ margin: '0px' }}>
+            Remediation from Insights requires Cloud connector. Cloud connector
+            can be enabled via Satelite, or through
+            <Button
+              className="pf-u-p-0"
+              key="configure"
+              variant="link"
+              component="a"
+              // eslint-disable-next-line max-len
+              href={connectorUrl()}
+            >
+              RHC (Red Hat connector)
+            </Button>
+          </Text>
+          <Button
+            className="pf-u-p-0"
+            key="download"
+            variant="link"
+            component="a"
+            // eslint-disable-next-line max-len
+            href="#"
+          >
+            Learn how to configure
+          </Button>
+        </Text>
+      </TextContent>
+    ),
+    no_smart_management: (
+      <TextContent>
+        <Text component={TextVariants.p}>
+          Cannot remediate - Not entitled
+          <Text component={TextVariants.small} style={{ margin: '0px' }}>
+            Remediation from Insights is supported only for systems with Cloud
+            connector, a feature of Smart Management
+          </Text>
+          <Button
+            className="pf-u-p-0"
+            key="download"
+            variant="link"
+            component="a"
+            // eslint-disable-next-line max-len
+            href="#"
+          >
+            Learn about Smart Management
+          </Button>
+        </Text>
+      </TextContent>
+    ),
+    disabled: (
+      <TextContent>
+        <Text component={TextVariants.p}>
+          Cannot remediate - Cloud connector not defined
+          <Text component={TextVariants.small} style={{ margin: '0px' }}>
+            Remediation from Insights requires Cloud connector. Cloud connector
+            can be enabled via Satelite, or through
+            <Button
+              className="pf-u-p-0"
+              key="configure"
+              variant="link"
+              component="a"
+              // eslint-disable-next-line max-len
+              href={connectorUrl()}
+            >
+              RHC (Red Hat connector)
+            </Button>
+          </Text>
+          <Button
+            className="pf-u-p-0"
+            key="download"
+            variant="link"
+            component="a"
+            // eslint-disable-next-line max-len
+            href="#"
           >
             Learn how to configure
           </Button>

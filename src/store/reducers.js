@@ -400,6 +400,13 @@ const reducers = {
       status: 'initial',
     }
   ),
+  executable: applyReducerHash(
+    {
+      [ACTION_TYPES.CHECK_EXECUTABLE_REJECTED]: () => false,
+      [ACTION_TYPES.CHECK_EXECUTABLE_FULFILLED]: () => true,
+    },
+    false
+  ),
 };
 
 export default reducers;
