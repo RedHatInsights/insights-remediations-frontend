@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Button, Modal, ModalVariant } from '@patternfly/react-core';
