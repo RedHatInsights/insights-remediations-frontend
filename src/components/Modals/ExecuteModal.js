@@ -62,14 +62,14 @@ export const ExecuteModal = ({
   useEffect(() => {
     const [con, dis] = data.reduce(
       ([pass, fail], e) =>
-        e.connection_status === 'connected'
-          ? [[...pass, { ...e, connection_status: 'loading' }], fail]
+        e && e.connection_status === 'connected'
+          ? [[...pass, { ...e }], fail]
           : [pass, [...fail, e]],
       [[], []]
     );
     setConnected(con);
     setDisconnected(dis);
-    con.map((c) => getEndpoint(c.endpoint_id));
+    con.map((c) => c.endpoint_id && getEndpoint(c.endpoint_id));
   }, [data]);
 
   useEffect(() => {
@@ -104,6 +104,15 @@ export const ExecuteModal = ({
     }
   }, [sources]);
 
+  const generateRowsStatus = (con) => {
+    return styledConnectionStatus(
+      con.connection_status,
+      sources.status === 'fulfilled' &&
+        sources.data[`${con.endpoint_id}`] &&
+        sources.data[`${con.endpoint_id}`].availability_status_error
+    );
+  };
+
   const rows = [...connected, ...disconnected].map((con) => ({
     cells: [
       {
@@ -121,12 +130,7 @@ export const ExecuteModal = ({
       },
       con.system_count,
       isUserEntitled && {
-        title: styledConnectionStatus(
-          con.connection_status,
-          sources.status === 'fulfilled' &&
-            sources.data[`${con.endpoint_id}`] &&
-            sources.data[`${con.endpoint_id}`].availability_status_error
-        ),
+        title: generateRowsStatus(con),
       },
     ],
   }));
@@ -138,7 +142,7 @@ export const ExecuteModal = ({
 
   return (
     <Modal
-      className="ins-c-execute-modal"
+      className="remediations ins-c-execute-modal"
       variant={isDebug() ? ModalVariant.large : ModalVariant.small}
       title={'Execute playbook'}
       isOpen={isOpen}
