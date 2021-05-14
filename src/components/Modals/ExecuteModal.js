@@ -110,8 +110,8 @@ export const ExecuteModal = ({
       sources.status === 'fulfilled' &&
         sources.data[`${con.endpoint_id}`] &&
         sources.data[`${con.endpoint_id}`].availability_status_error
-    )
-  }
+    );
+  };
 
   const rows = [...connected, ...disconnected].map((con) => ({
     cells: [
@@ -130,7 +130,7 @@ export const ExecuteModal = ({
       },
       con.system_count,
       isUserEntitled && {
-        title: generateRowsStatus(con)
+        title: generateRowsStatus(con),
       },
     ],
   }));
