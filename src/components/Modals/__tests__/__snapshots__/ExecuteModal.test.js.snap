@@ -24,7 +24,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
   aria-describedby=""
   aria-label=""
   aria-labelledby=""
-  className="ins-c-execute-modal"
+  className="remediations ins-c-execute-modal"
   hasNoBodyWrapper={false}
   isFooterLeftAligned={true}
   isOpen={true}
@@ -173,7 +173,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
   aria-describedby=""
   aria-label=""
   aria-labelledby=""
-  className="ins-c-execute-modal"
+  className="remediations ins-c-execute-modal"
   hasNoBodyWrapper={false}
   isFooterLeftAligned={true}
   isOpen={true}
