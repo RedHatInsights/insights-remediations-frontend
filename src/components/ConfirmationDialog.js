@@ -20,7 +20,7 @@ export default function ConfirmationDialog({
           {title}
         </div>
       }
-      className="ins-c-dialog"
+      className="remediations ins-c-dialog"
       variant={ModalVariant.small}
       isOpen={isOpen}
       onClose={() => onClose(false)}
