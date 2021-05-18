@@ -282,7 +282,7 @@ const reducers = {
               key: 'display_name',
               title: 'Name',
               // eslint-disable-next-line
-                        renderFunc: (name, id, { fqdn }) => <div><a href={props.urlBuilder(id)}>{fqdn}</a></div>
+              renderFunc: (name, id, { fqdn }) => <div><a href={props.urlBuilder(id)}>{fqdn || name || id}</a></div>
             },
             state.columns.find((col) => col.key === 'tags'),
             {
