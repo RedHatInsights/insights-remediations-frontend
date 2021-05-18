@@ -10,6 +10,9 @@ import {
   TextVariants,
   Alert,
   Tooltip,
+  ExpandableSection,
+  List,
+  ListItem,
 } from '@patternfly/react-core';
 import { downloadPlaybook } from '../../api';
 import { styledConnectionStatus } from '../statusHelper';
@@ -59,14 +62,14 @@ export const ExecuteModal = ({
   useEffect(() => {
     const [con, dis] = data.reduce(
       ([pass, fail], e) =>
-        e.connection_status === 'connected'
-          ? [[...pass, { ...e, connection_status: 'loading' }], fail]
+        e && e.connection_status === 'connected'
+          ? [[...pass, { ...e }], fail]
           : [pass, [...fail, e]],
       [[], []]
     );
     setConnected(con);
     setDisconnected(dis);
-    con.map((c) => getEndpoint(c.endpoint_id));
+    con.map((c) => c.endpoint_id && getEndpoint(c.endpoint_id));
   }, [data]);
 
   useEffect(() => {
@@ -101,6 +104,15 @@ export const ExecuteModal = ({
     }
   }, [sources]);
 
+  const generateRowsStatus = (con) => {
+    return styledConnectionStatus(
+      con.connection_status,
+      sources.status === 'fulfilled' &&
+        sources.data[`${con.endpoint_id}`] &&
+        sources.data[`${con.endpoint_id}`].availability_status_error
+    );
+  };
+
   const rows = [...connected, ...disconnected].map((con) => ({
     cells: [
       {
@@ -118,12 +130,7 @@ export const ExecuteModal = ({
       },
       con.system_count,
       isUserEntitled && {
-        title: styledConnectionStatus(
-          con.connection_status,
-          sources.status === 'fulfilled' &&
-            sources.data[`${con.endpoint_id}`] &&
-            sources.data[`${con.endpoint_id}`].availability_status_error
-        ),
+        title: generateRowsStatus(con),
       },
     ],
   }));
@@ -135,7 +142,7 @@ export const ExecuteModal = ({
 
   return (
     <Modal
-      className="ins-c-execute-modal"
+      className="remediations ins-c-execute-modal"
       variant={isDebug() ? ModalVariant.large : ModalVariant.small}
       title={'Execute playbook'}
       isOpen={isOpen}
@@ -190,11 +197,56 @@ export const ExecuteModal = ({
               <b> {`${pluralize(systemCount, 'system')}.`} </b>
             </Text>
           )}
-          <Text component={TextVariants.p}>
-            Systems connected to a Satellite instance and configured with Cloud
-            Connector can be automatically remediated. To remediate other
-            systems, download the Ansible Playbook.
+          <Text>
+            <ExpandableSection toggleText="About remote execution with Cloud connector">
+              Playbooks can be executed on systems which:
+              <List>
+                <ListItem>
+                  Are connected to Insights via a Satellite instance which has
+                  Receptor/Cloud Connector enabled, or <br />
+                  <Button
+                    className="pf-u-p-0"
+                    key="download"
+                    variant="link"
+                    component="a"
+                    // eslint-disable-next-line max-len
+                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                  >
+                    How to configure Receptor/Cloud Connector on Red Hat
+                    Satellite
+                  </Button>
+                </ListItem>
+                <ListItem>
+                  Are directly connected to Insights via Red Hat connector, and
+                  Cloud Connector is enabled <br />
+                  <Button
+                    className="pf-u-p-0"
+                    key="configure"
+                    variant="link"
+                    // eslint-disable-next-line max-len
+                    href="#"
+                  >
+                    How to enable Cloud Connector with Red Hat connect
+                  </Button>
+                </ListItem>
+              </List>
+            </ExpandableSection>
           </Text>
+          <Text component={TextVariants.p}>
+            Executed Ansible Playbooks run on eligible systems with Cloud
+            Connector. The playbook will be pushed immediately after selecting
+            “Execute playbook”. If the playbook has “Auto reboot” on, systems
+            requiring reboot to complete an action will reboot.
+          </Text>
+          <Button
+            className="pf-u-p-0"
+            key="configure"
+            variant="link"
+            // eslint-disable-next-line max-len
+            href="#"
+          >
+            Learn more about Cloud Connector
+          </Button>
           <Text component={TextVariants.h4}>Connection status of systems</Text>
         </TextContent>
         {isLoading ? (

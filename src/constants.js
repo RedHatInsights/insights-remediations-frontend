@@ -24,6 +24,7 @@ const asyncActions = flatMap(
     'GET_PLAYBOOK_RUN_SYSTEM_DETAILS',
     'CANCEL_PLAYBOOK_RUNS',
     'GET_ENDPOINT',
+    'CHECK_EXECUTABLE',
   ],
   (a) => [a, `${a}_PENDING`, `${a}_FULFILLED`, `${a}_REJECTED`]
 );
