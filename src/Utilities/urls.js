@@ -36,7 +36,7 @@ export function inventoryUrlBuilder(issue) {
   const base = appUrl('inventory').toString();
 
   // intentionally not using urijs here to optimize for large number of systems
-  return (systemId) => `${base}/${systemId}?AppName=${tab}`;
+  return (systemId) => `${base}/${systemId}?appName=${tab}`;
 }
 
 export function buildIssueUrl(id) {
