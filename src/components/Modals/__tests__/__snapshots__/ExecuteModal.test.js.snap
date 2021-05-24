@@ -66,37 +66,44 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
             <ListItem>
               Are connected to Insights via a Satellite instance which has Receptor/Cloud Connector enabled, or 
               <br />
-              <a
+              <Button
                 className="pf-u-p-0"
-                component="a"
+                component="span"
                 href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                isInline={true}
                 key="download"
+                rel="noreferrer"
                 target="_blank"
+                variant="link"
               >
-                How to configure Receptor/Cloud Connector on Red Hat Satellite 
+                How to configure Receptor/Cloud Connector on Red Hat Satellite  
                 <ExternalLinkAltIcon
                   color="currentColor"
                   noVerticalAlign={false}
                   size="sm"
                 />
-              </a>
+              </Button>
             </ListItem>
             <ListItem>
               Are directly connected to Insights via Red Hat connector, and Cloud Connector is enabled 
               <br />
-              <a
+              <Button
                 className="pf-u-p-0"
+                component="span"
                 href="#"
+                isInline={true}
                 key="configure"
+                rel="noreferrer"
                 target="_blank"
+                variant="link"
               >
-                How to enable Cloud Connector with Red Hat connect 
+                How to enable Cloud Connector with Red Hat connect  
                 <ExternalLinkAltIcon
                   color="currentColor"
                   noVerticalAlign={false}
                   size="sm"
                 />
-              </a>
+              </Button>
             </ListItem>
           </List>
         </ExpandableSection>
@@ -106,19 +113,23 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       >
         Executed Ansible Playbooks run on eligible systems with Cloud Connector. The playbook will be pushed immediately after selecting “Execute playbook”. If the playbook has “Auto reboot” on, systems requiring reboot to complete an action will reboot.
       </Text>
-      <a
+      <Button
         className="pf-u-p-0"
+        component="span"
         href="#"
+        isInline={true}
         key="configure"
+        rel="noreferrer"
         target="_blank"
+        variant="link"
       >
-        Learn more about Cloud Connector 
+        Learn more about Cloud Connector  
         <ExternalLinkAltIcon
           color="currentColor"
           noVerticalAlign={false}
           size="sm"
         />
-      </a>
+      </Button>
       <Text
         component="h4"
       >
@@ -235,37 +246,44 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
             <ListItem>
               Are connected to Insights via a Satellite instance which has Receptor/Cloud Connector enabled, or 
               <br />
-              <a
+              <Button
                 className="pf-u-p-0"
-                component="a"
+                component="span"
                 href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                isInline={true}
                 key="download"
+                rel="noreferrer"
                 target="_blank"
+                variant="link"
               >
-                How to configure Receptor/Cloud Connector on Red Hat Satellite 
+                How to configure Receptor/Cloud Connector on Red Hat Satellite  
                 <ExternalLinkAltIcon
                   color="currentColor"
                   noVerticalAlign={false}
                   size="sm"
                 />
-              </a>
+              </Button>
             </ListItem>
             <ListItem>
               Are directly connected to Insights via Red Hat connector, and Cloud Connector is enabled 
               <br />
-              <a
+              <Button
                 className="pf-u-p-0"
+                component="span"
                 href="#"
+                isInline={true}
                 key="configure"
+                rel="noreferrer"
                 target="_blank"
+                variant="link"
               >
-                How to enable Cloud Connector with Red Hat connect 
+                How to enable Cloud Connector with Red Hat connect  
                 <ExternalLinkAltIcon
                   color="currentColor"
                   noVerticalAlign={false}
                   size="sm"
                 />
-              </a>
+              </Button>
             </ListItem>
           </List>
         </ExpandableSection>
@@ -275,19 +293,23 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       >
         Executed Ansible Playbooks run on eligible systems with Cloud Connector. The playbook will be pushed immediately after selecting “Execute playbook”. If the playbook has “Auto reboot” on, systems requiring reboot to complete an action will reboot.
       </Text>
-      <a
+      <Button
         className="pf-u-p-0"
+        component="span"
         href="#"
+        isInline={true}
         key="configure"
+        rel="noreferrer"
         target="_blank"
+        variant="link"
       >
-        Learn more about Cloud Connector 
+        Learn more about Cloud Connector  
         <ExternalLinkAltIcon
           color="currentColor"
           noVerticalAlign={false}
           size="sm"
         />
-      </a>
+      </Button>
       <Text
         component="h4"
       >
