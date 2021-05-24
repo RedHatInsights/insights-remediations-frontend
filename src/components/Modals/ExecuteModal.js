@@ -211,6 +211,7 @@ export const ExecuteModal = ({
                     component="a"
                     // eslint-disable-next-line max-len
                     href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                    rel="noreferrer"
                     target="_blank"
                   >
                     How to configure Receptor/Cloud Connector on Red Hat
@@ -225,6 +226,7 @@ export const ExecuteModal = ({
                     key="configure"
                     // eslint-disable-next-line max-len
                     href="#"
+                    rel="noreferrer"
                     target="_blank"
                   >
                     How to enable Cloud Connector with Red Hat connect <ExternalLinkAltIcon />
@@ -244,10 +246,10 @@ export const ExecuteModal = ({
             key="configure"
             // eslint-disable-next-line max-len
             href="#"
+            rel="noreferrer"
             target="_blank"
           >
             Learn more about Cloud Connector <ExternalLinkAltIcon />
-
           </a>
           <Text component={TextVariants.h4}>Connection status of systems</Text>
         </TextContent>
