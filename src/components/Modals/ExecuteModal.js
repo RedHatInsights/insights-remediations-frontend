@@ -215,7 +215,8 @@ export const ExecuteModal = ({
                     target="_blank"
                   >
                     How to configure Receptor/Cloud Connector on Red Hat
-                    Satellite <ExternalLinkAltIcon />
+                    Satellite &nbsp;
+                    <ExternalLinkAltIcon />
                   </a>
                 </ListItem>
                 <ListItem>
@@ -229,7 +230,8 @@ export const ExecuteModal = ({
                     rel="noreferrer"
                     target="_blank"
                   >
-                    How to enable Cloud Connector with Red Hat connect <ExternalLinkAltIcon />
+                    How to enable Cloud Connector with Red Hat connect &nbsp;
+                    <ExternalLinkAltIcon />
                   </a>
                 </ListItem>
               </List>
@@ -249,7 +251,8 @@ export const ExecuteModal = ({
             rel="noreferrer"
             target="_blank"
           >
-            Learn more about Cloud Connector <ExternalLinkAltIcon />
+            Learn more about Cloud Connector &nbsp;
+            <ExternalLinkAltIcon />
           </a>
           <Text component={TextVariants.h4}>Connection status of systems</Text>
         </TextContent>
