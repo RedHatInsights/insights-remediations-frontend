@@ -23,6 +23,7 @@ import {
   TableVariant,
 } from '@patternfly/react-table';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
+import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
 
 export const ExecuteModal = ({
@@ -204,30 +205,30 @@ export const ExecuteModal = ({
                 <ListItem>
                   Are connected to Insights via a Satellite instance which has
                   Receptor/Cloud Connector enabled, or <br />
-                  <Button
+                  <a
                     className="pf-u-p-0"
                     key="download"
-                    variant="link"
                     component="a"
                     // eslint-disable-next-line max-len
                     href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                    target="_blank"
                   >
                     How to configure Receptor/Cloud Connector on Red Hat
-                    Satellite
-                  </Button>
+                    Satellite <ExternalLinkAltIcon />
+                  </a>
                 </ListItem>
                 <ListItem>
                   Are directly connected to Insights via Red Hat connector, and
                   Cloud Connector is enabled <br />
-                  <Button
+                  <a
                     className="pf-u-p-0"
                     key="configure"
-                    variant="link"
                     // eslint-disable-next-line max-len
                     href="#"
+                    target="_blank"
                   >
-                    How to enable Cloud Connector with Red Hat connect
-                  </Button>
+                    How to enable Cloud Connector with Red Hat connect <ExternalLinkAltIcon />
+                  </a>
                 </ListItem>
               </List>
             </ExpandableSection>
@@ -238,15 +239,16 @@ export const ExecuteModal = ({
             “Execute playbook”. If the playbook has “Auto reboot” on, systems
             requiring reboot to complete an action will reboot.
           </Text>
-          <Button
+          <a
             className="pf-u-p-0"
             key="configure"
-            variant="link"
             // eslint-disable-next-line max-len
             href="#"
+            target="_blank"
           >
-            Learn more about Cloud Connector
-          </Button>
+            Learn more about Cloud Connector <ExternalLinkAltIcon />
+
+          </a>
           <Text component={TextVariants.h4}>Connection status of systems</Text>
         </TextContent>
         {isLoading ? (
