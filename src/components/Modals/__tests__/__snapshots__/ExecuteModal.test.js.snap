@@ -68,12 +68,20 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
               <br />
               <Button
                 className="pf-u-p-0"
-                component="a"
+                component="span"
                 href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                isInline={true}
                 key="download"
+                rel="noreferrer"
+                target="_blank"
                 variant="link"
               >
-                How to configure Receptor/Cloud Connector on Red Hat Satellite
+                How to configure Receptor/Cloud Connector on Red Hat Satellite  
+                <ExternalLinkAltIcon
+                  color="currentColor"
+                  noVerticalAlign={false}
+                  size="sm"
+                />
               </Button>
             </ListItem>
             <ListItem>
@@ -81,11 +89,20 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
               <br />
               <Button
                 className="pf-u-p-0"
+                component="span"
                 href="#"
+                isInline={true}
                 key="configure"
+                rel="noreferrer"
+                target="_blank"
                 variant="link"
               >
-                How to enable Cloud Connector with Red Hat connect
+                How to enable Cloud Connector with Red Hat connect  
+                <ExternalLinkAltIcon
+                  color="currentColor"
+                  noVerticalAlign={false}
+                  size="sm"
+                />
               </Button>
             </ListItem>
           </List>
@@ -98,11 +115,20 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       </Text>
       <Button
         className="pf-u-p-0"
+        component="span"
         href="#"
+        isInline={true}
         key="configure"
+        rel="noreferrer"
+        target="_blank"
         variant="link"
       >
-        Learn more about Cloud Connector
+        Learn more about Cloud Connector  
+        <ExternalLinkAltIcon
+          color="currentColor"
+          noVerticalAlign={false}
+          size="sm"
+        />
       </Button>
       <Text
         component="h4"
@@ -222,12 +248,20 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
               <br />
               <Button
                 className="pf-u-p-0"
-                component="a"
+                component="span"
                 href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                isInline={true}
                 key="download"
+                rel="noreferrer"
+                target="_blank"
                 variant="link"
               >
-                How to configure Receptor/Cloud Connector on Red Hat Satellite
+                How to configure Receptor/Cloud Connector on Red Hat Satellite  
+                <ExternalLinkAltIcon
+                  color="currentColor"
+                  noVerticalAlign={false}
+                  size="sm"
+                />
               </Button>
             </ListItem>
             <ListItem>
@@ -235,11 +269,20 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
               <br />
               <Button
                 className="pf-u-p-0"
+                component="span"
                 href="#"
+                isInline={true}
                 key="configure"
+                rel="noreferrer"
+                target="_blank"
                 variant="link"
               >
-                How to enable Cloud Connector with Red Hat connect
+                How to enable Cloud Connector with Red Hat connect  
+                <ExternalLinkAltIcon
+                  color="currentColor"
+                  noVerticalAlign={false}
+                  size="sm"
+                />
               </Button>
             </ListItem>
           </List>
@@ -252,11 +295,20 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       </Text>
       <Button
         className="pf-u-p-0"
+        component="span"
         href="#"
+        isInline={true}
         key="configure"
+        rel="noreferrer"
+        target="_blank"
         variant="link"
       >
-        Learn more about Cloud Connector
+        Learn more about Cloud Connector  
+        <ExternalLinkAltIcon
+          color="currentColor"
+          noVerticalAlign={false}
+          size="sm"
+        />
       </Button>
       <Text
         component="h4"

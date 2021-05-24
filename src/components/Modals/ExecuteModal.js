@@ -23,6 +23,7 @@ import {
   TableVariant,
 } from '@patternfly/react-table';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
+import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
 
 export const ExecuteModal = ({
@@ -208,12 +209,16 @@ export const ExecuteModal = ({
                     className="pf-u-p-0"
                     key="download"
                     variant="link"
-                    component="a"
+                    isInline
+                    component="span"
                     // eslint-disable-next-line max-len
                     href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                    rel="noreferrer"
+                    target="_blank"
                   >
                     How to configure Receptor/Cloud Connector on Red Hat
-                    Satellite
+                    Satellite &nbsp;
+                    <ExternalLinkAltIcon />
                   </Button>
                 </ListItem>
                 <ListItem>
@@ -223,10 +228,15 @@ export const ExecuteModal = ({
                     className="pf-u-p-0"
                     key="configure"
                     variant="link"
+                    isInline
+                    component="span"
                     // eslint-disable-next-line max-len
                     href="#"
+                    rel="noreferrer"
+                    target="_blank"
                   >
-                    How to enable Cloud Connector with Red Hat connect
+                    How to enable Cloud Connector with Red Hat connect &nbsp;
+                    <ExternalLinkAltIcon />
                   </Button>
                 </ListItem>
               </List>
@@ -242,10 +252,15 @@ export const ExecuteModal = ({
             className="pf-u-p-0"
             key="configure"
             variant="link"
+            isInline
+            component="span"
             // eslint-disable-next-line max-len
             href="#"
+            rel="noreferrer"
+            target="_blank"
           >
-            Learn more about Cloud Connector
+            Learn more about Cloud Connector &nbsp;
+            <ExternalLinkAltIcon />
           </Button>
           <Text component={TextVariants.h4}>Connection status of systems</Text>
         </TextContent>
