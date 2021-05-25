@@ -375,7 +375,7 @@ export const styledConnectionStatus = (status, err) =>
             variant="link"
             component="a"
             // eslint-disable-next-line max-len
-            href="#"
+            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2021/html/red_hat_connector_configuration_guide/index"
           >
             Learn how to configure
           </Button>
@@ -427,7 +427,7 @@ export const styledConnectionStatus = (status, err) =>
             variant="link"
             component="a"
             // eslint-disable-next-line max-len
-            href="#"
+            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2021/html/red_hat_connector_configuration_guide/index"
           >
             Learn how to configure
           </Button>
