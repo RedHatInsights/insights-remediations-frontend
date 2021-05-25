@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ACTION_TYPES } from '../constants';
-import { applyReducerHash } from '@redhat-cloud-services/frontend-components-utilities/files/ReducerRegistry';
+import { applyReducerHash } from '@redhat-cloud-services/frontend-components-utilities/ReducerRegistry';
 import flatMap from 'lodash/flatMap';
 import uniq from 'lodash/uniq';
 import { RebootColumn, IssuesColumn } from '../components/SystemsTable';
@@ -249,28 +249,30 @@ const reducers = {
     }
   ),
 
-  inventoryEntitiesReducer: (props = { INVENTORY_ACTION_TYPES: {} }) => () =>
-    applyReducerHash({
-      [props.INVENTORY_ACTION_TYPES.LOAD_ENTITIES_FULFILLED]: (state) => {
-        return {
-          ...state,
-          columns: [
-            {
-              key: 'display_name',
-              title: 'Name',
-              // eslint-disable-next-line
-                        renderFunc: (name, id, { display_name }) => <div><a href={props.urlBuilder(id)}>{display_name}</a></div>
-            },
-            {
-              key: 'system_status',
-              title: 'Status',
-              // eslint-disable-next-line
+  inventoryEntitiesReducer:
+    (props = { INVENTORY_ACTION_TYPES: {} }) =>
+    () =>
+      applyReducerHash({
+        [props.INVENTORY_ACTION_TYPES.LOAD_ENTITIES_FULFILLED]: (state) => {
+          return {
+            ...state,
+            columns: [
+              {
+                key: 'display_name',
+                title: 'Name',
+                // eslint-disable-next-line
+                renderFunc: (name, id, { display_name }) => <div><a href={props.urlBuilder(id)}>{display_name}</a></div>
+              },
+              {
+                key: 'system_status',
+                title: 'Status',
+                // eslint-disable-next-line
                         renderFunc: (name, id) => <div>{props.generateStatus(id)}</div>
-            },
-          ],
-        };
-      },
-    }),
+              },
+            ],
+          };
+        },
+      }),
 
   playbookActivityIntentory: (props) => () =>
     applyReducerHash({
