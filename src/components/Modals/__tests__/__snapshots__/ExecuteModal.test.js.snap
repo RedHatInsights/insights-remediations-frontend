@@ -55,7 +55,9 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       <Text>
         <ExpandableSection
           className=""
+          contentId=""
           isActive={false}
+          isDetached={false}
           onToggle={[Function]}
           toggleText="About remote execution with Cloud connector"
           toggleTextCollapsed=""
@@ -161,6 +163,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       expandId="expandable-toggle"
       gridBreakPoint="grid-md"
       isStickyHeader={false}
+      isTreeTable={false}
       ouiaSafe={true}
       role="grid"
       rowLabeledBy="simple-node"
@@ -235,7 +238,9 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       <Text>
         <ExpandableSection
           className=""
+          contentId=""
           isActive={false}
+          isDetached={false}
           onToggle={[Function]}
           toggleText="About remote execution with Cloud connector"
           toggleTextCollapsed=""
@@ -341,6 +346,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       expandId="expandable-toggle"
       gridBreakPoint="grid-md"
       isStickyHeader={false}
+      isTreeTable={false}
       ouiaSafe={true}
       role="grid"
       rowLabeledBy="simple-node"
