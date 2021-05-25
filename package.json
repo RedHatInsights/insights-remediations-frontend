@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": false,
   "repository": "https://github.com/RedHatInsights/insights-remediations-frontend",
+  "engines": {
+    "node": ">=15.0.0",
+    "npm": ">=7.0.0"
+  },
   "dependencies": {
     "@patternfly/patternfly": "^4.80.3",
     "@patternfly/react-charts": "^6.13.8",
