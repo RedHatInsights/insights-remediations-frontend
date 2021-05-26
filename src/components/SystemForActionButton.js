@@ -12,13 +12,12 @@ export const SystemForActionButton = ({ issue, remediation, title }) => {
 
   return (
     <React.Fragment>
-      <Button
-        className="ins-c-systems-button"
-        variant="link"
+      <a
+
         onClick={() => setOpen(true)}
       >
         {title}
-      </Button>
+      </a>
       <SystemsStatusModal
         isOpen={open}
         onClose={() => setOpen(false)}
