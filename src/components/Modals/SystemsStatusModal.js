@@ -54,13 +54,14 @@ export const SystemsStatusModal = ({
   }, []);
 
   // eslint-disable-next-line react/display-name
-  const detailDropdown = (remediation, issue) => (system) => (
-    <RemediationDetailsSystemDropdown
-      remediation={remediation}
-      issue={issue}
-      system={system}
-    />
-  );
+  const detailDropdown = (remediation, issue) => (system) =>
+    (
+      <RemediationDetailsSystemDropdown
+        remediation={remediation}
+        issue={issue}
+        system={system}
+      />
+    );
 
   const generateStatus = (id) => {
     return systemStatuses[id];

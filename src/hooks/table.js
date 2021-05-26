@@ -10,10 +10,12 @@ import intersection from 'lodash/intersection';
 
 import { SEARCH_DEBOUNCE_DELAY } from '../constants';
 
-const chain = (f1, f2) => (...args) => {
-  f1(...args);
-  f2(...args);
-};
+const chain =
+  (f1, f2) =>
+  (...args) => {
+    f1(...args);
+    f2(...args);
+  };
 
 /**
  * Returns a function f that, when called, invokes a sequence of callback functions.
