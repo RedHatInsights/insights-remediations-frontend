@@ -43,8 +43,7 @@ class NewRemediationButton extends Component {
             resolution: 'selinux_mitigate',
           },
           {
-            id:
-              'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
+            id: 'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
           },
         ],
         systems: [
