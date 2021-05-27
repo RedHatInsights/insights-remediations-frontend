@@ -36,7 +36,9 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
   titleLabel=""
   variant="small"
 >
-  <div>
+  <div
+    className="ins-c-execute-modal__body"
+  >
     <TextContent>
       <Text
         component="p"
@@ -214,7 +216,9 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
   titleLabel=""
   variant="small"
 >
-  <div>
+  <div
+    className="ins-c-execute-modal__body"
+  >
     <Alert
       isInline={true}
       title="The connection status of systems associated with this Playbook has changed. Please review again."

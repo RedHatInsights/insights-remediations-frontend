@@ -180,7 +180,7 @@ export const ExecuteModal = ({
         ) : null,
       ]}
     >
-      <div className='ins-c-execute-modal__body'>
+      <div className="ins-c-execute-modal__body">
         {showRefresh ? (
           <Alert
             variant="warning"
