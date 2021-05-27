@@ -302,7 +302,7 @@ export const styledConnectionStatus = (status, err) =>
             variant="link"
             component="a"
             // eslint-disable-next-line max-len
-            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-10/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
           >
             Learn how to connect &nbsp;
             <ExternalLinkAltIcon />
@@ -346,7 +346,7 @@ export const styledConnectionStatus = (status, err) =>
             variant="link"
             component="a"
             // eslint-disable-next-line max-len
-            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-10/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
           >
             Learn how to configure &nbsp;
             <ExternalLinkAltIcon />
