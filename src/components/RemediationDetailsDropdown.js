@@ -28,7 +28,7 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
     <React.Fragment>
       {renameDialogOpen && (
         <TextInputDialog
-          title="Edit Playbook name"
+          title="Edit playbook name"
           ariaLabel="Playbook name"
           value={remediation.name}
           onCancel={() => setRenameDialogOpen(false)}
