@@ -54,13 +54,14 @@ export const SystemsStatusModal = ({
   }, []);
 
   // eslint-disable-next-line react/display-name
-  const detailDropdown = (remediation, issue) => (system) => (
-    <RemediationDetailsSystemDropdown
-      remediation={remediation}
-      issue={issue}
-      system={system}
-    />
-  );
+  const detailDropdown = (remediation, issue) => (system) =>
+    (
+      <RemediationDetailsSystemDropdown
+        remediation={remediation}
+        issue={issue}
+        system={system}
+      />
+    );
 
   const generateStatus = (id) => {
     return systemStatuses[id];
@@ -77,8 +78,8 @@ export const SystemsStatusModal = ({
   return (
     <React.Fragment>
       <Modal
-        className="ins-c-dialog"
-        variant={ModalVariant.small}
+        className="remediations"
+        variant={ModalVariant.large}
         title={`System${issue.systems.length > 1 ? 's' : ''} for action ${
           issue.description
         }`}

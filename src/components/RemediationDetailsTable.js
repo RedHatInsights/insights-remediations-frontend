@@ -44,8 +44,11 @@ function resolutionDescriptionCell(remediation, issue) {
   if (issue.resolutions_available <= 1) {
     return url ? (
       <React.Fragment>
-        <a href={url}>{issue.description}</a>
-        {issue.resolution.description}
+        <span>
+          <a href={url}>{issue.description}</a>
+          <br />
+          {issue.resolution.description}
+        </span>
       </React.Fragment>
     ) : (
       issue.resolution.description
@@ -54,13 +57,18 @@ function resolutionDescriptionCell(remediation, issue) {
 
   return url ? (
     <React.Fragment>
-      <a href={url}>{issue.description}</a>
-      {issue.resolution.description}
-      <ConnectResolutionEditButton issue={issue} remediation={remediation} />
+      <span>
+        <a href={url}>{issue.description}</a>
+        <br />
+        {issue.resolution.description}
+        <br />
+        <ConnectResolutionEditButton issue={issue} remediation={remediation} />
+      </span>
     </React.Fragment>
   ) : (
     <React.Fragment>
       {issue.resolution.description}
+      <br />
       <ConnectResolutionEditButton issue={issue} remediation={remediation} />
     </React.Fragment>
   );
