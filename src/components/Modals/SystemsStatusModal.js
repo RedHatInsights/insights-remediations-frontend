@@ -78,8 +78,8 @@ export const SystemsStatusModal = ({
   return (
     <React.Fragment>
       <Modal
-        className="ins-c-dialog"
-        variant={ModalVariant.small}
+        className="remediations"
+        variant={ModalVariant.large}
         title={`System${issue.systems.length > 1 ? 's' : ''} for action ${
           issue.description
         }`}

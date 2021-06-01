@@ -57,11 +57,13 @@ function resolutionDescriptionCell(remediation, issue) {
 
   return url ? (
     <React.Fragment>
-      <a href={url}>{issue.description}</a>
-      <br />
-      {issue.resolution.description}
-      <br />
-      <ConnectResolutionEditButton issue={issue} remediation={remediation} />
+      <span>
+        <a href={url}>{issue.description}</a>
+        <br />
+        {issue.resolution.description}
+        <br />
+        <ConnectResolutionEditButton issue={issue} remediation={remediation} />
+      </span>
     </React.Fragment>
   ) : (
     <React.Fragment>
