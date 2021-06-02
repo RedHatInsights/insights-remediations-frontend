@@ -7,7 +7,9 @@ const RebootColumn = ({ rebootRequired }) => {
   const Icon = rebootRequired ? RedoIcon : TimesIcon;
   return (
     <Fragment>
-      <Icon /> {rebootRequired ? 'Yes' : 'No'}
+      <span>
+        <Icon /> {rebootRequired ? 'Yes' : 'No'}
+      </span>
     </Fragment>
   );
 };
