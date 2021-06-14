@@ -37,7 +37,12 @@ export default function TextInputDialog(props) {
         >
           Save
         </Button>,
-        <Button key="cancel" variant="secondary" onClick={onCancel} ouiaId="cancel">
+        <Button
+          key="cancel"
+          variant="secondary"
+          onClick={onCancel}
+          ouiaId="cancel"
+        >
           Cancel
         </Button>,
       ]}
