@@ -61,6 +61,7 @@ class PlanSystems extends Component {
               value={this.state.systemValue}
               onChange={this.onChangeSystemOptions}
               aria-label="Select Input"
+              ouiaId="select"
             >
               {this.systemOptions.map((option, index) => (
                 <SelectOption

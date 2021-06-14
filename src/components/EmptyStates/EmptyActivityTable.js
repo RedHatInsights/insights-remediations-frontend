@@ -9,6 +9,7 @@ const EmptyActivityTable = () => (
   <Table
     aria-label="No activity"
     cells={['Run on', 'Run by', 'Status']}
+    ouiaId="activity-table"
     rows={[
       {
         cells: [

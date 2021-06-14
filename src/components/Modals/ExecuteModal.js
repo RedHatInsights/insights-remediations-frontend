@@ -153,6 +153,7 @@ export const ExecuteModal = ({
         <Button
           key="confirm"
           variant="primary"
+          ouiaId="etag"
           isDisabled={connected.length === 0}
           onClick={() => {
             runRemediation(
@@ -169,12 +170,17 @@ export const ExecuteModal = ({
         <Button
           key="download"
           variant="secondary"
+          ouiaId="download-playbook"
           onClick={() => downloadPlaybook(remediationId)}
         >
           Download playbook
         </Button>,
         isDebug() ? (
-          <Button key="reset-etag" onClick={() => setEtag('test')}>
+          <Button
+            key="reset-etag"
+            onClick={() => setEtag('test')}
+            ouiaId="reset-etag"
+          >
             Reset etag
           </Button>
         ) : null,

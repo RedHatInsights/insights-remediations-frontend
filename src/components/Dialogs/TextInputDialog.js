@@ -33,10 +33,16 @@ export default function TextInputDialog(props) {
           variant="primary"
           onClick={() => onSubmit(value)}
           isDisabled={!valid}
+          ouiaId="save"
         >
           Save
         </Button>,
-        <Button key="cancel" variant="secondary" onClick={onCancel}>
+        <Button
+          key="cancel"
+          variant="secondary"
+          onClick={onCancel}
+          ouiaId="cancel"
+        >
           Cancel
         </Button>,
       ]}

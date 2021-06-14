@@ -26,10 +26,20 @@ export const WarningModal = ({ isOpen, onModalCancel, onConfirmCancel }) => (
     isOpen={isOpen}
     onClose={onModalCancel}
     actions={[
-      <Button key="confirm" variant="danger" onClick={onConfirmCancel}>
+      <Button
+        key="confirm"
+        variant="danger"
+        ouiaId="cancel_playbook"
+        onClick={onConfirmCancel}
+      >
         Cancel playbook process
       </Button>,
-      <Button key="cancel" variant="link" onClick={onModalCancel}>
+      <Button
+        key="cancel"
+        variant="link"
+        ouiaId="cancel"
+        onClick={onModalCancel}
+      >
         Cancel
       </Button>,
     ]}
