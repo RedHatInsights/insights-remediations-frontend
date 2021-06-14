@@ -10,6 +10,9 @@ import {
   TextVariants,
   Alert,
   Tooltip,
+  ExpandableSection,
+  List,
+  ListItem,
 } from '@patternfly/react-core';
 import { downloadPlaybook } from '../../api';
 import { styledConnectionStatus } from '../statusHelper';
@@ -19,7 +22,8 @@ import {
   TableBody,
   TableVariant,
 } from '@patternfly/react-table';
-import { Skeleton } from '@redhat-cloud-services/frontend-components';
+import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
+import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
 
 export const ExecuteModal = ({
@@ -59,14 +63,14 @@ export const ExecuteModal = ({
   useEffect(() => {
     const [con, dis] = data.reduce(
       ([pass, fail], e) =>
-        e.connection_status === 'connected'
-          ? [[...pass, { ...e, connection_status: 'loading' }], fail]
+        e && e.connection_status === 'connected'
+          ? [[...pass, { ...e }], fail]
           : [pass, [...fail, e]],
       [[], []]
     );
     setConnected(con);
     setDisconnected(dis);
-    con.map((c) => getEndpoint(c.endpoint_id));
+    con.map((c) => c.endpoint_id && getEndpoint(c.endpoint_id));
   }, [data]);
 
   useEffect(() => {
@@ -101,6 +105,15 @@ export const ExecuteModal = ({
     }
   }, [sources]);
 
+  const generateRowsStatus = (con) => {
+    return styledConnectionStatus(
+      con.connection_status,
+      sources.status === 'fulfilled' &&
+        sources.data[`${con.endpoint_id}`] &&
+        sources.data[`${con.endpoint_id}`].availability_status_error
+    );
+  };
+
   const rows = [...connected, ...disconnected].map((con) => ({
     cells: [
       {
@@ -118,12 +131,7 @@ export const ExecuteModal = ({
       },
       con.system_count,
       isUserEntitled && {
-        title: styledConnectionStatus(
-          con.connection_status,
-          sources.status === 'fulfilled' &&
-            sources.data[`${con.endpoint_id}`] &&
-            sources.data[`${con.endpoint_id}`].availability_status_error
-        ),
+        title: generateRowsStatus(con),
       },
     ],
   }));
@@ -135,7 +143,7 @@ export const ExecuteModal = ({
 
   return (
     <Modal
-      className="ins-c-execute-modal"
+      className="remediations ins-c-execute-modal"
       variant={isDebug() ? ModalVariant.large : ModalVariant.small}
       title={'Execute playbook'}
       isOpen={isOpen}
@@ -178,7 +186,7 @@ export const ExecuteModal = ({
         ) : null,
       ]}
     >
-      <div>
+      <div className="ins-c-execute-modal__body">
         {showRefresh ? (
           <Alert
             variant="warning"
@@ -196,11 +204,70 @@ export const ExecuteModal = ({
               <b> {`${pluralize(systemCount, 'system')}.`} </b>
             </Text>
           )}
-          <Text component={TextVariants.p}>
-            Systems connected to a Satellite instance and configured with Cloud
-            Connector can be automatically remediated. To remediate other
-            systems, download the Ansible Playbook.
+          <Text>
+            <ExpandableSection toggleText="About remote execution with Cloud connector">
+              Playbooks can be executed on systems which:
+              <List>
+                <ListItem>
+                  Are connected to Insights via a Satellite instance which has
+                  Receptor/Cloud Connector enabled, or <br />
+                  <Button
+                    className="pf-u-p-0"
+                    key="download"
+                    variant="link"
+                    isInline
+                    component="span"
+                    // eslint-disable-next-line max-len
+                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-10/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    How to configure Receptor/Cloud Connector on Red Hat
+                    Satellite &nbsp;
+                    <ExternalLinkAltIcon />
+                  </Button>
+                </ListItem>
+                <ListItem>
+                  Are directly connected to Insights via Red Hat connector, and
+                  Cloud Connector is enabled <br />
+                  <Button
+                    className="pf-u-p-0"
+                    key="configure"
+                    variant="link"
+                    isInline
+                    component="span"
+                    // eslint-disable-next-line max-len
+                    href="#"
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    How to enable Cloud Connector with Red Hat connect &nbsp;
+                    <ExternalLinkAltIcon />
+                  </Button>
+                </ListItem>
+              </List>
+            </ExpandableSection>
           </Text>
+          <Text component={TextVariants.p}>
+            Executed Ansible Playbooks run on eligible systems with Cloud
+            Connector. The playbook will be pushed immediately after selecting
+            “Execute playbook”. If the playbook has “Auto reboot” on, systems
+            requiring reboot to complete an action will reboot.
+          </Text>
+          <Button
+            className="pf-u-p-0"
+            key="configure"
+            variant="link"
+            isInline
+            component="span"
+            // eslint-disable-next-line max-len
+            href="#"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Learn more about Cloud Connector &nbsp;
+            <ExternalLinkAltIcon />
+          </Button>
           <Text component={TextVariants.h4}>Connection status of systems</Text>
         </TextContent>
         {isLoading ? (

@@ -4,10 +4,10 @@ import { connect } from 'react-redux';
 
 import * as actions from '../actions';
 
-import { Wizard } from '@redhat-cloud-services/frontend-components';
+import { Wizard } from '@redhat-cloud-services/frontend-components/Wizard';
 import { Button } from '@patternfly/react-core';
 
-import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
 
 // Wizard Steps
 import PlanName from '../components/CreatePlanModal/ModalSteps/PlanName';
@@ -43,8 +43,7 @@ class NewRemediationButton extends Component {
             resolution: 'selinux_mitigate',
           },
           {
-            id:
-              'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
+            id: 'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
           },
         ],
         systems: [

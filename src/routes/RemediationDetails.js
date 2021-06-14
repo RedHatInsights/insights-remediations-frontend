@@ -5,25 +5,25 @@ import { connect } from 'react-redux';
 import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
+import SystemsTable from '../components/SystemsTable/SystemsTable';
 import RemediationActivityTable from '../components/RemediationActivityTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
 import { normalizeStatus } from '../components/statusHelper';
 import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
-import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
 import UpsellBanner from '../components/Alerts/UpsellBanner';
 import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
-import NotConfigured from '../components/EmptyStates/NotConfigured';
 import DeniedState from '../components/DeniedState';
 import SkeletonTable from '../skeletons/SkeletonTable';
 import '../components/Status.scss';
 
 import {
-  Main,
   PageHeader,
   PageHeaderTitle,
-  InvalidObject,
-} from '@redhat-cloud-services/frontend-components';
+} from '@redhat-cloud-services/frontend-components/PageHeader';
+import { Main } from '@redhat-cloud-services/frontend-components/Main';
+import { InvalidObject } from '@redhat-cloud-services/frontend-components/InvalidObject';
 
 import {
   Stack,
@@ -48,6 +48,8 @@ import './RemediationDetails.scss';
 import NoReceptorBanner from '../components/Alerts/NoReceptorBanner';
 import { RemediationSummary } from '../components/RemediationSummary';
 
+const tabMapper = ['issues', 'systems', 'activity'];
+
 const RemediationDetails = ({
   match,
   location,
@@ -59,6 +61,8 @@ const RemediationDetails = ({
   switchAutoReboot,
   playbookRuns,
   getPlaybookRuns,
+  checkExecutable,
+  executable,
 }) => {
   const id = match.params.id;
   const [upsellBannerVisible, setUpsellBannerVisible] = useState(
@@ -67,9 +71,7 @@ const RemediationDetails = ({
   const [noReceptorBannerVisible, setNoReceptorBannerVisible] = useState(
     localStorage.getItem('remediations:receptorBannerStatus') !== 'dismissed'
   );
-  const [activeTabKey, setActiveTabKey] = useState(
-    location.search.includes('?activity') ? 1 : 0
-  );
+  const [activeTabKey, setActiveTabKey] = useState(0);
 
   const context = useContext(PermissionContext);
 
@@ -85,15 +87,13 @@ const RemediationDetails = ({
 
   const handleTabClick = (event, tabIndex) => {
     setActiveTabKey(tabIndex);
-    history.push(tabIndex === 1 ? '?activity' : '?issues');
+    history.push(`?${tabMapper[tabIndex]}`);
   };
 
   const getDisabledStateText = () => {
-    if (!context.isReceptorConfigured) {
-      return 'Your account must be configured with Cloud Connector to execute playbooks.';
-    } else if (!context.permissions.execute) {
+    if (!context.permissions.execute) {
       return 'You do not have the required execute permissions to perform this action.';
-    } else if (!context.hasSmartManagement) {
+    } else if (!executable) {
       return 'Your account must be entitled to Smart Management to execute playbooks.';
     }
     return 'Unable to execute playbook.';
@@ -109,9 +109,16 @@ const RemediationDetails = ({
       throw e;
     });
 
+    const tabIndex = tabMapper.findIndex(
+      (item) => item === location.search.split('?')[1]
+    );
+    setActiveTabKey(tabIndex !== -1 ? tabIndex : 0);
+    history.push(`?${tabMapper[tabIndex !== -1 ? tabIndex : 0]}`);
+
     if (isBeta) {
       loadRemediationStatus(id);
     }
+    checkExecutable(id);
   }, []);
 
   useEffect(() => {
@@ -132,16 +139,7 @@ const RemediationDetails = ({
     }
   }, [playbookRuns]);
 
-  const renderActivityState = (
-    isEntitled,
-    isReceptorConfigured,
-    playbookRuns,
-    remediation
-  ) => {
-    if (!isReceptorConfigured) {
-      return <NotConfigured />;
-    }
-
+  const renderActivityState = (isEntitled, playbookRuns, remediation) => {
     if (!isEntitled) {
       return <ActivityTabUpsell />;
     }
@@ -194,19 +192,13 @@ const RemediationDetails = ({
             </LevelItem>
             <LevelItem>
               <Split hasGutter>
-                {context.hasSmartManagement && (
-                  <SplitItem>
-                    <ExecutePlaybookButton
-                      isDisabled={
-                        !context.isReceptorConfigured ||
-                        !context.permissions.execute ||
-                        !context.hasSmartManagement
-                      }
-                      disabledStateText={getDisabledStateText()}
-                      remediationId={remediation.id}
-                    ></ExecutePlaybookButton>
-                  </SplitItem>
-                )}
+                <SplitItem>
+                  <ExecutePlaybookButton
+                    isDisabled={!context.permissions.execute || !executable}
+                    disabledStateText={getDisabledStateText()}
+                    remediationId={remediation.id}
+                  ></ExecutePlaybookButton>
+                </SplitItem>
                 <SplitItem>
                   <Button
                     isDisabled={!remediation.issues.length}
@@ -231,18 +223,16 @@ const RemediationDetails = ({
         </PageHeader>
         <Main>
           <Stack hasGutter>
-            {!context.hasSmartManagement && upsellBannerVisible && (
+            {!executable && upsellBannerVisible && (
               <StackItem>
                 <UpsellBanner onClose={() => handleUpsellToggle()} />
               </StackItem>
             )}
-            {context.hasSmartManagement &&
-              !context.isReceptorConfigured &&
-              noReceptorBannerVisible && (
-                <StackItem>
-                  <NoReceptorBanner onClose={() => handleNoReceptorToggle()} />
-                </StackItem>
-              )}
+            {executable && noReceptorBannerVisible && (
+              <StackItem>
+                <NoReceptorBanner onClose={() => handleNoReceptorToggle()} />
+              </StackItem>
+            )}
             <StackItem className="ins-c-playbookSummary__tabs">
               <Tabs activeKey={activeTabKey} onSelect={handleTabClick}>
                 <Tab eventKey={0} title="Actions">
@@ -251,13 +241,11 @@ const RemediationDetails = ({
                     status={selectedRemediationStatus}
                   />
                 </Tab>
-                <Tab eventKey={1} title="Activity">
-                  {renderActivityState(
-                    context.hasSmartManagement,
-                    context.isReceptorConfigured,
-                    playbookRuns,
-                    remediation
-                  )}
+                <Tab eventKey={1} title="Systems">
+                  <SystemsTable remediation={remediation} />
+                </Tab>
+                <Tab eventKey={2} title="Activity">
+                  {renderActivityState(executable, playbookRuns, remediation)}
                 </Tab>
               </Tabs>
             </StackItem>
@@ -288,6 +276,7 @@ RemediationDetails.propTypes = {
   addNotification: PropTypes.func.isRequired,
   playbookRuns: PropTypes.array,
   getPlaybookRuns: PropTypes.func,
+  checkExecutable: PropTypes.func,
 };
 
 export default withRouter(
@@ -297,12 +286,14 @@ export default withRouter(
       selectedRemediationStatus,
       executePlaybookBanner,
       playbookRuns,
+      executable,
     }) => ({
       selectedRemediation,
       selectedRemediationStatus,
       executePlaybookBanner,
       playbookRuns: playbookRuns.data,
       remediation: selectedRemediation.remediation,
+      executable,
     }),
     (dispatch) => ({
       loadRemediation: (id) => dispatch(actions.loadRemediation(id)),
@@ -314,6 +305,7 @@ export default withRouter(
       deleteRemediation: (id) => dispatch(actions.deleteRemediation(id)),
       addNotification: (content) => dispatch(addNotification(content)),
       getPlaybookRuns: (id) => dispatch(actions.getPlaybookRuns(id)),
+      checkExecutable: (id) => dispatch(actions.checkExecutable(id)),
     })
   )(RemediationDetails)
 );

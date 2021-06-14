@@ -1,9 +1,10 @@
 import React from 'react';
 
 import { ACTION_TYPES } from '../constants';
-import { applyReducerHash } from '@redhat-cloud-services/frontend-components-utilities/files/ReducerRegistry';
+import { applyReducerHash } from '@redhat-cloud-services/frontend-components-utilities/ReducerRegistry';
 import flatMap from 'lodash/flatMap';
 import uniq from 'lodash/uniq';
+import { RebootColumn, IssuesColumn } from '../components/SystemsTable';
 
 function issuesToSystemsIds(issues) {
   return uniq(
@@ -25,6 +26,79 @@ function computeRebootStats(remediation) {
     },
   };
 }
+
+export const remediationSystems = ({ LOAD_ENTITIES_FULFILLED }) =>
+  applyReducerHash({
+    [ACTION_TYPES.SELECT_ENTITY]: (state, { payload }) => {
+      const selected = state.selected || new Map();
+      if (payload.selected) {
+        if (payload.id === 0) {
+          state?.rows?.forEach((row) => selected.set(row?.id, row));
+        } else {
+          const selectedRow = state?.rows?.find(
+            ({ id } = {}) => id === payload.id
+          );
+          selected.set(payload.id, { ...(selectedRow || {}), id: payload.id });
+        }
+      } else {
+        if (payload.id === 0) {
+          state.rows.forEach((row) => selected.delete(row.id));
+        } else if (payload.id === -1) {
+          selected.clear();
+        } else {
+          selected.delete(payload.id);
+        }
+      }
+
+      return {
+        ...state,
+        selected: new Map(selected),
+      };
+    },
+    [`${LOAD_ENTITIES_FULFILLED}`]: (state) => {
+      return {
+        ...state,
+        rows: state.rows.map(({ id, ...row }) => ({
+          id,
+          ...row,
+          selected: !!state.selected?.get(id),
+        })),
+        columns: [
+          ...state.columns.filter(({ key }) =>
+            ['display_name', 'tags'].includes(key)
+          ),
+          {
+            key: 'issues',
+            title: 'Issues',
+            // eslint-disable-next-line react/display-name
+            renderFunc: (issues, id, { display_name }) => (
+              <IssuesColumn
+                issues={issues}
+                id={id}
+                displayName={display_name}
+              />
+            ),
+            props: { width: 15 },
+          },
+          {
+            key: 'rebootRequired',
+            title: 'Reboot required',
+            // eslint-disable-next-line react/display-name
+            renderFunc: (rebootRequired) => (
+              <RebootColumn rebootRequired={rebootRequired} />
+            ),
+            props: { width: 15 },
+          },
+        ].map((cell) => ({
+          ...cell,
+          props: {
+            ...(cell.props || {}),
+            isStatic: true,
+          },
+        })),
+      };
+    },
+  });
 
 const reducers = {
   remediations: applyReducerHash(
@@ -175,28 +249,30 @@ const reducers = {
     }
   ),
 
-  inventoryEntitiesReducer: (props = { INVENTORY_ACTION_TYPES: {} }) => () =>
-    applyReducerHash({
-      [props.INVENTORY_ACTION_TYPES.LOAD_ENTITIES_FULFILLED]: (state) => {
-        return {
-          ...state,
-          columns: [
-            {
-              key: 'display_name',
-              title: 'Name',
-              // eslint-disable-next-line
-                        renderFunc: (name, id, { display_name }) => <div><a href={props.urlBuilder(id)}>{display_name}</a></div>
-            },
-            {
-              key: 'system_status',
-              title: 'Status',
-              // eslint-disable-next-line
+  inventoryEntitiesReducer:
+    (props = { INVENTORY_ACTION_TYPES: {} }) =>
+    () =>
+      applyReducerHash({
+        [props.INVENTORY_ACTION_TYPES.LOAD_ENTITIES_FULFILLED]: (state) => {
+          return {
+            ...state,
+            columns: [
+              {
+                key: 'display_name',
+                title: 'Name',
+                // eslint-disable-next-line
+                renderFunc: (name, id, { display_name }) => <div><a href={props.urlBuilder(id)}>{display_name}</a></div>
+              },
+              {
+                key: 'system_status',
+                title: 'Status',
+                // eslint-disable-next-line
                         renderFunc: (name, id) => <div>{props.generateStatus(id)}</div>
-            },
-          ],
-        };
-      },
-    }),
+              },
+            ],
+          };
+        },
+      }),
 
   playbookActivityIntentory: (props) => () =>
     applyReducerHash({
@@ -208,7 +284,7 @@ const reducers = {
               key: 'display_name',
               title: 'Name',
               // eslint-disable-next-line
-                        renderFunc: (name, id, { fqdn }) => <div><a href={props.urlBuilder(id)}>{fqdn}</a></div>
+              renderFunc: (name, id, { fqdn }) => <div><a href={props.urlBuilder(id)}>{fqdn || name || id}</a></div>
             },
             state.columns.find((col) => col.key === 'tags'),
             {
@@ -325,6 +401,13 @@ const reducers = {
     {
       status: 'initial',
     }
+  ),
+  executable: applyReducerHash(
+    {
+      [ACTION_TYPES.CHECK_EXECUTABLE_REJECTED]: () => false,
+      [ACTION_TYPES.CHECK_EXECUTABLE_FULFILLED]: () => true,
+    },
+    false
   ),
 };
 

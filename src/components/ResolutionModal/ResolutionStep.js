@@ -11,7 +11,8 @@ import {
   StackItem,
 } from '@patternfly/react-core';
 
-import { Reboot, Skeleton } from '@redhat-cloud-services/frontend-components';
+import { Reboot } from '@redhat-cloud-services/frontend-components/Reboot';
+import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 
 import './ChooseResolutionModal.scss';
 

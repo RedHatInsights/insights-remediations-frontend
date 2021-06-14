@@ -4,6 +4,7 @@ import {
   resolutions,
   getRemediationStatus,
   sources,
+  deleteSystemsFromRemediation,
 } from './api';
 
 export const loadRemediations = (
@@ -162,3 +163,21 @@ export const getEndpoint = (id, options = {}) => ({
   payload: sources.showEndpoint(id, options),
 });
 // payload: sources.listEndpoints(id, options)
+
+export const selectEntity = (id, selected) => ({
+  type: ACTION_TYPES.SELECT_ENTITY,
+  payload: {
+    id,
+    selected,
+  },
+});
+
+export const deleteSystems = (systems, remediation) => ({
+  type: ACTION_TYPES.DELTE_SYSTEMS,
+  payload: deleteSystemsFromRemediation(systems, remediation),
+});
+
+export const checkExecutable = (id) => ({
+  type: ACTION_TYPES.CHECK_EXECUTABLE,
+  payload: remediations.checkExecutable(id),
+});

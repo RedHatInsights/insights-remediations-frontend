@@ -29,14 +29,6 @@ export default function TextInputDialog(props) {
       onClose={(event) => onCancel(event)}
       actions={[
         <Button
-          key="cancel"
-          variant="secondary"
-          onClick={onCancel}
-          ouiaId="cancel"
-        >
-          Cancel
-        </Button>,
-        <Button
           key="confirm"
           variant="primary"
           onClick={() => onSubmit(value)}
@@ -44,6 +36,9 @@ export default function TextInputDialog(props) {
           ouiaId="save"
         >
           Save
+        </Button>,
+        <Button key="cancel" variant="secondary" onClick={onCancel} ouiaId="cancel">
+          Cancel
         </Button>,
       ]}
       variant={ModalVariant.small}

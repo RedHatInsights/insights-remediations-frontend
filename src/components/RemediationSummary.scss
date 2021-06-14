@@ -9,6 +9,7 @@
         }
         &--disabled {
             font-weight: var(--pf-global--FontWeight--normal);
+            padding-left: var(--pf-global--spacer--xs);
             &--warning {
                 font-weight: var(--pf-global--FontWeight--normal);
                 padding-right: var(--pf-global--spacer--md);

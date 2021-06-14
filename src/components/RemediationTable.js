@@ -2,7 +2,8 @@ import React, { useEffect, useContext, useState } from 'react';
 import { useDispatch, useSelector as reduxSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
-import { Main, Spinner } from '@redhat-cloud-services/frontend-components';
+import { Main } from '@redhat-cloud-services/frontend-components/Main';
+import { Spinner } from '@redhat-cloud-services/frontend-components/Spinner';
 import { downloadPlaybook } from '../api';
 import {
   getConnectionStatus,
@@ -115,7 +116,7 @@ function RemediationTable({
   }
 
   if (!showArchived) {
-    cards = value.data.reduce((result, remediation) => {
+    cards = value?.data?.reduce((result, remediation) => {
       if (remediation.archived !== true) {
         result.push(remediation);
       }
@@ -123,7 +124,7 @@ function RemediationTable({
       return result;
     }, []);
   } else {
-    cards = value.data.map((remediation) => remediation);
+    cards = value?.data?.map((remediation) => remediation);
   }
 
   if (cards.length === 0) {

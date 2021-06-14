@@ -3,14 +3,20 @@ import orderBy from 'lodash/orderBy';
 import { CheckIcon, TimesIcon } from '@patternfly/react-icons';
 
 import PropTypes from 'prop-types';
-import { Modal, ToolbarItem, ToolbarGroup } from '@patternfly/react-core';
-import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/files/esm/Registry';
-import { InventoryTable } from '@redhat-cloud-services/frontend-components/components/esm/Inventory';
 import {
-  TableToolbar,
+  Modal,
+  ModalVariant,
+  ToolbarItem,
+  ToolbarGroup,
+} from '@patternfly/react-core';
+import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/Registry';
+import { InventoryTable } from '@redhat-cloud-services/frontend-components/Inventory';
+import {
   ConditionalFilter,
   conditionalFilterType,
-} from '@redhat-cloud-services/frontend-components';
+} from '@redhat-cloud-services/frontend-components/ConditionalFilter';
+
+import { TableToolbar } from '@redhat-cloud-services/frontend-components/TableToolbar';
 import { inventoryUrlBuilder } from '../../Utilities/urls';
 import reducers from '../../store/reducers';
 import RemediationDetailsSystemDropdown from '../RemediationDetailsSystemDropdown';
@@ -48,13 +54,14 @@ export const SystemsStatusModal = ({
   }, []);
 
   // eslint-disable-next-line react/display-name
-  const detailDropdown = (remediation, issue) => (system) => (
-    <RemediationDetailsSystemDropdown
-      remediation={remediation}
-      issue={issue}
-      system={system}
-    />
-  );
+  const detailDropdown = (remediation, issue) => (system) =>
+    (
+      <RemediationDetailsSystemDropdown
+        remediation={remediation}
+        issue={issue}
+        system={system}
+      />
+    );
 
   const generateStatus = (id) => {
     return systemStatuses[id];
@@ -71,8 +78,8 @@ export const SystemsStatusModal = ({
   return (
     <React.Fragment>
       <Modal
-        className="ins-c-dialog"
-        width={'50%'}
+        className="remediations"
+        variant={ModalVariant.large}
         title={`System${issue.systems.length > 1 ? 's' : ''} for action ${
           issue.description
         }`}

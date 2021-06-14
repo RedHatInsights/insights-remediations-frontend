@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Split, SplitItem, Stack, StackItem } from '@patternfly/react-core';
-import RemediationButton from '@redhat-cloud-services/frontend-components-remediations/esm/RemediationButton';
+import RemediationButton from '@redhat-cloud-services/frontend-components-remediations/RemediationButton/';
 
 import propTypes from 'prop-types';
 
@@ -40,8 +40,7 @@ class TestButtons extends React.Component {
   dataProviderA2 = () => ({
     issues: [
       {
-        id:
-          'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
+        id: 'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
         description:
           'Bonding will not fail over to the backup link when bonding options are partially read',
         systems: this.state.allHosts.slice(0, 5),
@@ -70,8 +69,7 @@ class TestButtons extends React.Component {
   dataProviderC2 = () => ({
     issues: [
       {
-        id:
-          'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
+        id: 'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
         description:
           'Bonding will not fail over to the backup link when bonding options are partially read',
       },
@@ -92,8 +90,7 @@ class TestButtons extends React.Component {
   dataProviderC4 = () => ({
     issues: [
       {
-        id:
-          'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
+        id: 'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
         description:
           'Bonding will not fail over to the backup link when bonding options are partially read',
       },
@@ -156,8 +153,7 @@ class TestButtons extends React.Component {
   dataProviderD2 = () => ({
     issues: [
       {
-        id:
-          'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
+        id: 'advisor:network_bond_opts_config_issue|NETWORK_BONDING_OPTS_DOUBLE_QUOTES_ISSUE',
         description:
           'Bonding will not fail over to the backup link when bonding options are partially read',
         systems: this.state.allHosts.slice(0, 1),

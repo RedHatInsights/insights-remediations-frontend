@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Button, Modal } from '@patternfly/react-core';
+import { Button, Modal, ModalVariant } from '@patternfly/react-core';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import './ConfirmationDialog.scss';
 
@@ -20,8 +20,8 @@ export default function ConfirmationDialog({
           {title}
         </div>
       }
-      className="ins-c-dialog"
-      width={'50%'}
+      className="remediations ins-c-dialog"
+      variant={ModalVariant.small}
       isOpen={isOpen}
       onClose={() => onClose(false)}
       isFooterLeftAligned

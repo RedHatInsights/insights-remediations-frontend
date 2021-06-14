@@ -9,7 +9,7 @@ import GlobalSkeleton from './skeletons/GlobalSkeleton';
 import { getIsReceptorConfigured } from './api';
 
 // Notifications
-import { NotificationsPortal } from '@redhat-cloud-services/frontend-components-notifications/';
+import NotificationsPortal from '@redhat-cloud-services/frontend-components-notifications/NotificationPortal';
 
 export const PermissionContext = createContext();
 

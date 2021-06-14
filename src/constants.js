@@ -24,11 +24,12 @@ const asyncActions = flatMap(
     'GET_PLAYBOOK_RUN_SYSTEM_DETAILS',
     'CANCEL_PLAYBOOK_RUNS',
     'GET_ENDPOINT',
+    'CHECK_EXECUTABLE',
   ],
   (a) => [a, `${a}_PENDING`, `${a}_FULFILLED`, `${a}_REJECTED`]
 );
 
-const actions = ['SET_ETAG', 'EXPAND_INVENTORY_TABLE'];
+const actions = ['SET_ETAG', 'EXPAND_INVENTORY_TABLE', 'SELECT_ENTITY'];
 export const ACTION_TYPES = keyBy([...asyncActions, ...actions], (k) => k);
 
 export const SEARCH_DEBOUNCE_DELAY = 500;
