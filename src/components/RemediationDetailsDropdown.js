@@ -8,6 +8,9 @@ import {
   Dropdown,
   DropdownPosition,
   KebabToggle,
+  Alert,
+  AlertGroup,
+  AlertActionCloseButton
 } from '@patternfly/react-core';
 import TextInputDialog from './Dialogs/TextInputDialog';
 import ConfirmationDialog from './ConfirmationDialog';
@@ -22,10 +25,27 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
   const [open, setOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState(false);
   const permission = useContext(PermissionContext);
+
+  console.log('Observando mi details page desde dropdown: ', open);
 
   return (
     <React.Fragment>
+      { alertMessage ?
+          (
+            <AlertGroup isToast>
+              <Alert
+                isLiveRegion
+                timeout
+                variant="success"
+                title={`Deleted playbook playbook`}
+                actionClose={<AlertActionCloseButton />}
+              />
+            </AlertGroup>
+          )
+        : null
+      }
       {renameDialogOpen && (
         <TextInputDialog
           title="Edit playbook name"
@@ -35,6 +55,7 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
           onSubmit={(name) => {
             setRenameDialogOpen(false);
             onRename(remediation.id, name);
+            setAlertMessage(true);
           }}
           pattern={playbookNamePattern}
         />
@@ -45,6 +66,7 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
         text="You will not be able to recover this Playbook"
         onClose={(confirm) => {
           setDeleteDialogOpen(false);
+          setAlertMessage(true);
           confirm && onDelete(remediation.id);
         }}
       />

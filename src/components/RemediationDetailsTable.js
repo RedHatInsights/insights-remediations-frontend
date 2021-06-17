@@ -37,6 +37,7 @@ import './RemediationDetailsTable.scss';
 import { PermissionContext } from '../App';
 import { EmptyActions } from './EmptyStates/EmptyActions';
 import { IconInline } from './Layouts/IconInline';
+import { remediations } from '../api';
 
 function resolutionDescriptionCell(remediation, issue) {
   const url = buildIssueUrl(issue.id);
@@ -156,10 +157,20 @@ function RemediationDetailsTable(props) {
   const selector = useSelector();
   const permission = useContext(PermissionContext);
   const [filterText, setFilterText] = useState('');
+  const [prevRemediationsCount, setPrevRemediationsCount] = useState(0);
 
   useEffect(() => {
     filter.setValue(filterText);
   }, [filterText]);
+
+  useEffect(() => {
+    if(prevRemediationsCount !== props.remediation.resolved_count) {
+      console.log('Checking what we have when checking for deletion: ', props.remediation);
+      
+    }
+    
+    console.log('Checking that were inside useffect');
+  }, [props.remediation])
 
   sorter.onChange(pagination.reset);
   filter.onChange(pagination.reset);
@@ -192,6 +203,12 @@ function RemediationDetailsTable(props) {
       filter.setValue('');
     },
   };
+
+  console.log('Checking everything on here: Selector: ', selector);
+  console.log('Checking what we have in Rows: ', rows);
+  console.log('Checking what we have in Remediations: ', props.remediation);
+  console.log('Checking what we have in status: ', props.status);
+  console.log('Checking what we have in props.remediations: ', props.remediation);
 
   return (
     <div className="test">
