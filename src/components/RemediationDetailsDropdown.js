@@ -28,26 +28,36 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
   const permission = useContext(PermissionContext);
 
   /** This is Toast alert stuff for testing, will probably be extrapolated into its own manager. */
-  const [alertMessage, setAlertMessage] = useState('');
+  // const [alertMessage, setAlertMessage] = useState('');
   const [activeAlerts, setActiveAlerts] = useState([]);
-
-  console.log('Observando mi details page desde dropdown: ', open);
+  const removeAlert = (key) => {
+    setActiveAlerts([...activeAlerts.filter((alert) => alert.key !== key)]);
+  };
+  const addActiveAlert = (key, title, variant) => {
+    setActiveAlerts([...activeAlerts, { title:title, variant:variant, key}]);
+  };
 
   return (
     <React.Fragment>
-      { alertMessage !== '' ?
+      { activeAlerts.map(({key, title, variant}) =>
           (
             <AlertGroup isToast>
               <Alert
                 timeout
-                variant="success"
-                title={alertMessage}
-                actionClose={<AlertActionCloseButton />}
+                isLiveRegion
+                key={key}
+                variant={variant}
+                title={title}
+                actionClose={
+                  <AlertActionCloseButton
+                    title={title}
+                    onClose={() => removeAlert(key)}
+                  />
+                }
               />
             </AlertGroup>
           )
-        : null
-      }
+      )}
       {renameDialogOpen && (
         <TextInputDialog
           title="Edit playbook name"
@@ -57,7 +67,7 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
           onSubmit={(name) => {
             setRenameDialogOpen(false);
             onRename(remediation.id, name);
-            setAlertMessage(`Updated playbook name to ${name}`);
+            addActiveAlert(remediation.id, `Updated playbook name to ${name}`, 'success');
           }}
           pattern={playbookNamePattern}
         />
@@ -68,8 +78,8 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
         text="You will not be able to recover this Playbook"
         onClose={(confirm) => {
           setDeleteDialogOpen(false);
-          setAlertMessage(`Deleted playbook ${remediation.id}`);
           confirm && onDelete(remediation.id);
+          addActiveAlert(remediation.id, `Deleted playbook ${name}`, 'success');
         }}
       />
 
