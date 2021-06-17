@@ -25,21 +25,23 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
   const [open, setOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState(false);
   const permission = useContext(PermissionContext);
+
+  /** This is Toast alert stuff for testing, will probably be extrapolated into its own manager. */
+  const [alertMessage, setAlertMessage] = useState('');
+  const [activeAlerts, setActiveAlerts] = useState([]);
 
   console.log('Observando mi details page desde dropdown: ', open);
 
   return (
     <React.Fragment>
-      { alertMessage ?
+      { alertMessage !== '' ?
           (
             <AlertGroup isToast>
               <Alert
-                isLiveRegion
                 timeout
                 variant="success"
-                title={`Deleted playbook playbook`}
+                title={alertMessage}
                 actionClose={<AlertActionCloseButton />}
               />
             </AlertGroup>
@@ -55,7 +57,7 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
           onSubmit={(name) => {
             setRenameDialogOpen(false);
             onRename(remediation.id, name);
-            setAlertMessage(true);
+            setAlertMessage(`Updated playbook name to ${name}`);
           }}
           pattern={playbookNamePattern}
         />
@@ -66,7 +68,7 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
         text="You will not be able to recover this Playbook"
         onClose={(confirm) => {
           setDeleteDialogOpen(false);
-          setAlertMessage(true);
+          setAlertMessage(`Deleted playbook ${remediation.id}`);
           confirm && onDelete(remediation.id);
         }}
       />
