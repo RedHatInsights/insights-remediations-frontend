@@ -209,7 +209,7 @@ PlaybookCardHeader.propTypes = {
 };
 
 const renderActionStatus = (complete, total) => {
-  return complete === total ? (
+  return complete === total && complete !== 0 ? (
     <div>
       <CheckCircleIcon className="ins-c-remediations-success" /> {complete} of
       &nbsp;{total}
@@ -220,7 +220,7 @@ const renderActionStatus = (complete, total) => {
 };
 
 const renderProgress = (complete, total) => {
-  return complete === total ? (
+  return complete === total && complete !== 0 ? (
     <Progress
       className="ins-c-playbook-card__progress ins-c-playbook-card__progress--success"
       value={100}
