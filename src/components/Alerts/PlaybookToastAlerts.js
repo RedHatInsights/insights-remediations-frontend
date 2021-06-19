@@ -16,6 +16,8 @@ const PlaybookToastAlerts = ({
   const [activeAlerts, setActiveAlerts] = useState([]);
 
   useEffect(() => {
+    console.log("Checking inside playbook toaast alerts effect: ", key);
+
     if(key === currentAlertID || key === "" || title === "")
       return;
 

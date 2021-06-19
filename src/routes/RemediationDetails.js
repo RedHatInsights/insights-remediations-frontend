@@ -16,7 +16,7 @@ import UpsellBanner from '../components/Alerts/UpsellBanner';
 import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
 import DeniedState from '../components/DeniedState';
 import SkeletonTable from '../skeletons/SkeletonTable';
-import PlaybookAlerts from '../components/Alerts/PlaybookToastAlerts';
+import PlaybookToastAlerts from '../components/Alerts/PlaybookToastAlerts';
 import '../components/Status.scss';
 
 import {
@@ -73,7 +73,7 @@ const RemediationDetails = ({
     localStorage.getItem('remediations:receptorBannerStatus') !== 'dismissed'
   );
   const [activeTabKey, setActiveTabKey] = useState(0);
-  const [activeToastAlert, setActiveToastAlert] = useState({key: "", title: "Title", description:""});
+  const [activeToastAlert, setActiveToastAlert] = useState({key: "", title: "", description:"", variant:""});
 
   const context = useContext(PermissionContext);
 
@@ -182,7 +182,14 @@ const RemediationDetails = ({
     ) : (
       <div className="page__remediation-details">
         <PageHeader>
-          <PlaybookToastAlerts />
+          { activeToastAlert.key !== "" ? 
+              <PlaybookToastAlerts
+                key={activeToastAlert.key}
+                title={activeToastAlert.title}
+                description={activeToastAlert.description}
+                variant={activeToastAlert.variant}
+              /> : <> </>
+          }
           <Breadcrumb>
             <BreadcrumbItem>
               <Link to="/"> Remediations </Link>
@@ -208,7 +215,12 @@ const RemediationDetails = ({
                     variant="secondary"
                     onClick={() => {
                       downloadPlaybook(remediation.id)
-
+                      setActiveToastAlert({
+                        key:remediation.id,
+                        title:"Preparing playbook for download.",
+                        description:"Once complete, your download will start automatically.",
+                        variant:"info"
+                      });
                     }}
                   >
                     Download playbook
