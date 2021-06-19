@@ -16,6 +16,7 @@ import {
 import { RedoIcon, TimesIcon } from '@patternfly/react-icons';
 import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/PrimaryToolbar';
 import { TableToolbar } from '@redhat-cloud-services/frontend-components/TableToolbar';
+import PlaybookToastAlerts from './Alerts/PlaybookToastAlerts';
 
 import { getIssueApplication, includesIgnoreCase } from '../Utilities/model';
 import { buildIssueUrl } from '../Utilities/urls';
