@@ -12,23 +12,17 @@ const PlaybookToastAlerts = ({
   description="",
   variant="success"
 }) => {
-  const [currentAlertID, setCurrentAlertID] = useState('');
+  // const [currentAlertID, setCurrentAlertID] = useState('');
   const [activeAlerts, setActiveAlerts] = useState([]);
 
   useEffect(() => {
-    console.log("Checking inside playbook toaast alerts effect for key: ", key);
-    console.log("Checking inside playbook toaast alerts effect for title: ",  title);
-    console.log("Checking inside playbook toaast alerts effect for description: ",  description);
-    console.log("Checking inside playbook toaast alerts effect for variant: ", variant);
-    console.log("Checking inside playbook toaast alerts effect for activeAlerts: ",  activeAlerts);
-    console.log("Checking inside playbook toaast alerts effect for activeAlerts.length: ",  activeAlerts.length);
-    console.log("Checking inside playbook toaast alerts effect for currentAlertID: ",  currentAlertID);
-
-    if(activeAlerts.length === 0) {
       console.log('Checking PINGAAAAAAAAAAA');
-      addActiveAlert([...activeAlerts, {key, title, description, variant}]);
-      return;
-    }
+      var newKey = generateUniqueId();
+      var newAlert = {newKey, title, description, variant};
+      console.log('Checking new alert being created: ', newAlert);
+      
+      addActiveAlert(newKey, title, description, variant);
+      console.log('Checking my new activeAlerts', activeAlerts);
   }, []);
   
   const removeAlert = (key) => {
@@ -36,11 +30,12 @@ const PlaybookToastAlerts = ({
   };
   
   const addActiveAlert = (key, title, description, variant) => {
-    setCurrentAlertID(key);
-    setActiveAlerts([...activeAlerts, { key:key, title:title, description:description, variant:variant}]);
+    setActiveAlerts( activeAlerts => [...activeAlerts, { key:key, title:title, description:description, variant:variant}]);
   };
 
   const generateUniqueId = () => new Date().getTime();
+
+  console.log('Checking alert about to be rendered: ', activeAlerts);
 
   return (
     <div>
