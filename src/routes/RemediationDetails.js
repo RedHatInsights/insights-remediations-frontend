@@ -16,6 +16,7 @@ import UpsellBanner from '../components/Alerts/UpsellBanner';
 import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
 import DeniedState from '../components/DeniedState';
 import SkeletonTable from '../skeletons/SkeletonTable';
+import PlaybookAlerts from '../components/Alerts/PlaybookToastAlerts';
 import '../components/Status.scss';
 
 import {
@@ -72,6 +73,7 @@ const RemediationDetails = ({
     localStorage.getItem('remediations:receptorBannerStatus') !== 'dismissed'
   );
   const [activeTabKey, setActiveTabKey] = useState(0);
+  const [activeToastAlert, setActiveToastAlert] = useState({key: "", title: "Title", description:""});
 
   const context = useContext(PermissionContext);
 
@@ -180,6 +182,7 @@ const RemediationDetails = ({
     ) : (
       <div className="page__remediation-details">
         <PageHeader>
+          <PlaybookToastAlerts />
           <Breadcrumb>
             <BreadcrumbItem>
               <Link to="/"> Remediations </Link>
@@ -203,7 +206,10 @@ const RemediationDetails = ({
                   <Button
                     isDisabled={!remediation.issues.length}
                     variant="secondary"
-                    onClick={() => downloadPlaybook(remediation.id)}
+                    onClick={() => {
+                      downloadPlaybook(remediation.id)
+
+                    }}
                   >
                     Download playbook
                   </Button>
