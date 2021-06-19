@@ -7,8 +7,8 @@ import {
 } from '@patternfly/react-core';
 
 const PlaybookToastAlerts = ({
-  title="Title",
-  key="",
+  key,
+  title,
   description="",
   variant="success"
 }) => {
@@ -18,33 +18,35 @@ const PlaybookToastAlerts = ({
   useEffect(() => {
     console.log("Checking inside playbook toaast alerts effect for key: ", key);
     console.log("Checking inside playbook toaast alerts effect for title: ",  title);
+    console.log("Checking inside playbook toaast alerts effect for description: ",  description);
+    console.log("Checking inside playbook toaast alerts effect for variant: ", variant);
+    console.log("Checking inside playbook toaast alerts effect for activeAlerts: ",  activeAlerts);
+    console.log("Checking inside playbook toaast alerts effect for activeAlerts.length: ",  activeAlerts.length);
+    console.log("Checking inside playbook toaast alerts effect for currentAlertID: ",  currentAlertID);
 
-    if(key === currentAlertID || key === "" || title === "")
+    if(activeAlerts.length === 0) {
+      console.log('Checking PINGAAAAAAAAAAA');
+      addActiveAlert([...activeAlerts, {key, title, description, variant}]);
       return;
-
-    if(activeAlerts.length == 0) {
-      addActiveAlert(key, title, variant);
     }
-
-    if(activeAlerts.length !== 0 && !activeAlerts.includes(key)) {
-      addActiveAlert(key, title, variant);
-    }
-  }, [key]);
+  }, []);
   
   const removeAlert = (key) => {
     setActiveAlerts([...activeAlerts.filter((alert) => alert.key !== key)]);
   };
   
-  const addActiveAlert = (key, title, variant) => {
+  const addActiveAlert = (key, title, description, variant) => {
     setCurrentAlertID(key);
-    setActiveAlerts([...activeAlerts, { title:title, variant:variant, key}]);
+    setActiveAlerts([...activeAlerts, { key:key, title:title, description:description, variant:variant}]);
   };
+
+  const generateUniqueId = () => new Date().getTime();
 
   return (
     <div>
       {
         key === "" ? (<></>) : (
-          activeAlerts.map(({key, title, variant}) =>
+          activeAlerts.map(({key, title, description, variant}) =>
             (
               <AlertGroup isToast>
                 <Alert
@@ -69,8 +71,8 @@ const PlaybookToastAlerts = ({
 }
 
 PlaybookToastAlerts.propTypes = {
-  title: PropTypes.string.isRequired,
   key: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
   description: PropTypes.string,
   variant: PropTypes.string
 }
