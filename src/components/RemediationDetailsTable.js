@@ -205,12 +205,6 @@ function RemediationDetailsTable(props) {
     },
   };
 
-  console.log('Checking everything on here: Selector: ', selector);
-  console.log('Checking what we have in Rows: ', rows);
-  console.log('Checking what we have in Remediations: ', props.remediation);
-  console.log('Checking what we have in status: ', props.status);
-  console.log('Checking what we have in props.remediations: ', props.remediation);
-
   return (
     <div className="test">
       <PrimaryToolbar

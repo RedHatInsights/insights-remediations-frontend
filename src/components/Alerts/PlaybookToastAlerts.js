@@ -16,7 +16,7 @@ const PlaybookToastAlerts = ({
   const [activeAlerts, setActiveAlerts] = useState([]);
 
   useEffect(() => {
-      console.log('Checking PINGAAAAAAAAAAA');
+      console.log('Checking received key: ', key);
       var newKey = generateUniqueId();
       var newAlert = {newKey, title, description, variant};
       console.log('Checking new alert being created: ', newAlert);
