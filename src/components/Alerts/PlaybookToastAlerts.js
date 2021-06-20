@@ -7,22 +7,15 @@ import {
 } from '@patternfly/react-core';
 
 const PlaybookToastAlerts = ({
-  key,
   title,
   description="",
   variant="success"
 }) => {
-  // const [currentAlertID, setCurrentAlertID] = useState('');
   const [activeAlerts, setActiveAlerts] = useState([]);
 
   useEffect(() => {
-      console.log('Checking received key: ', key);
       var newKey = generateUniqueId();
-      var newAlert = {newKey, title, description, variant};
-      console.log('Checking new alert being created: ', newAlert);
-      
       addActiveAlert(newKey, title, description, variant);
-      console.log('Checking my new activeAlerts', activeAlerts);
   }, []);
   
   const removeAlert = (key) => {
@@ -39,34 +32,33 @@ const PlaybookToastAlerts = ({
 
   return (
     <div>
+      <AlertGroup isToast>
       {
-        key === "" ? (<></>) : (
+        title === "" ? (<></>) : (
           activeAlerts.map(({key, title, description, variant}) =>
             (
-              <AlertGroup isToast>
-                <Alert
-                  timeout
-                  isLiveRegion
-                  key={key}
-                  variant={variant}
-                  title={title}
-                  actionClose={
-                    <AlertActionCloseButton 
-                      title={title}
-                      onClose={() => removeAlert(key)}
-                    />
-                  }>
-                  {description}
-                </Alert>  
-              </AlertGroup>
+              <Alert
+                timeout
+                isLiveRegion
+                key={key}
+                variant={variant}
+                title={title}
+                actionClose={
+                  <AlertActionCloseButton 
+                    title={title}
+                    onClose={() => removeAlert(key)}
+                  />
+                }>
+                {description}
+              </Alert>  
             )
         ))}
+        </AlertGroup>
     </div>
   )
 }
 
 PlaybookToastAlerts.propTypes = {
-  key: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   description: PropTypes.string,
   variant: PropTypes.string

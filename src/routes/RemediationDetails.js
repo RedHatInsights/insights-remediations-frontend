@@ -73,7 +73,7 @@ const RemediationDetails = ({
     localStorage.getItem('remediations:receptorBannerStatus') !== 'dismissed'
   );
   const [activeTabKey, setActiveTabKey] = useState(0);
-  const [activeToastAlert, setActiveToastAlert] = useState({key: "", title: "", description:"", variant:""});
+  const [activeToastAlert, setActiveToastAlert] = useState({ title: "", description:"", variant:"" });
 
   const context = useContext(PermissionContext);
 
@@ -189,9 +189,9 @@ const RemediationDetails = ({
     ) : (
       <div className="page__remediation-details">
         <PageHeader>
-          { activeToastAlert.key !== "" ? 
+          { 
+            activeToastAlert.title !== "" ? 
               <PlaybookToastAlerts
-                key={activeToastAlert.key}
                 title={activeToastAlert.title}
                 description={activeToastAlert.description}
                 variant={activeToastAlert.variant}
@@ -223,7 +223,6 @@ const RemediationDetails = ({
                     onClick={() => {
                       downloadPlaybook(remediation.id);
                       setActiveToastAlert({
-                        key: remediation.id,
                         title:"Preparing playbook for download.",
                         description:"Once complete, your download will start automatically.",
                         variant:"info"
