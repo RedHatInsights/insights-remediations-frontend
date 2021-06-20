@@ -101,13 +101,6 @@ const RemediationDetails = ({
     return 'Unable to execute playbook.';
   };
 
-  /** TESTING OUT POP ALERT PROPS */
-  useEffect(() => {
-    console.log('TESTING CHANGES ON ACTIVE ALERTS', activeToastAlert);
-    console.log('Testing our active alert key: ', activeToastAlert.key);
-  }, [activeToastAlert]);
-  /******************************* */
-
   useEffect(() => {
     loadRemediation(id).catch((e) => {
       if (e && e.response && e.response.status === 404) {

@@ -14,6 +14,7 @@ import {
 } from '@patternfly/react-core';
 import TextInputDialog from './Dialogs/TextInputDialog';
 import ConfirmationDialog from './ConfirmationDialog';
+import PlaybookToastAlerts from './Alerts/PlaybookToastAlerts';
 import { deleteRemediation, patchRemediation } from '../actions';
 
 import { PermissionContext } from '../App';
@@ -26,38 +27,18 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const permission = useContext(PermissionContext);
-
-  /** This is Toast alert stuff for testing, will probably be extrapolated into its own manager. */
-  // const [alertMessage, setAlertMessage] = useState('');
-  const [activeAlerts, setActiveAlerts] = useState([]);
-  const removeAlert = (key) => {
-    setActiveAlerts([...activeAlerts.filter((alert) => alert.key !== key)]);
-  };
-  const addActiveAlert = (key, title, variant) => {
-    setActiveAlerts([...activeAlerts, { title:title, variant:variant, key}]);
-  };
+  const [activeAlert, setActiveAlert] = useState({title:"", description:"", variant:""});
 
   return (
     <React.Fragment>
-      { activeAlerts.map(({key, title, variant}) =>
-          (
-            <AlertGroup isToast>
-              <Alert
-                timeout
-                isLiveRegion
-                key={key}
-                variant={variant}
-                title={title}
-                actionClose={
-                  <AlertActionCloseButton
-                    title={title}
-                    onClose={() => removeAlert(key)}
-                  />
-                }
-              />
-            </AlertGroup>
-          )
-      )}
+      { activeAlert.title !== "" ? (
+        <PlaybookToastAlerts
+          title={activeAlert.title}
+          description={activeAlert.description}
+          variant={activeAlert.variant}
+        /> ) : <> </>
+      }
+
       {renameDialogOpen && (
         <TextInputDialog
           title="Edit playbook name"
@@ -67,7 +48,11 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
           onSubmit={(name) => {
             setRenameDialogOpen(false);
             onRename(remediation.id, name);
-            addActiveAlert(remediation.id, `Updated playbook name to ${name}`, 'success');
+            setActiveAlert({
+              title:`Updated playbook name to ${name}`,
+              description: '',
+              variant: 'success'
+            });
           }}
           pattern={playbookNamePattern}
         />
@@ -79,7 +64,11 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
         onClose={(confirm) => {
           setDeleteDialogOpen(false);
           confirm && onDelete(remediation.id);
-          addActiveAlert(remediation.id, `Deleted playbook ${name}`, 'success');
+          setActiveAlert({
+            title:`Deleted playbook ${name}`,
+            description:'',
+            variant:'success'
+          });
         }}
       />
 

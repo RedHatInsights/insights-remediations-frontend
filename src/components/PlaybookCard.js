@@ -24,7 +24,7 @@ import { addNotification } from '@redhat-cloud-services/frontend-components-noti
 import { Link } from 'react-router-dom';
 import { PropTypes } from 'prop-types';
 import { patchRemediation } from '../actions.js';
-
+import PlaybookToastAlerts from './Alerts/PlaybookToastAlerts';
 import './PlaybookCard.scss';
 
 function buildName(name, id) {
@@ -58,6 +58,7 @@ const PlaybookCardHeader = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isArchived, setIsArchived] = useState(archived);
+  const [activeAlert, setActiveAlert] = useState({title:"", description:"", variant:""});
   const dispatch = useDispatch();
   const dropdownItems = [];
 
@@ -91,6 +92,11 @@ const PlaybookCardHeader = ({
           () => {
             setExecuteOpen(true);
             setIsOpen(false);
+            setActiveAlert({
+              title: `Executing playbook`,
+              description: 'View results in the Activity tab.',
+              variant: 'success'
+            });
           },
           dispatch
         );
@@ -106,6 +112,11 @@ const PlaybookCardHeader = ({
       onClick={() => {
         downloadPlaybook(remediation.id);
         setIsOpen(false);
+        setActiveAlert({
+          title: `Downloading playbook`,
+          description: 'Once complete, your download will start automatically.',
+          variant: 'info'
+        });
       }}
     >
       Download playbook

@@ -22,6 +22,7 @@ import {
   TableBody,
   TableVariant,
 } from '@patternfly/react-table';
+import PlaybookToastAlerts from '../Alerts/PlaybookToastAlerts';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
@@ -38,11 +39,12 @@ export const ExecuteModal = ({
   etag,
   getEndpoint,
   sources,
-  setEtag,
+  setEtag
 }) => {
   const [isUserEntitled, setIsUserEntitled] = useState(false);
   const [connected, setConnected] = useState([]);
   const [disconnected, setDisconnected] = useState([]);
+  const [activeAlert, setActiveAlert] = useState({title:'', description:'', variant:''});
   const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
   useEffect(() => {
@@ -142,162 +144,183 @@ export const ExecuteModal = ({
     number > 1 ? `${number} ${str}s` : `${number} ${str}`;
 
   return (
-    <Modal
-      className="remediations ins-c-execute-modal"
-      variant={isDebug() ? ModalVariant.large : ModalVariant.small}
-      title={'Execute playbook'}
-      isOpen={isOpen}
-      onClose={onClose}
-      isFooterLeftAligned
-      actions={[
-        <Button
-          key="confirm"
-          variant="primary"
-          ouiaId="etag"
-          isDisabled={connected.length === 0}
-          onClick={() => {
-            runRemediation(
-              remediationId,
-              etag,
-              disconnected.map((e) => e.executor_id).filter((e) => e)
-            );
-          }}
-        >
-          {isLoading
-            ? 'Execute playbook'
-            : `Execute playbook on ${pluralize(connectedCount, 'system')}`}
-        </Button>,
-        <Button
-          key="download"
-          variant="secondary"
-          ouiaId="download-playbook"
-          onClick={() => downloadPlaybook(remediationId)}
-        >
-          Download playbook
-        </Button>,
-        isDebug() ? (
+    <>
+      { activeAlert.title !== "" ?
+        <PlaybookToastAlerts 
+            title={activeAlert.title}
+            description={activeAlert.description}
+            variant={activeAlert.variant} 
+        /> : <> </>
+      }
+      <Modal
+        className="remediations ins-c-execute-modal"
+        variant={isDebug() ? ModalVariant.large : ModalVariant.small}
+        title={'Execute playbook'}
+        isOpen={isOpen}
+        onClose={onClose}
+        isFooterLeftAligned
+        actions={[
           <Button
-            key="reset-etag"
-            onClick={() => setEtag('test')}
-            ouiaId="reset-etag"
+            key="confirm"
+            variant="primary"
+            ouiaId="etag"
+            isDisabled={connected.length === 0}
+            onClick={() => {
+              runRemediation(
+                remediationId,
+                etag,
+                disconnected.map((e) => e.executor_id).filter((e) => e)
+              );
+              setActiveAlert({
+                title:`Executing playbook`,
+                description:'View results in the Activity tab',
+                variant: 'success'
+              });
+            }}
           >
-            Reset etag
-          </Button>
-        ) : null,
-      ]}
-    >
-      <div className="ins-c-execute-modal__body">
-        {showRefresh ? (
-          <Alert
-            variant="warning"
-            isInline
-            title="The connection status of systems associated with this Playbook has changed. Please review again."
-          />
-        ) : null}
-        <TextContent>
+            {isLoading
+              ? 'Execute playbook'
+              : `Execute playbook on ${pluralize(connectedCount, 'system')}`}
+          </Button>,
+          <Button
+            key="download"
+            variant="secondary"
+            ouiaId="download-playbook"
+            onClick={() => {
+              downloadPlaybook(remediationId)
+              setActiveAlert({
+                title:'Preparing playbook for download',
+                description:'Once complete, your download will start automatically.',
+                variant:'info'
+              });
+            }}
+          >
+            Download playbook
+          </Button>,
+          isDebug() ? (
+            <Button
+              key="reset-etag"
+              onClick={() => setEtag('test')}
+              ouiaId="reset-etag"
+            >
+              Reset etag
+            </Button>
+          ) : null,
+        ]}
+      >
+        <div className="ins-c-execute-modal__body">
+          {showRefresh ? (
+            <Alert
+              variant="warning"
+              isInline
+              title="The connection status of systems associated with this Playbook has changed. Please review again."
+            />
+          ) : null}
+          <TextContent>
+            {isLoading ? (
+              <Skeleton size="lg" />
+            ) : (
+              <Text component={TextVariants.p}>
+                Playbook contains <b>{`${pluralize(issueCount, 'action')}`}</b>
+                &nbsp;affecting
+                <b> {`${pluralize(systemCount, 'system')}.`} </b>
+              </Text>
+            )}
+            <Text>
+              <ExpandableSection toggleText="About remote execution with Cloud connector">
+                Playbooks can be executed on systems which:
+                <List>
+                  <ListItem>
+                    Are connected to Insights via a Satellite instance which has
+                    Receptor/Cloud Connector enabled, or <br />
+                    <Button
+                      className="pf-u-p-0"
+                      key="download"
+                      variant="link"
+                      isInline
+                      component="span"
+                      // eslint-disable-next-line max-len
+                      href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-10/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      How to configure Receptor/Cloud Connector on Red Hat
+                      Satellite &nbsp;
+                      <ExternalLinkAltIcon />
+                    </Button>
+                  </ListItem>
+                  <ListItem>
+                    Are directly connected to Insights via Red Hat connector, and
+                    Cloud Connector is enabled <br />
+                    <Button
+                      className="pf-u-p-0"
+                      key="configure"
+                      variant="link"
+                      isInline
+                      component="span"
+                      // eslint-disable-next-line max-len
+                      href="#"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      How to enable Cloud Connector with Red Hat connect &nbsp;
+                      <ExternalLinkAltIcon />
+                    </Button>
+                  </ListItem>
+                </List>
+              </ExpandableSection>
+            </Text>
+            <Text component={TextVariants.p}>
+              Executed Ansible Playbooks run on eligible systems with Cloud
+              Connector. The playbook will be pushed immediately after selecting
+              “Execute playbook”. If the playbook has “Auto reboot” on, systems
+              requiring reboot to complete an action will reboot.
+            </Text>
+            <Button
+              className="pf-u-p-0"
+              key="configure"
+              variant="link"
+              isInline
+              component="span"
+              // eslint-disable-next-line max-len
+              href="#"
+              rel="noreferrer"
+              target="_blank"
+            >
+              Learn more about Cloud Connector &nbsp;
+              <ExternalLinkAltIcon />
+            </Button>
+            <Text component={TextVariants.h4}>Connection status of systems</Text>
+          </TextContent>
           {isLoading ? (
             <Skeleton size="lg" />
           ) : (
-            <Text component={TextVariants.p}>
-              Playbook contains <b>{`${pluralize(issueCount, 'action')}`}</b>
-              &nbsp;affecting
-              <b> {`${pluralize(systemCount, 'system')}.`} </b>
-            </Text>
+            <Table
+              variant={TableVariant.compact}
+              aria-label="Systems"
+              cells={[
+                {
+                  title: 'Connection type',
+                  value: 'type',
+                },
+                {
+                  title: 'Systems',
+                  value: 'count',
+                },
+                isUserEntitled && {
+                  title: 'Connection status',
+                  value: 'status',
+                },
+              ]}
+              rows={rows}
+            >
+              <TableHeader />
+              <TableBody />
+            </Table>
           )}
-          <Text>
-            <ExpandableSection toggleText="About remote execution with Cloud connector">
-              Playbooks can be executed on systems which:
-              <List>
-                <ListItem>
-                  Are connected to Insights via a Satellite instance which has
-                  Receptor/Cloud Connector enabled, or <br />
-                  <Button
-                    className="pf-u-p-0"
-                    key="download"
-                    variant="link"
-                    isInline
-                    component="span"
-                    // eslint-disable-next-line max-len
-                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-10/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    How to configure Receptor/Cloud Connector on Red Hat
-                    Satellite &nbsp;
-                    <ExternalLinkAltIcon />
-                  </Button>
-                </ListItem>
-                <ListItem>
-                  Are directly connected to Insights via Red Hat connector, and
-                  Cloud Connector is enabled <br />
-                  <Button
-                    className="pf-u-p-0"
-                    key="configure"
-                    variant="link"
-                    isInline
-                    component="span"
-                    // eslint-disable-next-line max-len
-                    href="#"
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    How to enable Cloud Connector with Red Hat connect &nbsp;
-                    <ExternalLinkAltIcon />
-                  </Button>
-                </ListItem>
-              </List>
-            </ExpandableSection>
-          </Text>
-          <Text component={TextVariants.p}>
-            Executed Ansible Playbooks run on eligible systems with Cloud
-            Connector. The playbook will be pushed immediately after selecting
-            “Execute playbook”. If the playbook has “Auto reboot” on, systems
-            requiring reboot to complete an action will reboot.
-          </Text>
-          <Button
-            className="pf-u-p-0"
-            key="configure"
-            variant="link"
-            isInline
-            component="span"
-            // eslint-disable-next-line max-len
-            href="#"
-            rel="noreferrer"
-            target="_blank"
-          >
-            Learn more about Cloud Connector &nbsp;
-            <ExternalLinkAltIcon />
-          </Button>
-          <Text component={TextVariants.h4}>Connection status of systems</Text>
-        </TextContent>
-        {isLoading ? (
-          <Skeleton size="lg" />
-        ) : (
-          <Table
-            variant={TableVariant.compact}
-            aria-label="Systems"
-            cells={[
-              {
-                title: 'Connection type',
-                value: 'type',
-              },
-              {
-                title: 'Systems',
-                value: 'count',
-              },
-              isUserEntitled && {
-                title: 'Connection status',
-                value: 'status',
-              },
-            ]}
-            rows={rows}
-          >
-            <TableHeader />
-            <TableBody />
-          </Table>
-        )}
-      </div>
-    </Modal>
+        </div>
+      </Modal>
+    </>
   );
 };
 
