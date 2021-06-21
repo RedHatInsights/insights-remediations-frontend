@@ -17,6 +17,7 @@ import { PermissionContext } from '../App';
 import { ExecuteModal } from './Modals/ExecuteModal';
 import { PlaybookCard } from './PlaybookCard';
 import { EmptyRemediations } from './EmptyStates/EmptyRemediations';
+import PlaybookToastAlerts from './Alerts/PlaybookToastAlerts';
 import './RemediationTable.scss';
 
 function skeleton() {
@@ -56,6 +57,7 @@ function RemediationTable({
   const permission = useContext(PermissionContext);
   const [executeOpen, setExecuteOpen] = useState(false);
   const [showRefreshMessage, setShowRefreshMessage] = useState(false);
+  const [activeToastAlert, setActiveToastAlert] = useState({title:"", description:"", variant:""});
   const selectedRemediation = reduxSelector(
     (state) => state.selectedRemediation
   );
@@ -168,10 +170,19 @@ function RemediationTable({
                 dispatch(getEndpoint(id));
               }}
               sources={sources}
+              // setActiveToastAlert={setActiveToastAlert}
             />
           )}
         </StackItem>
         <StackItem>
+        { 
+          activeToastAlert.title !== "" ? 
+            <PlaybookToastAlerts
+              title={activeToastAlert.title}
+              description={activeToastAlert.description}
+              variant={activeToastAlert.variant}
+            /> : <> </>
+          }
           <Grid sm={12} md={6} lg={4} hasGutter>
             {cards.map((remediation, idx) => {
               return (
@@ -188,6 +199,7 @@ function RemediationTable({
                     getConnectionStatus={getConnectionStatus}
                     downloadPlaybook={downloadPlaybook}
                     permission={permission}
+                    // setActiveAlert={setActiveAlert} // for delete and archiving from within details.
                   />
                 </GridItem>
               );
