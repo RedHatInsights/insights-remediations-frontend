@@ -91,11 +91,6 @@ const PlaybookCardHeader = ({
           () => {
             setExecuteOpen(true);
             setIsOpen(false);
-            setActiveAlert({
-              title: `Executing playbook`,
-              description: 'View results in the Activity tab.',
-              variant: 'success'
-            });
           },
           dispatch
         );

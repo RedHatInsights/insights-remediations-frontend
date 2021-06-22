@@ -151,13 +151,13 @@ export const ExecuteModal = ({
 
   return (
     <>
-      { activeAlert.title !== "" && activeAlert.title !== "Executing playbook" ?
+      {/* { activeAlert.title !== "" && activeAlert.title !== "Executing playbook" ?
         <PlaybookToastAlerts 
             title={activeAlert.title}
             description={activeAlert.description}
             variant={activeAlert.variant} 
         /> : <> </>
-      }
+      } */}
       <Modal
         className="remediations ins-c-execute-modal"
         variant={isDebug() ? ModalVariant.large : ModalVariant.small}

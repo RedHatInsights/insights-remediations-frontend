@@ -38,7 +38,7 @@ const PlaybookToastAlerts = ({
     <div>
       <AlertGroup isToast>
       {
-        title === "" ? (<></>) : (
+        // title === "" ? (<></>) : (
           activeAlerts.map(({key, title, description, variant}) =>
             (
               <Alert
@@ -47,6 +47,7 @@ const PlaybookToastAlerts = ({
                 key={key}
                 variant={variant}
                 title={title}
+                onTimeout={() => removeAlert(key)}
                 actionClose={
                   <AlertActionCloseButton 
                     title={title}
@@ -56,7 +57,7 @@ const PlaybookToastAlerts = ({
                 {description}
               </Alert>  
             )
-        ))}
+        )}
         </AlertGroup>
     </div>
   )
