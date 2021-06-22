@@ -24,7 +24,7 @@ import { addNotification } from '@redhat-cloud-services/frontend-components-noti
 import { Link } from 'react-router-dom';
 import { PropTypes } from 'prop-types';
 import { patchRemediation } from '../actions.js';
-import PlaybookToastAlerts from './Alerts/PlaybookToastAlerts';
+// import PlaybookToastAlerts from './Alerts/PlaybookToastAlerts';
 import './PlaybookCard.scss';
 
 function buildName(name, id) {
@@ -55,10 +55,11 @@ const PlaybookCardHeader = ({
   getConnectionStatus,
   downloadPlaybook,
   permission,
+  setActiveAlert,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isArchived, setIsArchived] = useState(archived);
-  const [activeAlert, setActiveAlert] = useState({title:"", description:"", variant:""});
+  // const [activeAlert, setActiveAlert] = useState({title:"", description:"", variant:""});
   const dispatch = useDispatch();
   const dropdownItems = [];
 
@@ -217,6 +218,7 @@ PlaybookCardHeader.propTypes = {
   getConnectionStatus: PropTypes.func.isRequired,
   downloadPlaybook: PropTypes.func.isRequired,
   permission: PropTypes.object.isRequired,
+  setActiveAlert: PropTypes.func.isRequired
 };
 
 const renderActionStatus = (complete, total) => {
@@ -259,6 +261,7 @@ export const PlaybookCard = ({
   getConnectionStatus,
   downloadPlaybook,
   permission,
+  setActiveAlert,
 }) => {
   // const [ poll, setPoll ] = useState(executeOpen => !executeOpen);
   // const [ curResolved, setCurResolved ] = useState(remediation.resolved_count);
@@ -308,6 +311,7 @@ export const PlaybookCard = ({
         getConnectionStatus={getConnectionStatus}
         downloadPlaybook={downloadPlaybook}
         permission={permission}
+        setActiveAlert={setActiveAlert}
       />
       <CardBody className="ins-c-playbook-card__body">
         <Split hasGutter className="ins-c-playbook-card__body--split">

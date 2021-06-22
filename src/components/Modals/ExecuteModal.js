@@ -48,6 +48,10 @@ export const ExecuteModal = ({
   const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
   useEffect(() => {
+    console.log('Checking out our activeAlert change: ', activeAlert);
+  }, [activeAlert]);
+
+  useEffect(() => {
     window.insights.chrome.auth
       .getUser()
       .then((user) =>

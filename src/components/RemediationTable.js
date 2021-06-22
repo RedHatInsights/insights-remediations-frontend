@@ -170,7 +170,7 @@ function RemediationTable({
                 dispatch(getEndpoint(id));
               }}
               sources={sources}
-              // setActiveToastAlert={setActiveToastAlert}
+              setActiveToastAlert={setActiveToastAlert}
             />
           )}
         </StackItem>
@@ -199,7 +199,7 @@ function RemediationTable({
                     getConnectionStatus={getConnectionStatus}
                     downloadPlaybook={downloadPlaybook}
                     permission={permission}
-                    // setActiveAlert={setActiveAlert} // for delete and archiving from within details.
+                    setActiveAlert={setActiveToastAlert} // for delete and archiving from within details.
                   />
                 </GridItem>
               );
