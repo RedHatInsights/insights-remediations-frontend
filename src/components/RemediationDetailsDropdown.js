@@ -11,7 +11,7 @@ import {
 } from '@patternfly/react-core';
 import TextInputDialog from './Dialogs/TextInputDialog';
 import ConfirmationDialog from './ConfirmationDialog';
-import PlaybookToastAlerts, { generateUniqueId } from './Alerts/PlaybookToastAlerts';
+import { generateUniqueId } from './Alerts/PlaybookToastAlerts';
 import { deleteRemediation, patchRemediation } from '../actions';
 
 import { PermissionContext } from '../App';
@@ -19,24 +19,14 @@ import { PermissionContext } from '../App';
 const playbookNamePattern = /^$|^.*[\w\d]+.*$/;
 const EMPTY_NAME = 'Unnamed Playbook';
 
-function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
+function RemediationDetailsDropdown({ remediation, onRename, onDelete, setActiveAlert }) {
   const [open, setOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const permission = useContext(PermissionContext);
-  const [activeAlert, setActiveAlert] = useState({key:"", title:"", description:"", variant:""});
 
   return (
     <React.Fragment>
-      { activeAlert.title !== "" ? (
-        <PlaybookToastAlerts
-          key={activeAlert.key}
-          title={activeAlert.title}
-          description={activeAlert.description}
-          variant={activeAlert.variant}
-        /> ) : <> </>
-      }
-
       {renameDialogOpen && (
         <TextInputDialog
           title="Edit playbook name"

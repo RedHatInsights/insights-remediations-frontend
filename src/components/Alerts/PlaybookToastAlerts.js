@@ -19,7 +19,7 @@ const PlaybookToastAlerts = ({
       console.log('Checking out what we have in queue to become a toast alert: ', title);
       console.log('checking description: ', description);
       console.log('checking variant: ', variant);
-      addActiveAlert(newKey, title, description, variant);
+      addActiveAlert(key, title, description, variant);
   }, [key]);
   
   const removeAlert = (key) => {
@@ -34,25 +34,24 @@ const PlaybookToastAlerts = ({
     <div>
       <AlertGroup isToast>
       {
-        // title === "" ? (<></>) : (
-          activeAlerts.map(({key, title, description, variant}) =>
-            (
-              <Alert
-                timeout
-                isLiveRegion
-                key={key}
-                variant={variant}
-                title={title}
-                onTimeout={() => removeAlert(key)}
-                actionClose={
-                  <AlertActionCloseButton 
-                    title={title}
-                    onClose={() => removeAlert(key)}
-                  />
-                }>
-                {description}
-              </Alert>  
-            )
+        activeAlerts.map(({key, title, description, variant}) =>
+          (
+            <Alert
+              timeout
+              isLiveRegion
+              key={key}
+              variant={variant}
+              title={title}
+              onTimeout={() => removeAlert(key)}
+              actionClose={
+                <AlertActionCloseButton 
+                  title={title}
+                  onClose={() => removeAlert(key)}
+                />
+              }>
+              {description}
+            </Alert>  
+          )
         )}
         </AlertGroup>
     </div>

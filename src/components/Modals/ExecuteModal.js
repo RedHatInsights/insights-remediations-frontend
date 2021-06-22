@@ -22,7 +22,7 @@ import {
   TableBody,
   TableVariant,
 } from '@patternfly/react-table';
-import PlaybookToastAlerts from '../Alerts/PlaybookToastAlerts';
+import PlaybookToastAlerts, { generateUniqueId } from '../Alerts/PlaybookToastAlerts';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
@@ -46,7 +46,6 @@ export const ExecuteModal = ({
   const [isUserEntitled, setIsUserEntitled] = useState(false);
   const [connected, setConnected] = useState([]);
   const [disconnected, setDisconnected] = useState([]);
-  // const [activeAlert, setActiveAlert] = useState({title:'', description:'', variant:''});
   const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
   useEffect(() => {
@@ -178,6 +177,7 @@ export const ExecuteModal = ({
                 disconnected.map((e) => e.executor_id).filter((e) => e)
               );
               setActiveAlert({
+                key: generateUniqueId(),
                 title:`Executing playbook`,
                 description:'View results in the Activity tab',
                 variant: 'success'
@@ -195,6 +195,7 @@ export const ExecuteModal = ({
             onClick={() => {
               downloadPlaybook(remediationId)
               setActiveAlert({
+                key: generateUniqueId(),
                 title:'Preparing playbook for download',
                 description:'Once complete, your download will start automatically.',
                 variant:'info'
