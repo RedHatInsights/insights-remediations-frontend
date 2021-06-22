@@ -39,12 +39,14 @@ export const ExecuteModal = ({
   etag,
   getEndpoint,
   sources,
-  setEtag
+  setEtag,
+  activeAlert,
+  setActiveAlert
 }) => {
   const [isUserEntitled, setIsUserEntitled] = useState(false);
   const [connected, setConnected] = useState([]);
   const [disconnected, setDisconnected] = useState([]);
-  const [activeAlert, setActiveAlert] = useState({title:'', description:'', variant:''});
+  // const [activeAlert, setActiveAlert] = useState({title:'', description:'', variant:''});
   const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
   useEffect(() => {
@@ -149,7 +151,7 @@ export const ExecuteModal = ({
 
   return (
     <>
-      { activeAlert.title !== "" ?
+      { activeAlert.title !== "" && activeAlert.title !== "Executing playbook" ?
         <PlaybookToastAlerts 
             title={activeAlert.title}
             description={activeAlert.description}

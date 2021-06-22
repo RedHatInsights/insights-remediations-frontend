@@ -15,6 +15,10 @@ const PlaybookToastAlerts = ({
 
   useEffect(() => {
       var newKey = generateUniqueId();
+      console.log('CHECKING: confirming that were creating a new alert.')
+      console.log('Checking out what we have in queue to become a toast alert: ', title);
+      console.log('checking description: ', description);
+      console.log('checking variant: ', variant);
       addActiveAlert(newKey, title, description, variant);
   }, []);
   

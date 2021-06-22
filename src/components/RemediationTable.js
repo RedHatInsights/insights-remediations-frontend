@@ -170,7 +170,8 @@ function RemediationTable({
                 dispatch(getEndpoint(id));
               }}
               sources={sources}
-              setActiveToastAlert={setActiveToastAlert}
+              activeAlert={activeToastAlert}
+              setActiveAlert={setActiveToastAlert}
             />
           )}
         </StackItem>
