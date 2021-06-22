@@ -50,7 +50,7 @@ export const ExecuteModal = ({
   const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
   useEffect(() => {
-    console.log('Checking out our activeAlert change: ', activeAlert);
+    console.log('Checking out our activeAlert change in executeModal: ', activeAlert);
   }, [activeAlert]);
 
   useEffect(() => {

@@ -20,7 +20,7 @@ const PlaybookToastAlerts = ({
       console.log('checking description: ', description);
       console.log('checking variant: ', variant);
       addActiveAlert(newKey, title, description, variant);
-  }, []);
+  }, [title]);
   
   const removeAlert = (key) => {
     setActiveAlerts([...activeAlerts.filter((alert) => alert.key !== key)]);

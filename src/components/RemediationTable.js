@@ -91,6 +91,10 @@ function RemediationTable({
   }
 
   useEffect(() => {
+    console.log('Checking out our activeAlert change in table: ', activeToastAlert);
+  }, [activeToastAlert]);
+
+  useEffect(() => {
     if (shouldUpdateGrid === true) {
       setShouldUpdateGrid(false);
       load();
