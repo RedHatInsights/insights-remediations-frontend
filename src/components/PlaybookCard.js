@@ -24,6 +24,7 @@ import { addNotification } from '@redhat-cloud-services/frontend-components-noti
 import { Link } from 'react-router-dom';
 import { PropTypes } from 'prop-types';
 import { patchRemediation } from '../actions.js';
+import { generateUniqueId } from './Alerts/PlaybookToastAlerts';
 import './PlaybookCard.scss';
 
 function buildName(name, id) {
@@ -107,6 +108,7 @@ const PlaybookCardHeader = ({
         downloadPlaybook(remediation.id);
         setIsOpen(false);
         setActiveAlert({
+          key: generateUniqueId(),
           title: `Downloading playbook`,
           description: 'Once complete, your download will start automatically.',
           variant: 'info'

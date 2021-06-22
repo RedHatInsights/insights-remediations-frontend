@@ -17,7 +17,7 @@ import { PermissionContext } from '../App';
 import { ExecuteModal } from './Modals/ExecuteModal';
 import { PlaybookCard } from './PlaybookCard';
 import { EmptyRemediations } from './EmptyStates/EmptyRemediations';
-import PlaybookToastAlerts from './Alerts/PlaybookToastAlerts';
+import PlaybookToastAlerts, { generateUniqueId } from './Alerts/PlaybookToastAlerts';
 import './RemediationTable.scss';
 
 function skeleton() {
@@ -57,7 +57,7 @@ function RemediationTable({
   const permission = useContext(PermissionContext);
   const [executeOpen, setExecuteOpen] = useState(false);
   const [showRefreshMessage, setShowRefreshMessage] = useState(false);
-  const [activeToastAlert, setActiveToastAlert] = useState({title:"", description:"", variant:""});
+  const [activeToastAlert, setActiveToastAlert] = useState({key:"", title:"", description:"", variant:""});
   const selectedRemediation = reduxSelector(
     (state) => state.selectedRemediation
   );

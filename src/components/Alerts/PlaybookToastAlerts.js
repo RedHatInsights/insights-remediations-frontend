@@ -7,6 +7,7 @@ import {
 } from '@patternfly/react-core';
 
 const PlaybookToastAlerts = ({
+  key,
   title,
   description="",
   variant="success"
@@ -14,13 +15,12 @@ const PlaybookToastAlerts = ({
   const [activeAlerts, setActiveAlerts] = useState([]);
 
   useEffect(() => {
-      var newKey = generateUniqueId();
       console.log('CHECKING: confirming that were creating a new alert.')
       console.log('Checking out what we have in queue to become a toast alert: ', title);
       console.log('checking description: ', description);
       console.log('checking variant: ', variant);
       addActiveAlert(newKey, title, description, variant);
-  }, [title]);
+  }, [key]);
   
   const removeAlert = (key) => {
     setActiveAlerts([...activeAlerts.filter((alert) => alert.key !== key)]);
@@ -29,10 +29,6 @@ const PlaybookToastAlerts = ({
   const addActiveAlert = (key, title, description, variant) => {
     setActiveAlerts( activeAlerts => [...activeAlerts, { key:key, title:title, description:description, variant:variant}]);
   };
-
-  const generateUniqueId = () => new Date().getTime();
-
-  console.log('Checking alert about to be rendered: ', activeAlerts);
 
   return (
     <div>
@@ -68,5 +64,7 @@ PlaybookToastAlerts.propTypes = {
   description: PropTypes.string,
   variant: PropTypes.string
 }
+
+export const generateUniqueId = () => new Date().getTime();
 
 export default PlaybookToastAlerts;

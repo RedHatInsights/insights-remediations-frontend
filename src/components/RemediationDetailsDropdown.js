@@ -8,13 +8,10 @@ import {
   Dropdown,
   DropdownPosition,
   KebabToggle,
-  Alert,
-  AlertGroup,
-  AlertActionCloseButton
 } from '@patternfly/react-core';
 import TextInputDialog from './Dialogs/TextInputDialog';
 import ConfirmationDialog from './ConfirmationDialog';
-import PlaybookToastAlerts from './Alerts/PlaybookToastAlerts';
+import PlaybookToastAlerts, { generateUniqueId } from './Alerts/PlaybookToastAlerts';
 import { deleteRemediation, patchRemediation } from '../actions';
 
 import { PermissionContext } from '../App';
@@ -27,12 +24,13 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const permission = useContext(PermissionContext);
-  const [activeAlert, setActiveAlert] = useState({title:"", description:"", variant:""});
+  const [activeAlert, setActiveAlert] = useState({key:"", title:"", description:"", variant:""});
 
   return (
     <React.Fragment>
       { activeAlert.title !== "" ? (
         <PlaybookToastAlerts
+          key={activeAlert.key}
           title={activeAlert.title}
           description={activeAlert.description}
           variant={activeAlert.variant}
@@ -49,6 +47,7 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
             setRenameDialogOpen(false);
             onRename(remediation.id, name);
             setActiveAlert({
+              key: generateUniqueId(),
               title:`Updated playbook name to ${name}`,
               description: '',
               variant: 'success'
@@ -65,6 +64,7 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
           setDeleteDialogOpen(false);
           confirm && onDelete(remediation.id);
           setActiveAlert({
+            key: generateUniqueId(),
             title:`Deleted playbook ${name}`,
             description:'',
             variant:'success'
