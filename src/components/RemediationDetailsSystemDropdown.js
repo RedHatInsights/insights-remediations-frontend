@@ -12,6 +12,7 @@ import {
 import ConfirmationDialog from './ConfirmationDialog';
 import { deleteRemediationIssueSystem } from '../actions';
 import { getSystemName } from '../Utilities/model';
+import { generateUniqueId } from './Alerts/PlaybookToastAlerts';
 
 function RemediationDetailsSystemDropdown({
   remediation,
@@ -32,6 +33,12 @@ function RemediationDetailsSystemDropdown({
         onClose={(value) => {
           setDeleteDialogOpen(false);
           value && onDelete(remediation.id, issue.id, system.id);
+          setActiveAlert({
+            key: generateUniqueId(),
+            title: `Removed systems from ${remediation.name}`,
+            description: '',
+            variant: 'success'
+          });
         }}
       />
 

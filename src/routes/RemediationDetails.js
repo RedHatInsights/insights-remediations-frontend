@@ -238,7 +238,7 @@ const RemediationDetails = ({
                   </Button>
                 </SplitItem>
                 <SplitItem>
-                  <RemediationDetailsDropdown remediation={remediation} />
+                  <RemediationDetailsDropdown remediation={remediation} setActiveAlert={setActiveToastAlert} />
                 </SplitItem>
               </Split>
             </LevelItem>
@@ -268,6 +268,7 @@ const RemediationDetails = ({
                   <RemediationDetailsTable
                     remediation={remediation}
                     status={selectedRemediationStatus}
+                    setActiveAlert={setActiveToastAlert}
                   />
                 </Tab>
                 <Tab eventKey={1} title="Systems">

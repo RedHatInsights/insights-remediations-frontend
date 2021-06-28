@@ -15,13 +15,6 @@ const PlaybookToastAlerts = ({
   const [activeAlerts, setActiveAlerts] = useState([]);
 
   useEffect(() => {
-    console.log('CHECKING: confirming that were creating a new alert.');
-    console.log(
-      'Checking out what we have in queue to become a toast alert: ',
-      title
-    );
-    console.log('checking description: ', description);
-    console.log('checking variant: ', variant);
     addActiveAlert(key, title, description, variant);
   }, [key]);
 

@@ -16,7 +16,7 @@ import {
 import { RedoIcon, TimesIcon } from '@patternfly/react-icons';
 import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/PrimaryToolbar';
 import { TableToolbar } from '@redhat-cloud-services/frontend-components/TableToolbar';
-import PlaybookToastAlerts from './Alerts/PlaybookToastAlerts';
+import { generateUniqueId } from './Alerts/PlaybookToastAlerts';
 
 import { getIssueApplication, includesIgnoreCase } from '../Utilities/model';
 import { buildIssueUrl } from '../Utilities/urls';
@@ -156,6 +156,7 @@ function RemediationDetailsTable(props) {
   const sorter = useSorter(1, 'asc');
   const filter = useFilter();
   const selector = useSelector();
+  const { setActiveAlert } = props;
   const permission = useContext(PermissionContext);
   const [filterText, setFilterText] = useState('');
   const [prevRemediationsCount, setPrevRemediationsCount] = useState(0);
@@ -173,7 +174,6 @@ function RemediationDetailsTable(props) {
     }
 
     console.log('Checking what selector is: ', selector);
-    console.log('Checking out what we have in table body: ', ...selector.tbodyProps);
   }, []);
 
   sorter.onChange(pagination.reset);
@@ -251,7 +251,16 @@ function RemediationDetailsTable(props) {
               isDisabled={!selectedIds.length}
               remediation={props.remediation}
               issues={selectedIds}
-              afterDelete={selector.reset}
+              afterDelete={() => {
+                setActiveAlert({
+                  key: generateUniqueId(),
+                  title: `Deleted actions from ${props.remediation.id}`,
+                  description: '',
+                  variant: 'success'
+                });
+                console.log('Checking: WE DELETED ACTION');
+                selector.reset;
+              }}
             />,
           ],
         }}
