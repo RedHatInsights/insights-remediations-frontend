@@ -22,7 +22,9 @@ import {
   TableBody,
   TableVariant,
 } from '@patternfly/react-table';
-import PlaybookToastAlerts, { generateUniqueId } from '../Alerts/PlaybookToastAlerts';
+import PlaybookToastAlerts, {
+  generateUniqueId,
+} from '../Alerts/PlaybookToastAlerts';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
@@ -41,7 +43,7 @@ export const ExecuteModal = ({
   sources,
   setEtag,
   activeAlert,
-  setActiveAlert
+  setActiveAlert,
 }) => {
   const [isUserEntitled, setIsUserEntitled] = useState(false);
   const [connected, setConnected] = useState([]);
@@ -49,7 +51,10 @@ export const ExecuteModal = ({
   const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
   useEffect(() => {
-    console.log('Checking out our activeAlert change in executeModal: ', activeAlert);
+    console.log(
+      'Checking out our activeAlert change in executeModal: ',
+      activeAlert
+    );
   }, [activeAlert]);
 
   useEffect(() => {
@@ -178,9 +183,9 @@ export const ExecuteModal = ({
               );
               setActiveAlert({
                 key: generateUniqueId(),
-                title:`Executing playbook`,
-                description:'View results in the Activity tab',
-                variant: 'success'
+                title: `Executing playbook`,
+                description: 'View results in the Activity tab',
+                variant: 'success',
               });
             }}
           >
@@ -193,12 +198,13 @@ export const ExecuteModal = ({
             variant="secondary"
             ouiaId="download-playbook"
             onClick={() => {
-              downloadPlaybook(remediationId)
+              downloadPlaybook(remediationId);
               setActiveAlert({
                 key: generateUniqueId(),
-                title:'Preparing playbook for download',
-                description:'Once complete, your download will start automatically.',
-                variant:'info'
+                title: 'Preparing playbook for download',
+                description:
+                  'Once complete, your download will start automatically.',
+                variant: 'info',
               });
             }}
           >
@@ -257,8 +263,8 @@ export const ExecuteModal = ({
                     </Button>
                   </ListItem>
                   <ListItem>
-                    Are directly connected to Insights via Red Hat connector, and
-                    Cloud Connector is enabled <br />
+                    Are directly connected to Insights via Red Hat connector,
+                    and Cloud Connector is enabled <br />
                     <Button
                       className="pf-u-p-0"
                       key="configure"
@@ -297,7 +303,9 @@ export const ExecuteModal = ({
               Learn more about Cloud Connector &nbsp;
               <ExternalLinkAltIcon />
             </Button>
-            <Text component={TextVariants.h4}>Connection status of systems</Text>
+            <Text component={TextVariants.h4}>
+              Connection status of systems
+            </Text>
           </TextContent>
           {isLoading ? (
             <Skeleton size="lg" />

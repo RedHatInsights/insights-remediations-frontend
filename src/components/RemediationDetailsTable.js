@@ -165,13 +165,16 @@ function RemediationDetailsTable(props) {
   }, [filterText]);
 
   useEffect(() => {
-    if(prevRemediationsCount !== props.remediation.resolved_count) {
-      console.log('Checking what we have when checking for deletion: ', props.remediation);
-      
+    if (prevRemediationsCount !== props.remediation.resolved_count) {
+      console.log(
+        'Checking what we have when checking for deletion: ',
+        props.remediation
+      );
     }
-    
-    console.log('Checking that were inside useffect');
-  }, [props.remediation])
+
+    console.log('Checking what selector is: ', selector);
+    console.log('Checking out what we have in table body: ', ...selector.tbodyProps);
+  }, []);
 
   sorter.onChange(pagination.reset);
   filter.onChange(pagination.reset);

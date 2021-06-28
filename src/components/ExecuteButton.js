@@ -96,7 +96,7 @@ ExecuteButton.propTypes = {
   disabledStateText: PropTypes.string,
   getEndpoint: PropTypes.func,
   sources: PropTypes.object,
-  setActiveAlert: PropTypes.func
+  setActiveAlert: PropTypes.func,
 };
 
 ExecuteButton.defaultProps = {

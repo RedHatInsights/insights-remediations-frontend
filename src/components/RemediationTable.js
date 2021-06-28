@@ -17,7 +17,9 @@ import { PermissionContext } from '../App';
 import { ExecuteModal } from './Modals/ExecuteModal';
 import { PlaybookCard } from './PlaybookCard';
 import { EmptyRemediations } from './EmptyStates/EmptyRemediations';
-import PlaybookToastAlerts, { generateUniqueId } from './Alerts/PlaybookToastAlerts';
+import PlaybookToastAlerts, {
+  generateUniqueId,
+} from './Alerts/PlaybookToastAlerts';
 import './RemediationTable.scss';
 
 function skeleton() {
@@ -57,7 +59,12 @@ function RemediationTable({
   const permission = useContext(PermissionContext);
   const [executeOpen, setExecuteOpen] = useState(false);
   const [showRefreshMessage, setShowRefreshMessage] = useState(false);
-  const [activeToastAlert, setActiveToastAlert] = useState({key:"", title:"", description:"", variant:""});
+  const [activeToastAlert, setActiveToastAlert] = useState({
+    key: '',
+    title: '',
+    description: '',
+    variant: '',
+  });
   const selectedRemediation = reduxSelector(
     (state) => state.selectedRemediation
   );
@@ -91,7 +98,10 @@ function RemediationTable({
   }
 
   useEffect(() => {
-    console.log('Checking out our activeAlert change in table: ', activeToastAlert);
+    console.log(
+      'Checking out our activeAlert change in table: ',
+      activeToastAlert
+    );
   }, [activeToastAlert]);
 
   useEffect(() => {
@@ -180,14 +190,15 @@ function RemediationTable({
           )}
         </StackItem>
         <StackItem>
-        { 
-          activeToastAlert.title !== "" ? 
+          {activeToastAlert.title !== '' ? (
             <PlaybookToastAlerts
               title={activeToastAlert.title}
               description={activeToastAlert.description}
               variant={activeToastAlert.variant}
-            /> : <> </>
-          }
+            />
+          ) : (
+            <> </>
+          )}
           <Grid sm={12} md={6} lg={4} hasGutter>
             {cards.map((remediation, idx) => {
               return (

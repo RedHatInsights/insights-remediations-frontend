@@ -9,6 +9,7 @@ import { Button } from '@patternfly/react-core';
 import { deleteSystems, selectEntity, loadRemediation } from '../../actions';
 import './SystemsTable.scss';
 import RemoveSystemModal from './RemoveSystemModal';
+import { getUniqueId, generateUniqueId } from '../Alerts/PlaybookToastAlerts';
 import {
   calculateChecked,
   calculateSystems,
@@ -43,6 +44,12 @@ const SystemsTableWrapper = ({ remediation, registry, refreshRemediation }) => {
       refreshRemediation();
     })();
     activeSystem.current = undefined;
+    setActiveAlert({
+      key: generateUniqueId(),
+      title: `Removed ${selected.size} systems from playbook`,
+      description: "",
+      variant: "success"
+    })
     setIsOpen(false);
   };
 

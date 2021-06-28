@@ -19,7 +19,12 @@ import { PermissionContext } from '../App';
 const playbookNamePattern = /^$|^.*[\w\d]+.*$/;
 const EMPTY_NAME = 'Unnamed Playbook';
 
-function RemediationDetailsDropdown({ remediation, onRename, onDelete, setActiveAlert }) {
+function RemediationDetailsDropdown({
+  remediation,
+  onRename,
+  onDelete,
+  setActiveAlert,
+}) {
   const [open, setOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -38,9 +43,9 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete, setActive
             onRename(remediation.id, name);
             setActiveAlert({
               key: generateUniqueId(),
-              title:`Updated playbook name to ${name}`,
+              title: `Updated playbook name to ${name}`,
               description: '',
-              variant: 'success'
+              variant: 'success',
             });
           }}
           pattern={playbookNamePattern}
@@ -55,9 +60,9 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete, setActive
           confirm && onDelete(remediation.id);
           setActiveAlert({
             key: generateUniqueId(),
-            title:`Deleted playbook ${name}`,
-            description:'',
-            variant:'success'
+            title: `Deleted playbook ${name}`,
+            description: '',
+            variant: 'success',
           });
         }}
       />

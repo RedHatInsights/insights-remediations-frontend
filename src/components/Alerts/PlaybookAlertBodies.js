@@ -1,31 +1,44 @@
 export const sendDownloadAlert = (name) => {
   return {
-    title:`${name}`,
-    description:'',
-    variant:'',
+    key: '',
+    title: `${name}`,
+    description: '',
+    variant: '',
   };
-}
+};
 
-export const  sendExecuteSuccessAlert = (name) => {
+export const sendExecuteSuccessAlert = (name) => {
   return {
-    title:'',
-    description:'',
-    variant:'',
+    key: '',
+    title: '',
+    description: '',
+    variant: '',
   };
-}
+};
 
 export const sendArchiveAlert = (name) => {
   return {
-    title:'',
-    description:'',
-    variant:'',
+    key: '',
+    title: '',
+    description: '',
+    variant: '',
   };
-}
+};
 
 export const sendDeleteAlert = (name) => {
   return {
-    title:'',
-    description:'',
-    variant:'',
+    key: '',
+    title: '',
+    description: '',
+    variant: '',
   };
+};
+
+export const sendSystemDeleteAlert = (systemsSelected, playbookName) => {
+  return {
+    key: '',
+    title: '',
+    description: '',
+    variant: ''
+  }
 }

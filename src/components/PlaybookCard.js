@@ -111,7 +111,7 @@ const PlaybookCardHeader = ({
           key: generateUniqueId(),
           title: `Downloading playbook`,
           description: 'Once complete, your download will start automatically.',
-          variant: 'info'
+          variant: 'info',
         });
       }}
     >
@@ -213,7 +213,7 @@ PlaybookCardHeader.propTypes = {
   getConnectionStatus: PropTypes.func.isRequired,
   downloadPlaybook: PropTypes.func.isRequired,
   permission: PropTypes.object.isRequired,
-  setActiveAlert: PropTypes.func.isRequired
+  setActiveAlert: PropTypes.func.isRequired,
 };
 
 const renderActionStatus = (complete, total) => {
