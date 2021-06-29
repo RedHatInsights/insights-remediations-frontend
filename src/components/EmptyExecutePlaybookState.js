@@ -13,11 +13,13 @@ const EmptyExecutePlaybookState = () => {
   return (
     <EmptyState>
       <EmptyStateIcon icon={DesktopIcon} />
-      <Title>This playbook has no systems associated with it.</Title>
+      <Title headingLevel="h4" size="lg">
+        This playbook has no systems associated with it.
+      </Title>
       <EmptyStateBody>Add at least one system and action to this playbook to use remote execution.</EmptyStateBody>
-      {/* <EmptyStateSecondaryActions>
+      <EmptyStateSecondaryActions>
         <Button onClick={() => onClose()}>Close</Button>
-      </EmptyStateSecondaryActions> */}
+      </EmptyStateSecondaryActions>
     </EmptyState>
   );
 };
