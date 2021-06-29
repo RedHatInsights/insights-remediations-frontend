@@ -13,7 +13,13 @@ import {
   ExpandableSection,
   List,
   ListItem,
+  Title,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateIcon,
+  EmptyStateSecondaryActions
 } from '@patternfly/react-core';
+import DesktopIcon from '@patternfly/react-icons/dist/js/icons/desktop-icon';
 import { downloadPlaybook } from '../../api';
 import { styledConnectionStatus } from '../statusHelper';
 import {
@@ -25,6 +31,7 @@ import {
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
+// import EmptyExecutePlaybookState from '../EmptyExecutePlaybookStateState';
 
 export const ExecuteModal = ({
   isOpen,
@@ -104,6 +111,10 @@ export const ExecuteModal = ({
       setDisconnected(dis);
     }
   }, [sources]);
+
+  useEffect(() => {
+    console.log('Checking out changes in rows: ', rows);
+  });
 
   const generateRowsStatus = (con) => {
     return styledConnectionStatus(
@@ -268,11 +279,14 @@ export const ExecuteModal = ({
             Learn more about Cloud Connector &nbsp;
             <ExternalLinkAltIcon />
           </Button>
-          <Text component={TextVariants.h4}>Connection status of systems</Text>
+          { rows.length !== 0 && (
+            <Text component={TextVariants.h4}>Connection status of systems</Text>
+          )}
         </TextContent>
-        {isLoading ? (
+        {isLoading && (
           <Skeleton size="lg" />
-        ) : (
+        )}
+        { (!isLoading && rows.length !== 0) && (
           <Table
             variant={TableVariant.compact}
             aria-label="Systems"
@@ -292,10 +306,22 @@ export const ExecuteModal = ({
             ]}
             rows={rows}
           >
-            <TableHeader />
-            <TableBody />
-          </Table>
-        )}
+          {console.log('Checking our rows inside of table: ', rows)}
+          {console.log('Checking our isLoading inside of table: ', isLoading)}
+          <TableHeader />
+          <TableBody />
+        </Table>
+      )}
+      {(!isLoading && rows.length === 0) && (
+        <EmptyState>
+          <EmptyStateIcon icon={DesktopIcon} />
+          <Title>This playbook has no systems associated with it.</Title>
+          <EmptyStateBody>Add at least one system and action to this playbook to use remote execution.</EmptyStateBody>
+          <EmptyStateSecondaryActions>
+            <Button onClick={() => onClose()}>Close</Button>
+          </EmptyStateSecondaryActions>
+        </EmptyState>
+      )}
       </div>
     </Modal>
   );
