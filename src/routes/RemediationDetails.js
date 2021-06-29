@@ -238,7 +238,10 @@ const RemediationDetails = ({
                   </Button>
                 </SplitItem>
                 <SplitItem>
-                  <RemediationDetailsDropdown remediation={remediation} setActiveAlert={setActiveToastAlert} />
+                  <RemediationDetailsDropdown
+                    remediation={remediation}
+                    setActiveAlert={setActiveToastAlert}
+                  />
                 </SplitItem>
               </Split>
             </LevelItem>

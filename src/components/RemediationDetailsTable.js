@@ -38,7 +38,6 @@ import './RemediationDetailsTable.scss';
 import { PermissionContext } from '../App';
 import { EmptyActions } from './EmptyStates/EmptyActions';
 import { IconInline } from './Layouts/IconInline';
-import { remediations } from '../api';
 
 function resolutionDescriptionCell(remediation, issue) {
   const url = buildIssueUrl(issue.id);
@@ -159,7 +158,7 @@ function RemediationDetailsTable(props) {
   const { setActiveAlert } = props;
   const permission = useContext(PermissionContext);
   const [filterText, setFilterText] = useState('');
-  const [prevRemediationsCount, setPrevRemediationsCount] = useState(0);
+  const [prevRemediationsCount, setPrevRemediationsCount] = useState(0); // eslint-disable-line
 
   useEffect(() => {
     filter.setValue(filterText);
@@ -256,7 +255,7 @@ function RemediationDetailsTable(props) {
                   key: generateUniqueId(),
                   title: `Deleted actions from ${props.remediation.id}`,
                   description: '',
-                  variant: 'success'
+                  variant: 'success',
                 });
                 console.log('Checking: WE DELETED ACTION');
                 selector.reset;
@@ -325,6 +324,7 @@ function RemediationDetailsTable(props) {
 RemediationDetailsTable.propTypes = {
   remediation: PropTypes.object.isRequired,
   status: PropTypes.object.isRequired,
+  setActiveAlert: PropTypes.func,
 };
 
 export default RemediationDetailsTable;

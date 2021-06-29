@@ -59,6 +59,7 @@ PlaybookToastAlerts.propTypes = {
   title: PropTypes.string.isRequired,
   description: PropTypes.string,
   variant: PropTypes.string,
+  key: PropTypes.string,
 };
 
 export const generateUniqueId = () => new Date().getTime();

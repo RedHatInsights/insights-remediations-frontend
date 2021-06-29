@@ -17,9 +17,7 @@ import { PermissionContext } from '../App';
 import { ExecuteModal } from './Modals/ExecuteModal';
 import { PlaybookCard } from './PlaybookCard';
 import { EmptyRemediations } from './EmptyStates/EmptyRemediations';
-import PlaybookToastAlerts, {
-  generateUniqueId,
-} from './Alerts/PlaybookToastAlerts';
+import PlaybookToastAlerts from './Alerts/PlaybookToastAlerts';
 import './RemediationTable.scss';
 
 function skeleton() {
@@ -96,13 +94,6 @@ function RemediationTable({
       );
     }
   }
-
-  useEffect(() => {
-    console.log(
-      'Checking out our activeAlert change in table: ',
-      activeToastAlert
-    );
-  }, [activeToastAlert]);
 
   useEffect(() => {
     if (shouldUpdateGrid === true) {

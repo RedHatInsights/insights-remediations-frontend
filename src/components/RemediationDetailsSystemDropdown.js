@@ -19,6 +19,7 @@ function RemediationDetailsSystemDropdown({
   issue,
   system,
   onDelete,
+  setActiveAlert,
 }) {
   const [open, setOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -37,7 +38,7 @@ function RemediationDetailsSystemDropdown({
             key: generateUniqueId(),
             title: `Removed systems from ${remediation.name}`,
             description: '',
-            variant: 'success'
+            variant: 'success',
           });
         }}
       />
@@ -62,6 +63,7 @@ RemediationDetailsSystemDropdown.propTypes = {
   issue: PropTypes.object.isRequired,
   system: PropTypes.object.isRequired,
   onDelete: PropTypes.func.isRequired,
+  setActiveAlert: PropTypes.func,
 };
 
 const connected = withRouter(

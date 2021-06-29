@@ -95,6 +95,7 @@ RemediationDetailsDropdown.propTypes = {
   remediation: PropTypes.object.isRequired,
   onRename: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
+  setActiveAlert: PropTypes.func,
 };
 
 const connected = withRouter(

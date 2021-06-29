@@ -22,9 +22,7 @@ import {
   TableBody,
   TableVariant,
 } from '@patternfly/react-table';
-import PlaybookToastAlerts, {
-  generateUniqueId,
-} from '../Alerts/PlaybookToastAlerts';
+import { generateUniqueId } from '../Alerts/PlaybookToastAlerts';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
@@ -42,20 +40,13 @@ export const ExecuteModal = ({
   getEndpoint,
   sources,
   setEtag,
-  activeAlert,
+  // activeAlert,
   setActiveAlert,
 }) => {
   const [isUserEntitled, setIsUserEntitled] = useState(false);
   const [connected, setConnected] = useState([]);
   const [disconnected, setDisconnected] = useState([]);
   const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
-
-  useEffect(() => {
-    console.log(
-      'Checking out our activeAlert change in executeModal: ',
-      activeAlert
-    );
-  }, [activeAlert]);
 
   useEffect(() => {
     window.insights.chrome.auth
@@ -155,13 +146,6 @@ export const ExecuteModal = ({
 
   return (
     <>
-      {/* { activeAlert.title !== "" && activeAlert.title !== "Executing playbook" ?
-        <PlaybookToastAlerts 
-            title={activeAlert.title}
-            description={activeAlert.description}
-            variant={activeAlert.variant} 
-        /> : <> </>
-      } */}
       <Modal
         className="remediations ins-c-execute-modal"
         variant={isDebug() ? ModalVariant.large : ModalVariant.small}
@@ -352,4 +336,5 @@ ExecuteModal.propTypes = {
   setEtag: PropTypes.func,
   getEndpoint: PropTypes.func,
   sources: PropTypes.object,
+  setActiveAlert: PropTypes.func,
 };

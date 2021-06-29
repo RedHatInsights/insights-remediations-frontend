@@ -352,4 +352,5 @@ PlaybookCard.propTypes = {
   getConnectionStatus: PropTypes.func.isRequired,
   downloadPlaybook: PropTypes.func.isRequired,
   permission: PropTypes.object.isRequired,
+  setActiveAlert: PropTypes.object.isRequired,
 };
