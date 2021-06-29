@@ -2,7 +2,6 @@
 
 exports[`Execute modal renders ExecuteModal component when given data 1`] = `
 <Fragment>
-   
   <Modal
     actions={
       Array [
@@ -187,7 +186,6 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
 
 exports[`Execute modal renders ExecuteModal with refresh message when showRefresh is true 1`] = `
 <Fragment>
-   
   <Modal
     actions={
       Array [
