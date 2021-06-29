@@ -183,6 +183,7 @@ function RemediationTable({
         <StackItem>
           {activeToastAlert.title !== '' ? (
             <PlaybookToastAlerts
+              key={activeToastAlert.key}
               title={activeToastAlert.title}
               description={activeToastAlert.description}
               variant={activeToastAlert.variant}
