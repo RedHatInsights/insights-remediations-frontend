@@ -164,17 +164,6 @@ function RemediationDetailsTable(props) {
     filter.setValue(filterText);
   }, [filterText]);
 
-  useEffect(() => {
-    if (prevRemediationsCount !== props.remediation.resolved_count) {
-      console.log(
-        'Checking what we have when checking for deletion: ',
-        props.remediation
-      );
-    }
-
-    console.log('Checking what selector is: ', selector);
-  }, []);
-
   sorter.onChange(pagination.reset);
   filter.onChange(pagination.reset);
 
