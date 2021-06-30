@@ -5,9 +5,10 @@ import {
   EmptyState,
   EmptyStateIcon,
   EmptyStateBody,
-  EmptyStateSecondaryActions
+  EmptyStateSecondaryActions,
 } from '@patternfly/react-core';
 import DesktopIcon from '@patternfly/react-icons/dist/js/icons/desktop-icon';
+import PropTypes from 'prop-types';
 
 const EmptyExecutePlaybookState = ({ onClose }) => {
   return (
@@ -17,7 +18,8 @@ const EmptyExecutePlaybookState = ({ onClose }) => {
         This playbook has no systems associated with it.
       </Title>
       <EmptyStateBody>
-        Add at least one system and action to this playbook to use remote execution.
+        Add at least one system and action to this playbook to use remote
+        execution.
       </EmptyStateBody>
       <EmptyStateSecondaryActions>
         <Button onClick={() => onClose()}>Close</Button>
@@ -27,3 +29,7 @@ const EmptyExecutePlaybookState = ({ onClose }) => {
 };
 
 export default EmptyExecutePlaybookState;
+
+EmptyExecutePlaybookState.propTypes = {
+  onClose: PropTypes.func.isRequired,
+};
