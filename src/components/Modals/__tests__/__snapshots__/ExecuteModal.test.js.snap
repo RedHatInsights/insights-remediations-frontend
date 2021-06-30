@@ -2,7 +2,26 @@
 
 exports[`Execute modal renders ExecuteModal component when given data 1`] = `
 <Modal
-  actions={[Function]}
+  actions={
+    Array [
+      <Button
+        isDisabled={true}
+        onClick={[Function]}
+        ouiaId="etag"
+        variant="primary"
+      >
+        Execute playbook on 0 system
+      </Button>,
+      <Button
+        onClick={[Function]}
+        ouiaId="download-playbook"
+        variant="secondary"
+      >
+        Download playbook
+      </Button>,
+      null,
+    ]
+  }
   appendTo={[Function]}
   aria-describedby=""
   aria-label=""
@@ -118,16 +137,68 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
         />
       </Button>
     </TextContent>
-    <EmptyExecutePlaybookState
-      onClose={[MockFunction]}
-    />
+    <Table
+      aria-label="Systems"
+      borders={true}
+      canSelectAll={true}
+      canSortFavorites={true}
+      cells={
+        Array [
+          Object {
+            "title": "Connection type",
+            "value": "type",
+          },
+          Object {
+            "title": "Systems",
+            "value": "count",
+          },
+          false,
+        ]
+      }
+      className=""
+      contentId="expanded-content"
+      dropdownDirection="down"
+      dropdownPosition="right"
+      expandId="expandable-toggle"
+      gridBreakPoint="grid-md"
+      isStickyHeader={false}
+      isTreeTable={false}
+      ouiaSafe={true}
+      role="grid"
+      rowLabeledBy="simple-node"
+      rows={Array []}
+      selectVariant="checkbox"
+      variant="compact"
+    >
+      <TableHeader />
+      <Component />
+    </Table>
   </div>
 </Modal>
 `;
 
 exports[`Execute modal renders ExecuteModal with refresh message when showRefresh is true 1`] = `
 <Modal
-  actions={[Function]}
+  actions={
+    Array [
+      <Button
+        isDisabled={true}
+        onClick={[Function]}
+        ouiaId="etag"
+        variant="primary"
+      >
+        Execute playbook on 0 system
+      </Button>,
+      <Button
+        onClick={[Function]}
+        ouiaId="download-playbook"
+        variant="secondary"
+      >
+        Download playbook
+      </Button>,
+      null,
+    ]
+  }
   appendTo={[Function]}
   aria-describedby=""
   aria-label=""
@@ -248,9 +319,42 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
         />
       </Button>
     </TextContent>
-    <EmptyExecutePlaybookState
-      onClose={[MockFunction]}
-    />
+    <Table
+      aria-label="Systems"
+      borders={true}
+      canSelectAll={true}
+      canSortFavorites={true}
+      cells={
+        Array [
+          Object {
+            "title": "Connection type",
+            "value": "type",
+          },
+          Object {
+            "title": "Systems",
+            "value": "count",
+          },
+          false,
+        ]
+      }
+      className=""
+      contentId="expanded-content"
+      dropdownDirection="down"
+      dropdownPosition="right"
+      expandId="expandable-toggle"
+      gridBreakPoint="grid-md"
+      isStickyHeader={false}
+      isTreeTable={false}
+      ouiaSafe={true}
+      role="grid"
+      rowLabeledBy="simple-node"
+      rows={Array []}
+      selectVariant="checkbox"
+      variant="compact"
+    >
+      <TableHeader />
+      <Component />
+    </Table>
   </div>
 </Modal>
 `;

@@ -150,50 +150,56 @@ export const ExecuteModal = ({
       isOpen={isOpen}
       onClose={onClose}
       isFooterLeftAligned
-      actions={ systemCount !== 0 ? [
-            <Button
-              key="confirm"
-              variant="primary"
-              ouiaId="etag"
-              isDisabled={connected.length === 0}
-              onClick={() => {
-                runRemediation(
-                  remediationId,
-                  etag,
-                  disconnected.map((e) => e.executor_id).filter((e) => e)
-                );
-              }}
-            >
-              {isLoading
-                ? 'Execute playbook'
-                : `Execute playbook on ${pluralize(connectedCount, 'system')}`}
-            </Button>,
-            <Button
-              key="download"
-              variant="secondary"
-              ouiaId="download-playbook"
-              onClick={() => downloadPlaybook(remediationId)}
-            >
-              Download playbook
-            </Button>,
-            isDebug() ? (
+      actions={
+        systemCount !== 0
+          ? [
               <Button
-                key="reset-etag"
-                onClick={() => setEtag('test')}
-                ouiaId="reset-etag"
+                key="confirm"
+                variant="primary"
+                ouiaId="etag"
+                isDisabled={connected.length === 0}
+                onClick={() => {
+                  runRemediation(
+                    remediationId,
+                    etag,
+                    disconnected.map((e) => e.executor_id).filter((e) => e)
+                  );
+                }}
               >
-                Reset etag
-              </Button>
-            ) : null,
-          ] : [
-            <Button
-              key="close-modal"
-              onClick={() => onClose()}
-              variant="primary"
-            >
-              Close
-            </Button>
-          ]
+                {isLoading
+                  ? 'Execute playbook'
+                  : `Execute playbook on ${pluralize(
+                      connectedCount,
+                      'system'
+                    )}`}
+              </Button>,
+              <Button
+                key="download"
+                variant="secondary"
+                ouiaId="download-playbook"
+                onClick={() => downloadPlaybook(remediationId)}
+              >
+                Download playbook
+              </Button>,
+              isDebug() ? (
+                <Button
+                  key="reset-etag"
+                  onClick={() => setEtag('test')}
+                  ouiaId="reset-etag"
+                >
+                  Reset etag
+                </Button>
+              ) : null,
+            ]
+          : [
+              <Button
+                key="close-modal"
+                onClick={() => onClose()}
+                variant="primary"
+              >
+                Close
+              </Button>,
+            ]
       }
     >
       <div className="ins-c-execute-modal__body">
@@ -285,7 +291,7 @@ export const ExecuteModal = ({
           )}
         </TextContent>
         {isLoading && <Skeleton size="lg" />}
-        {(!isLoading && systemCount !== 0) && (
+        {!isLoading && systemCount !== 0 && (
           <Table
             variant={TableVariant.compact}
             aria-label="Systems"
@@ -309,9 +315,7 @@ export const ExecuteModal = ({
             <TableBody />
           </Table>
         )}
-        {(!isLoading && systemCount === 0) && (
-          <EmptyExecutePlaybookState />
-        )}
+        {!isLoading && systemCount === 0 && <EmptyExecutePlaybookState />}
       </div>
     </Modal>
   );
