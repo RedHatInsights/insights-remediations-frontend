@@ -31,7 +31,7 @@ import {
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
-// import EmptyExecutePlaybookState from '../EmptyExecutePlaybookStateState';
+import EmptyExecutePlaybookState from '../EmptyExecutePlaybookStateState';
 
 export const ExecuteModal = ({
   isOpen,
@@ -160,7 +160,7 @@ export const ExecuteModal = ({
       isOpen={isOpen}
       onClose={onClose}
       isFooterLeftAligned
-      actions={[
+      actions={() => rows.length !== 0 && ([
         <Button
           key="confirm"
           variant="primary"
@@ -195,7 +195,7 @@ export const ExecuteModal = ({
             Reset etag
           </Button>
         ) : null,
-      ]}
+      ])}
     >
       <div className="ins-c-execute-modal__body">
         {showRefresh ? (
