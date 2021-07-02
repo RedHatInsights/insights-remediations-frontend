@@ -14,6 +14,7 @@ const ExecuteButton = ({
   data,
   getConnectionStatus,
   remediationId,
+  remediationName,
   issueCount,
   runRemediation,
   etag,
@@ -67,6 +68,7 @@ const ExecuteButton = ({
           }}
           showRefresh={showRefreshMessage}
           remediationId={remediationId}
+          remediationName={remediationName}
           data={data}
           etag={etag}
           isLoading={isLoading}
@@ -88,6 +90,7 @@ ExecuteButton.propTypes = {
   getConnectionStatus: PropTypes.func,
   runRemediation: PropTypes.func,
   remediationId: PropTypes.string,
+  remediationName: PropTypes.string,
   remediationStatus: PropTypes.string,
   issueCount: PropTypes.number,
   etag: PropTypes.string,

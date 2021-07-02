@@ -216,6 +216,7 @@ const RemediationDetails = ({
                     isDisabled={!context.permissions.execute || !executable}
                     disabledStateText={getDisabledStateText()}
                     remediationId={remediation.id}
+                    remediationName={remediation.name}
                     setActiveAlert={setActiveToastAlert}
                   ></ExecutePlaybookButton>
                 </SplitItem>

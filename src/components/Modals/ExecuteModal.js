@@ -34,6 +34,7 @@ export const ExecuteModal = ({
   isLoading,
   data,
   remediationId,
+  remediationName,
   issueCount,
   runRemediation,
   etag,
@@ -167,8 +168,8 @@ export const ExecuteModal = ({
               );
               setActiveAlert({
                 key: generateUniqueId(),
-                title: `Executing playbook`,
-                description: 'View results in the Activity tab',
+                title: `Executing playbook ${remediationName}`,
+                description: `View results in the <b>Activity tab</b>`,
                 variant: 'success',
               });
             }}
@@ -330,6 +331,7 @@ ExecuteModal.propTypes = {
   isLoading: PropTypes.bool,
   data: PropTypes.array,
   remediationId: PropTypes.string,
+  remediationName: PropTypes.name,
   issueCount: PropTypes.number,
   runRemediation: PropTypes.func,
   etag: PropTypes.string,
