@@ -330,7 +330,7 @@ ExecuteModal.propTypes = {
   isLoading: PropTypes.bool,
   data: PropTypes.array,
   remediationId: PropTypes.string,
-  remediationName: PropTypes.name,
+  remediationName: PropTypes.string,
   issueCount: PropTypes.number,
   runRemediation: PropTypes.func,
   etag: PropTypes.string,
