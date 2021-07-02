@@ -15,14 +15,12 @@ const PlaybookToastAlerts = ({
   const [activeAlerts, setActiveAlerts] = useState([]);
 
   useEffect(() => {
-    console.log('Testing the changes on active alert: ', key);
-    console.log(title);
     addActiveAlert(key, title, description, variant);
   }, [key]);
 
   const removeAlert = (key) => {
-    console.log('Testing that weve cleared out alerts');
-    setActiveAlerts([...activeAlerts.filter((alert) => alert.key !== key)]);
+    // setActiveAlerts([...activeAlerts.filter((alert) => alert.key !== key)]);
+    setActiveAlerts(previousAlerts => [previousAlerts.filter((alert) => alert.key !== key)]);
   };
 
   const addActiveAlert = (key, title, description, variant) => {

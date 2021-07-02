@@ -181,15 +181,13 @@ function RemediationTable({
           )}
         </StackItem>
         <StackItem>
-          {activeToastAlert.title !== '' ? (
+          {activeToastAlert.title && (
             <PlaybookToastAlerts
               key={activeToastAlert.key}
               title={activeToastAlert.title}
               description={activeToastAlert.description}
               variant={activeToastAlert.variant}
             />
-          ) : (
-            <> </>
           )}
           <Grid sm={12} md={6} lg={4} hasGutter>
             {cards.map((remediation, idx) => {
@@ -207,7 +205,7 @@ function RemediationTable({
                     getConnectionStatus={getConnectionStatus}
                     downloadPlaybook={downloadPlaybook}
                     permission={permission}
-                    setActiveAlert={setActiveToastAlert} // for delete and archiving from within details.
+                    setActiveAlert={setActiveToastAlert}
                   />
                 </GridItem>
               );

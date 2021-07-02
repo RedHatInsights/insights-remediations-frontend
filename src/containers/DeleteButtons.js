@@ -41,7 +41,6 @@ export const DeleteActionsButton = withRouter(
           dispatch(loadRemediationStatus(remediation.id));
         }
 
-        console.log('Checking the deletion of an action.');
         afterDelete();
       },
     })

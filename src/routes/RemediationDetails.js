@@ -189,15 +189,13 @@ const RemediationDetails = ({
     ) : (
       <div className="page__remediation-details">
         <PageHeader>
-          {activeToastAlert.title !== '' ? (
+          {activeToastAlert.title && (
             <PlaybookToastAlerts
               key={activeToastAlert.key}
               title={activeToastAlert.title}
               description={activeToastAlert.description}
               variant={activeToastAlert.variant}
             />
-          ) : (
-            <> </>
           )}
           <Breadcrumb>
             <BreadcrumbItem>

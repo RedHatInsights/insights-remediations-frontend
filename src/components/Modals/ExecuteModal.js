@@ -41,7 +41,6 @@ export const ExecuteModal = ({
   getEndpoint,
   sources,
   setEtag,
-  // activeAlert,
   setActiveAlert,
 }) => {
   const [isUserEntitled, setIsUserEntitled] = useState(false);
