@@ -17,7 +17,7 @@ import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
 import DeniedState from '../components/DeniedState';
 import SkeletonTable from '../skeletons/SkeletonTable';
 import PlaybookToastAlerts, {
-  getUniqueId,
+  generateUniqueId,
 } from '../components/Alerts/PlaybookToastAlerts';
 import '../components/Status.scss';
 
@@ -225,7 +225,7 @@ const RemediationDetails = ({
                     onClick={() => {
                       downloadPlaybook(remediation.id);
                       setActiveToastAlert({
-                        key: getUniqueId(),
+                        key: generateUniqueId(),
                         title: 'Preparing playbook for download.',
                         description:
                           'Once complete, your download will start automatically.',

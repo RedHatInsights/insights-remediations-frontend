@@ -109,7 +109,7 @@ const PlaybookCardHeader = ({
         setIsOpen(false);
         setActiveAlert({
           key: generateUniqueId(),
-          title: `Downloading playbook`,
+          title: `Preparing playbook for download`,
           description: 'Once complete, your download will start automatically.',
           variant: 'info',
         });

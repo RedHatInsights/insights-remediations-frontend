@@ -17,7 +17,7 @@ import {
 } from './helpers';
 
 const SystemsTableWrapper = ({
-  remediation,
+    remediation,
   registry,
   refreshRemediation,
   setActiveAlert,
@@ -51,7 +51,7 @@ const SystemsTableWrapper = ({
     activeSystem.current = undefined;
     setActiveAlert({
       key: generateUniqueId(),
-      title: `Removed ${selected.size} systems from playbook`,
+      title: `Removed ${selected.size} ${selected.size > 1 ? 'systems' : 'system'} from playbook`,
       description: '',
       variant: 'success',
     });
@@ -130,7 +130,7 @@ const SystemsTableWrapper = ({
           onClick={() => setIsOpen(true)}
           isDisabled={selected.size === 0}
         >
-          Remove
+          Remove system
         </Button>
       )}
       <RemoveSystemModal

@@ -242,11 +242,10 @@ function RemediationDetailsTable(props) {
               afterDelete={() => {
                 setActiveAlert({
                   key: generateUniqueId(),
-                  title: `Deleted actions from ${props.remediation.id}`,
+                  title: `Removed ${selectedIds.length} actions from ${props.remediation.name}`,
                   description: '',
                   variant: 'success',
                 });
-                console.log('Checking: WE DELETED ACTION');
                 selector.reset;
               }}
             />,
