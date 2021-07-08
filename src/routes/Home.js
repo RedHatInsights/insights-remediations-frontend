@@ -72,9 +72,7 @@ function download(selectedIds, data, dispatch) {
       addNotification({
         variant: 'success',
         title:
-          valid.length > 1
-            ? `Downloading playbooks`
-            : `Downloading playbook`,
+          valid.length > 1 ? `Downloading playbooks` : `Downloading playbook`,
         description:
           selectedIds.length - valid.length > 1
             ? `${
@@ -89,9 +87,7 @@ function download(selectedIds, data, dispatch) {
       addNotification({
         variant: 'success',
         title:
-          valid.length > 1
-            ? `Downloading playbooks`
-            : `Downloading playbook`,
+          valid.length > 1 ? `Downloading playbooks` : `Downloading playbook`,
       })
     );
   }
