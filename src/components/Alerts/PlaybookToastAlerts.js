@@ -19,7 +19,6 @@ const PlaybookToastAlerts = ({
   }, [key]);
 
   const removeAlert = (key) => {
-    // setActiveAlerts([...activeAlerts.filter((alert) => alert.key !== key)]);
     setActiveAlerts((previousAlerts) => [
       previousAlerts.filter((alert) => alert.key !== key),
     ]);
