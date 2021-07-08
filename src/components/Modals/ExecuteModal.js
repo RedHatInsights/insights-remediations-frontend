@@ -25,6 +25,7 @@ import {
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
+import EmptyExecutePlaybookState from '../EmptyExecutePlaybookState';
 
 export const ExecuteModal = ({
   isOpen,
@@ -149,42 +150,57 @@ export const ExecuteModal = ({
       isOpen={isOpen}
       onClose={onClose}
       isFooterLeftAligned
-      actions={[
-        <Button
-          key="confirm"
-          variant="primary"
-          ouiaId="etag"
-          isDisabled={connected.length === 0}
-          onClick={() => {
-            runRemediation(
-              remediationId,
-              etag,
-              disconnected.map((e) => e.executor_id).filter((e) => e)
-            );
-          }}
-        >
-          {isLoading
-            ? 'Execute playbook'
-            : `Execute playbook on ${pluralize(connectedCount, 'system')}`}
-        </Button>,
-        <Button
-          key="download"
-          variant="secondary"
-          ouiaId="download-playbook"
-          onClick={() => downloadPlaybook(remediationId)}
-        >
-          Download playbook
-        </Button>,
-        isDebug() ? (
-          <Button
-            key="reset-etag"
-            onClick={() => setEtag('test')}
-            ouiaId="reset-etag"
-          >
-            Reset etag
-          </Button>
-        ) : null,
-      ]}
+      actions={
+        systemCount !== 0
+          ? [
+              <Button
+                key="confirm"
+                variant="primary"
+                ouiaId="etag"
+                isDisabled={connected.length === 0}
+                onClick={() => {
+                  runRemediation(
+                    remediationId,
+                    etag,
+                    disconnected.map((e) => e.executor_id).filter((e) => e)
+                  );
+                }}
+              >
+                {isLoading
+                  ? 'Execute playbook'
+                  : `Execute playbook on ${pluralize(
+                      connectedCount,
+                      'system'
+                    )}`}
+              </Button>,
+              <Button
+                key="download"
+                variant="secondary"
+                ouiaId="download-playbook"
+                onClick={() => downloadPlaybook(remediationId)}
+              >
+                Download playbook
+              </Button>,
+              isDebug() ? (
+                <Button
+                  key="reset-etag"
+                  onClick={() => setEtag('test')}
+                  ouiaId="reset-etag"
+                >
+                  Reset etag
+                </Button>
+              ) : null,
+            ]
+          : [
+              <Button
+                key="close-modal"
+                onClick={() => onClose()}
+                variant="primary"
+              >
+                Close
+              </Button>,
+            ]
+      }
     >
       <div className="ins-c-execute-modal__body">
         {showRefresh ? (
@@ -268,11 +284,14 @@ export const ExecuteModal = ({
             Learn more about Cloud Connector &nbsp;
             <ExternalLinkAltIcon />
           </Button>
-          <Text component={TextVariants.h4}>Connection status of systems</Text>
+          {rows.length !== 0 && (
+            <Text component={TextVariants.h4}>
+              Connection status of systems
+            </Text>
+          )}
         </TextContent>
-        {isLoading ? (
-          <Skeleton size="lg" />
-        ) : (
+        {isLoading && <Skeleton size="lg" />}
+        {!isLoading && systemCount !== 0 && (
           <Table
             variant={TableVariant.compact}
             aria-label="Systems"
@@ -296,6 +315,7 @@ export const ExecuteModal = ({
             <TableBody />
           </Table>
         )}
+        {!isLoading && systemCount === 0 && <EmptyExecutePlaybookState />}
       </div>
     </Modal>
   );
