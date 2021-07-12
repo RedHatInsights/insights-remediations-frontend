@@ -24,8 +24,8 @@ import { capitalize } from '../Utilities/utils';
 
 const connectorUrl = () =>
   insights.chrome.isBeta()
-    ? 'https://cloud.redhat.com/beta/settings/connector'
-    : 'https://cloud.redhat.com/settings/connector';
+    ? `${window.location.origin}/beta/settings/connector`
+    : `${window.location.origin}/settings/connector`;
 
 export const normalizeStatus = (status) =>
   ({
