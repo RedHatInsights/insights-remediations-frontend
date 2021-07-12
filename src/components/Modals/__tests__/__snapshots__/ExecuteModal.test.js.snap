@@ -42,42 +42,20 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
     className="ins-c-execute-modal__body"
   >
     <TextContent>
-      <Table
-        aria-label="Systems"
-        borders={true}
-        canSelectAll={true}
-        canSortFavorites={true}
-        cells={
-          Array [
-            Object {
-              "title": "Connection type",
-              "value": "type",
-            },
-            Object {
-              "title": "Systems",
-              "value": "count",
-            },
-            false,
-          ]
-        }
-        className=""
-        contentId="expanded-content"
-        dropdownDirection="down"
-        dropdownPosition="right"
-        expandId="expandable-toggle"
-        gridBreakPoint="grid-md"
-        isStickyHeader={false}
-        isTreeTable={false}
-        ouiaSafe={true}
-        role="grid"
-        rowLabeledBy="simple-node"
-        rows={Array []}
-        selectVariant="checkbox"
-        variant="compact"
+      <Text
+        component="p"
       >
-        <TableHeader />
-        <Component />
-      </Table>
+        Playbook contains 
+        <b>
+          1 action
+        </b>
+         affecting
+        <b>
+           
+          5 systems.
+           
+        </b>
+      </Text>
       <Text>
         <ExpandableSection
           className=""
@@ -246,42 +224,20 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       variant="warning"
     />
     <TextContent>
-      <Table
-        aria-label="Systems"
-        borders={true}
-        canSelectAll={true}
-        canSortFavorites={true}
-        cells={
-          Array [
-            Object {
-              "title": "Connection type",
-              "value": "type",
-            },
-            Object {
-              "title": "Systems",
-              "value": "count",
-            },
-            false,
-          ]
-        }
-        className=""
-        contentId="expanded-content"
-        dropdownDirection="down"
-        dropdownPosition="right"
-        expandId="expandable-toggle"
-        gridBreakPoint="grid-md"
-        isStickyHeader={false}
-        isTreeTable={false}
-        ouiaSafe={true}
-        role="grid"
-        rowLabeledBy="simple-node"
-        rows={Array []}
-        selectVariant="checkbox"
-        variant="compact"
+      <Text
+        component="p"
       >
-        <TableHeader />
-        <Component />
-      </Table>
+        Playbook contains 
+        <b>
+          1 action
+        </b>
+         affecting
+        <b>
+           
+          5 systems.
+           
+        </b>
+      </Text>
       <Text>
         <ExpandableSection
           className=""

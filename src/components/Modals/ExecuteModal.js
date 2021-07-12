@@ -232,28 +232,11 @@ export const ExecuteModal = ({
           {isLoading ? (
             <Skeleton size="lg" />
           ) : (
-            <Table
-              variant={TableVariant.compact}
-              aria-label="Systems"
-              cells={[
-                {
-                  title: 'Connection type',
-                  value: 'type',
-                },
-                {
-                  title: 'Systems',
-                  value: 'count',
-                },
-                isUserEntitled && {
-                  title: 'Connection status',
-                  value: 'status',
-                },
-              ]}
-              rows={rows}
-            >
-              <TableHeader />
-              <TableBody />
-            </Table>
+            <Text component={TextVariants.p}>
+              Playbook contains <b>{`${pluralize(issueCount, 'action')}`}</b>
+              &nbsp;affecting
+              <b> {`${pluralize(systemCount, 'system')}.`} </b>
+            </Text>
           )}
           <Text>
             <ExpandableSection toggleText="About remote execution with Cloud connector">
