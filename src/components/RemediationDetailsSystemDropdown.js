@@ -12,12 +12,14 @@ import {
 import ConfirmationDialog from './ConfirmationDialog';
 import { deleteRemediationIssueSystem } from '../actions';
 import { getSystemName } from '../Utilities/model';
+import { generateUniqueId } from './Alerts/PlaybookToastAlerts';
 
 function RemediationDetailsSystemDropdown({
   remediation,
   issue,
   system,
   onDelete,
+  setActiveAlert,
 }) {
   const [open, setOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -32,6 +34,12 @@ function RemediationDetailsSystemDropdown({
         onClose={(value) => {
           setDeleteDialogOpen(false);
           value && onDelete(remediation.id, issue.id, system.id);
+          setActiveAlert({
+            key: generateUniqueId(),
+            title: `Removed systems from ${remediation.name}`,
+            description: '',
+            variant: 'success',
+          });
         }}
       />
 
@@ -55,6 +63,7 @@ RemediationDetailsSystemDropdown.propTypes = {
   issue: PropTypes.object.isRequired,
   system: PropTypes.object.isRequired,
   onDelete: PropTypes.func.isRequired,
+  setActiveAlert: PropTypes.func,
 };
 
 const connected = withRouter(

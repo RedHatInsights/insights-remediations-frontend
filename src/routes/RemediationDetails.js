@@ -16,6 +16,9 @@ import UpsellBanner from '../components/Alerts/UpsellBanner';
 import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
 import DeniedState from '../components/DeniedState';
 import SkeletonTable from '../skeletons/SkeletonTable';
+import PlaybookToastAlerts, {
+  generateUniqueId,
+} from '../components/Alerts/PlaybookToastAlerts';
 import '../components/Status.scss';
 
 import {
@@ -72,6 +75,12 @@ const RemediationDetails = ({
     localStorage.getItem('remediations:receptorBannerStatus') !== 'dismissed'
   );
   const [activeTabKey, setActiveTabKey] = useState(0);
+  const [activeToastAlert, setActiveToastAlert] = useState({
+    key: '',
+    title: '',
+    description: '',
+    variant: '',
+  });
 
   const context = useContext(PermissionContext);
 
@@ -180,6 +189,14 @@ const RemediationDetails = ({
     ) : (
       <div className="page__remediation-details">
         <PageHeader>
+          {activeToastAlert.title && (
+            <PlaybookToastAlerts
+              key={activeToastAlert.key}
+              title={activeToastAlert.title}
+              description={activeToastAlert.description}
+              variant={activeToastAlert.variant}
+            />
+          )}
           <Breadcrumb>
             <BreadcrumbItem>
               <Link to="/"> Remediations </Link>
@@ -197,19 +214,33 @@ const RemediationDetails = ({
                     isDisabled={!context.permissions.execute || !executable}
                     disabledStateText={getDisabledStateText()}
                     remediationId={remediation.id}
+                    remediationName={remediation.name}
+                    setActiveAlert={setActiveToastAlert}
                   ></ExecutePlaybookButton>
                 </SplitItem>
                 <SplitItem>
                   <Button
                     isDisabled={!remediation.issues.length}
                     variant="secondary"
-                    onClick={() => downloadPlaybook(remediation.id)}
+                    onClick={() => {
+                      downloadPlaybook(remediation.id);
+                      setActiveToastAlert({
+                        key: generateUniqueId(),
+                        title: 'Preparing playbook for download.',
+                        description:
+                          'Once complete, your download will start automatically.',
+                        variant: 'info',
+                      });
+                    }}
                   >
                     Download playbook
                   </Button>
                 </SplitItem>
                 <SplitItem>
-                  <RemediationDetailsDropdown remediation={remediation} />
+                  <RemediationDetailsDropdown
+                    remediation={remediation}
+                    setActiveAlert={setActiveToastAlert}
+                  />
                 </SplitItem>
               </Split>
             </LevelItem>
@@ -239,10 +270,14 @@ const RemediationDetails = ({
                   <RemediationDetailsTable
                     remediation={remediation}
                     status={selectedRemediationStatus}
+                    setActiveAlert={setActiveToastAlert}
                   />
                 </Tab>
                 <Tab eventKey={1} title="Systems">
-                  <SystemsTable remediation={remediation} />
+                  <SystemsTable
+                    remediation={remediation}
+                    setActiveAlert={setActiveToastAlert}
+                  />
                 </Tab>
                 <Tab eventKey={2} title="Activity">
                   {renderActivityState(executable, playbookRuns, remediation)}

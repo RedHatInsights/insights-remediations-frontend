@@ -24,7 +24,7 @@ import { addNotification } from '@redhat-cloud-services/frontend-components-noti
 import { Link } from 'react-router-dom';
 import { PropTypes } from 'prop-types';
 import { patchRemediation } from '../actions.js';
-
+import { generateUniqueId } from './Alerts/PlaybookToastAlerts';
 import './PlaybookCard.scss';
 
 function buildName(name, id) {
@@ -55,6 +55,7 @@ const PlaybookCardHeader = ({
   getConnectionStatus,
   downloadPlaybook,
   permission,
+  setActiveAlert,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isArchived, setIsArchived] = useState(archived);
@@ -106,6 +107,12 @@ const PlaybookCardHeader = ({
       onClick={() => {
         downloadPlaybook(remediation.id);
         setIsOpen(false);
+        setActiveAlert({
+          key: generateUniqueId(),
+          title: `Preparing playbook for download`,
+          description: 'Once complete, your download will start automatically.',
+          variant: 'info',
+        });
       }}
     >
       Download playbook
@@ -206,6 +213,7 @@ PlaybookCardHeader.propTypes = {
   getConnectionStatus: PropTypes.func.isRequired,
   downloadPlaybook: PropTypes.func.isRequired,
   permission: PropTypes.object.isRequired,
+  setActiveAlert: PropTypes.func.isRequired,
 };
 
 const renderActionStatus = (complete, total) => {
@@ -248,6 +256,7 @@ export const PlaybookCard = ({
   getConnectionStatus,
   downloadPlaybook,
   permission,
+  setActiveAlert,
 }) => {
   // const [ poll, setPoll ] = useState(executeOpen => !executeOpen);
   // const [ curResolved, setCurResolved ] = useState(remediation.resolved_count);
@@ -297,6 +306,7 @@ export const PlaybookCard = ({
         getConnectionStatus={getConnectionStatus}
         downloadPlaybook={downloadPlaybook}
         permission={permission}
+        setActiveAlert={setActiveAlert}
       />
       <CardBody className="ins-c-playbook-card__body">
         <Split hasGutter className="ins-c-playbook-card__body--split">
@@ -342,4 +352,5 @@ PlaybookCard.propTypes = {
   getConnectionStatus: PropTypes.func.isRequired,
   downloadPlaybook: PropTypes.func.isRequired,
   permission: PropTypes.object.isRequired,
+  setActiveAlert: PropTypes.object.isRequired,
 };

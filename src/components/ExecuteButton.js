@@ -14,6 +14,7 @@ const ExecuteButton = ({
   data,
   getConnectionStatus,
   remediationId,
+  remediationName,
   issueCount,
   runRemediation,
   etag,
@@ -21,6 +22,7 @@ const ExecuteButton = ({
   getEndpoint,
   sources,
   setEtag,
+  setActiveAlert,
 }) => {
   const [open, setOpen] = useState(false);
   const [showRefreshMessage, setShowRefreshMessage] = useState(false);
@@ -66,6 +68,7 @@ const ExecuteButton = ({
           }}
           showRefresh={showRefreshMessage}
           remediationId={remediationId}
+          remediationName={remediationName}
           data={data}
           etag={etag}
           isLoading={isLoading}
@@ -74,6 +77,7 @@ const ExecuteButton = ({
           setEtag={setEtag}
           getEndpoint={getEndpoint}
           sources={sources}
+          setActiveAlert={setActiveAlert}
         />
       )}
     </React.Fragment>
@@ -86,6 +90,7 @@ ExecuteButton.propTypes = {
   getConnectionStatus: PropTypes.func,
   runRemediation: PropTypes.func,
   remediationId: PropTypes.string,
+  remediationName: PropTypes.string,
   remediationStatus: PropTypes.string,
   issueCount: PropTypes.number,
   etag: PropTypes.string,
@@ -94,6 +99,7 @@ ExecuteButton.propTypes = {
   disabledStateText: PropTypes.string,
   getEndpoint: PropTypes.func,
   sources: PropTypes.object,
+  setActiveAlert: PropTypes.func,
 };
 
 ExecuteButton.defaultProps = {

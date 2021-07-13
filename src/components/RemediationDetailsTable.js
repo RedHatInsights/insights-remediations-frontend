@@ -16,6 +16,7 @@ import {
 import { RedoIcon, TimesIcon } from '@patternfly/react-icons';
 import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/PrimaryToolbar';
 import { TableToolbar } from '@redhat-cloud-services/frontend-components/TableToolbar';
+import { generateUniqueId } from './Alerts/PlaybookToastAlerts';
 
 import { getIssueApplication, includesIgnoreCase } from '../Utilities/model';
 import { buildIssueUrl } from '../Utilities/urls';
@@ -154,8 +155,10 @@ function RemediationDetailsTable(props) {
   const sorter = useSorter(1, 'asc');
   const filter = useFilter();
   const selector = useSelector();
+  const { setActiveAlert } = props;
   const permission = useContext(PermissionContext);
   const [filterText, setFilterText] = useState('');
+  const [prevRemediationsCount, setPrevRemediationsCount] = useState(0); // eslint-disable-line
 
   useEffect(() => {
     filter.setValue(filterText);
@@ -236,7 +239,15 @@ function RemediationDetailsTable(props) {
               isDisabled={!selectedIds.length}
               remediation={props.remediation}
               issues={selectedIds}
-              afterDelete={selector.reset}
+              afterDelete={() => {
+                setActiveAlert({
+                  key: generateUniqueId(),
+                  title: `Removed ${selectedIds.length} actions from ${props.remediation.name}`,
+                  description: '',
+                  variant: 'success',
+                });
+                selector.reset;
+              }}
             />,
           ],
         }}
@@ -301,6 +312,7 @@ function RemediationDetailsTable(props) {
 RemediationDetailsTable.propTypes = {
   remediation: PropTypes.object.isRequired,
   status: PropTypes.object.isRequired,
+  setActiveAlert: PropTypes.func,
 };
 
 export default RemediationDetailsTable;
