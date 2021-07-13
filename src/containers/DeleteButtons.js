@@ -33,7 +33,7 @@ export const DeleteActionsButton = withRouter(
     (dispatch, { remediation, issues, afterDelete }) => ({
       onDelete: async () => {
         await Promise.all(
-          issues.map((issueId) => 
+          issues.map((issueId) =>
             dispatch(deleteRemediationIssue(remediation.id, issueId))
           )
         );
