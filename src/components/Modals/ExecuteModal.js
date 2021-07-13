@@ -22,6 +22,7 @@ import {
   TableBody,
   TableVariant,
 } from '@patternfly/react-table';
+import { generateUniqueId } from '../Alerts/PlaybookToastAlerts';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
@@ -34,12 +35,14 @@ export const ExecuteModal = ({
   isLoading,
   data,
   remediationId,
+  remediationName,
   issueCount,
   runRemediation,
   etag,
   getEndpoint,
   sources,
   setEtag,
+  setActiveAlert,
 }) => {
   const [isUserEntitled, setIsUserEntitled] = useState(false);
   const [connected, setConnected] = useState([]);
@@ -164,6 +167,12 @@ export const ExecuteModal = ({
                     etag,
                     disconnected.map((e) => e.executor_id).filter((e) => e)
                   );
+                  setActiveAlert({
+                    key: generateUniqueId(),
+                    title: `Executing playbook ${remediationName}`,
+                    description: `View results in the <b>Activity tab</b>`,
+                    variant: 'success',
+                  });
                 }}
               >
                 {isLoading
@@ -177,7 +186,16 @@ export const ExecuteModal = ({
                 key="download"
                 variant="secondary"
                 ouiaId="download-playbook"
-                onClick={() => downloadPlaybook(remediationId)}
+                onClick={() => {
+                  downloadPlaybook(remediationId);
+                  setActiveAlert({
+                    key: generateUniqueId(),
+                    title: 'Preparing playbook for download',
+                    description:
+                      'Once complete, your download will start automatically.',
+                    variant: 'info',
+                  });
+                }}
               >
                 Download playbook
               </Button>,
@@ -328,10 +346,12 @@ ExecuteModal.propTypes = {
   isLoading: PropTypes.bool,
   data: PropTypes.array,
   remediationId: PropTypes.string,
+  remediationName: PropTypes.string,
   issueCount: PropTypes.number,
   runRemediation: PropTypes.func,
   etag: PropTypes.string,
   setEtag: PropTypes.func,
   getEndpoint: PropTypes.func,
   sources: PropTypes.object,
+  setActiveAlert: PropTypes.func,
 };

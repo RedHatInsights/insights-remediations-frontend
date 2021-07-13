@@ -11,6 +11,7 @@ import {
 } from '@patternfly/react-core';
 import TextInputDialog from './Dialogs/TextInputDialog';
 import ConfirmationDialog from './ConfirmationDialog';
+import { generateUniqueId } from './Alerts/PlaybookToastAlerts';
 import { deleteRemediation, patchRemediation } from '../actions';
 
 import { PermissionContext } from '../App';
@@ -18,7 +19,12 @@ import { PermissionContext } from '../App';
 const playbookNamePattern = /^$|^.*[\w\d]+.*$/;
 const EMPTY_NAME = 'Unnamed Playbook';
 
-function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
+function RemediationDetailsDropdown({
+  remediation,
+  onRename,
+  onDelete,
+  setActiveAlert,
+}) {
   const [open, setOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -35,6 +41,12 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
           onSubmit={(name) => {
             setRenameDialogOpen(false);
             onRename(remediation.id, name);
+            setActiveAlert({
+              key: generateUniqueId(),
+              title: `Updated playbook name to ${name}`,
+              description: '',
+              variant: 'success',
+            });
           }}
           pattern={playbookNamePattern}
         />
@@ -46,6 +58,12 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
         onClose={(confirm) => {
           setDeleteDialogOpen(false);
           confirm && onDelete(remediation.id);
+          setActiveAlert({
+            key: generateUniqueId(),
+            title: `Deleted playbook ${name}`,
+            description: '',
+            variant: 'success',
+          });
         }}
       />
 
@@ -77,6 +95,7 @@ RemediationDetailsDropdown.propTypes = {
   remediation: PropTypes.object.isRequired,
   onRename: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
+  setActiveAlert: PropTypes.func,
 };
 
 const connected = withRouter(
