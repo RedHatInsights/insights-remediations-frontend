@@ -6,24 +6,39 @@ This is the frontend application for [Insights Remediations](https://github.com/
 
 ## Getting Started
 
-### Insights Proxy
-[Insights Proxy](https://github.com/RedHatInsights/insights-proxy) configured under `PROXY_PATH` is required to run this application.
-
-```sh
-SPANDX_CONFIG="./config/spandx.config.js" bash $PROXY_PATH/scripts/run.sh
-```
-
-This setup will forward API calls to CI/QA/PROD instance.
-Alternatively, API calls can be forwarded to a locally-running API instance using a [remediations-specific](https://github.com/RedHatInsights/insights-remediations-frontend/blob/master/config/spandx.config.local.js) configuration:
-
-```sh
-SPANDX_CONFIG="./config/spandx.config.local.js" bash $PROXY_PATH/scripts/run.sh
-```
-
 ### Running the application
 
-1. ```npm install```
-2. ```npm start```
+#### CI stable env
+
+1. install and start the dev server
+```sh
+npm i
+npm run start:proxy
+```
+2. Open browser at [https://ci.foo.redhat.com:1337/insights/remediations](https://ci.foo.redhat.com:1337/insights/remediations)
+
+#### CI beta env
+
+1. install and start the dev server
+```sh
+npm i
+npm run start:proxy:beta
+```
+2. Open browser at [https://ci.foo.redhat.com:1337/beta/insights/remediations](https://ci.foo.redhat.com:1337/beta/insights/remediations)
+
+#### Using other environments
+
+1. open `dev.webpack.config.js`
+2. add `env` attribute with required value to the `webpackProxy` object.
+
+For example, for prod-beta add following:
+```js
+{
+  env: 'prod-beta'
+}
+```
+ and run `npm run start:proxy:beta` (the `:beta` suffix configures webpack to serve assets at /beta location.)
+
 
 ### Testing
 
