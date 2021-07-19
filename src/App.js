@@ -14,6 +14,7 @@ import NotificationsPortal from '@redhat-cloud-services/frontend-components-noti
 export const PermissionContext = createContext();
 
 class App extends Component {
+  unregister;
   constructor() {
     super();
     this.state = {
@@ -34,6 +35,11 @@ class App extends Component {
       arePermissionLoaded: true,
     });
 
+  componentWillUnmount() {
+    if (typeof this.unregister === 'function') {
+      this.unregister();
+    }
+  }
   async componentDidMount() {
     insights.chrome.init();
     insights.chrome?.hideGlobalFilter?.();
@@ -49,6 +55,13 @@ class App extends Component {
         isReceptorConfigured: isConfigured.data.length > 0,
       })
     );
+    this.unregister = insights.chrome.on('APP_NAVIGATION', (event) => {
+      if (typeof event?.domEvent?.href === 'string') {
+        this.props.history.push(
+          event.domEvent.href.replace(this.props.basename, '')
+        );
+      }
+    });
     window.insights.chrome
       .getUserPermissions('remediations')
       .then((remediationsPermissions) => {
@@ -110,6 +123,7 @@ class App extends Component {
 
 App.propTypes = {
   history: PropTypes.object,
+  basename: PropTypes.string.isRequired,
 };
 
 /**
