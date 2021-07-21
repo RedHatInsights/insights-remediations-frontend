@@ -1,4 +1,4 @@
-import { API_BASE, SOURCES_BASE } from './config';
+import { API_BASE, SOURCES_BASE } from '../config';
 
 import axios from 'axios';
 import {
@@ -11,7 +11,7 @@ import { DefaultApi } from '@redhat-cloud-services/sources-client';
 /*
  * TODO: replace these with generated clients
  */
-import { doGet } from './Utilities/http';
+import { doGet } from '../Utilities/http';
 import urijs from 'urijs';
 
 function url(...args) {
@@ -136,4 +136,72 @@ export function deleteSystemsFromRemediation(systems, remediation) {
       )
     )
   );
+}
+
+function checkResponse(r) {
+  if (!r.ok) {
+    const error = new Error(`Unexpected response code ${r.status}`);
+    error.statusCode = r.status;
+    throw error;
+  }
+
+  return r;
+}
+
+function json(r) {
+  checkResponse(r);
+  return r.json();
+}
+
+const headers = Object.freeze({
+  'Content-Type': 'application/json; charset=utf-8',
+});
+
+export function createRemediation(data) {
+  const uri = new urijs(API_BASE).segment('remediations').toString();
+  return fetch(uri, {
+    headers,
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify(data),
+  }).then(json);
+}
+
+export function patchRemediation(id, data) {
+  const uri = new urijs(API_BASE)
+    .segment('remediations')
+    .segment(id)
+    .toString();
+  return fetch(uri, {
+    headers,
+    credentials: 'include',
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  }).then(checkResponse);
+}
+
+export function getRemediations() {
+  const uri = new urijs(API_BASE)
+    .segment('remediations')
+    .query({ limit: 200 })
+    .toString();
+  return fetch(uri, { credentials: 'include' }).then(json);
+}
+
+export function getRemediation(id) {
+  const uri = new urijs(API_BASE)
+    .segment('remediations')
+    .segment(id)
+    .toString();
+  return fetch(uri, { credentials: 'include' }).then(json);
+}
+
+export function getResolutionsBatch(issues) {
+  const uri = new urijs(API_BASE).segment('resolutions').toString();
+  return fetch(uri, {
+    headers,
+    credentials: 'include',
+    method: 'POST',
+    body: JSON.stringify({ issues }),
+  }).then(json);
 }

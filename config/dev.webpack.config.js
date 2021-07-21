@@ -24,6 +24,18 @@ plugins.push(
   require('@redhat-cloud-services/frontend-components-config/federated-modules')(
     {
       root: resolve(__dirname, '../'),
+      useFileHash: false,
+      exposes: {
+        './RootApp': resolve(__dirname, '../src/AppEntry'),
+        './RemediationButton': resolve(
+          __dirname,
+          '../src/modules/RemediationsButton.js'
+        ),
+        './RemediationWizard': resolve(
+          __dirname,
+          '../src/modules/RemediationsModal/index.js'
+        ),
+      },
     }
   )
 );

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Split, SplitItem, Stack, StackItem } from '@patternfly/react-core';
-import RemediationButton from '@redhat-cloud-services/frontend-components-remediations/RemediationButton/';
+import RemediationButton from '../modules/RemediationsButton';
 
 import propTypes from 'prop-types';
 
