@@ -1,12 +1,12 @@
 .ins-c-entity-table.pf-c-table.pf-m-compact {
+    .ins-composed-col * {
+        font-size: var(--pf-global--FontSize--sm);
+    }
     tr > *:first-child {
         --pf-c-table--cell--PaddingLeft: var(--pf-global--spacer--lg);
     }
     tr > *:last-child {
         --pf-c-table--cell--PaddingRight: var(--pf-global--spacer--lg);
-    }
-    .ins-composed-col * {
-        font-size: var(--pf-global--FontSize--sm);
     }
     .ins-c-inventory__list-tags {
         vertical-align: bottom;

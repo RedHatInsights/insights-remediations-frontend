@@ -141,7 +141,6 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
     <Fragment>
       {state.schema && !state.submitted ? (
         <FormRenderer
-          className="remediationsss"
           schema={state.schema}
           subscription={{ values: true }}
           FormTemplate={(props) => (
