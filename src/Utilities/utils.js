@@ -260,20 +260,24 @@ export const entitySelected = (state, { payload }) => {
   };
 };
 
-export const loadEntitiesFulfilled = (state, allSystems) => {
+export const loadEntitiesFulfilled = (state, allSystems, sortBy) => {
   let selected = state.selected || [];
   if (!state.selected) {
     selected = allSystems ? allSystems : state.rows.map((row) => row.id);
   }
-
   return {
     ...state,
     selected,
-    rows: state.rows.map(({ id, ...row }) => ({
-      id,
-      ...row,
-      selected: !!selected?.includes(id),
-    })),
+    rows: sortByAttr(
+      state.rows.map(({ id, ...row }) => ({
+        id,
+        ...row,
+        selected: !!selected?.includes(id),
+      })),
+      'display_name',
+      sortBy?.direction || 'asc'
+    ),
+    sortBy,
   };
 };
 
@@ -297,11 +301,27 @@ export const changeBulkSelect = (state, action) => {
   };
 };
 
+const sortByAttr = (systems, attribute, direction) =>
+  Array.isArray(systems)
+    ? systems.sort(
+        (a, b) =>
+          ((a[attribute] > b[attribute] && 1) || -1) *
+          (direction === 'asc' ? -1 : 1)
+      )
+    : [];
+
 export const fetchSystemsInfo = async (
   config,
+  sortableColumns = [],
   allSystemsNamed = [],
   getEntities
 ) => {
+  const isSortingValid = sortableColumns.includes(config.orderBy);
+  config.orderBy = isSortingValid ? config.orderBy : undefined;
+  config.orderDirection = isSortingValid
+    ? config.orderDirection?.toLowerCase()
+    : undefined;
+  allSystemsNamed = sortByAttr(allSystemsNamed, 'name', config.orderDirection);
   const hostnameOrId = config?.filters?.hostnameOrId?.toLowerCase();
   const systems = hostnameOrId
     ? allSystemsNamed.reduce(
@@ -324,10 +344,16 @@ export const fetchSystemsInfo = async (
       ? await getEntities(sliced, { ...config, hasItems: true, page: 1 }, true)
       : {};
   return {
-    ...data,
+    ...{
+      ...data,
+      results: sortByAttr(data.results, 'display_name', config.orderDirection),
+    },
     total: systems.length,
     page: config.page,
     per_page: config.per_page,
+    orderBy: config.orderBy,
+    orderDirection: config.orderDirection,
+    sortBy: { key: config.orderBy, direction: config.orderDirection },
   };
 };
 
@@ -359,8 +385,11 @@ export const inventoryEntitiesReducer = (
 ) =>
   applyReducerHash({
     SELECT_ENTITY: (state, action) => entitySelected(state, action),
-    [LOAD_ENTITIES_FULFILLED]: (state) =>
-      loadEntitiesFulfilled(state, allSystems),
+    [LOAD_ENTITIES_FULFILLED]: (state, { payload }) =>
+      loadEntitiesFulfilled(state, allSystems, {
+        key: payload.orderBy,
+        direction: payload.orderDirection,
+      }),
     [TOGGLE_BULK_SELECT]: changeBulkSelect,
   });
 

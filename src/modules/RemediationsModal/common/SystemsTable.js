@@ -55,7 +55,12 @@ const SystemsTable = ({
       onRefresh={(options) => inventory.current.onRefreshData(options)}
       ref={inventory}
       getEntities={(_i, config, showTags, defaultGetEntities) =>
-        fetchSystemsInfo(config, allSystemsNamed, defaultGetEntities)
+        fetchSystemsInfo({
+          ...config,
+          sortableColumns,
+          allSystemsNamed,
+          defaultGetEntities,
+        })
       }
       onLoad={({ mergeWithEntities, INVENTORY_ACTION_TYPES }) => {
         registry.register(
