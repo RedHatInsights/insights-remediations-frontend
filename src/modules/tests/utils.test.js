@@ -256,13 +256,20 @@ describe('fetchSystemsInfo', () => {
   it('should fetch systems correctly', async () => {
     const value = await fetchSystemsInfo(
       { page: 1, per_page: 1 },
+      ['display_name'],
       [{ id: '123' }, { id: '456' }],
-      (systems) => Promise.resolve({ result: systems })
+      (systems) => Promise.resolve({ results: systems })
     );
     expect(value).toEqual({
+      orderBy: undefined,
+      orderDirection: undefined,
       page: 1,
       per_page: 1,
-      result: ['123'],
+      results: ['123'],
+      sortBy: {
+        direction: undefined,
+        key: undefined,
+      },
       total: 2,
     });
   });
@@ -270,18 +277,25 @@ describe('fetchSystemsInfo', () => {
   it('should fetch filtered systems correctly', async () => {
     const value = await fetchSystemsInfo(
       { page: 1, per_page: 2, filters: { hostnameOrId: '12' } },
+      ['display_name'],
       [
         { id: '123', name: 'test' },
         { id: '456', name: 'test' },
         { id: '789', name: '12test' },
       ],
-      (systems) => Promise.resolve({ result: systems })
+      (systems) => Promise.resolve({ results: systems })
     );
     expect(value).toEqual({
+      orderBy: undefined,
+      orderDirection: undefined,
       page: 1,
       per_page: 2,
-      result: ['123', '789'],
-      total: 2,
+      results: ['789'],
+      sortBy: {
+        direction: undefined,
+        key: undefined,
+      },
+      total: 1,
     });
   });
 });
