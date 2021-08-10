@@ -306,7 +306,7 @@ const sortByAttr = (systems, attribute, direction) =>
     ? systems.sort(
         (a, b) =>
           ((a[attribute] > b[attribute] && 1) || -1) *
-          (direction === 'asc' ? -1 : 1)
+          (direction === 'asc' ? 1 : -1)
       )
     : [];
 
@@ -327,10 +327,7 @@ export const fetchSystemsInfo = async (
     ? allSystemsNamed.reduce(
         (acc, curr) => [
           ...acc,
-          ...(curr.name.toLowerCase().includes(hostnameOrId) ||
-          curr.id.toLowerCase().includes(hostnameOrId)
-            ? [curr.id]
-            : []),
+          ...(curr.name.toLowerCase().includes(hostnameOrId) ? [curr.id] : []),
         ],
         []
       )
