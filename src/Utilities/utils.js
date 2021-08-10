@@ -408,7 +408,7 @@ export const getIssuesMultiple = (
         action: issues.find((i) => i.id === issue.id).description,
         resolution: description,
         needsReboot,
-        systems: dedupeArray([...(issue.systems || []), systems]),
+        systems: dedupeArray([...(issue.systems || []), ...systems]),
         id: issue.id,
         alternate: issueResolutions?.length - 1,
       };

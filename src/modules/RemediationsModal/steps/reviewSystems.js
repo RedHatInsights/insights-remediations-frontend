@@ -10,7 +10,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import isEqual from 'lodash/isEqual';
 import SystemsTable from '../common/SystemsTable';
-import { TOGGLE_BULK_SELECT } from '../../../Utilities/utils';
+import { dedupeArray, TOGGLE_BULK_SELECT } from '../../../Utilities/utils';
 import './reviewSystems.scss';
 
 const ReviewSystems = ({ issues, systems, allSystems, registry, ...props }) => {
@@ -32,9 +32,10 @@ const ReviewSystems = ({ issues, systems, allSystems, registry, ...props }) => {
 
   useEffect(() => {
     const value = issues?.reduce((acc, curr) => {
-      const tempSystems = [...systems, ...(curr.systems || [])].filter((id) =>
-        selected?.includes(id)
-      );
+      const tempSystems = dedupeArray([
+        ...systems,
+        ...(curr.systems || []),
+      ]).filter((id) => selected?.includes(id));
       return {
         ...acc,
         ...(tempSystems.length > 0 ? { [curr.id]: tempSystems } : {}),
