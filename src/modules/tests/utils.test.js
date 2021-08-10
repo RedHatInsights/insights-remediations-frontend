@@ -2,20 +2,21 @@
 /* eslint-disable camelcase */
 import * as dependency from '../../api/index';
 import {
+  EXISTING_PLAYBOOK,
+  MANUAL_RESOLUTION,
+  SELECTED_RESOLUTIONS,
+  SYSTEMS,
+  EXISTING_PLAYBOOK_SELECTED,
   entitySelected,
   getResolution,
   changeBulkSelect,
   loadEntitiesFulfilled,
   submitRemediation,
-  EXISTING_PLAYBOOK,
-  MANUAL_RESOLUTION,
-  SELECTED_RESOLUTIONS,
-  EXISTING_PLAYBOOK_SELECTED,
   fetchSystemsInfo,
   splitArray,
   getPlaybookSystems,
   createNotification,
-  SYSTEMS,
+  sortByAttr,
 } from '../../Utilities/utils';
 import { remediationWizardTestData } from './testData';
 
@@ -249,6 +250,26 @@ describe('changeBulkSelect', () => {
       rows: [{ id: '123', selected: true }],
       selected: ['123'],
     });
+  });
+});
+
+describe('sortByAttr', () => {
+  const systems = [{ name: 'a' }, { name: 'c' }, { name: 'b' }];
+
+  it('should sort asc correctly', () => {
+    const value = sortByAttr(systems, 'name', 'asc');
+    expect(value).toEqual([{ name: 'a' }, { name: 'b' }, { name: 'c' }]);
+  });
+
+  it('should sort desc correctly', () => {
+    const systems = [{ name: 'a' }, { name: 'c' }, { name: 'b' }];
+    const value = sortByAttr(systems, 'name', 'desc');
+    expect(value).toEqual([{ name: 'c' }, { name: 'b' }, { name: 'a' }]);
+  });
+
+  it('should return an empty array on invalid value', () => {
+    const value = sortByAttr(undefined, 'name', 'desc');
+    expect(value).toEqual([]);
   });
 });
 

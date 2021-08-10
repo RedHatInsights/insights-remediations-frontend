@@ -301,7 +301,7 @@ export const changeBulkSelect = (state, action) => {
   };
 };
 
-const sortByAttr = (systems, attribute, direction) =>
+export const sortByAttr = (systems, attribute, direction) =>
   Array.isArray(systems)
     ? systems.sort(
         (a, b) =>
