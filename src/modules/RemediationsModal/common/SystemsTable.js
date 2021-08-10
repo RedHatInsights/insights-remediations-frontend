@@ -19,6 +19,7 @@ const SystemsTable = ({
   bulkSelect,
 }) => {
   const inventory = useRef(null);
+  const sortableColumns = ['display_name'];
 
   return (
     <InventoryTable
@@ -28,7 +29,23 @@ const SystemsTable = ({
         stale: true,
       }}
       columns={(columns) =>
-        columns.filter((column) => !disabledColumns.includes(column.key))
+        columns.reduce(
+          (acc, curr) => [
+            ...acc,
+            ...(!disabledColumns.includes(curr.key)
+              ? [
+                  {
+                    ...curr,
+                    props: {
+                      ...(curr.props || {}),
+                      isStatic: !sortableColumns.includes(curr.key),
+                    },
+                  },
+                ]
+              : []),
+          ],
+          []
+        )
       }
       noDetail
       variant="compact"
@@ -38,7 +55,12 @@ const SystemsTable = ({
       onRefresh={(options) => inventory.current.onRefreshData(options)}
       ref={inventory}
       getEntities={(_i, config, showTags, defaultGetEntities) =>
-        fetchSystemsInfo(config, allSystemsNamed, defaultGetEntities)
+        fetchSystemsInfo(
+          config,
+          sortableColumns,
+          allSystemsNamed,
+          defaultGetEntities
+        )
       }
       onLoad={({ mergeWithEntities, INVENTORY_ACTION_TYPES }) => {
         registry.register(
