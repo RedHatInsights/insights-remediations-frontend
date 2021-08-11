@@ -3,6 +3,27 @@ const config = require('@redhat-cloud-services/frontend-components-config');
 
 const insightsProxy = {
   ...(process.env.BETA && { deployment: 'beta/apps' }),
+  ...(process.env.LOCAL_API && {
+    routes: {
+      ...(process.env.LOCAL_API.split(',') || []).reduce((acc, curr) => {
+        const [appName, appConfig] = (curr || '').split(':');
+        const [appPort = 8003, protocol = 'http'] = appConfig.split('~');
+        return {
+          ...acc,
+          [`/apps/${appName}`]: { host: `${protocol}://localhost:${appPort}` },
+          [`/insights/${appName}`]: {
+            host: `${protocol}://localhost:${appPort}`,
+          },
+          [`/beta/insights/${appName}`]: {
+            host: `${protocol}://localhost:${appPort}`,
+          },
+          [`/beta/apps/${appName}`]: {
+            host: `${protocol}://localhost:${appPort}`,
+          },
+        };
+      }, {}),
+    },
+  }),
 };
 
 const webpackProxy = {
