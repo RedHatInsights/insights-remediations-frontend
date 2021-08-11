@@ -40,6 +40,46 @@ For example, for prod-beta add following:
  and run `npm run start:proxy:beta` (the `:beta` suffix configures webpack to serve assets at /beta location.)
 
 
+### Running with another app
+
+If you want to see changes made in remediations button or wizard in another application you will have to run both remediations and desired application. We'll take for example [insights-advisor-frontend](https://github.com/RedHatInsights/insights-advisor-frontend) application as app that uses system detail.
+
+#### With insights proxy
+Run the remediations application
+```
+npm start
+```
+
+Open new terminal and navigate to desired application (for instance insights-adviror-frontend) and run it (make sure to run it on different port)
+```
+npm start
+```
+
+Open new terminal, navigate to insights-proxy and run it with
+```
+LOCAL_API=advisor:8003~https SPANDX_CONFIG="$(pwd)/insights-remediations-frontend/config/spandx.config.js" bash insights-proxy/scripts/run.
+```
+
+If you want to run advisor and for instance vulnerability just add new entry to LOCAL_API
+```
+LOCAL_API=advisor:8003~https,vulnerability:8004
+```
+#### With webpack proxy
+Open new terminal and navigate to desired application (for instance insights-adviror-frontend) and run it (make sure to run it on different port)
+```
+npm start
+```
+
+Run the remediations application with proxy enabled and list of additional applications
+```
+LOCAL_API=advisor:8003~https npm run start:proxy
+```
+
+If you want to run advisor and for instance vulnerability just add new entry to LOCAL_API
+```
+LOCAL_API=advisor:8003~https,vulnerability:8004
+```
+
 ### Testing
 
 Run `npm run verify` to run build, linters and tests
