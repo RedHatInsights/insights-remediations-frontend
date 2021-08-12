@@ -21,7 +21,7 @@ import {
   BreadcrumbItem,
   Split,
   SplitItem,
-  Title,
+  Title
 } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody } from '@patternfly/react-table';
 import { InProgressIcon } from '@patternfly/react-icons';
