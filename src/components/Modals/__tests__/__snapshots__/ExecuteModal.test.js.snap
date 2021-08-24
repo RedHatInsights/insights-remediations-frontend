@@ -60,8 +60,10 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
         <ExpandableSection
           className=""
           contentId=""
+          displaySize="default"
           isActive={false}
           isDetached={false}
+          isWidthLimited={false}
           onToggle={[Function]}
           toggleText="About remote execution with Cloud connector"
           toggleTextCollapsed=""
@@ -242,8 +244,10 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
         <ExpandableSection
           className=""
           contentId=""
+          displaySize="default"
           isActive={false}
           isDetached={false}
+          isWidthLimited={false}
           onToggle={[Function]}
           toggleText="About remote execution with Cloud connector"
           toggleTextCollapsed=""
