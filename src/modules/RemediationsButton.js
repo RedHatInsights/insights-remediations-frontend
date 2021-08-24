@@ -12,6 +12,7 @@ const RemediationButton = ({
   children,
   dataProvider,
   onRemediationCreated,
+  buttonProps,
 }) => {
   const [hasPermissions, setHasPermissions] = useState(false);
   const [remediationsData, setRemediationsData] = useState();
@@ -28,7 +29,9 @@ const RemediationButton = ({
     return (
       <Tooltip content="You do not have correct permissions to remediate this entity.">
         <span>
-          <Button isDisabled>{children}</Button>
+          <Button isDisabled {...buttonProps}>
+            {children}
+          </Button>
         </span>
       </Tooltip>
     );
@@ -44,6 +47,7 @@ const RemediationButton = ({
             setRemediationsData(data);
           });
         }}
+        {...buttonProps}
       >
         {children}
       </Button>
