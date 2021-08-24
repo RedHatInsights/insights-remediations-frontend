@@ -29,7 +29,7 @@ const insightsProxy = {
 const webpackProxy = {
   deployment: process.env.BETA ? 'beta/apps' : 'apps',
   useProxy: true,
-  useCloud: false,
+  useCloud: true,
   appUrl: process.env.BETA
     ? ['/beta/insights/remediations']
     : ['/insights/remediations'],
