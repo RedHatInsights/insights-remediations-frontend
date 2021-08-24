@@ -7,12 +7,14 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       <Button
         isDisabled={true}
         onClick={[Function]}
+        ouiaId="etag"
         variant="primary"
       >
         Execute playbook on 0 system
       </Button>,
       <Button
         onClick={[Function]}
+        ouiaId="download-playbook"
         variant="secondary"
       >
         Download playbook
@@ -36,7 +38,9 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
   titleLabel=""
   variant="small"
 >
-  <div>
+  <div
+    className="ins-c-execute-modal__body"
+  >
     <TextContent>
       <Text
         component="p"
@@ -55,7 +59,9 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       <Text>
         <ExpandableSection
           className=""
+          contentId=""
           isActive={false}
+          isDetached={false}
           onToggle={[Function]}
           toggleText="About remote execution with Cloud connector"
           toggleTextCollapsed=""
@@ -68,12 +74,20 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
               <br />
               <Button
                 className="pf-u-p-0"
-                component="a"
-                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                component="span"
+                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-10/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                isInline={true}
                 key="download"
+                rel="noreferrer"
+                target="_blank"
                 variant="link"
               >
-                How to configure Receptor/Cloud Connector on Red Hat Satellite
+                How to configure Receptor/Cloud Connector on Red Hat Satellite  
+                <ExternalLinkAltIcon
+                  color="currentColor"
+                  noVerticalAlign={false}
+                  size="sm"
+                />
               </Button>
             </ListItem>
             <ListItem>
@@ -81,11 +95,20 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
               <br />
               <Button
                 className="pf-u-p-0"
+                component="span"
                 href="#"
+                isInline={true}
                 key="configure"
+                rel="noreferrer"
+                target="_blank"
                 variant="link"
               >
-                How to enable Cloud Connector with Red Hat connect
+                How to enable Cloud Connector with Red Hat connect  
+                <ExternalLinkAltIcon
+                  color="currentColor"
+                  noVerticalAlign={false}
+                  size="sm"
+                />
               </Button>
             </ListItem>
           </List>
@@ -98,17 +121,21 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       </Text>
       <Button
         className="pf-u-p-0"
+        component="span"
         href="#"
+        isInline={true}
         key="configure"
+        rel="noreferrer"
+        target="_blank"
         variant="link"
       >
-        Learn more about Cloud Connector
+        Learn more about Cloud Connector  
+        <ExternalLinkAltIcon
+          color="currentColor"
+          noVerticalAlign={false}
+          size="sm"
+        />
       </Button>
-      <Text
-        component="h4"
-      >
-        Connection status of systems
-      </Text>
     </TextContent>
     <Table
       aria-label="Systems"
@@ -135,6 +162,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       expandId="expandable-toggle"
       gridBreakPoint="grid-md"
       isStickyHeader={false}
+      isTreeTable={false}
       ouiaSafe={true}
       role="grid"
       rowLabeledBy="simple-node"
@@ -156,12 +184,14 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       <Button
         isDisabled={true}
         onClick={[Function]}
+        ouiaId="etag"
         variant="primary"
       >
         Execute playbook on 0 system
       </Button>,
       <Button
         onClick={[Function]}
+        ouiaId="download-playbook"
         variant="secondary"
       >
         Download playbook
@@ -185,7 +215,9 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
   titleLabel=""
   variant="small"
 >
-  <div>
+  <div
+    className="ins-c-execute-modal__body"
+  >
     <Alert
       isInline={true}
       title="The connection status of systems associated with this Playbook has changed. Please review again."
@@ -209,7 +241,9 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       <Text>
         <ExpandableSection
           className=""
+          contentId=""
           isActive={false}
+          isDetached={false}
           onToggle={[Function]}
           toggleText="About remote execution with Cloud connector"
           toggleTextCollapsed=""
@@ -222,12 +256,20 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
               <br />
               <Button
                 className="pf-u-p-0"
-                component="a"
-                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                component="span"
+                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-10/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                isInline={true}
                 key="download"
+                rel="noreferrer"
+                target="_blank"
                 variant="link"
               >
-                How to configure Receptor/Cloud Connector on Red Hat Satellite
+                How to configure Receptor/Cloud Connector on Red Hat Satellite  
+                <ExternalLinkAltIcon
+                  color="currentColor"
+                  noVerticalAlign={false}
+                  size="sm"
+                />
               </Button>
             </ListItem>
             <ListItem>
@@ -235,11 +277,20 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
               <br />
               <Button
                 className="pf-u-p-0"
+                component="span"
                 href="#"
+                isInline={true}
                 key="configure"
+                rel="noreferrer"
+                target="_blank"
                 variant="link"
               >
-                How to enable Cloud Connector with Red Hat connect
+                How to enable Cloud Connector with Red Hat connect  
+                <ExternalLinkAltIcon
+                  color="currentColor"
+                  noVerticalAlign={false}
+                  size="sm"
+                />
               </Button>
             </ListItem>
           </List>
@@ -252,17 +303,21 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       </Text>
       <Button
         className="pf-u-p-0"
+        component="span"
         href="#"
+        isInline={true}
         key="configure"
+        rel="noreferrer"
+        target="_blank"
         variant="link"
       >
-        Learn more about Cloud Connector
+        Learn more about Cloud Connector  
+        <ExternalLinkAltIcon
+          color="currentColor"
+          noVerticalAlign={false}
+          size="sm"
+        />
       </Button>
-      <Text
-        component="h4"
-      >
-        Connection status of systems
-      </Text>
     </TextContent>
     <Table
       aria-label="Systems"
@@ -289,6 +344,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       expandId="expandable-toggle"
       gridBreakPoint="grid-md"
       isStickyHeader={false}
+      isTreeTable={false}
       ouiaSafe={true}
       role="grid"
       rowLabeledBy="simple-node"

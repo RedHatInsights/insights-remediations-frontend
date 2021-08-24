@@ -17,7 +17,7 @@ if (pathName[0] === 'beta') {
 const Remediations = ({ logger }) => (
   <Provider store={init(logger).getStore()}>
     <Router basename={`${release}${pathName[0]}/${pathName[1]}`}>
-      <App />
+      <App basename={`${pathName[0]}/${pathName[1]}`} />
     </Router>
   </Provider>
 );

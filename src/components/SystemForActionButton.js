@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Button } from '@patternfly/react-core';
 import { deleteRemediationIssueSystem } from '../actions';
 import { SystemsStatusModal } from './Modals/SystemsStatusModal';
 import './SystemForActionButton.scss';
@@ -12,13 +11,7 @@ export const SystemForActionButton = ({ issue, remediation, title }) => {
 
   return (
     <React.Fragment>
-      <Button
-        className="ins-c-systems-button"
-        variant="link"
-        onClick={() => setOpen(true)}
-      >
-        {title}
-      </Button>
+      <a onClick={() => setOpen(true)}>{title}</a>
       <SystemsStatusModal
         isOpen={open}
         onClose={() => setOpen(false)}

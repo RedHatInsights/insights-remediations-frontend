@@ -22,8 +22,11 @@ import {
   TableBody,
   TableVariant,
 } from '@patternfly/react-table';
+import { generateUniqueId } from '../Alerts/PlaybookToastAlerts';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
+import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
+import EmptyExecutePlaybookState from '../EmptyExecutePlaybookState';
 
 export const ExecuteModal = ({
   isOpen,
@@ -32,12 +35,14 @@ export const ExecuteModal = ({
   isLoading,
   data,
   remediationId,
+  remediationName,
   issueCount,
   runRemediation,
   etag,
   getEndpoint,
   sources,
   setEtag,
+  setActiveAlert,
 }) => {
   const [isUserEntitled, setIsUserEntitled] = useState(false);
   const [connected, setConnected] = useState([]);
@@ -148,38 +153,74 @@ export const ExecuteModal = ({
       isOpen={isOpen}
       onClose={onClose}
       isFooterLeftAligned
-      actions={[
-        <Button
-          key="confirm"
-          variant="primary"
-          isDisabled={connected.length === 0}
-          onClick={() => {
-            runRemediation(
-              remediationId,
-              etag,
-              disconnected.map((e) => e.executor_id).filter((e) => e)
-            );
-          }}
-        >
-          {isLoading
-            ? 'Execute playbook'
-            : `Execute playbook on ${pluralize(connectedCount, 'system')}`}
-        </Button>,
-        <Button
-          key="download"
-          variant="secondary"
-          onClick={() => downloadPlaybook(remediationId)}
-        >
-          Download playbook
-        </Button>,
-        isDebug() ? (
-          <Button key="reset-etag" onClick={() => setEtag('test')}>
-            Reset etag
-          </Button>
-        ) : null,
-      ]}
+      actions={
+        systemCount !== 0
+          ? [
+              <Button
+                key="confirm"
+                variant="primary"
+                ouiaId="etag"
+                isDisabled={connected.length === 0}
+                onClick={() => {
+                  runRemediation(
+                    remediationId,
+                    etag,
+                    disconnected.map((e) => e.executor_id).filter((e) => e)
+                  );
+                  setActiveAlert({
+                    key: generateUniqueId(),
+                    title: `Executing playbook ${remediationName}`,
+                    description: `View results in the <b>Activity tab</b>`,
+                    variant: 'success',
+                  });
+                }}
+              >
+                {isLoading
+                  ? 'Execute playbook'
+                  : `Execute playbook on ${pluralize(
+                      connectedCount,
+                      'system'
+                    )}`}
+              </Button>,
+              <Button
+                key="download"
+                variant="secondary"
+                ouiaId="download-playbook"
+                onClick={() => {
+                  downloadPlaybook(remediationId);
+                  setActiveAlert({
+                    key: generateUniqueId(),
+                    title: 'Preparing playbook for download',
+                    description:
+                      'Once complete, your download will start automatically.',
+                    variant: 'info',
+                  });
+                }}
+              >
+                Download playbook
+              </Button>,
+              isDebug() ? (
+                <Button
+                  key="reset-etag"
+                  onClick={() => setEtag('test')}
+                  ouiaId="reset-etag"
+                >
+                  Reset etag
+                </Button>
+              ) : null,
+            ]
+          : [
+              <Button
+                key="close-modal"
+                onClick={() => onClose()}
+                variant="primary"
+              >
+                Close
+              </Button>,
+            ]
+      }
     >
-      <div>
+      <div className="ins-c-execute-modal__body">
         {showRefresh ? (
           <Alert
             variant="warning"
@@ -208,12 +249,16 @@ export const ExecuteModal = ({
                     className="pf-u-p-0"
                     key="download"
                     variant="link"
-                    component="a"
+                    isInline
+                    component="span"
                     // eslint-disable-next-line max-len
-                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-04/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-10/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                    rel="noreferrer"
+                    target="_blank"
                   >
                     How to configure Receptor/Cloud Connector on Red Hat
-                    Satellite
+                    Satellite &nbsp;
+                    <ExternalLinkAltIcon />
                   </Button>
                 </ListItem>
                 <ListItem>
@@ -223,10 +268,15 @@ export const ExecuteModal = ({
                     className="pf-u-p-0"
                     key="configure"
                     variant="link"
+                    isInline
+                    component="span"
                     // eslint-disable-next-line max-len
                     href="#"
+                    rel="noreferrer"
+                    target="_blank"
                   >
-                    How to enable Cloud Connector with Red Hat connect
+                    How to enable Cloud Connector with Red Hat connect &nbsp;
+                    <ExternalLinkAltIcon />
                   </Button>
                 </ListItem>
               </List>
@@ -242,16 +292,24 @@ export const ExecuteModal = ({
             className="pf-u-p-0"
             key="configure"
             variant="link"
+            isInline
+            component="span"
             // eslint-disable-next-line max-len
             href="#"
+            rel="noreferrer"
+            target="_blank"
           >
-            Learn more about Cloud Connector
+            Learn more about Cloud Connector &nbsp;
+            <ExternalLinkAltIcon />
           </Button>
-          <Text component={TextVariants.h4}>Connection status of systems</Text>
+          {rows.length !== 0 && (
+            <Text component={TextVariants.h4}>
+              Connection status of systems
+            </Text>
+          )}
         </TextContent>
-        {isLoading ? (
-          <Skeleton size="lg" />
-        ) : (
+        {isLoading && <Skeleton size="lg" />}
+        {!isLoading && systemCount !== 0 && (
           <Table
             variant={TableVariant.compact}
             aria-label="Systems"
@@ -275,6 +333,7 @@ export const ExecuteModal = ({
             <TableBody />
           </Table>
         )}
+        {!isLoading && systemCount === 0 && <EmptyExecutePlaybookState />}
       </div>
     </Modal>
   );
@@ -287,10 +346,12 @@ ExecuteModal.propTypes = {
   isLoading: PropTypes.bool,
   data: PropTypes.array,
   remediationId: PropTypes.string,
+  remediationName: PropTypes.string,
   issueCount: PropTypes.number,
   runRemediation: PropTypes.func,
   etag: PropTypes.string,
   setEtag: PropTypes.func,
   getEndpoint: PropTypes.func,
   sources: PropTypes.object,
+  setActiveAlert: PropTypes.func,
 };

@@ -6,24 +6,79 @@ This is the frontend application for [Insights Remediations](https://github.com/
 
 ## Getting Started
 
-### Insights Proxy
-[Insights Proxy](https://github.com/RedHatInsights/insights-proxy) configured under `PROXY_PATH` is required to run this application.
-
-```sh
-SPANDX_CONFIG="./config/spandx.config.js" bash $PROXY_PATH/scripts/run.sh
-```
-
-This setup will forward API calls to CI/QA/PROD instance.
-Alternatively, API calls can be forwarded to a locally-running API instance using a [remediations-specific](https://github.com/RedHatInsights/insights-remediations-frontend/blob/master/config/spandx.config.local.js) configuration:
-
-```sh
-SPANDX_CONFIG="./config/spandx.config.local.js" bash $PROXY_PATH/scripts/run.sh
-```
-
 ### Running the application
 
-1. ```npm install```
-2. ```npm start```
+#### CI stable env
+
+1. install and start the dev server
+```sh
+npm i
+npm run start:proxy
+```
+2. Open browser at [https://ci.foo.redhat.com:1337/insights/remediations](https://ci.foo.redhat.com:1337/insights/remediations)
+
+#### CI beta env
+
+1. install and start the dev server
+```sh
+npm i
+npm run start:proxy:beta
+```
+2. Open browser at [https://ci.foo.redhat.com:1337/beta/insights/remediations](https://ci.foo.redhat.com:1337/beta/insights/remediations)
+
+#### Using other environments
+
+1. open `dev.webpack.config.js`
+2. add `env` attribute with required value to the `webpackProxy` object.
+
+For example, for prod-beta add following:
+```js
+{
+  env: 'prod-beta'
+}
+```
+ and run `npm run start:proxy:beta` (the `:beta` suffix configures webpack to serve assets at /beta location.)
+
+
+### Running with another app
+
+If you want to see changes made in remediations button or wizard in another application you will have to run both remediations and desired application. We'll take for example [insights-advisor-frontend](https://github.com/RedHatInsights/insights-advisor-frontend) application as app that uses system detail.
+
+#### With insights proxy
+Run the remediations application
+```
+npm start
+```
+
+Open new terminal and navigate to desired application (for instance insights-adviror-frontend) and run it (make sure to run it on different port)
+```
+npm start
+```
+
+Open new terminal, navigate to insights-proxy and run it with
+```
+LOCAL_API=advisor:8003~https SPANDX_CONFIG="$(pwd)/insights-remediations-frontend/config/spandx.config.js" bash insights-proxy/scripts/run.
+```
+
+If you want to run advisor and for instance vulnerability just add new entry to LOCAL_API
+```
+LOCAL_API=advisor:8003~https,vulnerability:8004
+```
+#### With webpack proxy
+Open new terminal and navigate to desired application (for instance insights-adviror-frontend) and run it (make sure to run it on different port)
+```
+npm start
+```
+
+Run the remediations application with proxy enabled and list of additional applications
+```
+LOCAL_API=advisor:8003~https npm run start:proxy
+```
+
+If you want to run advisor and for instance vulnerability just add new entry to LOCAL_API
+```
+LOCAL_API=advisor:8003~https,vulnerability:8004
+```
 
 ### Testing
 
