@@ -1,16 +1,13 @@
 /* eslint-disable camelcase */
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
 import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
-import docco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';
 import RemediationsLogViewer from './RemediationsLogViewer';
 
 import { Spinner } from '@patternfly/react-core';
-import classnames from 'classnames';
-
 import { Title } from '@patternfly/react-core';
 
 import './SystemDetails.scss';
@@ -18,15 +15,10 @@ import './SystemDetails.scss';
 SyntaxHighlighter.registerLanguage('yaml', yaml);
 
 const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
-  const outputClasses = classnames('ins-c-job-output', {
-    ['ins-c-job-output__finished']:
-      playbookRunSystemDetails.status !== 'running',
-  });
-
-  useEffect(() => {
-    console.log('TESTING OUR OBJECT: ', playbookRunSystemDetails);
-    console.log('TESTING OUR DATA: ', playbookRunSystemDetails.console);
-  });
+  // const outputClasses = classnames('ins-c-job-output', {
+  //   ['ins-c-job-output__finished']:
+  //     playbookRunSystemDetails.status !== 'running',
+  // });
 
   return (
     <React.Fragment>
@@ -44,9 +36,7 @@ const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
             {(playbookRunSystemDetails && playbookRunSystemDetails.console) ||
               ''}
           </SyntaxHighlighter> */}
-          <RemediationsLogViewer 
-            data={playbookRunSystemDetails.console}
-          />
+          <RemediationsLogViewer data={playbookRunSystemDetails.console} />
           {playbookRunSystemDetails.status === 'running' && (
             <div className="ins-l-playbook-running">
               <Spinner
