@@ -37,7 +37,8 @@ export const getEnvUrl = () => {
   return pathName[1] === 'beta' ? 'beta/' : '';
 };
 
-export const remediationUrl = (id) => `${document.baseURI}${getGroup()}/remediations${id ? `/${id}` : ''}`;
+export const remediationUrl = (id) =>
+  `${document.baseURI}${getGroup()}/remediations${id ? `/${id}` : ''}`;
 
 export const dedupeArray = (array) => [...new Set(array)];
 
