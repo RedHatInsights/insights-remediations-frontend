@@ -15,7 +15,6 @@ import './SystemDetails.scss';
 SyntaxHighlighter.registerLanguage('yaml', yaml);
 
 const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
-  
   return (
     <React.Fragment>
       <Title headingLevel="h4" size="xl" className="ins-c-job-output__title">
