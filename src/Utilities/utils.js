@@ -5,7 +5,6 @@ export function capitalize(string) {
 /* eslint-disable camelcase */
 import React, { Fragment } from 'react';
 import { CloseIcon, RedoIcon } from '@patternfly/react-icons';
-import urijs from 'urijs';
 import * as api from '../api';
 import uniqWith from 'lodash/uniqWith';
 import isEqual from 'lodash/isEqual';
@@ -27,22 +26,18 @@ export const ISSUES_MULTIPLE = 'issues-multiple';
 export const TOGGLE_BULK_SELECT = 'toggle-bulk-select';
 
 // Get the current group since we can be mounted at two urls
-export const getGroup = () => {
-  const pathName = window.location.pathname.split('/');
-  return pathName[1] === 'beta' ? pathName[2] : pathName[1];
-};
+export const getGroup = () =>
+  window.location.pathname
+    .split('/')
+    .filter((s) => s !== 'beta' && s.length > 0)
+    .shift();
 
 export const getEnvUrl = () => {
   const pathName = window.location.pathname.split('/');
   return pathName[1] === 'beta' ? 'beta/' : '';
 };
 
-export const remediationUrl = (id) =>
-  urijs(document.baseURI)
-    .segment(getGroup())
-    .segment('remediations')
-    .segment(id)
-    .toString();
+export const remediationUrl = (id) => `${document.baseURI}${getGroup()}/remediations${id ? `/${id}` : ''}`;
 
 export const dedupeArray = (array) => [...new Set(array)];
 
