@@ -15,11 +15,7 @@ import './SystemDetails.scss';
 SyntaxHighlighter.registerLanguage('yaml', yaml);
 
 const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
-  // const outputClasses = classnames('ins-c-job-output', {
-  //   ['ins-c-job-output__finished']:
-  //     playbookRunSystemDetails.status !== 'running',
-  // });
-
+  
   return (
     <React.Fragment>
       <Title headingLevel="h4" size="xl" className="ins-c-job-output__title">
@@ -27,15 +23,6 @@ const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
       </Title>
       {systemId && systemId === playbookRunSystemDetails.system_id ? (
         <React.Fragment>
-          {/* <SyntaxHighlighter
-            language="yaml"
-            showLineNumbers
-            style={docco}
-            className={outputClasses}
-          >
-            {(playbookRunSystemDetails && playbookRunSystemDetails.console) ||
-              ''}
-          </SyntaxHighlighter> */}
           <RemediationsLogViewer data={playbookRunSystemDetails.console} />
           {playbookRunSystemDetails.status === 'running' && (
             <div className="ins-l-playbook-running">
