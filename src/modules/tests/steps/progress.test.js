@@ -52,7 +52,7 @@ describe('Progress', () => {
     );
 
     wrapper
-      .find('button[data-ouia-component-id="OpenPlaybookButton"]')
+      .find('a[data-ouia-component-id="OpenPlaybookButton"]')
       .simulate('click');
     expect(onClose).toHaveBeenCalledTimes(1);
 

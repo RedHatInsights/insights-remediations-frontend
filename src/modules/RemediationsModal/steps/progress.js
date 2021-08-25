@@ -154,11 +154,12 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
         {percent === 100 && (
           <Button
             variant="link"
+            component="a"
             ouiaId="OpenPlaybookButton"
+            href={remediationUrl(playbook.id)}
             onClick={() => {
               onClose();
               setOpen(false);
-              window.location.href = remediationUrl(playbook.id);
             }}
           >
             Open playbook {playbook.name}
