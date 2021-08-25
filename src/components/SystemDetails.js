@@ -5,11 +5,9 @@ import { connect } from 'react-redux';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
 import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
-import docco from 'react-syntax-highlighter/dist/esm/styles/hljs/docco';
+import RemediationsLogViewer from './RemediationsLogViewer';
 
 import { Spinner } from '@patternfly/react-core';
-import classnames from 'classnames';
-
 import { Title } from '@patternfly/react-core';
 
 import './SystemDetails.scss';
@@ -17,11 +15,6 @@ import './SystemDetails.scss';
 SyntaxHighlighter.registerLanguage('yaml', yaml);
 
 const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
-  const outputClasses = classnames('ins-c-job-output', {
-    ['ins-c-job-output__finished']:
-      playbookRunSystemDetails.status !== 'running',
-  });
-
   return (
     <React.Fragment>
       <Title headingLevel="h4" size="xl" className="ins-c-job-output__title">
@@ -29,15 +22,7 @@ const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
       </Title>
       {systemId && systemId === playbookRunSystemDetails.system_id ? (
         <React.Fragment>
-          <SyntaxHighlighter
-            language="yaml"
-            showLineNumbers
-            style={docco}
-            className={outputClasses}
-          >
-            {(playbookRunSystemDetails && playbookRunSystemDetails.console) ||
-              ''}
-          </SyntaxHighlighter>
+          <RemediationsLogViewer data={playbookRunSystemDetails.console} />
           {playbookRunSystemDetails.status === 'running' && (
             <div className="ins-l-playbook-running">
               <Spinner
