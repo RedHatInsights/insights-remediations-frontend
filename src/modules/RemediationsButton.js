@@ -53,13 +53,15 @@ const RemediationButton = ({
       </Button>
       {remediationsData && (
         <RemediationWizard
-          onRemediationCreated={onRemediationCreated}
           setOpen={(isOpen) =>
             setRemediationsData((prevData) =>
               isOpen === false ? null : prevData
             )
           }
-          data={remediationsData || {}}
+          data={{
+            onRemediationCreated,
+            ...(remediationsData || {}),
+          }}
         />
       )}
     </React.Fragment>
