@@ -71,6 +71,9 @@ RemediationButton.propTypes = {
   dataProvider: propTypes.func.isRequired,
   onRemediationCreated: propTypes.func,
   children: propTypes.node,
+  buttonProps: propTypes.shape({
+    [propTypes.string]: propTypes.any,
+  }),
 };
 
 RemediationButton.defaultProps = {
