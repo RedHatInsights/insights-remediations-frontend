@@ -12,6 +12,7 @@ const RemediationButton = ({
   children,
   dataProvider,
   onRemediationCreated,
+  buttonProps,
 }) => {
   const [hasPermissions, setHasPermissions] = useState(false);
   const [remediationsData, setRemediationsData] = useState();
@@ -28,7 +29,9 @@ const RemediationButton = ({
     return (
       <Tooltip content="You do not have correct permissions to remediate this entity.">
         <span>
-          <Button isDisabled>{children}</Button>
+          <Button isDisabled {...buttonProps}>
+            {children}
+          </Button>
         </span>
       </Tooltip>
     );
@@ -44,18 +47,21 @@ const RemediationButton = ({
             setRemediationsData(data);
           });
         }}
+        {...buttonProps}
       >
         {children}
       </Button>
       {remediationsData && (
         <RemediationWizard
-          onRemediationCreated={onRemediationCreated}
           setOpen={(isOpen) =>
             setRemediationsData((prevData) =>
               isOpen === false ? null : prevData
             )
           }
-          data={remediationsData || {}}
+          data={{
+            onRemediationCreated,
+            ...(remediationsData || {}),
+          }}
         />
       )}
     </React.Fragment>
@@ -67,6 +73,9 @@ RemediationButton.propTypes = {
   dataProvider: propTypes.func.isRequired,
   onRemediationCreated: propTypes.func,
   children: propTypes.node,
+  buttonProps: propTypes.shape({
+    [propTypes.string]: propTypes.any,
+  }),
 };
 
 RemediationButton.defaultProps = {
