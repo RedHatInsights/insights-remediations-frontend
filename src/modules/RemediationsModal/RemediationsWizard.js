@@ -69,7 +69,7 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
     dedupeArray(
       data.issues?.reduce(
         (acc, curr) => [...acc, ...(curr.systems || [])],
-        [...data.systems]
+        [...(data.systems || [])]
       )
     )
   );
@@ -111,7 +111,7 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
     'review-systems': {
       component: ReviewSystems,
       issues: data.issues,
-      systems: data.systems,
+      systems: data.systems || [],
       allSystems: allSystems.current,
       registry,
     },
