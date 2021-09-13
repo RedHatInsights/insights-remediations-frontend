@@ -30,7 +30,7 @@ function buildBody(status) {
 
 const ActionsResolvedCard = ({ status }) => (
   <Card className="ins-c-card__actions-resolved">
-    <CardHeader className="ins-m-card__header-bold">
+    <CardHeader className="rem-m-card__header-bold">
       Actions Resolved
     </CardHeader>
     <CardBody>{buildBody(status)}</CardBody>

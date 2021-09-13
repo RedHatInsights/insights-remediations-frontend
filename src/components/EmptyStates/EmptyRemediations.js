@@ -15,7 +15,7 @@ import './EmptyRemediations.scss';
 
 export const EmptyRemediations = ({ archivedCount, setShowArchived }) => {
   return (
-    <Bullseye className="ins-c-no-remediations">
+    <Bullseye className="rem-c-no-remediations">
       <EmptyState>
         <EmptyStateIcon icon={WrenchIcon} size="sm" />
         <Title size="lg" headingLevel="h5">

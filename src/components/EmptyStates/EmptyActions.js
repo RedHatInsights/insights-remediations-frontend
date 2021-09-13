@@ -12,7 +12,7 @@ import './EmptyActions.scss';
 
 export const EmptyActions = (filtered) => {
   return (
-    <Bullseye className="ins-c-no-actions">
+    <Bullseye className="rem-c-no-actions">
       <EmptyState>
         {filtered.filtered === true ? (
           <Title size="lg" headingLevel="h5">

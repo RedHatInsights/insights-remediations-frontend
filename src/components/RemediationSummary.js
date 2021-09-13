@@ -107,7 +107,7 @@ export const RemediationSummary = ({
   const renderAutoReboot = (remediation) => {
     return (
       <DescriptionList
-        className="ins-c-playbookSummary__settings"
+        className="rem-c-playbookSummary__settings"
         title="Autoreboot"
       >
         <Flex>

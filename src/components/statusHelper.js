@@ -169,7 +169,7 @@ export const StatusSummary = ({
   const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
   const statusBar = (
-    <Flex className="ins-c-remediations-status-bar">
+    <Flex className="rem-c-status-bar">
       {executorStatus && <FlexItem>{statusText(executorStatus)}</FlexItem>}
       <FlexItem>{renderStatus('success', `${passCount}`)}</FlexItem>
       <FlexItem>{renderStatus('failure', `${failCount}`)}</FlexItem>
@@ -228,7 +228,7 @@ export const styledConnectionStatus = (status, err) =>
       <TextContent>
         <Text component={TextVariants.p}>
           <CheckCircleIcon
-            className="ins-c-remediations-reboot-check-circle ins-c-remediations-connection-status"
+            className="rem-c-reboot-check-circle rem-c-connection-status"
             aria-label="connection status"
           />
           Ready
@@ -240,7 +240,7 @@ export const styledConnectionStatus = (status, err) =>
       <TextContent>
         <Text component={TextVariants.p}>
           <CheckCircleIcon
-            className="ins-c-remediations-reboot-check-circle ins-c-remediations-connection-status"
+            className="rem-c-reboot-check-circle rem-c-connection-status"
             aria-label="connection status"
           />
           Ready
@@ -269,7 +269,7 @@ export const styledConnectionStatus = (status, err) =>
       <TextContent>
         <Text component={TextVariants.p}>
           <ExclamationCircleIcon
-            className="ins-c-remediations-failure ins-c-remediations-connection-status"
+            className="ins-c-remediations-failure rem-c-connection-status"
             aria-label="connection status"
           />
           Connection issue
@@ -333,7 +333,7 @@ export const styledConnectionStatus = (status, err) =>
       <TextContent>
         <Text component={TextVariants.p}>
           <ExclamationCircleIcon
-            className="ins-c-remediations-failure ins-c-remediations-connection-status"
+            className="ins-c-remediations-failure rem-c-connection-status"
             aria-label="connection status"
           />
           Cannot remediate - Cloud connector not defined
@@ -444,7 +444,7 @@ export const styledConnectionStatus = (status, err) =>
       <TextContent>
         <Text component={TextVariants.small}>
           <SyncIcon
-            className="ins-c-remediations-connection-status"
+            className="rem-c-connection-status"
             aria-label="connection status"
           />
           Checking

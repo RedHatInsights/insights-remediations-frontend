@@ -130,7 +130,7 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
 
   return (
     <Table
-      className="ins-c-activity-table"
+      className="rem-c-activity-table"
       aria-label="Collapsible table"
       onCollapse={handleOnCollapse}
       rows={rows}

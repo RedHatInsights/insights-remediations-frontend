@@ -16,11 +16,11 @@ export default function ConfirmationDialog({
     <Modal
       title={
         <div>
-          <ExclamationTriangleIcon className="ins-m-alert ins-c-remediation__delete-icon" />
+          <ExclamationTriangleIcon className="rem-m-alert rem-c-delete-icon" />
           {title}
         </div>
       }
-      className="remediations ins-c-dialog"
+      className="remediations rem-c-dialog"
       variant={ModalVariant.small}
       isOpen={isOpen}
       onClose={() => onClose(false)}

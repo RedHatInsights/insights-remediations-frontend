@@ -46,7 +46,7 @@ const ActivityDetailsSkeleton = () => {
             <Split hasGutter>
               <SplitItem>
                 <DescriptionList
-                  className="ins-c-playbookSummary__settings"
+                  className="rem-c-playbookSummary__settings"
                   title="Run on"
                 >
                   <Skeleton size="lg" />
@@ -54,7 +54,7 @@ const ActivityDetailsSkeleton = () => {
               </SplitItem>
               <SplitItem>
                 <DescriptionList
-                  className="ins-c-playbookSummary__settings"
+                  className="rem-c-playbookSummary__settings"
                   title="Run by"
                 >
                   <Skeleton size="lg" />
@@ -62,7 +62,7 @@ const ActivityDetailsSkeleton = () => {
               </SplitItem>
               <SplitItem>
                 <DescriptionList
-                  className="ins-c-playbookSummary__settings"
+                  className="rem-c-playbookSummary__settings"
                   title="Run status"
                 >
                   <Skeleton size="lg" />
@@ -75,7 +75,7 @@ const ActivityDetailsSkeleton = () => {
       <Main>
         <Stack hasGutter>
           <Card>
-            <CardHeader className="ins-m-card__header-bold">
+            <CardHeader className="rem-m-card__header-bold">
               <Title headingLevel="h4" size="xl">
                 Results by connection
               </Title>

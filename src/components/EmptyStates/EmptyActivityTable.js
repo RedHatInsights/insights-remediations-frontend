@@ -15,7 +15,7 @@ const EmptyActivityTable = () => (
         cells: [
           {
             title: (
-              <EmptyState className="ins-c-activity-table__empty">
+              <EmptyState className="rem-c-activity-table__empty">
                 <Title headingLevel="h5" size="lg">
                   No activity
                 </Title>
