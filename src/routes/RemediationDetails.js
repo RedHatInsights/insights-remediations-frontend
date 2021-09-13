@@ -213,7 +213,9 @@ const RemediationDetails = ({
               <Split hasGutter>
                 <SplitItem>
                   <ExecutePlaybookButton
-                    isDisabled={!context.permissions.execute || !executable || isFedramp}
+                    isDisabled={
+                      !context.permissions.execute || !executable || isFedramp
+                    }
                     disabledStateText={getDisabledStateText()}
                     remediationId={remediation.id}
                     remediationName={remediation.name}
