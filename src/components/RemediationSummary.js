@@ -55,7 +55,7 @@ export const RemediationSummary = ({
   const rebootEnabled = () => {
     return (
       <div>
-        <CheckCircleIcon className="ins-c-remediations-success" />
+        <CheckCircleIcon className="rem-c-success" />
         <b className="ins-c-remediation-summary__reboot--enabled"> Enabled </b>
         {context.permissions.write && (
           <Button

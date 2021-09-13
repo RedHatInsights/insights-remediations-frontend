@@ -24,7 +24,7 @@ const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
         <React.Fragment>
           <RemediationsLogViewer data={playbookRunSystemDetails.console} />
           {playbookRunSystemDetails.status === 'running' && (
-            <div className="ins-l-playbook-running">
+            <div className="rem-l-playbook-running">
               <Spinner
                 size="lg"
                 aria-valuetext="playbook in progress"

@@ -16,7 +16,7 @@ export default function ConfirmationDialog({
     <Modal
       title={
         <div>
-          <ExclamationTriangleIcon className="rem-m-alert rem-c-delete-icon" />
+          <ExclamationTriangleIcon className="rem-m-alert rem-c-delete-icon pf-u-mr-xs" />
           {title}
         </div>
       }

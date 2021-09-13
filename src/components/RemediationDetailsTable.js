@@ -134,7 +134,7 @@ const buildRow = (remediation) => (issue) => {
         },
         {
           title: getIssueApplication(issue),
-          props: { className: 'ins-m-nowrap' },
+          props: { className: 'rem-m-nowrap' },
         },
         {
           title: systemsForAction(

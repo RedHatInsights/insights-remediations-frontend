@@ -49,7 +49,7 @@ class SkeletonTable extends React.Component {
         </EmptyTable>
         <TableToolbar
           isFooter
-          className="ins-c-skeleton-table__footer ins-m-align-right"
+          className="rem-c-skeleton-table__footer rem-m-align-right"
         >
           <Skeleton size="sm" />
         </TableToolbar>

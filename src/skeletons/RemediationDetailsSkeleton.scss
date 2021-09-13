@@ -1,11 +1,11 @@
 @import '@redhat-cloud-services/frontend-components-utilities/styles/_mixins.scss';
 
 // Overwriting patternfly for widths:
-.ins-s-page-header .ins-c-skeleton { @include rem('width', 100px); }
+.rem-s-page-header .ins-c-skeleton { @include rem('width', 100px); }
 .pf-c-breadcrumb__item .ins-c-skeleton { @include rem('width', 50px); }
-.ins-c-card__system-reboot .ins-c-skeleton { @include rem('width', 50px); }
+.rem-c-card__system-reboot .ins-c-skeleton { @include rem('width', 50px); }
 
-.ins-s-remediation-detail__header .ins-s-page-header{
+.rem-s-remediation-detail__header .rem-s-page-header{
     display: flex;
     .ins-c-skeleton {  @include rem('margin-left', 15px); }
 }

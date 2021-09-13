@@ -1,6 +1,6 @@
-.ins-c-remediations-success { color: var(--pf-global--success-color--100); }
+.rem-c-success { color: var(--pf-global--success-color--100); }
 .ins-c-remediations-failure { color: var(--pf-global--danger-color--100); }
-.ins-c-remediations-running { color: var(--pf-global--default-color--300); }
+.rem-c-running { color: var(--pf-global--default-color--300); }
 .ins-c-remediations-canceled { color: var(--pf-global--default-color--300); }
 
 .rem-c-connection-status { margin-right: var(--pf-global--spacer--xs); }
@@ -8,7 +8,7 @@
 
 td .ins-c-remediations-status-text { display: inline-block; min-width: 85px; }
 
-.ins-c-latest-activity .ins-l-description-list__description {
+.ins-c-latest-activity .rem-l-description-list__description {
     display: flex;
     align-items: center;
     .ins-c-latest-activity__date {

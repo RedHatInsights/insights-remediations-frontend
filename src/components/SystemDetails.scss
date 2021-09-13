@@ -12,13 +12,13 @@
     code {
         // style the line numbers
         &:first-of-type {
-            padding: 8px;
+            padding: var(--pf-global--spacer--sm);
             border-right: 2px solid var(--pf-global--Color--light-300);
-            margin-right: 8px;
+            margin-right: var(--pf-global--spacer--sm);
         }
          &:nth-of-type(2) {
              position: relative;
-             top: 8px;
+             top: var(--pf-global--spacer--sm);
              white-space: pre-wrap;
          }
     }
@@ -27,7 +27,7 @@
     &__finished { border-bottom: 2px solid var(--pf-global--Color--light-300);}
 }
 
-.ins-l-playbook-running {
+.rem-l-playbook-running {
     background: rgb(240, 240, 240);
     padding: 15px;
     display: flex;

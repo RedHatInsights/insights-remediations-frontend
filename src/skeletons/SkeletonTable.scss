@@ -1,10 +1,10 @@
 @import '@redhat-cloud-services/frontend-components-utilities/styles/_mixins.scss';
 
-.ins-c-skeleton-table__footer > * {
+.rem-c-skeleton-table__footer > * {
     @include rem('margin', 5px);
 }
 
-.ins-m-align-right > * {
+.rem-m-align-right > * {
     margin-left: auto;
     margin-right: 0;
 }

@@ -49,7 +49,7 @@ const RemediationDetailsSkeleton = () => {
         <Level className="ins-c-level">
           <LevelItem>
             <PageHeaderTitle
-              className="ins-s-page-header"
+              className="rem-s-page-header"
               title={
                 <React.Fragment>
                   <Skeleton size="md" />

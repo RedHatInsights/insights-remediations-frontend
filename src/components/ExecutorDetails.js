@@ -326,7 +326,7 @@ const ExecutorDetails = ({
                 normalizeStatus(executor.status) === 'Running' ? (
                   <React.Fragment>
                     <InProgressIcon
-                      className="ins-c-remediations-running"
+                      className="rem-c-running"
                       aria-label="connection status"
                     />
                     {executor.executor_name}

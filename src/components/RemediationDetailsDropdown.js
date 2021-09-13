@@ -79,7 +79,7 @@ function RemediationDetailsDropdown({
             Rename
           </Button>
           <Button
-            className=" ins-c-button__danger-link"
+            className=" rem-c-button__danger-link"
             onClick={() => setDeleteDialogOpen(true)}
             variant="link"
           >
