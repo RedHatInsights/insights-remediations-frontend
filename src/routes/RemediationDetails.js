@@ -12,6 +12,7 @@ import { normalizeStatus } from '../components/statusHelper';
 import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import UpsellBanner from '../components/Alerts/UpsellBanner';
 import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
 import DeniedState from '../components/DeniedState';
@@ -84,6 +85,7 @@ const RemediationDetails = ({
 
   const context = useContext(PermissionContext);
 
+  const { isFedramp } = useChrome();
   const handleUpsellToggle = () => {
     setUpsellBannerVisible(false);
     localStorage.setItem('remediations:bannerStatus', 'dismissed');
@@ -211,7 +213,9 @@ const RemediationDetails = ({
               <Split hasGutter>
                 <SplitItem>
                   <ExecutePlaybookButton
-                    isDisabled={!context.permissions.execute || !executable}
+                    isDisabled={
+                      !context.permissions.execute || !executable || isFedramp
+                    }
                     disabledStateText={getDisabledStateText()}
                     remediationId={remediation.id}
                     remediationName={remediation.name}
