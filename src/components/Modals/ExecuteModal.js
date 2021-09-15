@@ -170,7 +170,11 @@ export const ExecuteModal = ({
                   setActiveAlert({
                     key: generateUniqueId(),
                     title: `Executing playbook ${remediationName}`,
-                    description: `View results in the <b>Activity tab</b>`,
+                    description: (
+                      <span>
+                        View results in the <b>Activity tab</b>
+                      </span>
+                    ),
                     variant: 'success',
                   });
                 }}
