@@ -41,13 +41,13 @@ export const renderStatusIcon = (status) =>
   ({
     running: (
       <InProgressIcon
-        className="ins-c-remediations-running"
+        className="rem-c-running"
         aria-label="connection status"
       />
     ),
     success: (
       <CheckCircleIcon
-        className="ins-c-remediations-success"
+        className="rem-c-success"
         aria-label="connection status"
       />
     ),
@@ -68,10 +68,7 @@ export const renderStatusIcon = (status) =>
 export const renderStatus = (status, text) =>
   ({
     running: (
-      <Flex
-        className="ins-c-remediations-running"
-        spacer={{ default: 'space-items-sm' }}
-      >
+      <Flex className="rem-c-running" spacer={{ default: 'space-items-sm' }}>
         <FlexItem>
           <b>{text || 'Running'}</b>
         </FlexItem>
@@ -81,10 +78,7 @@ export const renderStatus = (status, text) =>
       </Flex>
     ),
     success: (
-      <Flex
-        className="ins-c-remediations-success"
-        spacer={{ default: 'space-items-sm' }}
-      >
+      <Flex className="rem-c-success" spacer={{ default: 'space-items-sm' }}>
         <FlexItem>
           <b>{text || 'Success'}</b>
         </FlexItem>
@@ -124,20 +118,10 @@ export const renderStatus = (status, text) =>
 const statusTextClass = 'ins-c-remediations-status-text';
 export const statusText = (executorStatus) =>
   ({
-    running: (
-      <b className={`${statusTextClass} ins-c-remediations-running`}>Running</b>
-    ),
-    pending: (
-      <b className={`${statusTextClass} ins-c-remediations-running`}>Pending</b>
-    ),
-    acked: (
-      <b className={`${statusTextClass} ins-c-remediations-running`}> Acked </b>
-    ),
-    success: (
-      <b className={`${statusTextClass} ins-c-remediations-success`}>
-        Succeeded
-      </b>
-    ),
+    running: <b className={`${statusTextClass} rem-c-running`}>Running</b>,
+    pending: <b className={`${statusTextClass} rem-c-running`}>Pending</b>,
+    acked: <b className={`${statusTextClass} rem-c-running`}> Acked </b>,
+    success: <b className={`${statusTextClass} rem-c-success`}>Succeeded</b>,
     failure: (
       <b className={`${statusTextClass} ins-c-remediations-failure`}>Failed</b>
     ),
@@ -169,7 +153,7 @@ export const StatusSummary = ({
   const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
   const statusBar = (
-    <Flex className="ins-c-remediations-status-bar">
+    <Flex className="rem-c-status-bar">
       {executorStatus && <FlexItem>{statusText(executorStatus)}</FlexItem>}
       <FlexItem>{renderStatus('success', `${passCount}`)}</FlexItem>
       <FlexItem>{renderStatus('failure', `${failCount}`)}</FlexItem>
@@ -228,7 +212,7 @@ export const styledConnectionStatus = (status, err) =>
       <TextContent>
         <Text component={TextVariants.p}>
           <CheckCircleIcon
-            className="ins-c-remediations-reboot-check-circle ins-c-remediations-connection-status"
+            className="rem-c-reboot-check-circle rem-c-connection-status"
             aria-label="connection status"
           />
           Ready
@@ -240,7 +224,7 @@ export const styledConnectionStatus = (status, err) =>
       <TextContent>
         <Text component={TextVariants.p}>
           <CheckCircleIcon
-            className="ins-c-remediations-reboot-check-circle ins-c-remediations-connection-status"
+            className="rem-c-reboot-check-circle rem-c-connection-status"
             aria-label="connection status"
           />
           Ready
@@ -269,7 +253,7 @@ export const styledConnectionStatus = (status, err) =>
       <TextContent>
         <Text component={TextVariants.p}>
           <ExclamationCircleIcon
-            className="ins-c-remediations-failure ins-c-remediations-connection-status"
+            className="ins-c-remediations-failure rem-c-connection-status"
             aria-label="connection status"
           />
           Connection issue
@@ -333,7 +317,7 @@ export const styledConnectionStatus = (status, err) =>
       <TextContent>
         <Text component={TextVariants.p}>
           <ExclamationCircleIcon
-            className="ins-c-remediations-failure ins-c-remediations-connection-status"
+            className="ins-c-remediations-failure rem-c-connection-status"
             aria-label="connection status"
           />
           Cannot remediate - Cloud connector not defined
@@ -444,7 +428,7 @@ export const styledConnectionStatus = (status, err) =>
       <TextContent>
         <Text component={TextVariants.small}>
           <SyncIcon
-            className="ins-c-remediations-connection-status"
+            className="rem-c-connection-status"
             aria-label="connection status"
           />
           Checking

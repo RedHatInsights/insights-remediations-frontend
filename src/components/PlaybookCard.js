@@ -29,7 +29,7 @@ import './PlaybookCard.scss';
 
 function buildName(name, id) {
   return (
-    <Link to={`/${id}`} className="ins-c-playbook-card__header--name">
+    <Link to={`/${id}`} className="rem-c-playbook-card__header--name">
       {name}
     </Link>
   );
@@ -156,7 +156,7 @@ const PlaybookCardHeader = ({
       );
 
   return (
-    <CardHeader className="ins-c-playbook-card__header">
+    <CardHeader className="rem-c-playbook-card__header">
       <CardActions>
         <Dropdown
           key="dropdown"
@@ -185,15 +185,15 @@ const PlaybookCardHeader = ({
       </CardActions>
       <CardTitle>
         <Stack hasGutter>
-          <StackItem className="ins-c-playbook-card__header--title">
+          <StackItem className="rem-c-playbook-card__header--title">
             {isArchived && (
-              <Badge isRead className="ins-c-playbook-card__header--badge">
+              <Badge isRead className="rem-c-playbook-card__header--badge">
                 Archived
               </Badge>
             )}
             {buildName(remediation.name, remediation.id)}
           </StackItem>
-          <StackItem className="ins-c-playbook-card__header--last-modified">
+          <StackItem className="rem-c-playbook-card__header--last-modified">
             Last modified: <DateFormat date={remediation.updated_at} />
           </StackItem>
         </Stack>
@@ -219,8 +219,7 @@ PlaybookCardHeader.propTypes = {
 const renderActionStatus = (complete, total) => {
   return complete === total && complete !== 0 ? (
     <div>
-      <CheckCircleIcon className="ins-c-remediations-success" /> {complete} of
-      &nbsp;{total}
+      <CheckCircleIcon className="rem-c-success" /> {complete} of &nbsp;{total}
     </div>
   ) : (
     `${complete} of ${total}`
@@ -230,14 +229,14 @@ const renderActionStatus = (complete, total) => {
 const renderProgress = (complete, total) => {
   return complete === total && complete !== 0 ? (
     <Progress
-      className="ins-c-playbook-card__progress ins-c-playbook-card__progress--success"
+      className="rem-c-playbook-card__progress rem-c-playbook-card__progress--success"
       value={100}
       measureLocation={ProgressMeasureLocation.none}
       variant={ProgressVariant.success}
     />
   ) : (
     <Progress
-      className="ins-c-playbook-card__progress"
+      className="rem-c-playbook-card__progress"
       value={(complete / total) * 100}
       measureLocation={ProgressMeasureLocation.none}
     />
@@ -294,7 +293,7 @@ export const PlaybookCard = ({
   // }, [ executeOpen ]);
 
   return (
-    <Card className="ins-c-playbook-card" isCompact>
+    <Card className="rem-c-playbook-card" isCompact>
       <PlaybookCardHeader
         remediation={remediation}
         remediationIdx={remediationIdx}
@@ -308,24 +307,24 @@ export const PlaybookCard = ({
         permission={permission}
         setActiveAlert={setActiveAlert}
       />
-      <CardBody className="ins-c-playbook-card__body">
-        <Split hasGutter className="ins-c-playbook-card__body--split">
+      <CardBody className="rem-c-playbook-card__body">
+        <Split hasGutter className="rem-c-playbook-card__body--split">
           <SplitItem>
             <Stack>
-              <StackItem className="ins-c-playbook-card__body--titles">
+              <StackItem className="rem-c-playbook-card__body--titles">
                 Systems
               </StackItem>
-              <StackItem className="ins-c-playbook-card__body--values">
+              <StackItem className="rem-c-playbook-card__body--values">
                 {remediation.system_count}
               </StackItem>
             </Stack>
           </SplitItem>
           <SplitItem>
             <Stack>
-              <StackItem className="ins-c-playbook-card__body--titles">
+              <StackItem className="rem-c-playbook-card__body--titles">
                 Complete actions
               </StackItem>
-              <StackItem className="ins-c-playbook-card__body--values">
+              <StackItem className="rem-c-playbook-card__body--values">
                 {renderActionStatus(
                   remediation.resolved_count,
                   remediation.issue_count

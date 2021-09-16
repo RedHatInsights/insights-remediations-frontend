@@ -76,7 +76,7 @@ const ActivityDetail = ({
                 normalizeStatus(playbookRun.data.status) === 'running' ? (
                   <React.Fragment>
                     <InProgressIcon
-                      className="ins-c-remediations-running"
+                      className="rem-c-running"
                       aria-label="connection status"
                     />
                     <DateFormat
@@ -101,7 +101,7 @@ const ActivityDetail = ({
             <Split hasGutter>
               <SplitItem>
                 <DescriptionList
-                  className="ins-c-playbookSummary__settings"
+                  className="rem-c-playbookSummary__settings"
                   title="Run on"
                 >
                   <DateFormat type="exact" date={playbookRun.data.created_at} />
@@ -109,7 +109,7 @@ const ActivityDetail = ({
               </SplitItem>
               <SplitItem>
                 <DescriptionList
-                  className="ins-c-playbookSummary__settings"
+                  className="rem-c-playbookSummary__settings"
                   title="Run by"
                 >
                   {`${playbookRun.data.created_by.first_name} ${playbookRun.data.created_by.last_name}`}
@@ -117,7 +117,7 @@ const ActivityDetail = ({
               </SplitItem>
               <SplitItem>
                 <DescriptionList
-                  className="ins-c-playbookSummary__settings"
+                  className="rem-c-playbookSummary__settings"
                   title="Run status"
                 >
                   <StatusSummary
@@ -150,7 +150,7 @@ const ActivityDetail = ({
       <Main>
         <Stack hasGutter>
           <Card>
-            <CardHeader className="ins-m-card__header-bold">
+            <CardHeader className="rem-m-card__header-bold">
               <Title headingLevel="h4" size="xl">
                 Results by connection
               </Title>

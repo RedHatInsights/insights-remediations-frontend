@@ -87,7 +87,7 @@ export const SystemsStatusModal = ({
         onClose={onClose}
         isFooterLeftAligned
       >
-        <div className="ins-c-toolbar__filter">
+        <div className="rem-c-toolbar__filter">
           <InventoryTable
             onLoad={({ mergeWithEntities, INVENTORY_ACTION_TYPES }) =>
               getRegistry().register({

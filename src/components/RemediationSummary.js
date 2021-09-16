@@ -55,7 +55,7 @@ export const RemediationSummary = ({
   const rebootEnabled = () => {
     return (
       <div>
-        <CheckCircleIcon className="ins-c-remediations-success" />
+        <CheckCircleIcon className="rem-c-success" />
         <b className="ins-c-remediation-summary__reboot--enabled"> Enabled </b>
         {context.permissions.write && (
           <Button
@@ -107,7 +107,7 @@ export const RemediationSummary = ({
   const renderAutoReboot = (remediation) => {
     return (
       <DescriptionList
-        className="ins-c-playbookSummary__settings"
+        className="rem-c-playbookSummary__settings"
         title="Autoreboot"
       >
         <Flex>

@@ -25,7 +25,7 @@ const DeniedState = () => {
       <Main>
         <EmptyState
           variant={EmptyStateVariant.full}
-          className="ins-c-remediaitions-denied-state"
+          className="rem-c-denied-state"
         >
           <EmptyStateIcon icon={LockIcon} />
           <Title headingLevel="h5" size="lg">

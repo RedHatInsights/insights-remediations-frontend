@@ -99,7 +99,7 @@ const ReviewActions = (props) => {
           onChange={() => input.onChange(true)}
         />
         {issues.length - multiples.length > 0 && (
-          <Text className="ins-c-remediations-choose-actions-description">
+          <Text className="rem-c-choose-actions-description">
             {`The ${
               issues.length - multiples.length
             } other selected ${pluralize(
@@ -155,7 +155,7 @@ const ReviewActions = (props) => {
           isChecked={!input.value}
           onChange={() => input.onChange(false)}
         />
-        <Text className="ins-c-remediations-choose-actions-description">
+        <Text className="rem-c-choose-actions-description">
           You may modify reboot status to manual reboot in the next step, or
           from the playbook.
         </Text>

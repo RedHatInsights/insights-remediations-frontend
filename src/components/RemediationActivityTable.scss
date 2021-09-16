@@ -1,9 +1,9 @@
 // Activity Table
-.ins-c-activity-table {
+.rem-c-activity-table {
     .pf-c-table__expandable-row {
-        th { padding-top: 24px; }
+        th { padding-top: var(--pf-global--spacer--lg); }
     }
-    .ins-c-remediations-status-bar {
+    .rem-c-status-bar {
         max-width: max-content;
     }
 }

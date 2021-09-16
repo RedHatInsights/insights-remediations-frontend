@@ -26,7 +26,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
   aria-describedby=""
   aria-label=""
   aria-labelledby=""
-  className="remediations ins-c-execute-modal"
+  className="remediations rem-c-execute-modal"
   hasNoBodyWrapper={false}
   isFooterLeftAligned={true}
   isOpen={true}
@@ -39,7 +39,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
   variant="small"
 >
   <div
-    className="ins-c-execute-modal__body"
+    className="rem-c-execute-modal__body"
   >
     <TextContent>
       <Text
@@ -205,7 +205,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
   aria-describedby=""
   aria-label=""
   aria-labelledby=""
-  className="remediations ins-c-execute-modal"
+  className="remediations rem-c-execute-modal"
   hasNoBodyWrapper={false}
   isFooterLeftAligned={true}
   isOpen={true}
@@ -218,7 +218,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
   variant="small"
 >
   <div
-    className="ins-c-execute-modal__body"
+    className="rem-c-execute-modal__body"
   >
     <Alert
       isInline={true}

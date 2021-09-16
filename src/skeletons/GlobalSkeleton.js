@@ -10,7 +10,7 @@ import { Spinner } from '@redhat-cloud-services/frontend-components/Spinner';
 const GlobalSkeleton = () => (
   <React.Fragment>
     <PageHeader className="ins-remediations__skeleton">
-      <PageHeaderTitle className="ins-s-page-header" title="Remediations" />
+      <PageHeaderTitle className="rem-s-page-header" title="Remediations" />
     </PageHeader>
     <Main>
       <Spinner centered />

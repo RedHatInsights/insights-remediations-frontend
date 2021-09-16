@@ -8,11 +8,9 @@ import {
 import PropTypes from 'prop-types';
 import { appUrl } from '../../Utilities/urls';
 
-import './EmptyActions.scss';
-
 export const EmptyActions = (filtered) => {
   return (
-    <Bullseye className="ins-c-no-actions">
+    <Bullseye className="pf-u-pt-2xl">
       <EmptyState>
         {filtered.filtered === true ? (
           <Title size="lg" headingLevel="h5">

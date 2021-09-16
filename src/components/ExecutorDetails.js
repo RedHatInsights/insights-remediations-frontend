@@ -156,7 +156,7 @@ const ExecutorDetails = ({
   const renderInventorycard = (status) => (
     <Main>
       <Stack hasGutter>
-        <Card className="ins-c-card__playbook-log">
+        <Card className="rem-c-card__playbook-log">
           <CardBody>
             <InventoryTable
               ref={inventory}
@@ -167,7 +167,7 @@ const ExecutorDetails = ({
                       INVENTORY_ACTION_TYPES,
                       // eslint-disable-next-line react/display-name
                       renderStatus: (status) => (
-                        <div className="ins-c-remediations-status-bar">
+                        <div className="rem-c-status-bar">
                           {renderStatus(normalizeStatus(status))}
                         </div>
                       ),
@@ -282,7 +282,7 @@ const ExecutorDetails = ({
         <Main>
           <Stack hasGutter>
             <Card>
-              <CardHeader className="ins-m-card__header-bold">
+              <CardHeader className="rem-m-card__header-bold">
                 <Button
                   variant="secondary"
                   onClick={() => downloadPlaybook(remediation.id)}
@@ -326,7 +326,7 @@ const ExecutorDetails = ({
                 normalizeStatus(executor.status) === 'Running' ? (
                   <React.Fragment>
                     <InProgressIcon
-                      className="ins-c-remediations-running"
+                      className="rem-c-running"
                       aria-label="connection status"
                     />
                     {executor.executor_name}
@@ -341,7 +341,7 @@ const ExecutorDetails = ({
             <Split hasGutter>
               <SplitItem>
                 <DescriptionList
-                  className="ins-c-playbookSummary__settings"
+                  className="rem-c-playbookSummary__settings"
                   title="Run status"
                 >
                   {executor.status ? (
@@ -357,7 +357,7 @@ const ExecutorDetails = ({
               </SplitItem>
               <SplitItem>
                 <DescriptionList
-                  className="ins-c-playbookSummary__settings"
+                  className="rem-c-playbookSummary__settings"
                   title="Run by"
                 >
                   {`${playbookRun.data.created_by.first_name} ${playbookRun.data.created_by.last_name}`}
@@ -365,7 +365,7 @@ const ExecutorDetails = ({
               </SplitItem>
               <SplitItem>
                 <DescriptionList
-                  className="ins-c-playbookSummary__settings"
+                  className="rem-c-playbookSummary__settings"
                   title="Run on"
                 >
                   <DateFormat type="exact" date={playbookRun.data.created_at} />

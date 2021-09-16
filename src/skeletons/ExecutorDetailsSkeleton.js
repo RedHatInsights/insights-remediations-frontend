@@ -48,7 +48,7 @@ const ExecutorDetailsSkeleton = () => {
             <Split hasGutter>
               <SplitItem>
                 <DescriptionList
-                  className="ins-c-playbookSummary__settings"
+                  className="rem-c-playbookSummary__settings"
                   title="Run on"
                 >
                   <Skeleton size="lg" />
@@ -56,7 +56,7 @@ const ExecutorDetailsSkeleton = () => {
               </SplitItem>
               <SplitItem>
                 <DescriptionList
-                  className="ins-c-playbookSummary__settings"
+                  className="rem-c-playbookSummary__settings"
                   title="Run by"
                 >
                   <Skeleton size="lg" />
@@ -64,7 +64,7 @@ const ExecutorDetailsSkeleton = () => {
               </SplitItem>
               <SplitItem>
                 <DescriptionList
-                  className="ins-c-playbookSummary__settings"
+                  className="rem-c-playbookSummary__settings"
                   title="Run by"
                 >
                   <Skeleton size="lg" />
@@ -77,7 +77,7 @@ const ExecutorDetailsSkeleton = () => {
       <Main>
         <Stack hasGutter>
           <Card>
-            <CardHeader className="ins-m-card__header-bold">
+            <CardHeader className="rem-m-card__header-bold">
               <Button>Download playbook</Button>
             </CardHeader>
 

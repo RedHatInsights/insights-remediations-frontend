@@ -4,12 +4,12 @@
 .page__remediation-details {
 
     // Make all cards the same height
-    .ins-c-summary-cards .pf-c-card{
+    .rem-c-summary-cards .pf-c-card{
         min-height: 100%
     }
 
-    .pf-c-card__header .ins-m-card__header-bold,
-    .pf-c-card__header.ins-m-card__header-bold {
+    .pf-c-card__header .rem-m-card__header-bold,
+    .pf-c-card__header.rem-m-card__header-bold {
         font-weight: 600;
     }
 
@@ -30,7 +30,7 @@
     }
 
     // Systems Reboot Card
-    .ins-c-card__system-reboot {
+    .rem-c-card__system-reboot {
         .pf-l-stack, .pf-l-stack__item {
             align-items: center;
             text-align: center;

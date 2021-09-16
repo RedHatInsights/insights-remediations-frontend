@@ -2,17 +2,17 @@
 
 exports[`DescriptionList component should render 1`] = `
 <dl
-  className="ins-l-description-list"
+  className="rem-l-description-list"
 >
   <dt
-    className="ins-l-description-list__title"
+    className="rem-l-description-list__title"
   >
     <b>
       title
     </b>
   </dt>
   <dd
-    className="ins-l-description-list__description"
+    className="rem-l-description-list__description"
   >
      
     DescriptionList
@@ -23,17 +23,17 @@ exports[`DescriptionList component should render 1`] = `
 
 exports[`DescriptionList component should render with bold 1`] = `
 <dl
-  className="ins-l-description-list"
+  className="rem-l-description-list"
 >
   <dt
-    className="ins-l-description-list__title"
+    className="rem-l-description-list__title"
   >
     <b>
       title
     </b>
   </dt>
   <dd
-    className="ins-l-description-list__description ins-l-description-list__description--bold"
+    className="rem-l-description-list__description rem-l-description-list__description--bold"
   >
      
     DescriptionList
