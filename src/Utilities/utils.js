@@ -5,6 +5,7 @@ export function capitalize(string) {
 /* eslint-disable camelcase */
 import React, { Fragment } from 'react';
 import { CloseIcon, RedoIcon } from '@patternfly/react-icons';
+import { Bullseye, Spinner } from '@patternfly/react-core';
 import * as api from '../api';
 import uniqWith from 'lodash/uniqWith';
 import isEqual from 'lodash/isEqual';
@@ -104,18 +105,16 @@ export const buildRows = (
             {
               parent: index * 2,
               fullWidth: true,
+              allSystemsNamed: allSystemsNamed.filter((system) =>
+                curr.systems.includes(system.id)
+              ),
+              allSystems: curr.systems,
               cells: [
                 {
                   title: (
-                    <Router>
-                      <SystemsTableWithContext
-                        allSystemsNamed={allSystemsNamed.filter((system) =>
-                          curr.systems.includes(system.id)
-                        )}
-                        allSystems={curr.systems}
-                        disabledColumns={['updated']}
-                      />
-                    </Router>
+                    <Bullseye>
+                      <Spinner />
+                    </Bullseye>
                   ),
                   props: { colSpan: 5, className: 'pf-m-no-padding' },
                 },
@@ -127,9 +126,27 @@ export const buildRows = (
     []
   );
 
+const buildSystemRow = (allSystemsNamed = [], allSystems = []) => (
+  <Router>
+    <SystemsTableWithContext
+      allSystemsNamed={allSystemsNamed}
+      allSystems={allSystems}
+      disabledColumns={['updated']}
+    />
+  </Router>
+);
+
 export const onCollapse = (event, rowKey, isOpen, rows, setRows) => {
   let temp = [...rows];
   rows[rowKey].isOpen = isOpen;
+  temp[rowKey + 1].cells = [
+    {
+      title: buildSystemRow(
+        rows[rowKey + 1].allSystemsNamed,
+        rows[rowKey + 1].allSystems
+      ),
+    },
+  ];
   setRows(temp);
 };
 

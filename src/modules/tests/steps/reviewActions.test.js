@@ -87,7 +87,7 @@ describe('ReviewActions', () => {
       );
     });
     expect(wrapper.find('input[type="radio"]')).toHaveLength(2);
-    expect(wrapper.find('table')).toHaveLength(2);
+    expect(wrapper.find('table')).toHaveLength(1);
     expect(wrapper.find(BodyRow)).toHaveLength(2);
   });
 
