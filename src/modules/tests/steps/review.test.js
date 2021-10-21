@@ -98,7 +98,7 @@ describe('Review', () => {
     });
     wrapper.update();
     expect(wrapper.find('Form')).toHaveLength(1);
-    expect(wrapper.find('table')).toHaveLength(3);
+    expect(wrapper.find('table')).toHaveLength(1);
     expect(wrapper.find(BodyRow)).toHaveLength(4);
     expect(wrapper.find('button')).toHaveLength(8);
   });
