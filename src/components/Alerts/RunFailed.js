@@ -15,10 +15,7 @@ import '../Status.scss';
 const RunFailed = ({ name }) => (
   <Bullseye>
     <EmptyState>
-      <EmptyStateIcon
-        className="ins-c-remediations-failure"
-        icon={ExclamationCircleIcon}
-      />
+      <EmptyStateIcon className="rem-c-failure" icon={ExclamationCircleIcon} />
       <Title headingLevel="h5" size="lg">
         Run failed
       </Title>

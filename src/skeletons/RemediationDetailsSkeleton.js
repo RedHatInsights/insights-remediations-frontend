@@ -37,7 +37,7 @@ import './RemediationDetailsSkeleton.scss';
 const RemediationDetailsSkeleton = () => {
   return (
     <React.Fragment>
-      <PageHeader className="ins-s-remediation-detail__header">
+      <PageHeader className="rem-c-page-details__header">
         <Breadcrumb>
           <BreadcrumbItem>
             <Link to="/"> Remediations </Link>
@@ -46,7 +46,7 @@ const RemediationDetailsSkeleton = () => {
             <Skeleton size="lg" />
           </BreadcrumbItem>
         </Breadcrumb>
-        <Level className="ins-c-level">
+        <Level className="rem-l-level">
           <LevelItem>
             <PageHeaderTitle
               className="rem-s-page-header"

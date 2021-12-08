@@ -1,6 +1,6 @@
 @import '@redhat-cloud-services/frontend-components-utilities/styles/_mixins.scss';
 
-.select-systems-form .pf-c-form__group {
+.rem-c-form-select-systems .pf-c-form__group {
     display: grid;
     grid-template-columns: 1fr 2fr;
     @include rem('grid-column-gap', 30px);

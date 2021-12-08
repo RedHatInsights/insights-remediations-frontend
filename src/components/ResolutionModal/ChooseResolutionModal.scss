@@ -1,6 +1,6 @@
 @import '@redhat-cloud-services/frontend-components-utilities/styles/_mixins.scss';
 
-.ins-c-resolution-modal {
+.rem-c-resolution-modal {
     .ins-c-resolution-choice__details { @include rem("margin-left", 5px); }
     .ins-c-resolution-option .pf-c-check { align-items: baseline; }
     .ins-m-text__bold { font-weight: 500; }

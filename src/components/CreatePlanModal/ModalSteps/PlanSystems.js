@@ -49,7 +49,7 @@ class PlanSystems extends Component {
     return (
       <React.Fragment>
         <h2> Select the system(s) for the plan </h2>
-        <Form className="select-systems-form">
+        <Form className="rem-c-form-select-systems">
           <FormGroup isRequired fieldId="select-systems">
             <Radio
               id="one-system"

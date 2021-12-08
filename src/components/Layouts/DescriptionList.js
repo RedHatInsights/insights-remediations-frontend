@@ -14,17 +14,17 @@ const DescriptionList = ({
   ...props
 }) => {
   const descriptionListClasses = classnames(
-    'rem-l-description-list__description',
-    { ['rem-l-description-list__description--bold']: isBold },
-    { ['rem-l-description-list__description--withGutter']: hasGutter },
-    { ['rem-l-description-list__description--needsPointer']: needsPointer }
+    'rem-c-description-list__description',
+    { ['rem-c-description-list__description--bold']: isBold },
+    { ['rem-c-description-list__description--withGutter']: hasGutter },
+    { ['rem-c-description-list__description--needsPointer']: needsPointer }
   );
 
-  const mainClasses = classnames(className, 'rem-l-description-list');
+  const mainClasses = classnames(className, 'rem-c-description-list');
 
   return (
     <dl className={mainClasses} {...props}>
-      <dt className="rem-l-description-list__title">
+      <dt className="rem-c-description-list__title">
         <b>{title}</b>
       </dt>
       <dd className={descriptionListClasses}> {children} </dd>

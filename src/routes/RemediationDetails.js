@@ -205,7 +205,7 @@ const RemediationDetails = ({
             </BreadcrumbItem>
             <BreadcrumbItem isActive> {remediation.name} </BreadcrumbItem>
           </Breadcrumb>
-          <Level className="ins-c-level">
+          <Level className="rem-l-level">
             <LevelItem>
               <PageHeaderTitle title={remediation.name} />
             </LevelItem>
