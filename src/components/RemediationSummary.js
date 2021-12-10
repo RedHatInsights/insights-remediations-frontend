@@ -139,7 +139,7 @@ export const RemediationSummary = ({
         <FlexItem spacer={{ default: 'spacer-xl' }}>
           <DescriptionList
             needsPointer
-            className="ins-c-latest-activity"
+            className="rem-c-description-list-latest-activity"
             title="Latest activity"
           >
             <StatusSummary
@@ -164,7 +164,7 @@ export const RemediationSummary = ({
               )}
               permission={{}}
             />
-            <span className="ins-c-latest-activity__date">
+            <span className="rem-c-description-list-latest-activity__date">
               <DateFormat type="relative" date={mostRecent.updated_at} />
             </span>
             <Link to={`/${mostRecent.remediation_id}/${mostRecent.id}`}>

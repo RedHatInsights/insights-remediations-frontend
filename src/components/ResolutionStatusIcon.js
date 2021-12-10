@@ -14,14 +14,14 @@ export default function ResolutionStatusIcon({ status }) {
     case true:
       return (
         <CheckCircleIcon
-          className="ins-c-resolution-status-icon--resolved"
+          className="rem-c-resolution-status-icon--resolved"
           title="Resolved"
         />
       );
     case false:
       return (
         <ExclamationCircleIcon
-          className="ins-c-resolution-status-icon--unresolved"
+          className="rem-c-resolution-status-icon--unresolved"
           title="Unresolved"
         />
       );

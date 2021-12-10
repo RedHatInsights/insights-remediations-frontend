@@ -17,7 +17,7 @@ SyntaxHighlighter.registerLanguage('yaml', yaml);
 const PlaybookSystemDetails = ({ systemId, playbookRunSystemDetails }) => {
   return (
     <React.Fragment>
-      <Title headingLevel="h4" size="xl" className="ins-c-job-output__title">
+      <Title headingLevel="h4" size="xl" className="rem-c-title-job-output">
         Playbook log
       </Title>
       {systemId && systemId === playbookRunSystemDetails.system_id ? (

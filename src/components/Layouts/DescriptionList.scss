@@ -1,19 +1,19 @@
-.rem-l-description-list {
-    .rem-l-description-list__title {
+.rem-c-description-list {
+    .rem-c-description-list__title {
         margin-bottom: 6px; // form-element-spacer
         font-size: var(--pf-global--FontSize--sm);
     }
-    .rem-l-description-list__description {
+    .rem-c-description-list__description {
         font-size: var(--pf-global--FontSize--md);
         &--bold {
             font-size: var(--pf-global--FontSize--lg);
             font-weight: var(--pf-global--FontWeight--redhatfont--bold);
         }
     }
-    .rem-l-description-list__description--withGutter {
+    .rem-c-description-list__description--withGutter {
         * + * { margin-left: var(--pf-global--spacer--sm); }
     }
-    .rem-l-description-list__description--needsPointer {
+    .rem-c-description-list__description--needsPointer {
         cursor: pointer;
     }
 }
