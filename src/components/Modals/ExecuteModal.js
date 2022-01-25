@@ -254,9 +254,9 @@ export const ExecuteModal = ({
                     key="download"
                     variant="link"
                     isInline
-                    component="span"
+                    component="a"
                     // eslint-disable-next-line max-len
-                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-10/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/2021/html/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index"
                     rel="noreferrer"
                     target="_blank"
                   >
@@ -273,9 +273,9 @@ export const ExecuteModal = ({
                     key="configure"
                     variant="link"
                     isInline
-                    component="span"
+                    component="a"
                     // eslint-disable-next-line max-len
-                    href="#"
+                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/2021/html/red_hat_connector_configuration_guide/index"
                     rel="noreferrer"
                     target="_blank"
                   >
@@ -297,9 +297,9 @@ export const ExecuteModal = ({
             key="configure"
             variant="link"
             isInline
-            component="span"
+            component="a"
             // eslint-disable-next-line max-len
-            href="#"
+            href="https://access.redhat.com/articles/rhc"
             rel="noreferrer"
             target="_blank"
           >
