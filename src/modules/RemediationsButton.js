@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import propTypes from 'prop-types';
 import validate from './RemediationsModal/validate';
 
-import { CAN_REMEDIATE } from '../Utilities/utils';
+import { CAN_REMEDIATE, matchPermissions } from '../Utilities/utils';
 import { Button, Tooltip } from '@patternfly/react-core';
 import RemediationWizard from './RemediationsModal';
 
@@ -20,7 +20,9 @@ const RemediationButton = ({
   useEffect(() => {
     insights.chrome.getUserPermissions('remediations').then((permissions) => {
       setHasPermissions(
-        permissions.some(({ permission }) => permission === CAN_REMEDIATE)
+        permissions.some(({ permission }) =>
+          matchPermissions(permission, CAN_REMEDIATE)
+        )
       );
     });
   }, []);
