@@ -427,3 +427,19 @@ export const getIssuesMultiple = (
       };
     })
     .filter((record) => record.alternate > 0);
+
+export const matchPermissions = (permissionA, permissionB) => {
+  const segmentsA = permissionA.split(':');
+  const segmentsB = permissionB.split(':');
+
+  if (segmentsA.length !== segmentsB.length) {
+    return false;
+  }
+
+  return segmentsA.every(
+    (segmentA, index) =>
+      segmentA === segmentsB[index] ||
+      segmentA === '*' ||
+      segmentsB[index] === '*'
+  );
+};
