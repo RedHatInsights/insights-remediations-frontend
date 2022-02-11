@@ -11,13 +11,13 @@ const ProgressBar = ({ percent, failed }) => {
 
   if (percent === 100) {
     title = 'Completed';
-    variant = ProgressVariant.success;
+    variant = 'success';
   } else if (failed) {
     title = 'Error';
-    variant = ProgressVariant.danger;
+    variant = 'danger';
   } else {
     title = 'In progress';
-    variant = ProgressVariant.info;
+    variant = 'info';
   }
 
   return (

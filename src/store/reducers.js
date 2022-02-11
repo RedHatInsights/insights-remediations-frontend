@@ -68,6 +68,17 @@ export const remediationSystems = ({ LOAD_ENTITIES_FULFILLED }) =>
             ['display_name', 'tags'].includes(key)
           ),
           {
+            key: 'os',
+            title: 'OS',
+            // eslint-disable-next-line react/display-name
+            renderFunc: (_, id, data) => {
+              console.log(data);
+              const { name, major, minor} = data?.system_profile.operating_system;
+              return name && (major && `${name} ${major}.${minor}` || name) || 'N/A';
+            },
+            props: { width: 6 },
+          },
+          {
             key: 'issues',
             title: 'Issues',
             // eslint-disable-next-line react/display-name
@@ -78,7 +89,7 @@ export const remediationSystems = ({ LOAD_ENTITIES_FULFILLED }) =>
                 displayName={display_name}
               />
             ),
-            props: { width: 15 },
+            props: { width: 12 },
           },
           {
             key: 'rebootRequired',
@@ -87,7 +98,7 @@ export const remediationSystems = ({ LOAD_ENTITIES_FULFILLED }) =>
             renderFunc: (rebootRequired) => (
               <RebootColumn rebootRequired={rebootRequired} />
             ),
-            props: { width: 15 },
+            props: { width: 12 },
           },
         ].map((cell) => ({
           ...cell,

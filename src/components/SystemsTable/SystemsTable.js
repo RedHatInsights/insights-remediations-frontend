@@ -68,10 +68,11 @@ const SystemsTableWrapper = ({
     <InventoryTable
       variant="compact"
       showTags
+      showOS
       noDetail
       hideFilters={{
         all: true,
-        name: false,
+        name: false
       }}
       tableProps={{
         canSelectAll: false,

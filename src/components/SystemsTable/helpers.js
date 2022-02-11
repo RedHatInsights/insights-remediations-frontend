@@ -41,6 +41,7 @@ export const fetchInventoryData = async (
       ? display_name.includes(config.filters.hostnameOrId)
       : true
   );
+
   const data = await getEntities(
     currSystems
       .slice((page - 1) * config.per_page, page * config.per_page)
@@ -48,6 +49,7 @@ export const fetchInventoryData = async (
     { ...config, hasItems: true },
     true
   );
+  console.log(data);
   return {
     ...data,
     page,
