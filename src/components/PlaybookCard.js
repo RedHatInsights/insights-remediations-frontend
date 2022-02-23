@@ -12,7 +12,6 @@ import {
   KebabToggle,
   Progress,
   ProgressMeasureLocation,
-  ProgressVariant,
   Split,
   SplitItem,
   Stack,
@@ -186,12 +185,12 @@ const PlaybookCardHeader = ({
       <CardTitle>
         <Stack hasGutter>
           <StackItem className="rem-c-playbook-card__header--title">
+            {buildName(remediation.name, remediation.id)}
             {isArchived && (
               <Badge isRead className="rem-c-playbook-card__header--badge">
                 Archived
               </Badge>
             )}
-            {buildName(remediation.name, remediation.id)}
           </StackItem>
           <StackItem className="rem-c-playbook-card__header--last-modified">
             Last modified: <DateFormat date={remediation.updated_at} />
@@ -226,13 +225,18 @@ const renderActionStatus = (complete, total) => {
   );
 };
 
-const renderProgress = (complete, total) => {
-  return complete === total && complete !== 0 ? (
+const renderProgress = (complete, total, archived) => {
+  return archived ? (
+    <Progress
+      className="rem-c-playbook-card__progress rem-c-playbook-card__progress--archived"
+      value={100}
+      measureLocation={ProgressMeasureLocation.none}
+    />
+  ) : complete === total && complete !== 0 ? (
     <Progress
       className="rem-c-playbook-card__progress rem-c-playbook-card__progress--success"
       value={100}
       measureLocation={ProgressMeasureLocation.none}
-      variant={ProgressVariant.success}
     />
   ) : (
     <Progress
@@ -334,7 +338,11 @@ export const PlaybookCard = ({
           </SplitItem>
         </Split>
       </CardBody>
-      {renderProgress(remediation.resolved_count, remediation.issue_count)}
+      {renderProgress(
+        remediation.resolved_count,
+        remediation.issue_count,
+        archived
+      )}
     </Card>
   );
 };
