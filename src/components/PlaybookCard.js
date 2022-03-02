@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
-  Badge,
   Card,
   CardBody,
   CardHeader,
@@ -16,6 +15,7 @@ import {
   SplitItem,
   Stack,
   StackItem,
+  Label,
 } from '@patternfly/react-core';
 import { CheckCircleIcon } from '@patternfly/react-icons';
 import { DateFormat } from '@redhat-cloud-services/frontend-components/DateFormat';
@@ -185,12 +185,10 @@ const PlaybookCardHeader = ({
       <CardTitle>
         <Stack hasGutter>
           <StackItem className="rem-c-playbook-card__header--title">
-            {buildName(remediation.name, remediation.id)}
-            {isArchived && (
-              <Badge isRead className="rem-c-playbook-card__header--badge">
-                Archived
-              </Badge>
-            )}
+            <span className="pf-u-mr-sm">
+              {buildName(remediation.name, remediation.id)}
+            </span>
+            {isArchived && <Label>Archived</Label>}
           </StackItem>
           <StackItem className="rem-c-playbook-card__header--last-modified">
             Last modified: <DateFormat date={remediation.updated_at} />
