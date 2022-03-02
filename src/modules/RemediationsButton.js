@@ -6,6 +6,7 @@ import validate from './RemediationsModal/validate';
 import { CAN_REMEDIATE, matchPermissions } from '../Utilities/utils';
 import { Button, Tooltip } from '@patternfly/react-core';
 import RemediationWizard from './RemediationsModal';
+import NoDataModal from './RemediationsModal/NoDataModal';
 
 const RemediationButton = ({
   isDisabled,
@@ -16,6 +17,7 @@ const RemediationButton = ({
 }) => {
   const [hasPermissions, setHasPermissions] = useState(false);
   const [remediationsData, setRemediationsData] = useState();
+  const [isNoDataModalOpen, setNoDataModalOpen] = useState(false);
 
   useEffect(() => {
     insights.chrome.getUserPermissions('remediations').then((permissions) => {
@@ -45,6 +47,11 @@ const RemediationButton = ({
         isDisabled={isDisabled}
         onClick={() => {
           Promise.resolve(dataProvider()).then((data) => {
+            if (!data) {
+              setNoDataModalOpen(true);
+              return;
+            }
+
             validate(data);
             setRemediationsData(data);
           });
@@ -53,6 +60,7 @@ const RemediationButton = ({
       >
         {children}
       </Button>
+      <NoDataModal isOpen={isNoDataModalOpen} setOpen={setNoDataModalOpen} />
       {remediationsData && (
         <RemediationWizard
           setOpen={(isOpen) =>
