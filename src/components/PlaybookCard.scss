@@ -50,3 +50,7 @@
 }
 
 .rem-c-success { color: var(--pf-global--success-color--100); }
+
+.rem-c-playbook-card__progress--archived {
+    --pf-c-progress__indicator--BackgroundColor: var(--pf-global--palette--black-500);
+}
