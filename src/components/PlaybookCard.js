@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
+  Badge,
   Card,
   CardBody,
   CardHeader,
@@ -11,11 +12,11 @@ import {
   KebabToggle,
   Progress,
   ProgressMeasureLocation,
+  ProgressVariant,
   Split,
   SplitItem,
   Stack,
   StackItem,
-  Label,
 } from '@patternfly/react-core';
 import { CheckCircleIcon } from '@patternfly/react-icons';
 import { DateFormat } from '@redhat-cloud-services/frontend-components/DateFormat';
@@ -185,10 +186,12 @@ const PlaybookCardHeader = ({
       <CardTitle>
         <Stack hasGutter>
           <StackItem className="rem-c-playbook-card__header--title">
-            <span className="pf-u-mr-sm">
-              {buildName(remediation.name, remediation.id)}
-            </span>
-            {isArchived && <Label>Archived</Label>}
+            {isArchived && (
+              <Badge isRead className="rem-c-playbook-card__header--badge">
+                Archived
+              </Badge>
+            )}
+            {buildName(remediation.name, remediation.id)}
           </StackItem>
           <StackItem className="rem-c-playbook-card__header--last-modified">
             Last modified: <DateFormat date={remediation.updated_at} />
@@ -223,18 +226,13 @@ const renderActionStatus = (complete, total) => {
   );
 };
 
-const renderProgress = (complete, total, archived) => {
-  return archived ? (
-    <Progress
-      className="rem-c-playbook-card__progress rem-c-playbook-card__progress--archived"
-      value={100}
-      measureLocation={ProgressMeasureLocation.none}
-    />
-  ) : complete === total && complete !== 0 ? (
+const renderProgress = (complete, total) => {
+  return complete === total && complete !== 0 ? (
     <Progress
       className="rem-c-playbook-card__progress rem-c-playbook-card__progress--success"
       value={100}
       measureLocation={ProgressMeasureLocation.none}
+      variant={ProgressVariant.success}
     />
   ) : (
     <Progress
@@ -336,11 +334,7 @@ export const PlaybookCard = ({
           </SplitItem>
         </Split>
       </CardBody>
-      {renderProgress(
-        remediation.resolved_count,
-        remediation.issue_count,
-        archived
-      )}
+      {renderProgress(remediation.resolved_count, remediation.issue_count)}
     </Card>
   );
 };

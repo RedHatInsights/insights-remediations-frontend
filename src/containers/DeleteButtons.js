@@ -29,8 +29,6 @@ export const DeleteActionsButton = withRouter(
   connect(
     (state, { issues }) => ({
       label: `Remove action${issues.length > 1 ? 's' : ''}`,
-      dialogTitle: 'Remove action',
-      dialogConfirmationText: 'Remove action',
     }),
     (dispatch, { remediation, issues, afterDelete }) => ({
       onDelete: async () => {

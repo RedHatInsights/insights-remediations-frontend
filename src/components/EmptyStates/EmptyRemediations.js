@@ -9,6 +9,7 @@ import {
 } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 import { WrenchIcon } from '@patternfly/react-icons';
+import { appUrl } from '../../Utilities/urls';
 
 import './EmptyRemediations.scss';
 
@@ -18,16 +19,21 @@ export const EmptyRemediations = ({ archivedCount, setShowArchived }) => {
       <EmptyState>
         <EmptyStateIcon icon={WrenchIcon} size="sm" />
         <Title size="lg" headingLevel="h5">
-          No remediation playbooks yet
+          No remediation playbooks
         </Title>
         <EmptyStateBody>
-          Insights uses Ansible Playbooks to remediate or mitigate configuration
-          problems on your systems, and apply patches.
+          Create an Ansible Playbook to remediate or mitigate vulnerabilities or
+          configuration issues.
           <br />
           <br />
-          To create a remediation playbook, select issues identified in Insights
-          applications, then select
-          <strong> Remediate</strong>.
+          To create a new remediation Playbook, select issues identified in
+          <br />
+          <a href={appUrl('advisor').toString()}>Recommendations</a>,&nbsp;
+          <a href={appUrl('compliance').toString()}>Compliance</a> or&nbsp;
+          <a href={appUrl('vulnerabilities').toString()}>Vulnerability</a>&nbsp;
+          and select
+          <br />
+          <strong>Remediate with Ansible.</strong>
         </EmptyStateBody>
         <br />
         {archivedCount > 0 && (

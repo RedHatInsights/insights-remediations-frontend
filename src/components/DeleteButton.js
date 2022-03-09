@@ -34,8 +34,6 @@ class DeleteButton extends Component {
         </Button>
         {dialogOpen && (
           <ConfirmationDialog
-            title={this.props.dialogTitle}
-            confirmText={this.props.dialogConfirmationText}
             text={this.props.dialogMessage}
             onClose={this.onDialogClose}
           />
@@ -47,9 +45,7 @@ class DeleteButton extends Component {
 
 DeleteButton.propTypes = {
   label: PropTypes.string,
-  dialogTitle: PropTypes.string,
   dialogMessage: PropTypes.string,
-  dialogConfirmationText: PropTypes.string,
   isDisabled: PropTypes.bool,
   onDelete: PropTypes.func.isRequired,
   variant: PropTypes.string,
