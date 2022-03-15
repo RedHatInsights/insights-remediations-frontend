@@ -13,7 +13,6 @@ import {
   TableBody,
   TableVariant,
 } from '@patternfly/react-table';
-import { RedoIcon, TimesIcon } from '@patternfly/react-icons';
 import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/PrimaryToolbar';
 import { TableToolbar } from '@redhat-cloud-services/frontend-components/TableToolbar';
 import { generateUniqueId } from './Alerts/PlaybookToastAlerts';
@@ -37,7 +36,6 @@ import * as debug from '../Utilities/debug';
 import './RemediationDetailsTable.scss';
 import { PermissionContext } from '../App';
 import { EmptyActions } from './EmptyStates/EmptyActions';
-import { IconInline } from './Layouts/IconInline';
 
 function resolutionDescriptionCell(remediation, issue) {
   const url = buildIssueUrl(issue.id);
@@ -76,11 +74,7 @@ function resolutionDescriptionCell(remediation, issue) {
 }
 
 function needsRebootCell(needsReboot) {
-  if (needsReboot) {
-    return <IconInline icon={<RedoIcon />} text="Yes" />;
-  }
-
-  return <IconInline icon={<TimesIcon />} text="No" />;
+  return <span>{needsReboot ? 'Required' : 'Not required'}</span>;
 }
 
 function systemsForAction(issue, remediation, title) {
