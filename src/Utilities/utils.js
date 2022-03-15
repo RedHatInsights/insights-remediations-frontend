@@ -4,7 +4,6 @@ export function capitalize(string) {
 
 /* eslint-disable camelcase */
 import React, { Fragment } from 'react';
-import { CloseIcon, RedoIcon } from '@patternfly/react-icons';
 import { Bullseye, Spinner } from '@patternfly/react-core';
 import * as api from '../api';
 import uniqWith from 'lodash/uniqWith';
@@ -83,15 +82,9 @@ export const buildRows = (
           },
           {
             title: curr.needsReboot ? (
-              <div>
-                <RedoIcon className="pf-u-mr-sm" />
-                Yes
-              </div>
+              <div>Required</div>
             ) : (
-              <div>
-                <CloseIcon className="pf-u-mr-sm" />
-                No
-              </div>
+              <div>Not required</div>
             ),
           },
           {
@@ -427,3 +420,19 @@ export const getIssuesMultiple = (
       };
     })
     .filter((record) => record.alternate > 0);
+
+export const matchPermissions = (permissionA, permissionB) => {
+  const segmentsA = permissionA.split(':');
+  const segmentsB = permissionB.split(':');
+
+  if (segmentsA.length !== segmentsB.length) {
+    return false;
+  }
+
+  return segmentsA.every(
+    (segmentA, index) =>
+      segmentA === segmentsB[index] ||
+      segmentA === '*' ||
+      segmentsB[index] === '*'
+  );
+};
