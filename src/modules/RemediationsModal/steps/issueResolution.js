@@ -20,7 +20,6 @@ import {
   SELECTED_RESOLUTIONS,
   SYSTEMS,
 } from '../../../Utilities/utils';
-import { RedoIcon, CloseIcon } from '@patternfly/react-icons';
 import uniqBy from 'lodash/uniqBy';
 import differenceWith from 'lodash/differenceWith';
 import isEqual from 'lodash/isEqual';
@@ -127,7 +126,6 @@ const IssueResolution = ({ issue }) => {
                   </Text>
                   {
                     <div className="ins-c-reboot-required">
-                      {resolution.needs_reboot ? <RedoIcon /> : <CloseIcon />}
                       <Text component="span">
                         {resolution.needs_reboot ? (
                           'Reboot required'
