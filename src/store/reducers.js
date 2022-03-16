@@ -108,7 +108,7 @@ const reducers = {
       }),
       [ACTION_TYPES.LOAD_REMEDIATIONS_FULFILLED]: (state, action) => ({
         status: 'fulfilled',
-        value: action.payload,
+        value: action.payload.data,
       }),
       [ACTION_TYPES.LOAD_REMEDIATIONS_REJECTED]: () => ({
         status: 'rejected',
