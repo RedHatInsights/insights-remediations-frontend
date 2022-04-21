@@ -256,7 +256,7 @@ export const ExecuteModal = ({
                     isInline
                     component="a"
                     // eslint-disable-next-line max-len
-                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/2021/html/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index"
+                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index"
                     rel="noreferrer"
                     target="_blank"
                   >
@@ -275,7 +275,7 @@ export const ExecuteModal = ({
                     isInline
                     component="a"
                     // eslint-disable-next-line max-len
-                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/2021/html/red_hat_connector_configuration_guide/index"
+                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html/red_hat_connector_configuration_guide/index"
                     rel="noreferrer"
                     target="_blank"
                   >

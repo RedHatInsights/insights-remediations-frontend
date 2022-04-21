@@ -318,7 +318,7 @@ export const styledConnectionStatus = (status, err) =>
             variant="link"
             component="a"
             // eslint-disable-next-line max-len
-            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-10/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html-single/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index#configuring-your-satellite-infrastructure-to-communicate-with-insights"
           >
             Learn how to configure &nbsp;
             <ExternalLinkAltIcon />
@@ -350,7 +350,7 @@ export const styledConnectionStatus = (status, err) =>
             variant="link"
             component="a"
             // eslint-disable-next-line max-len
-            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2021/html/red_hat_connector_configuration_guide/index"
+            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html/red_hat_connector_configuration_guide/index"
           >
             Learn how to configure &nbsp;
             <ExternalLinkAltIcon />
@@ -404,7 +404,7 @@ export const styledConnectionStatus = (status, err) =>
             variant="link"
             component="a"
             // eslint-disable-next-line max-len
-            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2021/html/red_hat_connector_configuration_guide/index"
+            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html/red_hat_connector_configuration_guide/index"
           >
             Learn how to configure &nbsp;
             <ExternalLinkAltIcon />
