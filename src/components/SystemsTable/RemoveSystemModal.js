@@ -47,13 +47,16 @@ const RemoveSystemModal = ({
         <Stack hasGutter>
           <StackItem>
             This action will remove{' '}
-            <b>
-              {selected.length === 1
-                ? selected[0]?.display_name
-                : selected.length}
-            </b>{' '}
-            {pluralize(selected.length, 'system')} from <b>{remediationName}</b>{' '}
-            Remediation.
+            {selected.length === 1 ? (
+              <span>
+                <b> {selected[0]?.display_name} </b> system
+              </span>
+            ) : (
+              <span>
+                <b> {selected.length} </b> systems
+              </span>
+            )}{' '}
+            from <b>{remediationName}</b> Remediation.
           </StackItem>
           <StackItem>
             Removing {pluralize(selected.length, 'system')} from this
