@@ -113,10 +113,10 @@ const SystemsTableWrapper = ({
       actions={[
         {
           title: 'Remove system',
-          onClick: (_event, _index, { id, display_name: displayName }) => {
+          onClick: (_event, _index, { id, display_name }) => {
             activeSystem.current = {
               id,
-              displayName,
+              display_name,
               issues: remediation.issues.filter((issue) =>
                 issue.systems.find(({ id: systemId }) => systemId === id)
               ),
