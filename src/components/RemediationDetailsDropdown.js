@@ -54,16 +54,19 @@ function RemediationDetailsDropdown({
 
       <ConfirmationDialog
         isOpen={deleteDialogOpen}
+        title="Remove playbook?"
         text="You will not be able to recover this Playbook"
+        confirmText="Remove playbook"
         onClose={(confirm) => {
           setDeleteDialogOpen(false);
-          confirm && onDelete(remediation.id);
-          setActiveAlert({
-            key: generateUniqueId(),
-            title: `Deleted playbook ${name}`,
-            description: '',
-            variant: 'success',
-          });
+          if (confirm) {
+            onDelete(remediation.id);
+            setActiveAlert({
+              key: generateUniqueId(),
+              title: `Deleted playbook ${remediation.name}`,
+              variant: 'success',
+            });
+          }
         }}
       />
 
