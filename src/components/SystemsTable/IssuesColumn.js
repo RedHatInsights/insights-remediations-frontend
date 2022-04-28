@@ -26,7 +26,7 @@ const sortByIndex = (issue) => [
   issue.resolved,
 ];
 
-const IssuesColumn = ({ issues, status, displayName }) => {
+const IssuesColumn = ({ issues, status, display_name }) => {
   const [sortByConfig, setSortByConfig] = useState({
     index: 0,
     direction: 'asc',
@@ -44,13 +44,13 @@ const IssuesColumn = ({ issues, status, displayName }) => {
       </Button>
       <Modal
         variant={ModalVariant.medium}
-        title={`Actions for system ${displayName}`}
+        title={`Actions for system ${display_name}`}
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
       >
         <Table
           variant="compact"
-          aria-label={`Issues table for ${displayName}`}
+          aria-label={`Issues table for ${display_name}`}
           rows={(sortByConfig.direction === 'asc'
             ? sortedIssues
             : sortedIssues.reverse()
@@ -121,7 +121,7 @@ IssuesColumn.propTypes = {
   issues: PropTypes.arrayOf(PropTypes.shape()),
   rebootRequired: PropTypes.bool,
   status: PropTypes.bool,
-  displayName: PropTypes.string,
+  display_name: PropTypes.string,
 };
 
 export default IssuesColumn;
