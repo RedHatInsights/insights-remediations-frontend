@@ -4,6 +4,9 @@ import { LogViewer, LogViewerSearch } from '@patternfly/react-log-viewer';
 import { Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 
 const RemediationsLogViewer = ({ data }) => {
+  // New line after each line
+  data = data.replaceAll('\n', '\n\n').slice(0, -1);
+
   return (
     <LogViewer
       data={data}
