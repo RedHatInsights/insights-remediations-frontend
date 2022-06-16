@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { Wizard } from '@redhat-cloud-services/frontend-components/Wizard';
+// import { Wizard } from '@redhat-cloud-services/frontend-components/Wizard';
+import { Wizard } from '@patternfly/react-core';
 import ResolutionStep from './ResolutionModal/ResolutionStep';
 
 class ResolutionEditButton extends Component {
@@ -33,14 +34,28 @@ class ResolutionEditButton extends Component {
       <React.Fragment>
         <a onClick={this.openModal}>Edit</a>
         {open && (
+          // <Wizard
+          //   isLarge
+          //   title="Edit resolution"
+          //   className="rem-c-resolution-modal"
+          //   confirmAction="Save"
+          //   onClose={this.onModalClose}
+          //   isOpen={true}
+          //   content={[
+          //     <ResolutionStep
+          //       key="ResolutionStep"
+          //       issue={this.props.issue}
+          //       ref={(ref) => (this.resolutionStep = ref)}
+          //       getResolutions={this.props.getResolutions}
+          //     />,
+          //   ]}
+          // />
           <Wizard
-            isLarge
-            title="Edit resolution"
             className="rem-c-resolution-modal"
-            confirmAction="Save"
-            onClose={this.onModalClose}
             isOpen={true}
-            content={[
+            onClose={this.onModalClose}
+            title="Edit resolution"
+            steps={[
               <ResolutionStep
                 key="ResolutionStep"
                 issue={this.props.issue}

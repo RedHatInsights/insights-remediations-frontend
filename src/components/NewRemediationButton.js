@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 
 import * as actions from '../actions';
 
-import { Wizard } from '@redhat-cloud-services/frontend-components/Wizard';
-import { Button } from '@patternfly/react-core';
+// import { Wizard } from '@redhat-cloud-services/frontend-components/Wizard';
+import { Button, Wizard } from '@patternfly/react-core';
 
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
 
@@ -77,13 +77,20 @@ class NewRemediationButton extends Component {
         <Button variant="primary" onClick={() => this.openModal()}>
           Demo Remediation
         </Button>
-        <Wizard
+        {/* <Wizard
           isLarge={true}
           title="Create remediation"
           className="ins-c-plan-modal"
           onClose={this.closeModal}
           isOpen={this.state.open}
           content={steps}
+        /> */}
+        <Wizard
+          className="ins-c-plan-modal"
+          isOpen={this.state.open}
+          onClose={this.closeModal}
+          title="Create remediation"
+          steps={steps}
         />
       </React.Fragment>
     );

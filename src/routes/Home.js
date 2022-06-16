@@ -11,7 +11,8 @@ import {
 } from '@redhat-cloud-services/frontend-components/PageHeader';
 import { Main } from '@redhat-cloud-services/frontend-components/Main';
 import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/PrimaryToolbar';
-import { Wizard } from '@redhat-cloud-services/frontend-components/Wizard';
+// import { Wizard } from '@redhat-cloud-services/frontend-components/Wizard';
+import { Wizard } from '@patternfly/react-core';
 import RemediationTable from '../components/RemediationTable';
 import TestButtons from '../components/TestButtons';
 
@@ -372,13 +373,20 @@ function Home() {
                 </Stack>
               </Main>
 
-              <Wizard
+              {/* <Wizard
                 isLarge
                 title="Create Plan"
                 className="ins-c-plan-modal"
                 onClose={onClose}
                 isOpen={isModalOpen}
                 content={ModalStepContent}
+              /> */}
+              <Wizard
+                className="ins-c-plan-modal"
+                isOpen={isModalOpen}
+                onClose={onClose}
+                title="Create Plan"
+                steps={ModalStepContent}
               />
             </React.Fragment>
           )
