@@ -138,9 +138,7 @@ describe('Review', () => {
       );
     });
     wrapper.update();
-    expect(wrapper.find('td').at(2).props().children).toEqual(
-      'test_description'
-    );
+    expect(wrapper.find('td').at(2).text()).toEqual('test_description');
     wrapper
       .find('button[className="pf-c-table__button"]')
       .first()
@@ -149,9 +147,7 @@ describe('Review', () => {
       .find('button[className="pf-c-table__button"]')
       .first()
       .simulate('click');
-    expect(wrapper.find('td').at(2).props().children).toEqual(
-      'test_description'
-    );
+    expect(wrapper.find('td').at(2).text()).toEqual('test_description');
   });
 
   it('should submit the form', async () => {

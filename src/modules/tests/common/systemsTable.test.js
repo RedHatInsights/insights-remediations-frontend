@@ -3,20 +3,15 @@ import { mount } from 'enzyme';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { SystemsTableWithContext } from '../../RemediationsModal/common/SystemsTable';
 
-// jest.mock('@redhat-cloud-services/frontend-components/Inventory', () => ({
-//   __esModule: true,
-//   // eslint-disable-next-line react/display-name
-//   InventoryTable: () => <div>Inventory</div>,
-// }));
-
-jest.mock('@redhat-cloud-services/frontend-components/Inventory', () => ({
-  ...jest.requireActual('@redhat-cloud-services/frontend-components/Inventory'),
-  InventoryTable: jest.fn(() => (
-    <div className="testInventroyComponentChild">
-      <div>This is child</div>
-    </div>
-  )),
-}));
+jest.mock(
+  '@redhat-cloud-services/frontend-components/Inventory/InventoryTable',
+  () =>
+    jest.fn(() => (
+      <div className="testInventroyComponentChild">
+        <div>This is child</div>
+      </div>
+    ))
+);
 
 describe('SystemsTable', () => {
   it('should render correctly', async () => {
