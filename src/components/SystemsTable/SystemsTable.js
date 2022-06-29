@@ -22,7 +22,7 @@ const SystemsTableWrapper = ({
   refreshRemediation,
   setActiveAlert,
 }) => {
-  const [isOpen, setIsOpen] = useState();
+  const [isOpen, setIsOpen] = useState(false);
   const systemsRef = useRef();
   const getEntitiesRef = useRef(() => undefined);
   const activeSystem = useRef(undefined);

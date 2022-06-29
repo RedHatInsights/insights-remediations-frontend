@@ -78,7 +78,8 @@ describe('SelectPlaybook', () => {
     expect(wrapper.find('input[type="radio"]')).toHaveLength(2);
     expect(wrapper.find('input[type="text"]')).toHaveLength(4);
     expect(wrapper.find('FormSelect')).toHaveLength(0);
-    expect(wrapper.find('Skeleton')).toHaveLength(1);
+    const skeleton = wrapper.find('Skeleton');
+    expect(skeleton).toBeTruthy();
   });
 
   it('should render correctly with remediations', async () => {
