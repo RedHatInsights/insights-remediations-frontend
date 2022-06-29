@@ -11,7 +11,6 @@ const ResolutionEditButton = ({
   getResolutions,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const openModal = () => setIsOpen(true);
 
   const resolutionStep = useRef();
 
@@ -26,7 +25,7 @@ const ResolutionEditButton = ({
 
   return (
     <React.Fragment>
-      <a onClick={openModal}>Edit</a>
+      <a onClick={() => setIsOpen(true)}>Edit</a>
       {isOpen && (
         <Modal
           variant={ModalVariant.medium}
