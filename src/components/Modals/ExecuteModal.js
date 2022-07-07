@@ -57,12 +57,14 @@ export const ExecuteModal = ({
       );
   }, []);
 
-  const combineStatuses = (status, availability) =>
-    status === 'connected'
+  const combineStatuses = (status, availability, executor_type) => {
+    //RHC hosts do not have endpoint_id to check availiabililty status.
+    return status === 'connected' && executor_type !== 'RHC'
       ? availability
         ? availability.availability_status
         : 'loading'
       : status;
+  };
 
   useEffect(() => {
     const [con, dis] = data.reduce(
@@ -78,17 +80,24 @@ export const ExecuteModal = ({
   }, [data]);
 
   useEffect(() => {
-    const isAvailable = (connectionStatus, sourcesStatus, data) =>
+    const isAvailable = (
+      connectionStatus,
+      sourcesStatus,
+      data,
+      executor_type
+    ) =>
       combineStatuses(
         connectionStatus,
-        sourcesStatus === 'fulfilled' && data
+        sourcesStatus === 'fulfilled' && data,
+        executor_type
       ) === 'available';
 
     const updatedData = data.map((e) => ({
       ...e,
       connection_status: combineStatuses(
         e.connection_status,
-        sources.status === 'fulfilled' && sources.data[`${e.endpoint_id}`]
+        sources.status === 'fulfilled' && sources.data[`${e.endpoint_id}`],
+        e.executor_type
       ),
     }));
 
@@ -98,7 +107,8 @@ export const ExecuteModal = ({
           isAvailable(
             e.connection_status,
             sources.status,
-            sources.data[`${e.endpoint_id}`]
+            sources.data[`${e.endpoint_id}`],
+            e.executor_type
           )
             ? [[...pass, { ...e }], fail]
             : [pass, [...fail, { ...e }]],
