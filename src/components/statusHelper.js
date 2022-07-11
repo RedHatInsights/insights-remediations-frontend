@@ -194,21 +194,9 @@ export const StatusSummary = ({
   return statusBar;
 };
 
-export const styledConnectionStatus = (status, err) =>
+export const styledConnectionStatus = (status) =>
   ({
     connected: (
-      <TextContent>
-        <Text component={TextVariants.p}>
-          <CheckCircleIcon
-            className="rem-c-reboot-check-circle rem-c-connection-status"
-            aria-label="connection status"
-          />
-          Ready
-        </Text>
-      </TextContent>
-    ),
-    // TODO: delete?
-    available: (
       <TextContent>
         <Text component={TextVariants.p}>
           <CheckCircleIcon
@@ -233,30 +221,6 @@ export const styledConnectionStatus = (status, err) =>
                     variant='link' onClick={ () => console.log('TODO: add link') }>
                     Troubleshoot
                 </Button> */}
-        </Text>
-      </TextContent>
-    ),
-    // TODO: delete?
-    unavailable: (
-      <TextContent>
-        <Text component={TextVariants.p}>
-          <ExclamationCircleIcon
-            className="rem-c-failure rem-c-connection-status"
-            aria-label="connection status"
-          />
-          Connection issue
-          <Text component={TextVariants.small} style={{ margin: '0px' }}>
-            {err ? err : 'Cloud Connector not responding'}
-          </Text>
-          <Button
-            className="pf-u-p-0"
-            key="troubleshoot"
-            // eslint-disable-next-line no-console
-            variant="link"
-            onClick={() => console.log('TODO: add link')}
-          >
-            Troubleshoot
-          </Button>
         </Text>
       </TextContent>
     ),

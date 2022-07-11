@@ -39,8 +39,6 @@ export const ExecuteModal = ({
   issueCount,
   runRemediation,
   etag,
-  getEndpoint,
-  sources,
   setEtag,
   setActiveAlert,
 }) => {
@@ -57,15 +55,6 @@ export const ExecuteModal = ({
       );
   }, []);
 
-  const combineStatuses = (status, availability, executor_type) => {
-    //RHC hosts do not have endpoint_id to check availiabililty status.
-    return status === 'connected' && executor_type !== 'RHC'
-      ? availability
-        ? availability.availability_status
-        : 'loading'
-      : status;
-  };
-
   useEffect(() => {
     const [con, dis] = data.reduce(
       ([pass, fail], e) =>
@@ -76,56 +65,10 @@ export const ExecuteModal = ({
     );
     setConnected(con);
     setDisconnected(dis);
-    con.map((c) => c.endpoint_id && getEndpoint(c.endpoint_id));
   }, [data]);
 
-  useEffect(() => {
-    const isAvailable = (
-      connectionStatus,
-      sourcesStatus,
-      data,
-      executor_type
-    ) =>
-      combineStatuses(
-        connectionStatus,
-        sourcesStatus === 'fulfilled' && data,
-        executor_type
-      ) === 'available';
-
-    const updatedData = data.map((e) => ({
-      ...e,
-      connection_status: combineStatuses(
-        e.connection_status,
-        sources.status === 'fulfilled' && sources.data[`${e.endpoint_id}`],
-        e.executor_type
-      ),
-    }));
-
-    if (sources.status === 'fulfilled') {
-      const [con, dis] = updatedData.reduce(
-        ([pass, fail], e) =>
-          isAvailable(
-            e.connection_status,
-            sources.status,
-            sources.data[`${e.endpoint_id}`],
-            e.executor_type
-          )
-            ? [[...pass, { ...e }], fail]
-            : [pass, [...fail, { ...e }]],
-        [[], []]
-      );
-      setConnected(con);
-      setDisconnected(dis);
-    }
-  }, [sources]);
-
   const generateRowsStatus = (con) => {
-    return styledConnectionStatus(
-      con.connection_status,
-      sources.status === 'fulfilled' &&
-        sources.data[`${con.endpoint_id}`] &&
-        sources.data[`${con.endpoint_id}`].availability_status_error
-    );
+    return styledConnectionStatus(con.connection_status);
   };
 
   const rows = [...connected, ...disconnected].map((con) => ({
@@ -365,7 +308,5 @@ ExecuteModal.propTypes = {
   runRemediation: PropTypes.func,
   etag: PropTypes.string,
   setEtag: PropTypes.func,
-  getEndpoint: PropTypes.func,
-  sources: PropTypes.object,
   setActiveAlert: PropTypes.func,
 };
