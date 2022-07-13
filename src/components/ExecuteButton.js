@@ -19,8 +19,6 @@ const ExecuteButton = ({
   runRemediation,
   etag,
   remediationStatus,
-  getEndpoint,
-  sources,
   setEtag,
   setActiveAlert,
 }) => {
@@ -75,8 +73,6 @@ const ExecuteButton = ({
           issueCount={issueCount}
           runRemediation={runRemediation}
           setEtag={setEtag}
-          getEndpoint={getEndpoint}
-          sources={sources}
           setActiveAlert={setActiveAlert}
         />
       )}
@@ -97,8 +93,6 @@ ExecuteButton.propTypes = {
   setEtag: PropTypes.func,
   isDisabled: PropTypes.bool,
   disabledStateText: PropTypes.string,
-  getEndpoint: PropTypes.func,
-  sources: PropTypes.object,
   setActiveAlert: PropTypes.func,
 };
 

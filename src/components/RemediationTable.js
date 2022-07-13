@@ -11,7 +11,6 @@ import {
   setEtag,
   getPlaybookRuns,
   loadRemediation,
-  getEndpoint,
 } from '../actions';
 import { PermissionContext } from '../App';
 import { ExecuteModal } from './Modals/ExecuteModal';
@@ -68,7 +67,6 @@ function RemediationTable({
   );
   const connectionStatus = reduxSelector((state) => state.connectionStatus);
   const runningRemediation = reduxSelector((state) => state.runRemediation);
-  const sources = reduxSelector((state) => state.sources);
   const dispatch = useDispatch();
 
   function load() {
@@ -171,10 +169,6 @@ function RemediationTable({
               setEtag={(etag) => {
                 dispatch(setEtag(etag));
               }}
-              getEndpoint={(id) => {
-                dispatch(getEndpoint(id));
-              }}
-              sources={sources}
               activeAlert={activeToastAlert}
               setActiveAlert={setActiveToastAlert}
             />
