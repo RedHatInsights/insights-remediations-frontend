@@ -167,7 +167,7 @@ function onSelectOne(selected, isSelected, id) {
   return result;
 }
 
-function onSelectAll(rows, value, isSelected, rowToId) {
+function onSelectPage(rows, value, isSelected, rowToId) {
   const rowIds = keyBy(
     filter(rows, (row) => rowToId(row)),
     rowToId
@@ -202,16 +202,24 @@ export function useSelector(rowToId = (row) => row.id) {
     },
     reset: () => setValue({}),
     props: {
-      onSelect: (unused, isSelected, index) => {
+      onSelect: (selectionType, isSelected, index) => {
         if (!rows) {
           throw new Error('register() not called on useSelector()');
         }
 
-        setValue((value) =>
-          index === -1
-            ? onSelectAll(rows, value, isSelected, rowToId)
-            : onSelectOne(value, isSelected, rowToId(rows[index]))
-        );
+        switch (selectionType) {
+          case 'none': {
+            setValue({});
+            break;
+          }
+          case 'page': {
+            setValue(onSelectPage(rows, value, isSelected, rowToId));
+            break;
+          }
+          default: {
+            setValue(onSelectOne(value, isSelected, rowToId(rows[index])));
+          }
+        }
       },
     },
     tbodyProps: {

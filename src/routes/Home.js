@@ -118,6 +118,7 @@ function Home() {
   const loadRemediations = (...args) =>
     dispatch(actions.loadRemediations(...args));
   const deleteRemediation = (id) => dispatch(actions.deleteRemediation(id));
+  const itemsCountInPage = remediations?.value?.data.length || 0;
 
   function load() {
     const column = SORTING_ITERATEES[sorter.sortBy];
@@ -224,8 +225,12 @@ function Home() {
                 bulkSelect={{
                   items: [
                     {
-                      title: 'Select all',
-                      onClick: (e) => selector.props.onSelect(e, true, -1),
+                      title: 'Select none',
+                      onClick: () => selector.props.onSelect('none', true),
+                    },
+                    {
+                      title: `Select page (${itemsCountInPage})`,
+                      onClick: () => selector.props.onSelect('page', true),
                     },
                   ],
                   checked:
@@ -233,8 +238,12 @@ function Home() {
                       ? null
                       : selectedIds.length,
                   count: selectedIds.length,
-                  onSelect: (isSelected, e) =>
-                    selector.props.onSelect(e, isSelected, -1),
+                  isDisabled: !itemsCountInPage,
+                  onSelect: (isSelected) =>
+                    selector.props.onSelect(
+                      selectedIds.length ? 'none' : 'page',
+                      isSelected
+                    ),
                 }}
                 actionsConfig={{
                   actions: [
