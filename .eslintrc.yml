@@ -1,4 +1,5 @@
 extends:
   - '@redhat-cloud-services/eslint-config-redhat-cloud-services'
+root: true
 globals:
   insights: readable
