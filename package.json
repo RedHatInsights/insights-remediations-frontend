@@ -45,6 +45,7 @@
     "fontAwesome": "node_modules/patternfly/node_modules/font-awesome-sass/assets/stylesheets"
   },
   "jest": {
+    "test": "TZ=UTC jest --verbose --no-cache",
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.{js|jsx}",
