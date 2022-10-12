@@ -4,19 +4,15 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { init } from './store';
 import App from './App';
+import { getBaseName } from '@redhat-cloud-services/frontend-components-utilities/helpers';
 
 window.remReact = React;
 const pathName = window.location.pathname.split('/');
 pathName.shift();
 
-let release = '/';
-if (pathName[0] === 'beta') {
-  release = `/${pathName.shift()}/`;
-}
-
 const Remediations = ({ logger }) => (
   <Provider store={init(logger).getStore()}>
-    <Router basename={`${release}${pathName[0]}/${pathName[1]}`}>
+    <Router basename={getBaseName(window.location.pathname)}>
       <App basename={`${pathName[0]}/${pathName[1]}`} />
     </Router>
   </Provider>
