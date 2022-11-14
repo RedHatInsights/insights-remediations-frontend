@@ -48,8 +48,8 @@
     "test": "TZ=UTC jest --verbose --no-cache",
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.{js|jsx}",
-      "!src/**/stories/*"
+      "src/**/*.{js,jsx}",
+      "!**/node_modules/**"
     ],
     "transformIgnorePatterns": [
       "/node_modules/(?!@redhat-cloud-services)"
