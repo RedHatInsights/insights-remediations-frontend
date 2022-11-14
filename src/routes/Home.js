@@ -11,15 +11,10 @@ import {
 } from '@redhat-cloud-services/frontend-components/PageHeader';
 import { Main } from '@redhat-cloud-services/frontend-components/Main';
 import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/PrimaryToolbar';
-import { Wizard } from '@redhat-cloud-services/frontend-components/Wizard';
 import RemediationTable from '../components/RemediationTable';
 import TestButtons from '../components/TestButtons';
 
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
-
-// Wizard Steps
-import PlanName from '../components/CreatePlanModal/ModalSteps/PlanName';
-import PlanSystems from '../components/CreatePlanModal/ModalSteps/PlanSystems';
 
 import './Home.scss';
 
@@ -104,7 +99,6 @@ const SORTING_ITERATEES = [
 function Home() {
   document.title = 'Remediations | Red Hat Insights';
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [noReceptorBannerVisible, setNoReceptorBannerVisible] = useState(
     localStorage.getItem('remediations:receptorBannerStatus') !== 'dismissed'
   );
@@ -124,6 +118,7 @@ function Home() {
   const loadRemediations = (...args) =>
     dispatch(actions.loadRemediations(...args));
   const deleteRemediation = (id) => dispatch(actions.deleteRemediation(id));
+  const itemsCountInPage = remediations?.value?.data.length || 0;
 
   function load() {
     const column = SORTING_ITERATEES[sorter.sortBy];
@@ -182,31 +177,10 @@ function Home() {
     dispatch(addNotification(data));
   };
 
-  // const openModal = () => setIsModalOpen(true);
-
-  const onClose = (submitted) => {
-    setIsModalOpen(false);
-
-    if (submitted) {
-      sendNotification({
-        variant: 'success',
-        title: 'Wizard completed',
-        description:
-          'Congratulations! You successfully clicked through the temporary wizard placeholder!',
-      });
-    }
-  };
-
   const onRemediationCreated = (result) => {
     sendNotification(result.getNotification());
     dispatch(actions.loadRemediations());
   };
-
-  // Wizard Content
-  const ModalStepContent = [
-    <PlanName key="PlanName" />,
-    <PlanSystems key="PlanSystems" />,
-  ];
 
   const activeFiltersConfig = {
     filters: filterText.length
@@ -251,8 +225,12 @@ function Home() {
                 bulkSelect={{
                   items: [
                     {
-                      title: 'Select all',
-                      onClick: (e) => selector.props.onSelect(e, true, -1),
+                      title: 'Select none',
+                      onClick: () => selector.props.onSelect('none', true),
+                    },
+                    {
+                      title: `Select page (${itemsCountInPage})`,
+                      onClick: () => selector.props.onSelect('page', true),
                     },
                   ],
                   checked:
@@ -260,8 +238,12 @@ function Home() {
                       ? null
                       : selectedIds.length,
                   count: selectedIds.length,
-                  onSelect: (isSelected, e) =>
-                    selector.props.onSelect(e, isSelected, -1),
+                  isDisabled: !itemsCountInPage,
+                  onSelect: (isSelected) =>
+                    selector.props.onSelect(
+                      selectedIds.length ? 'none' : 'page',
+                      isSelected
+                    ),
                 }}
                 actionsConfig={{
                   actions: [
@@ -371,15 +353,6 @@ function Home() {
                   </StackItem>
                 </Stack>
               </Main>
-
-              <Wizard
-                isLarge
-                title="Create Plan"
-                className="ins-c-plan-modal"
-                onClose={onClose}
-                isOpen={isModalOpen}
-                content={ModalStepContent}
-              />
             </React.Fragment>
           )
         }

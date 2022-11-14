@@ -242,11 +242,11 @@ describe('table hooks', () => {
       const { result } = renderHook(() => useSelector());
       result.current.register(rows);
 
-      act(() => result.current.props.onSelect(undefined, true, -1));
+      act(() => result.current.props.onSelect('page', true));
       result.current.register(rows);
       expect(result.current.getSelectedIds()).toEqual(['5', '6', '7']);
 
-      act(() => result.current.props.onSelect(undefined, false, -1));
+      act(() => result.current.props.onSelect('none', false));
       result.current.register(rows);
       expect(result.current.getSelectedIds()).toEqual([]);
     });
@@ -255,7 +255,7 @@ describe('table hooks', () => {
       const { result } = renderHook(() => useSelector());
       result.current.register(rows);
 
-      act(() => result.current.props.onSelect(undefined, true, -1));
+      act(() => result.current.props.onSelect('page', true));
       result.current.register(rows);
       expect(result.current.getSelectedIds(['6'])).toEqual(['6']);
     });
@@ -264,7 +264,7 @@ describe('table hooks', () => {
       const { result } = renderHook(() => useSelector());
 
       expect(() =>
-        act(() => result.current.props.onSelect(undefined, true, 2))
+        act(() => result.current.props.onSelect('single', true, 2))
       ).toThrow('register() not called on useSelector()');
     });
   });

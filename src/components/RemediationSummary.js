@@ -243,7 +243,7 @@ export const RemediationSummary = ({
 
 RemediationSummary.propTypes = {
   remediation: PropTypes.object.isRequired,
-  playbookRuns: PropTypes.array.isRequired,
+  playbookRuns: PropTypes.array,
   switchAutoReboot: PropTypes.func.isRequired,
   context: PropTypes.object.isRequired,
 };

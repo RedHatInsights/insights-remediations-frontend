@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: insights-remediations-frontend
+objects:
+  - apiVersion: cloud.redhat.com/v1alpha1
+    kind: Frontend
+    metadata:
+      name: remediations
+    spec:
+      envName: ${ENV_NAME}
+      title: Remediations
+      deploymentRepo: https://github.com/RedHatInsights/insights-remediations-frontend
+      API:
+        versions:
+          - v1
+      frontend:
+        paths:
+          - /apps/remediations
+      image: ${IMAGE}:${IMAGE_TAG}
+      navItems:
+        - appId: "remediations"
+          title: "Remediations"
+          href: "/insights/remediations"
+          product: "Red Hat Insights"
+      module:
+        manifestLocation: "/apps/remediations/fed-mods.json"
+        modules:
+          - id: "remediations"
+            module: "./RootApp"
+            routes:
+              - pathname: /insights/remediations
+
+parameters:
+  - name: ENV_NAME
+    required: true
+  - name: IMAGE_TAG
+    required: true
+  - name: IMAGE
+    value: quay.io/cloudservices/insights-remediations-frontend

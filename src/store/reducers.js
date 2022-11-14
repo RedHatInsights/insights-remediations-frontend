@@ -75,7 +75,7 @@ export const remediationSystems = ({ LOAD_ENTITIES_FULFILLED }) =>
               <IssuesColumn
                 issues={issues}
                 id={id}
-                displayName={display_name}
+                display_name={display_name}
               />
             ),
             props: { width: 15 },

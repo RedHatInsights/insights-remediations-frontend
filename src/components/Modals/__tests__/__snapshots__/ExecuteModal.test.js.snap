@@ -63,6 +63,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
           displaySize="default"
           isActive={false}
           isDetached={false}
+          isIndented={false}
           isWidthLimited={false}
           onToggle={[Function]}
           toggleText="About remote execution with Cloud connector"
@@ -77,7 +78,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
               <Button
                 className="pf-u-p-0"
                 component="a"
-                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2021/html/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index"
+                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index"
                 isInline={true}
                 key="download"
                 rel="noreferrer"
@@ -98,7 +99,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
               <Button
                 className="pf-u-p-0"
                 component="a"
-                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2021/html/red_hat_connector_configuration_guide/index"
+                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html/red_hat_connector_configuration_guide/index"
                 isInline={true}
                 key="configure"
                 rel="noreferrer"
@@ -142,6 +143,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
     <Table
       aria-label="Systems"
       borders={true}
+      canCollapseAll={false}
       canSelectAll={true}
       canSortFavorites={true}
       cells={
@@ -158,11 +160,14 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
         ]
       }
       className=""
+      collapseAllAriaLabel=""
       contentId="expanded-content"
       dropdownDirection="down"
       dropdownPosition="right"
       expandId="expandable-toggle"
       gridBreakPoint="grid-md"
+      isHeaderSelectDisabled={false}
+      isNested={false}
       isStickyHeader={false}
       isTreeTable={false}
       ouiaSafe={true}
@@ -173,7 +178,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       variant="compact"
     >
       <TableHeader />
-      <Component />
+      <TableBody />
     </Table>
   </div>
 </Modal>
@@ -247,6 +252,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
           displaySize="default"
           isActive={false}
           isDetached={false}
+          isIndented={false}
           isWidthLimited={false}
           onToggle={[Function]}
           toggleText="About remote execution with Cloud connector"
@@ -261,7 +267,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
               <Button
                 className="pf-u-p-0"
                 component="a"
-                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2021/html/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index"
+                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index"
                 isInline={true}
                 key="download"
                 rel="noreferrer"
@@ -282,7 +288,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
               <Button
                 className="pf-u-p-0"
                 component="a"
-                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2021/html/red_hat_connector_configuration_guide/index"
+                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html/red_hat_connector_configuration_guide/index"
                 isInline={true}
                 key="configure"
                 rel="noreferrer"
@@ -326,6 +332,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
     <Table
       aria-label="Systems"
       borders={true}
+      canCollapseAll={false}
       canSelectAll={true}
       canSortFavorites={true}
       cells={
@@ -342,11 +349,14 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
         ]
       }
       className=""
+      collapseAllAriaLabel=""
       contentId="expanded-content"
       dropdownDirection="down"
       dropdownPosition="right"
       expandId="expandable-toggle"
       gridBreakPoint="grid-md"
+      isHeaderSelectDisabled={false}
+      isNested={false}
       isStickyHeader={false}
       isTreeTable={false}
       ouiaSafe={true}
@@ -357,7 +367,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       variant="compact"
     >
       <TableHeader />
-      <Component />
+      <TableBody />
     </Table>
   </div>
 </Modal>

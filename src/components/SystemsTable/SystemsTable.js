@@ -22,7 +22,7 @@ const SystemsTableWrapper = ({
   refreshRemediation,
   setActiveAlert,
 }) => {
-  const [isOpen, setIsOpen] = useState();
+  const [isOpen, setIsOpen] = useState(false);
   const systemsRef = useRef();
   const getEntitiesRef = useRef(() => undefined);
   const activeSystem = useRef(undefined);
@@ -113,10 +113,10 @@ const SystemsTableWrapper = ({
       actions={[
         {
           title: 'Remove system',
-          onClick: (_event, _index, { id, display_name: displayName }) => {
+          onClick: (_event, _index, { id, display_name }) => {
             activeSystem.current = {
               id,
-              displayName,
+              display_name,
               issues: remediation.issues.filter((issue) =>
                 issue.systems.find(({ id: systemId }) => systemId === id)
               ),
