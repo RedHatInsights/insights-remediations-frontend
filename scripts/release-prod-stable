@@ -1,0 +1,15 @@
+#!/bin/bash -e
+
+read -p "Releasing prod-beta to prod-stable environment. Do you wish to continue? (Y/n) " decision
+
+remote_name=$(git remote -v | grep RedHatInsights --ignore-case | grep push | awk '{print $1}')
+
+if [ $decision == 'Y' ];then
+  git stash
+  git fetch $remote_name
+  git checkout prod-beta
+  git reset $remote_name/prod-beta --hard
+  git push $remote_name prod-beta:prod-stable
+else
+  echo 'Aborting release to prod-stable'
+fi

@@ -1,0 +1,15 @@
+#!/bin/bash -e
+
+read -p "Releasing stage-beta to stage-stable environment. Do you wish to continue? (Y/n) " decision
+
+remote_name=$(git remote -v | grep RedHatInsights --ignore-case | grep push | awk '{print $1}')
+
+if [ $decision == 'Y' ];then
+  git stash
+  git fetch $remote_name
+  git checkout master
+  git reset $remote_name/master --hard
+  git push $remote_name master:stage-stable
+else
+  echo 'Aborting release to stage-stable'
+fi
