@@ -45,8 +45,6 @@ describe('Execute button', () => {
         issueCount={1}
         remediationId="id"
         isDisabled={false}
-        getEndpoint={() => null}
-        sources={{ data: {} }}
         getConnectionStatus={() => null}
       />
     );
@@ -62,7 +60,6 @@ describe('Execute button', () => {
         issueCount={1}
         remediationId="id"
         isDisabled={false}
-        sources={{ data: {} }}
         getConnectionStatus={() => null}
       />
     );

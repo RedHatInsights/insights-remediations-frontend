@@ -19,6 +19,10 @@ plugins.push(
           __dirname,
           '../src/modules/RemediationsModal/index.js'
         ),
+        './NoDataModal': resolve(
+          __dirname,
+          '../src/modules/RemediationsModal/NoDataModal.js'
+        ),
       },
     }
   )

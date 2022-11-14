@@ -1,59 +1,62 @@
-import React, { Component } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-import { Wizard } from '@redhat-cloud-services/frontend-components/Wizard';
+import { Button, Modal, ModalVariant } from '@patternfly/react-core';
 import ResolutionStep from './ResolutionModal/ResolutionStep';
 
-class ResolutionEditButton extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      open: false,
-    };
-  }
+const ResolutionEditButton = ({
+  remediation,
+  issue,
+  onResolutionSelected,
+  getResolutions,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
 
-  setOpen = (open) => this.setState({ open });
-  openModal = () => this.setOpen(true);
+  const resolutionStep = useRef();
 
-  onModalClose = (result) => {
-    this.setOpen(false);
-
-    const { remediation, issue, onResolutionSelected } = this.props;
-    const resolution = this.resolutionStep.getSelectedResolution();
+  const onModalClose = (result) => {
+    setIsOpen(false);
+    const resolution = resolutionStep.current?.getSelectedResolution();
 
     if (result && issue.resolution.id !== resolution.id) {
       onResolutionSelected(remediation.id, issue.id, resolution.id);
     }
   };
 
-  render() {
-    const { open } = this.state;
-
-    return (
-      <React.Fragment>
-        <a onClick={this.openModal}>Edit</a>
-        {open && (
-          <Wizard
-            isLarge
-            title="Edit resolution"
-            className="rem-c-resolution-modal"
-            confirmAction="Save"
-            onClose={this.onModalClose}
-            isOpen={true}
-            content={[
-              <ResolutionStep
-                key="ResolutionStep"
-                issue={this.props.issue}
-                ref={(ref) => (this.resolutionStep = ref)}
-                getResolutions={this.props.getResolutions}
-              />,
-            ]}
+  return (
+    <React.Fragment>
+      <a onClick={() => setIsOpen(true)}>Edit</a>
+      {isOpen && (
+        <Modal
+          variant={ModalVariant.medium}
+          className="rem-c-resolution-modal"
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          title="Edit resolution"
+          actions={[
+            <Button key="confirm" variant="primary" onClick={onModalClose}>
+              Save
+            </Button>,
+            <Button
+              key="cancel"
+              variant="secondary"
+              onClick={() => setIsOpen(false)}
+            >
+              Cancel
+            </Button>,
+          ]}
+        >
+          <ResolutionStep
+            key="ResolutionStep"
+            issue={issue}
+            ref={resolutionStep}
+            getResolutions={getResolutions}
           />
-        )}
-      </React.Fragment>
-    );
-  }
-}
+        </Modal>
+      )}
+    </React.Fragment>
+  );
+};
 
 ResolutionEditButton.propTypes = {
   remediation: PropTypes.object.isRequired,
