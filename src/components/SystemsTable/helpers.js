@@ -58,3 +58,23 @@ export const fetchInventoryData = async (
     total: currSystems.length,
   };
 };
+
+export const mergedColumns =
+  (columns, defaultProps = {}) =>
+  (defaultColumns) =>
+    columns.map((column) => {
+      const isStringCol = typeof column === 'string';
+      const key = isStringCol ? column : column.key;
+      const defaultColumn = defaultColumns.find(
+        (defaultCol) => defaultCol.key === key
+      );
+      return {
+        ...defaultColumn,
+        ...(isStringCol ? { key: column } : column),
+        props: {
+          ...defaultColumn?.props,
+          ...column?.props,
+          ...defaultProps,
+        },
+      };
+    });

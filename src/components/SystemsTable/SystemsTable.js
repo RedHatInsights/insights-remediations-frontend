@@ -14,7 +14,10 @@ import {
   calculateChecked,
   calculateSystems,
   fetchInventoryData,
+  mergedColumns,
 } from './helpers';
+
+import columns, { defaultProps } from './Columns';
 
 const SystemsTableWrapper = ({
   remediation,
@@ -76,6 +79,7 @@ const SystemsTableWrapper = ({
       tableProps={{
         canSelectAll: false,
       }}
+      columns={mergedColumns(columns, defaultProps)}
       bulkSelect={{
         count: selected ? selected.size : 0,
         items: [
