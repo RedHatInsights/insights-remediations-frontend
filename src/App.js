@@ -57,9 +57,7 @@ class App extends Component {
     );
     this.unregister = insights.chrome.on('APP_NAVIGATION', (event) => {
       if (typeof event?.domEvent?.href === 'string') {
-        this.props.history.push(
-          event.domEvent.href.replace(this.props.basename, '')
-        );
+        this.props.history.push('/');
       }
     });
     window.insights.chrome
@@ -123,7 +121,6 @@ class App extends Component {
 
 App.propTypes = {
   history: PropTypes.object,
-  basename: PropTypes.string.isRequired,
 };
 
 /**

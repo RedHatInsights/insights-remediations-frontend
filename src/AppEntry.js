@@ -13,7 +13,7 @@ pathName.shift();
 const Remediations = ({ logger }) => (
   <Provider store={init(logger).getStore()}>
     <Router basename={getBaseName(window.location.pathname)}>
-      <App basename={`${pathName[0]}/${pathName[1]}`} />
+      <App />
     </Router>
   </Provider>
 );
