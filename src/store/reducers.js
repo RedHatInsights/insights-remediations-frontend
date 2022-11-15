@@ -4,7 +4,6 @@ import { ACTION_TYPES } from '../constants';
 import { applyReducerHash } from '@redhat-cloud-services/frontend-components-utilities/ReducerRegistry';
 import flatMap from 'lodash/flatMap';
 import uniq from 'lodash/uniq';
-import { RebootColumn, IssuesColumn } from '../components/SystemsTable';
 
 function issuesToSystemsIds(issues) {
   return uniq(
@@ -62,39 +61,6 @@ export const remediationSystems = ({ LOAD_ENTITIES_FULFILLED }) =>
           id,
           ...row,
           selected: !!state.selected?.get(id),
-        })),
-        columns: [
-          ...state.columns.filter(({ key }) =>
-            ['display_name', 'tags'].includes(key)
-          ),
-          {
-            key: 'issues',
-            title: 'Issues',
-            // eslint-disable-next-line react/display-name
-            renderFunc: (issues, id, { display_name }) => (
-              <IssuesColumn
-                issues={issues}
-                id={id}
-                display_name={display_name}
-              />
-            ),
-            props: { width: 15 },
-          },
-          {
-            key: 'rebootRequired',
-            title: 'Reboot required',
-            // eslint-disable-next-line react/display-name
-            renderFunc: (rebootRequired) => (
-              <RebootColumn rebootRequired={rebootRequired} />
-            ),
-            props: { width: 15 },
-          },
-        ].map((cell) => ({
-          ...cell,
-          props: {
-            ...(cell.props || {}),
-            isStatic: true,
-          },
         })),
       };
     },
