@@ -17,8 +17,6 @@ import {
   mergedColumns,
 } from './helpers';
 
-import columns, { defaultProps } from './Columns';
-
 const SystemsTableWrapper = ({
   remediation,
   registry,
@@ -79,7 +77,7 @@ const SystemsTableWrapper = ({
       tableProps={{
         canSelectAll: false,
       }}
-      columns={mergedColumns(columns, defaultProps)}
+      columns={(defaultColumns) => mergedColumns(defaultColumns)}
       bulkSelect={{
         count: selected ? selected.size : 0,
         items: [
