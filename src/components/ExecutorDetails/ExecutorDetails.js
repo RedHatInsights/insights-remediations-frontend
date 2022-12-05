@@ -32,8 +32,8 @@ import {
   ToolbarContent,
 } from '@patternfly/react-core';
 import { InProgressIcon } from '@patternfly/react-icons';
-import reducers from '../store/reducers';
-import DescriptionList from './Layouts/DescriptionList';
+import reducers from '../../store/reducers';
+import DescriptionList from '../Layouts/DescriptionList';
 import {
   getPlaybookRuns,
   getPlaybookRun,
@@ -41,16 +41,18 @@ import {
   getPlaybookRunSystemDetails,
   expandInventoryTable,
   loadRemediation,
-} from '../actions';
-import { downloadPlaybook } from '../api';
-import { normalizeStatus, renderStatus, StatusSummary } from './statusHelper';
-import PlaybookSystemDetails from './SystemDetails';
-import ExecutorDetailsSkeleton from '../skeletons/ExecutorDetailsSkeleton';
-import RunFailed from './Alerts/RunFailed';
-import { inventoryUrlBuilder } from '../Utilities/urls';
+} from '../../actions';
+import { downloadPlaybook } from '../../api';
+import { normalizeStatus, StatusSummary } from '../statusHelper';
+import PlaybookSystemDetails from '../SystemDetails';
+import ExecutorDetailsSkeleton from '../../skeletons/ExecutorDetailsSkeleton';
+import RunFailed from '../Alerts/RunFailed';
 import './ExecutorDetails.scss';
-import { PermissionContext } from '../App';
-import { register } from '../store';
+import { PermissionContext } from '../../App';
+import { register } from '../../store';
+import { mergedColumns } from '../SystemsTable/helpers';
+import columns from './Columns';
+
 let refreshInterval;
 
 const ExecutorDetails = ({
@@ -76,8 +78,6 @@ const ExecutorDetails = ({
   const [firstExpand, setFirstExpand] = useState(false);
   const [debouncedGetPlaybookRunSystems, setDebounce] = useState();
   const inventory = useRef(null);
-
-  const urlBuilder = inventoryUrlBuilder({ id: 'default' });
 
   const onRefresh = (options) => {
     if (inventory && inventory.current) {
@@ -160,18 +160,12 @@ const ExecutorDetails = ({
           <CardBody>
             <InventoryTable
               ref={inventory}
+              columns={mergedColumns(columns)}
               onLoad={({ INVENTORY_ACTION_TYPES, mergeWithEntities }) =>
                 register({
                   ...mergeWithEntities(
                     reducers.playbookActivityIntentory({
                       INVENTORY_ACTION_TYPES,
-                      // eslint-disable-next-line react/display-name
-                      renderStatus: (status) => (
-                        <div className="rem-c-status-bar">
-                          {renderStatus(normalizeStatus(status))}
-                        </div>
-                      ),
-                      urlBuilder,
                     })()
                   ),
                 })

@@ -14,7 +14,7 @@ const ActivityDetails = lazy(() =>
 );
 const ExecutorDetails = lazy(() =>
   import(
-    /* webpackChunkName: "ExecutorDetails" */ './components/ExecutorDetails'
+    /* webpackChunkName: "ExecutorDetails" */ './components/ExecutorDetails/ExecutorDetails'
   )
 );
 
