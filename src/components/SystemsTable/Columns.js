@@ -2,10 +2,6 @@ import React from 'react';
 import IssuesColumn from './IssuesColumn';
 import RebootColumn from './RebootColumn';
 
-export const defaultProps = {
-  isStatic: true,
-};
-
 const Issues = {
   key: 'issues',
   title: 'Issues',
@@ -13,7 +9,10 @@ const Issues = {
   renderFunc: (issues, id, { display_name }) => (
     <IssuesColumn issues={issues} id={id} display_name={display_name} />
   ),
-  props: { width: 15 },
+  props: {
+    width: 15,
+    isStatic: true,
+  },
 };
 
 const RebootRequired = {
@@ -25,7 +24,9 @@ const RebootRequired = {
   ),
   props: {
     width: 15,
+    isStatic: true,
   },
 };
 
-export default ['display_name', 'tags', Issues, RebootRequired];
+export const inventoryColumns = ['display_name', 'tags', 'system_profile'];
+export default [Issues, RebootRequired];

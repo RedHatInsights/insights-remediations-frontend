@@ -1,3 +1,5 @@
+import remediationColumns, { inventoryColumns } from './Columns';
+
 export const calculateChecked = (rows = [], selected) =>
   rows.every(({ id }) => selected?.has(id))
     ? rows.length > 0
@@ -41,6 +43,7 @@ export const fetchInventoryData = async (
       ? display_name.includes(config.filters.hostnameOrId)
       : true
   );
+
   const data = await getEntities(
     currSystems
       .slice((page - 1) * config.per_page, page * config.per_page)
@@ -48,6 +51,7 @@ export const fetchInventoryData = async (
     { ...config, hasItems: true },
     true
   );
+
   return {
     ...data,
     page,
@@ -59,22 +63,9 @@ export const fetchInventoryData = async (
   };
 };
 
-export const mergedColumns =
-  (columns, defaultProps = {}) =>
-  (defaultColumns) =>
-    columns.map((column) => {
-      const isStringCol = typeof column === 'string';
-      const key = isStringCol ? column : column.key;
-      const defaultColumn = defaultColumns.find(
-        (defaultCol) => defaultCol.key === key
-      );
-      return {
-        ...defaultColumn,
-        ...(isStringCol ? { key: column } : column),
-        props: {
-          ...defaultColumn?.props,
-          ...column?.props,
-          ...defaultProps,
-        },
-      };
-    });
+export const mergedColumns = (defaultColumns) => {
+  return [
+    ...defaultColumns.filter((column) => inventoryColumns.includes(column.key)),
+    ...remediationColumns,
+  ];
+};
