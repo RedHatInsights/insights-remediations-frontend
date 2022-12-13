@@ -240,28 +240,8 @@ const reducers = {
         },
       }),
 
-  playbookActivityIntentory: (props) => () =>
+  playbookActivityIntentory: () => () =>
     applyReducerHash({
-      [props.INVENTORY_ACTION_TYPES.LOAD_ENTITIES_FULFILLED]: (state) => {
-        return {
-          ...state,
-          columns: [
-            {
-              key: 'display_name',
-              title: 'Name',
-              // eslint-disable-next-line
-              renderFunc: (name, id, { fqdn }) => <div><a href={props.urlBuilder(id)}>{fqdn || name || id}</a></div>
-            },
-            state.columns.find((col) => col.key === 'tags'),
-            {
-              key: 'status',
-              title: 'Status',
-              renderFunc: (status) => props.renderStatus(status),
-            },
-          ],
-        };
-      },
-
       [ACTION_TYPES.EXPAND_INVENTORY_TABLE]: (state, action) => {
         return {
           ...state,
