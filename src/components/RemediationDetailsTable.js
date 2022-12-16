@@ -177,7 +177,6 @@ function RemediationDetailsTable(props) {
   const rows = flatMap(paged, buildRow(props.remediation));
 
   selector.register(rows);
-
   const selectedIds = selector.getSelectedIds();
 
   const activeFiltersConfig = {
@@ -214,7 +213,11 @@ function RemediationDetailsTable(props) {
           items: [
             {
               title: 'Select all',
-              onClick: (e) => selector.props.onSelect(e, true, -1),
+              onClick: () => selector.props.onSelect('page', true, 0),
+            },
+            {
+              title: 'Select none',
+              onClick: () => selector.props.onSelect('none'),
             },
           ],
           checked:
