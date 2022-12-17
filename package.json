@@ -125,7 +125,7 @@
     "start:proxy:beta": "BETA=true npm run start:proxy",
     "travis:build": "NODE_ENV=production webpack --config config/test.webpack.config.js",
     "travis:verify": "npm-run-all build:prod lint test:ct",
-    "verify": "npm-run-all build lint test:ct",
+    "verify": "npm-run-all build lint test:jest",
     "nightly": "npm run travis:verify:ct",
     "test:ct": "BABEL_ENV=componentTest cypress run --component",
     "test:openct": "BABEL_ENV=componentTest cypress open --component",
