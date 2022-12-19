@@ -63,7 +63,7 @@
     "moduleNameMapper": {
       "\\.(css|scss)$": "identity-obj-proxy"
     },
-    "coverageDirectory": "./codecov-jest/"
+    "coverageDirectory": "./jest-coverage/"
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",
@@ -135,7 +135,7 @@
     "appname": "remediations"
   },
   "nyc": {
-    "report-dir": "codecov-cypress",
+    "report-dir": "cypress-coverage",
     "include": [
       "src/**/*"
     ],
