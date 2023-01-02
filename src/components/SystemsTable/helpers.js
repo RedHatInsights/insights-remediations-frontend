@@ -1,5 +1,3 @@
-import remediationColumns, { inventoryColumns } from './Columns';
-
 export const calculateChecked = (rows = [], selected) =>
   rows.every(({ id }) => selected?.has(id))
     ? rows.length > 0
@@ -63,9 +61,12 @@ export const fetchInventoryData = async (
   };
 };
 
-export const mergedColumns = (defaultColumns) => {
-  return [
-    ...defaultColumns.filter((column) => inventoryColumns.includes(column.key)),
-    ...remediationColumns,
-  ];
+export const mergedColumns = (defaultColumns = [], customColumns = []) => {
+  return customColumns.map((column) => {
+    const inventoryColumn = defaultColumns.find(
+      (invColumn) => invColumn.key === column.key
+    );
+
+    return inventoryColumn || column;
+  });
 };
