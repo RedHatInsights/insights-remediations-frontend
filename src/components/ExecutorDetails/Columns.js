@@ -11,7 +11,9 @@ export default [
     // eslint-disable-next-line
     renderFunc: (name, id, { fqdn }) => <div><a href={urlBuilder(id)}>{fqdn || name || id}</a></div>
   },
-  'tags',
+  {
+    key: 'tags',
+  },
   {
     key: 'status',
     title: 'Status',

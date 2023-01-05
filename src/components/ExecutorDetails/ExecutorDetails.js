@@ -160,7 +160,9 @@ const ExecutorDetails = ({
           <CardBody>
             <InventoryTable
               ref={inventory}
-              columns={mergedColumns(columns)}
+              columns={(defaultColumns) =>
+                mergedColumns(defaultColumns, columns)
+              }
               onLoad={({ INVENTORY_ACTION_TYPES, mergeWithEntities }) =>
                 register({
                   ...mergeWithEntities(
