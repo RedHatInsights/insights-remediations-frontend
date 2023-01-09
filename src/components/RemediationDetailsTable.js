@@ -212,6 +212,13 @@ function RemediationDetailsTable(props) {
         }}
         bulkSelect={{
           items: [
+            {
+              title: 'Select none (0)',
+              onClick: () => {
+                bulkSelectChecked ? setBulkSelectChecked(false) : true;
+                selector.props.onSelect('none');
+              },
+            },
             rows.length > 0
               ? {
                   title: `Select page (${rows.length})`,
@@ -221,13 +228,6 @@ function RemediationDetailsTable(props) {
                   },
                 }
               : {},
-            {
-              title: 'Select none (0)',
-              onClick: () => {
-                setBulkSelectChecked((prev) => !prev);
-                selector.props.onSelect('none');
-              },
-            },
           ],
           checked: bulkSelectChecked,
           count: selectedIds.length,

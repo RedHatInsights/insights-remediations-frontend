@@ -11,8 +11,7 @@ import './SystemsTable.scss';
 import RemoveSystemModal from './RemoveSystemModal';
 import { generateUniqueId } from '../Alerts/PlaybookToastAlerts';
 import { calculateSystems, fetchInventoryData, mergedColumns } from './helpers';
-
-import columns, { defaultProps } from './Columns';
+import systemsColumns from './Columns';
 
 const SystemsTableWrapper = ({
   remediation,
@@ -83,6 +82,7 @@ const SystemsTableWrapper = ({
           {
             title: 'Select none (0)',
             onClick: () => {
+              bulkSelectChecked ? setBulkSelectChecked(false) : true;
               dispatch(selectEntity(-1, false));
             },
           },
@@ -91,6 +91,7 @@ const SystemsTableWrapper = ({
               ? {
                   title: `Select page (${rows.length})`,
                   onClick: () => {
+                    setBulkSelectChecked((prev) => !prev);
                     dispatch(selectEntity(0, true));
                   },
                 }
