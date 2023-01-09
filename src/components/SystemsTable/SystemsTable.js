@@ -10,12 +10,7 @@ import { deleteSystems, selectEntity, loadRemediation } from '../../actions';
 import './SystemsTable.scss';
 import RemoveSystemModal from './RemoveSystemModal';
 import { generateUniqueId } from '../Alerts/PlaybookToastAlerts';
-import {
-  calculateChecked,
-  calculateSystems,
-  fetchInventoryData,
-  mergedColumns,
-} from './helpers';
+import { calculateSystems, fetchInventoryData, mergedColumns } from './helpers';
 
 import columns, { defaultProps } from './Columns';
 
@@ -35,7 +30,7 @@ const SystemsTableWrapper = ({
   );
   const loaded = useSelector(({ entities }) => entities?.loaded);
   const rows = useSelector(({ entities }) => entities?.rows);
-
+  const [bulkSelectChecked, setBulkSelectChecked] = useState(false);
   const onConfirm = () => {
     (async () => {
       const selectedSystems =
@@ -100,9 +95,10 @@ const SystemsTableWrapper = ({
               : {}),
           },
         ],
-        checked: calculateChecked(rows, selected),
+        checked: bulkSelectChecked,
         onSelect: (value) => {
           dispatch(selectEntity(0, value));
+          setBulkSelectChecked((prev) => !prev);
         },
       }}
       getEntities={async (_i, config) =>

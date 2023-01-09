@@ -152,6 +152,7 @@ function RemediationDetailsTable(props) {
   const { setActiveAlert } = props;
   const permission = useContext(PermissionContext);
   const [filterText, setFilterText] = useState('');
+  const [bulkSelectChecked, setBulkSelectChecked] = useState(false);
   const [prevRemediationsCount, setPrevRemediationsCount] = useState(0); // eslint-disable-line
 
   useEffect(() => {
@@ -211,22 +212,31 @@ function RemediationDetailsTable(props) {
         }}
         bulkSelect={{
           items: [
+            rows.length > 0
+              ? {
+                  title: `Select page (${rows.length})`,
+                  onClick: () => {
+                    setBulkSelectChecked((prev) => !prev);
+                    selector.props.onSelect('page', true, 0);
+                  },
+                }
+              : {},
             {
-              title: 'Select all',
-              onClick: () => selector.props.onSelect('page', true, 0),
-            },
-            {
-              title: 'Select none',
-              onClick: () => selector.props.onSelect('none'),
+              title: 'Select none (0)',
+              onClick: () => {
+                setBulkSelectChecked((prev) => !prev);
+                selector.props.onSelect('none');
+              },
             },
           ],
-          checked:
-            selectedIds.length && filtered.length > selectedIds.length
-              ? null
-              : selectedIds.length,
+          checked: bulkSelectChecked,
           count: selectedIds.length,
-          onSelect: (isSelected, e) =>
-            selector.props.onSelect(e, isSelected, -1),
+          onSelect: () => {
+            setBulkSelectChecked((prev) => !prev);
+            !bulkSelectChecked
+              ? selector.props.onSelect('page', true, 0)
+              : selector.props.onSelect('none');
+          },
         }}
         actionsConfig={{
           actions: [
