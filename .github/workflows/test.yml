@@ -1,0 +1,15 @@
+name: Test runner
+on:
+  push:
+    branches: ['master', 'stage-stable', 'stable', 'prod-beta', 'prod-stable']
+  pull_request:
+    branches: ['master', 'stage-stable', 'stable', 'prod-beta', 'prod-stable']
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm ci
+      - run: npm run test:jest
+      - run: npm run test:ct
+      - run: npm run coverage

@@ -74,7 +74,9 @@ const SystemsTableWrapper = ({
       tableProps={{
         canSelectAll: false,
       }}
-      columns={mergedColumns(columns, defaultProps)}
+      columns={(defaultColumns) =>
+        mergedColumns(defaultColumns, systemsColumns)
+      }
       bulkSelect={{
         count: selected ? selected.size : 0,
         items: [

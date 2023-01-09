@@ -41,6 +41,7 @@ export const fetchInventoryData = async (
       ? display_name.includes(config.filters.hostnameOrId)
       : true
   );
+
   const data = await getEntities(
     currSystems
       .slice((page - 1) * config.per_page, page * config.per_page)
@@ -48,6 +49,7 @@ export const fetchInventoryData = async (
     { ...config, hasItems: true },
     true
   );
+
   return {
     ...data,
     page,
@@ -59,22 +61,12 @@ export const fetchInventoryData = async (
   };
 };
 
-export const mergedColumns =
-  (columns, defaultProps = {}) =>
-  (defaultColumns) =>
-    columns.map((column) => {
-      const isStringCol = typeof column === 'string';
-      const key = isStringCol ? column : column.key;
-      const defaultColumn = defaultColumns.find(
-        (defaultCol) => defaultCol.key === key
-      );
-      return {
-        ...defaultColumn,
-        ...(isStringCol ? { key: column } : column),
-        props: {
-          ...defaultColumn?.props,
-          ...column?.props,
-          ...defaultProps,
-        },
-      };
-    });
+export const mergedColumns = (defaultColumns = [], customColumns = []) => {
+  return customColumns.map((column) => {
+    const inventoryColumn = defaultColumns.find(
+      (invColumn) => invColumn.key === column.key
+    );
+
+    return inventoryColumn || column;
+  });
+};
