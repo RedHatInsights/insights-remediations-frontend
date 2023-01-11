@@ -22,11 +22,11 @@ import {
   TableBody,
   TableVariant,
 } from '@patternfly/react-table';
-import { generateUniqueId } from '../Alerts/PlaybookToastAlerts';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
 import EmptyExecutePlaybookState from '../EmptyExecutePlaybookState';
+import { dispatchNotification } from '../../Utilities/dispatcher';
 
 export const ExecuteModal = ({
   isOpen,
@@ -40,7 +40,6 @@ export const ExecuteModal = ({
   runRemediation,
   etag,
   setEtag,
-  setActiveAlert,
 }) => {
   const [isUserEntitled, setIsUserEntitled] = useState(false);
   const [connected, setConnected] = useState([]);
@@ -120,8 +119,7 @@ export const ExecuteModal = ({
                     etag,
                     disconnected.map((e) => e.executor_id).filter((e) => e)
                   );
-                  setActiveAlert({
-                    key: generateUniqueId(),
+                  dispatchNotification({
                     title: `Executing playbook ${remediationName}`,
                     description: (
                       <span>
@@ -129,6 +127,8 @@ export const ExecuteModal = ({
                       </span>
                     ),
                     variant: 'success',
+                    dismissable: true,
+                    autoDismiss: true,
                   });
                 }}
               >
@@ -145,12 +145,13 @@ export const ExecuteModal = ({
                 ouiaId="download-playbook"
                 onClick={() => {
                   downloadPlaybook(remediationId);
-                  setActiveAlert({
-                    key: generateUniqueId(),
+                  dispatchNotification({
                     title: 'Preparing playbook for download',
                     description:
                       'Once complete, your download will start automatically.',
                     variant: 'info',
+                    dismissable: true,
+                    autoDismiss: true,
                   });
                 }}
               >
@@ -308,5 +309,4 @@ ExecuteModal.propTypes = {
   runRemediation: PropTypes.func,
   etag: PropTypes.string,
   setEtag: PropTypes.func,
-  setActiveAlert: PropTypes.func,
 };

@@ -9,7 +9,7 @@ import { Button } from '@patternfly/react-core';
 import { deleteSystems, selectEntity, loadRemediation } from '../../actions';
 import './SystemsTable.scss';
 import RemoveSystemModal from './RemoveSystemModal';
-import { generateUniqueId } from '../Alerts/PlaybookToastAlerts';
+import { dispatchNotification } from '../../Utilities/dispatcher';
 import {
   calculateSystems,
   fetchInventoryData,
@@ -18,12 +18,7 @@ import {
 } from './helpers';
 import systemsColumns from './Columns';
 
-const SystemsTableWrapper = ({
-  remediation,
-  registry,
-  refreshRemediation,
-  setActiveAlert,
-}) => {
+const SystemsTableWrapper = ({ remediation, registry, refreshRemediation }) => {
   const [isOpen, setIsOpen] = useState(false);
   const systemsRef = useRef();
   const getEntitiesRef = useRef(() => undefined);
@@ -51,13 +46,14 @@ const SystemsTableWrapper = ({
       refreshRemediation();
     })();
     activeSystem.current = undefined;
-    setActiveAlert({
-      key: generateUniqueId(),
+    dispatchNotification({
       title: `Removed ${selected.size} ${
         selected.size > 1 ? 'systems' : 'system'
       } from playbook`,
       description: '',
       variant: 'success',
+      dismissable: true,
+      autoDismiss: true,
     });
     setIsOpen(false);
   };
@@ -226,7 +222,6 @@ const SystemsTable = (props) => {
         refreshRemediation={() =>
           dispatch(loadRemediation(props.remediation.id))
         }
-        setActiveAlert={props.setActiveAlert}
         {...props}
       />
     </Provider>
@@ -258,7 +253,6 @@ SystemsTableWrapper.propTypes = {
     register: PropTypes.func,
   }),
   refreshRemediation: PropTypes.func,
-  setActiveAlert: PropTypes.func,
 };
 
 export default SystemsTable;
