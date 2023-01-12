@@ -117,7 +117,12 @@ function Home() {
   const dispatch = useDispatch();
   const loadRemediations = (...args) =>
     dispatch(actions.loadRemediations(...args));
-  const deleteRemediation = (id) => dispatch(actions.deleteRemediation(id));
+  const deleteRemediations = (ids) =>
+    dispatch(
+      actions.deleteRemediations({
+        remediation_ids: ids,
+      })
+    );
   const itemsCountInPage = remediations?.value?.data.length || 0;
 
   function load() {
@@ -327,9 +332,8 @@ function Home() {
                       onClose={async (del) => {
                         setDialogOpen(false);
                         if (del) {
-                          await Promise.all(
-                            selectedIds.map((r) => deleteRemediation(r))
-                          );
+                          await deleteRemediations(selectedIds);
+
                           loadRemediations();
                           selector.reset();
                         }
