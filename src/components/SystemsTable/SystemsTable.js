@@ -10,7 +10,12 @@ import { deleteSystems, selectEntity, loadRemediation } from '../../actions';
 import './SystemsTable.scss';
 import RemoveSystemModal from './RemoveSystemModal';
 import { generateUniqueId } from '../Alerts/PlaybookToastAlerts';
-import { calculateSystems, fetchInventoryData, mergedColumns } from './helpers';
+import {
+  calculateSystems,
+  fetchInventoryData,
+  mergedColumns,
+  calculateChecked,
+} from './helpers';
 import systemsColumns from './Columns';
 
 const SystemsTableWrapper = ({
@@ -77,6 +82,7 @@ const SystemsTableWrapper = ({
         mergedColumns(defaultColumns, systemsColumns)
       }
       bulkSelect={{
+        isDisabled: rows ? false : true,
         count: selected ? selected.size : 0,
         items: [
           {
@@ -92,13 +98,32 @@ const SystemsTableWrapper = ({
                   title: `Select page (${rows.length})`,
                   onClick: () => {
                     setBulkSelectChecked((prev) => !prev);
-                    dispatch(selectEntity(0, true));
+                    !bulkSelectChecked
+                      ? dispatch(selectEntity(0, true))
+                      : dispatch(selectEntity(0, false));
+                  },
+                }
+              : {}),
+          },
+          {
+            ...(loaded && rows && rows.length > 0
+              ? {
+                  title: `Select all (${systemsRef.current.length})`,
+                  onClick: () => {
+                    setBulkSelectChecked((prev) => !prev);
+                    !bulkSelectChecked
+                      ? systemsRef.current.map((system) =>
+                          dispatch(selectEntity(system.id, true))
+                        )
+                      : systemsRef.current.map((system) =>
+                          dispatch(selectEntity(system.id, false))
+                        );
                   },
                 }
               : {}),
           },
         ],
-        checked: bulkSelectChecked,
+        checked: calculateChecked(systemsRef.current, selected),
         onSelect: (value) => {
           dispatch(selectEntity(0, value));
           setBulkSelectChecked((prev) => !prev);
