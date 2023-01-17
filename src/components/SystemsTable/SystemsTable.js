@@ -34,7 +34,7 @@ const SystemsTableWrapper = ({
   );
   const loaded = useSelector(({ entities }) => entities?.loaded);
   const rows = useSelector(({ entities }) => entities?.rows);
-  const [bulkSelectChecked, setBulkSelectChecked] = useState(false);
+
   const onConfirm = () => {
     (async () => {
       const selectedSystems =
@@ -62,6 +62,34 @@ const SystemsTableWrapper = ({
     setIsOpen(false);
   };
 
+  const bulkSelectCheck = (data) => {
+    return data?.filter((system) => system.selected === true);
+  };
+  const checkBoxValidator = (selection) => {
+    switch (selection) {
+      case 'none':
+        systemsRef.current.map((system) =>
+          dispatch(selectEntity(system.id, false))
+        );
+        break;
+      case 'page':
+        dispatch(selectEntity(0, true));
+        break;
+      case 'unselect page':
+        rows.map(() => dispatch(selectEntity(0, false)));
+        break;
+      case 'all':
+        systemsRef.current.map((system) =>
+          dispatch(selectEntity(system.id, true))
+        );
+        break;
+      case 'unselect all':
+        systemsRef.current.map((system) =>
+          dispatch(selectEntity(system.id, false))
+        );
+        break;
+    }
+  };
   useEffect(() => {
     systemsRef.current = calculateSystems(remediation);
   }, [remediation.id]);
@@ -87,20 +115,20 @@ const SystemsTableWrapper = ({
         items: [
           {
             title: 'Select none (0)',
-            onClick: () => {
-              bulkSelectChecked ? setBulkSelectChecked(false) : true;
-              dispatch(selectEntity(-1, false));
-            },
+            onClick: () => checkBoxValidator('none'),
           },
           {
             ...(loaded && rows && rows.length > 0
               ? {
                   title: `Select page (${rows.length})`,
                   onClick: () => {
-                    setBulkSelectChecked((prev) => !prev);
-                    !bulkSelectChecked
-                      ? dispatch(selectEntity(0, true))
-                      : dispatch(selectEntity(0, false));
+                    calculateChecked(systemsRef.current, selected) === false //if nothing is selected - selected the page
+                      ? checkBoxValidator('page')
+                      : bulkSelectCheck(rows).length === rows.length //it compares the selected rows to the total selected values so you can unselect the page
+                      ? checkBoxValidator('unselect page')
+                      : systemsRef.current.length > selected.size //it compares the total amount of rows to the selected values, so you can select additional page
+                      ? checkBoxValidator('page')
+                      : checkBoxValidator('unselect page');
                   },
                 }
               : {}),
@@ -110,14 +138,9 @@ const SystemsTableWrapper = ({
               ? {
                   title: `Select all (${systemsRef.current.length})`,
                   onClick: () => {
-                    setBulkSelectChecked((prev) => !prev);
-                    !bulkSelectChecked
-                      ? systemsRef.current.map((system) =>
-                          dispatch(selectEntity(system.id, true))
-                        )
-                      : systemsRef.current.map((system) =>
-                          dispatch(selectEntity(system.id, false))
-                        );
+                    calculateChecked(systemsRef.current, selected)
+                      ? checkBoxValidator('unselect all')
+                      : checkBoxValidator('all');
                   },
                 }
               : {}),
@@ -126,7 +149,6 @@ const SystemsTableWrapper = ({
         checked: calculateChecked(systemsRef.current, selected),
         onSelect: (value) => {
           dispatch(selectEntity(0, value));
-          setBulkSelectChecked((prev) => !prev);
         },
       }}
       getEntities={async (_i, config) =>
