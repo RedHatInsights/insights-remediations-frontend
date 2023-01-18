@@ -65,7 +65,7 @@ const SystemsTableWrapper = ({
   const bulkSelectCheck = (data) => {
     return data?.filter((system) => system.selected === true);
   };
-  const checkBoxValidator = (selection) => {
+  const bulkSelectorSwitch = (selection) => {
     switch (selection) {
       case 'none':
         systemsRef.current.map((system) =>
@@ -115,20 +115,20 @@ const SystemsTableWrapper = ({
         items: [
           {
             title: 'Select none (0)',
-            onClick: () => checkBoxValidator('none'),
+            onClick: () => bulkSelectorSwitch('none'),
           },
           {
             ...(loaded && rows && rows.length > 0
               ? {
                   title: `Select page (${rows.length})`,
                   onClick: () => {
-                    calculateChecked(systemsRef.current, selected) === false //if nothing is selected - selected the page
-                      ? checkBoxValidator('page')
+                    !selected //if nothing is selected - select the page
+                      ? bulkSelectorSwitch('page')
                       : bulkSelectCheck(rows).length === rows.length //it compares the selected rows to the total selected values so you can unselect the page
-                      ? checkBoxValidator('unselect page')
+                      ? bulkSelectorSwitch('unselect page')
                       : systemsRef.current.length > selected.size //it compares the total amount of rows to the selected values, so you can select additional page
-                      ? checkBoxValidator('page')
-                      : checkBoxValidator('unselect page');
+                      ? bulkSelectorSwitch('page')
+                      : bulkSelectorSwitch('unselect page');
                   },
                 }
               : {}),
@@ -139,16 +139,18 @@ const SystemsTableWrapper = ({
                   title: `Select all (${systemsRef.current.length})`,
                   onClick: () => {
                     calculateChecked(systemsRef.current, selected)
-                      ? checkBoxValidator('unselect all')
-                      : checkBoxValidator('all');
+                      ? bulkSelectorSwitch('unselect all')
+                      : bulkSelectorSwitch('all');
                   },
                 }
               : {}),
           },
         ],
         checked: calculateChecked(systemsRef.current, selected),
-        onSelect: (value) => {
-          dispatch(selectEntity(0, value));
+        onSelect: () => {
+          bulkSelectCheck(rows).length === rows.length
+            ? bulkSelectorSwitch('unselect page')
+            : bulkSelectorSwitch('page');
         },
       }}
       getEntities={async (_i, config) =>

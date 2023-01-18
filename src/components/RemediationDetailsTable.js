@@ -152,9 +152,7 @@ function RemediationDetailsTable(props) {
   const { setActiveAlert } = props;
   const permission = useContext(PermissionContext);
   const [filterText, setFilterText] = useState('');
-  const [bulkSelectChecked, setBulkSelectChecked] = useState(false);
   const [prevRemediationsCount, setPrevRemediationsCount] = useState(0); // eslint-disable-line
-
   useEffect(() => {
     filter.setValue(filterText);
   }, [filterText]);
@@ -190,6 +188,10 @@ function RemediationDetailsTable(props) {
     },
   };
 
+  const bulkSelectCheck = (data) => {
+    return data?.filter((action) => action.selected === true);
+  };
+
   return (
     <div className="test">
       <PrimaryToolbar
@@ -216,7 +218,6 @@ function RemediationDetailsTable(props) {
             {
               title: 'Select none (0)',
               onClick: () => {
-                bulkSelectChecked ? setBulkSelectChecked(false) : true;
                 selector.props.onSelect('none');
               },
             },
@@ -224,9 +225,10 @@ function RemediationDetailsTable(props) {
               ? {
                   title: `Select page (${rows.length})`,
                   onClick: () => {
-                    setBulkSelectChecked((prev) => !prev);
-                    !bulkSelectChecked
+                    bulkSelectCheck(rows).length === 0
                       ? selector.props.onSelect('page', true, 0)
+                      : rows.length === bulkSelectCheck(rows).length
+                      ? selector.props.onSelect('page', false, 0)
                       : selector.props.onSelect('page', false, 0);
                   },
                 }
@@ -235,9 +237,8 @@ function RemediationDetailsTable(props) {
               ? {
                   title: `Select all (${props.remediation.issues.length})`,
                   onClick: () => {
-                    setBulkSelectChecked((prev) => !prev);
                     selector.register(props.remediation.issues);
-                    !bulkSelectChecked
+                    selectedIds.length < props.remediation.issues.length
                       ? selector.props.onSelect('page', true, 0)
                       : selector.props.onSelect('page', false, 0);
                   },
@@ -250,8 +251,7 @@ function RemediationDetailsTable(props) {
               : selectedIds.length,
           count: selectedIds.length,
           onSelect: () => {
-            setBulkSelectChecked((prev) => !prev);
-            !bulkSelectChecked
+            bulkSelectCheck(rows).length === 0
               ? selector.props.onSelect('page', true, 0)
               : selector.props.onSelect('none');
           },
