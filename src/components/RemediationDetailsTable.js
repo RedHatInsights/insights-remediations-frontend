@@ -223,22 +223,22 @@ function RemediationDetailsTable(props) {
             },
             rows.length > 0
               ? {
-                  title: `Select page (${rows.length})`,
+                  title: `Select page (${rows?.length})`,
                   onClick: () => {
                     bulkSelectCheck(rows).length === 0
                       ? selector.props.onSelect('page', true, 0)
                       : rows.length === bulkSelectCheck(rows).length
                       ? selector.props.onSelect('page', false, 0)
-                      : selector.props.onSelect('page', false, 0);
+                      : selector.props.onSelect('page', true, 0);
                   },
                 }
               : {},
             rows.length > 0
               ? {
-                  title: `Select all (${props.remediation.issues.length})`,
+                  title: `Select all (${props?.remediation?.issues.length})`,
                   onClick: () => {
-                    selector.register(props.remediation.issues);
-                    selectedIds.length < props.remediation.issues.length
+                    selector.register(props?.remediation.issues);
+                    selectedIds?.length < props?.remediation?.issues.length
                       ? selector.props.onSelect('page', true, 0)
                       : selector.props.onSelect('page', false, 0);
                   },
@@ -253,7 +253,7 @@ function RemediationDetailsTable(props) {
           onSelect: () => {
             bulkSelectCheck(rows).length === 0
               ? selector.props.onSelect('page', true, 0)
-              : selector.props.onSelect('none');
+              : selector.props.onSelect('page', false, 0);
           },
         }}
         actionsConfig={{

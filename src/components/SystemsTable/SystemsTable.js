@@ -75,7 +75,7 @@ const SystemsTableWrapper = ({
       case 'page':
         dispatch(selectEntity(0, true));
         break;
-      case 'unselect page':
+      case 'deselect page':
         rows.map(() => dispatch(selectEntity(0, false)));
         break;
       case 'all':
@@ -83,7 +83,7 @@ const SystemsTableWrapper = ({
           dispatch(selectEntity(system.id, true))
         );
         break;
-      case 'unselect all':
+      case 'deselect all':
         systemsRef.current.map((system) =>
           dispatch(selectEntity(system.id, false))
         );
@@ -124,11 +124,11 @@ const SystemsTableWrapper = ({
                   onClick: () => {
                     !selected //if nothing is selected - select the page
                       ? bulkSelectorSwitch('page')
-                      : bulkSelectCheck(rows).length === rows.length //it compares the selected rows to the total selected values so you can unselect the page
-                      ? bulkSelectorSwitch('unselect page')
+                      : bulkSelectCheck(rows).length === rows.length //it compares the selected rows to the total selected values so you can deselect the page
+                      ? bulkSelectorSwitch('deselect page')
                       : systemsRef.current.length > selected.size //it compares the total amount of rows to the selected values, so you can select additional page
                       ? bulkSelectorSwitch('page')
-                      : bulkSelectorSwitch('unselect page');
+                      : bulkSelectorSwitch('deselect page');
                   },
                 }
               : {}),
@@ -139,7 +139,7 @@ const SystemsTableWrapper = ({
                   title: `Select all (${systemsRef.current.length})`,
                   onClick: () => {
                     calculateChecked(systemsRef.current, selected)
-                      ? bulkSelectorSwitch('unselect all')
+                      ? bulkSelectorSwitch('deselect all')
                       : bulkSelectorSwitch('all');
                   },
                 }
@@ -149,7 +149,7 @@ const SystemsTableWrapper = ({
         checked: calculateChecked(systemsRef.current, selected),
         onSelect: () => {
           bulkSelectCheck(rows).length === rows.length
-            ? bulkSelectorSwitch('unselect page')
+            ? bulkSelectorSwitch('deselect page')
             : bulkSelectorSwitch('page');
         },
       }}
