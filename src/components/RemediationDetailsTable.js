@@ -153,7 +153,6 @@ function RemediationDetailsTable(props) {
   const permission = useContext(PermissionContext);
   const [filterText, setFilterText] = useState('');
   const [prevRemediationsCount, setPrevRemediationsCount] = useState(0); // eslint-disable-line
-
   useEffect(() => {
     filter.setValue(filterText);
   }, [filterText]);
@@ -189,6 +188,10 @@ function RemediationDetailsTable(props) {
     },
   };
 
+  const bulkSelectCheck = (data) => {
+    return data?.filter((action) => action.selected === true);
+  };
+
   return (
     <div className="test">
       <PrimaryToolbar
@@ -210,23 +213,48 @@ function RemediationDetailsTable(props) {
           ],
         }}
         bulkSelect={{
+          isDisabled: rows ? false : true,
           items: [
             {
-              title: 'Select all',
-              onClick: () => selector.props.onSelect('page', true, 0),
+              title: 'Select none (0)',
+              onClick: () => {
+                selector.props.onSelect('none');
+              },
             },
-            {
-              title: 'Select none',
-              onClick: () => selector.props.onSelect('none'),
-            },
+            rows.length > 0
+              ? {
+                  title: `Select page (${rows?.length})`,
+                  onClick: () => {
+                    bulkSelectCheck(rows).length === 0
+                      ? selector.props.onSelect('page', true, 0)
+                      : rows.length === bulkSelectCheck(rows).length
+                      ? selector.props.onSelect('page', false, 0)
+                      : selector.props.onSelect('page', true, 0);
+                  },
+                }
+              : {},
+            rows.length > 0
+              ? {
+                  title: `Select all (${props?.remediation?.issues.length})`,
+                  onClick: () => {
+                    selector.register(props?.remediation.issues);
+                    selectedIds?.length < props?.remediation?.issues.length
+                      ? selector.props.onSelect('page', true, 0)
+                      : selector.props.onSelect('page', false, 0);
+                  },
+                }
+              : {},
           ],
           checked:
             selectedIds.length && filtered.length > selectedIds.length
               ? null
               : selectedIds.length,
           count: selectedIds.length,
-          onSelect: (isSelected, e) =>
-            selector.props.onSelect(e, isSelected, -1),
+          onSelect: () => {
+            bulkSelectCheck(rows).length === 0
+              ? selector.props.onSelect('page', true, 0)
+              : selector.props.onSelect('page', false, 0);
+          },
         }}
         actionsConfig={{
           actions: [
