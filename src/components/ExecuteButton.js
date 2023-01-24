@@ -20,7 +20,6 @@ const ExecuteButton = ({
   etag,
   remediationStatus,
   setEtag,
-  setActiveAlert,
 }) => {
   const [open, setOpen] = useState(false);
   const [showRefreshMessage, setShowRefreshMessage] = useState(false);
@@ -73,7 +72,6 @@ const ExecuteButton = ({
           issueCount={issueCount}
           runRemediation={runRemediation}
           setEtag={setEtag}
-          setActiveAlert={setActiveAlert}
         />
       )}
     </React.Fragment>
@@ -93,7 +91,6 @@ ExecuteButton.propTypes = {
   setEtag: PropTypes.func,
   isDisabled: PropTypes.bool,
   disabledStateText: PropTypes.string,
-  setActiveAlert: PropTypes.func,
 };
 
 ExecuteButton.defaultProps = {

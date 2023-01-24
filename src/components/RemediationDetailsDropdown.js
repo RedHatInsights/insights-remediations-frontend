@@ -11,20 +11,15 @@ import {
 } from '@patternfly/react-core';
 import TextInputDialog from './Dialogs/TextInputDialog';
 import ConfirmationDialog from './ConfirmationDialog';
-import { generateUniqueId } from './Alerts/PlaybookToastAlerts';
 import { deleteRemediation, patchRemediation } from '../actions';
+import { dispatchNotification } from '../Utilities/dispatcher';
 
 import { PermissionContext } from '../App';
 
 const playbookNamePattern = /^$|^.*[\w\d]+.*$/;
 const EMPTY_NAME = 'Unnamed Playbook';
 
-function RemediationDetailsDropdown({
-  remediation,
-  onRename,
-  onDelete,
-  setActiveAlert,
-}) {
+function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
   const [open, setOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -41,11 +36,12 @@ function RemediationDetailsDropdown({
           onSubmit={(name) => {
             setRenameDialogOpen(false);
             onRename(remediation.id, name);
-            setActiveAlert({
-              key: generateUniqueId(),
+            dispatchNotification({
               title: `Updated playbook name to ${name}`,
               description: '',
               variant: 'success',
+              dismissable: true,
+              autoDismiss: true,
             });
           }}
           pattern={playbookNamePattern}
@@ -61,10 +57,11 @@ function RemediationDetailsDropdown({
           setDeleteDialogOpen(false);
           if (confirm) {
             onDelete(remediation.id);
-            setActiveAlert({
-              key: generateUniqueId(),
+            dispatchNotification({
               title: `Deleted playbook ${remediation.name}`,
               variant: 'success',
+              dismissable: true,
+              autoDismiss: true,
             });
           }
         }}
@@ -98,7 +95,6 @@ RemediationDetailsDropdown.propTypes = {
   remediation: PropTypes.object.isRequired,
   onRename: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
-  setActiveAlert: PropTypes.func,
 };
 
 const connected = withRouter(
