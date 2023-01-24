@@ -11,10 +11,10 @@ import './SystemsTable.scss';
 import RemoveSystemModal from './RemoveSystemModal';
 import { generateUniqueId } from '../Alerts/PlaybookToastAlerts';
 import {
-  calculateChecked,
   calculateSystems,
   fetchInventoryData,
   mergedColumns,
+  calculateChecked,
 } from './helpers';
 import systemsColumns from './Columns';
 
@@ -62,6 +62,34 @@ const SystemsTableWrapper = ({
     setIsOpen(false);
   };
 
+  const bulkSelectCheck = (data) => {
+    return data?.filter((system) => system.selected === true);
+  };
+  const bulkSelectorSwitch = (selection) => {
+    switch (selection) {
+      case 'none':
+        systemsRef.current.map((system) =>
+          dispatch(selectEntity(system.id, false))
+        );
+        break;
+      case 'page':
+        dispatch(selectEntity(0, true));
+        break;
+      case 'deselect page':
+        rows.map(() => dispatch(selectEntity(0, false)));
+        break;
+      case 'all':
+        systemsRef.current.map((system) =>
+          dispatch(selectEntity(system.id, true))
+        );
+        break;
+      case 'deselect all':
+        systemsRef.current.map((system) =>
+          dispatch(selectEntity(system.id, false))
+        );
+        break;
+    }
+  };
   useEffect(() => {
     systemsRef.current = calculateSystems(remediation);
   }, [remediation.id]);
@@ -82,28 +110,47 @@ const SystemsTableWrapper = ({
         mergedColumns(defaultColumns, systemsColumns)
       }
       bulkSelect={{
+        isDisabled: rows ? false : true,
         count: selected ? selected.size : 0,
         items: [
           {
             title: 'Select none (0)',
-            onClick: () => {
-              dispatch(selectEntity(-1, false));
-            },
+            onClick: () => bulkSelectorSwitch('none'),
           },
           {
             ...(loaded && rows && rows.length > 0
               ? {
                   title: `Select page (${rows.length})`,
                   onClick: () => {
-                    dispatch(selectEntity(0, true));
+                    !selected //if nothing is selected - select the page
+                      ? bulkSelectorSwitch('page')
+                      : bulkSelectCheck(rows).length === rows.length //it compares the selected rows to the total selected values so you can deselect the page
+                      ? bulkSelectorSwitch('deselect page')
+                      : systemsRef.current.length > selected.size //it compares the total amount of rows to the selected values, so you can select additional page
+                      ? bulkSelectorSwitch('page')
+                      : bulkSelectorSwitch('deselect page');
+                  },
+                }
+              : {}),
+          },
+          {
+            ...(loaded && rows && rows.length > 0
+              ? {
+                  title: `Select all (${systemsRef.current.length})`,
+                  onClick: () => {
+                    calculateChecked(systemsRef.current, selected)
+                      ? bulkSelectorSwitch('deselect all')
+                      : bulkSelectorSwitch('all');
                   },
                 }
               : {}),
           },
         ],
-        checked: calculateChecked(rows, selected),
-        onSelect: (value) => {
-          dispatch(selectEntity(0, value));
+        checked: calculateChecked(systemsRef.current, selected),
+        onSelect: () => {
+          bulkSelectCheck(rows).length === rows.length
+            ? bulkSelectorSwitch('deselect page')
+            : bulkSelectorSwitch('page');
         },
       }}
       getEntities={async (_i, config) =>
