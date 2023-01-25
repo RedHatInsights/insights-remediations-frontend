@@ -20,7 +20,7 @@
     "@redhat-cloud-services/frontend-components-notifications": "3.2.7",
     "@redhat-cloud-services/frontend-components-utilities": "3.2.17",
     "@redhat-cloud-services/host-inventory-client": "^1.0.100",
-    "@redhat-cloud-services/remediations-client": "^1.0.100",
+    "@redhat-cloud-services/remediations-client": "^1.2.0",
     "@redhat-cloud-services/sources-client": "^1.0.100",
     "@scalprum/react-core": "^0.1.1",
     "awesome-debounce-promise": "2.1.0",
