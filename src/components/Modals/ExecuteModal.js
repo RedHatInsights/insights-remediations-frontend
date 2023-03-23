@@ -27,6 +27,7 @@ import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
 import EmptyExecutePlaybookState from '../EmptyExecutePlaybookState';
 import { dispatchNotification } from '../../Utilities/dispatcher';
+import { useChrome } from '@redhat-cloud-services/frontend-components/useChrome';
 
 export const ExecuteModal = ({
   isOpen,
@@ -45,9 +46,10 @@ export const ExecuteModal = ({
   const [connected, setConnected] = useState([]);
   const [disconnected, setDisconnected] = useState([]);
   const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
+  const chrome = useChrome();
 
   useEffect(() => {
-    window.insights.chrome.auth
+    chrome.auth
       .getUser()
       .then((user) =>
         setIsUserEntitled(user.entitlements.smart_management.is_entitled)

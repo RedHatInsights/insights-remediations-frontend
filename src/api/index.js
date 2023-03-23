@@ -36,7 +36,6 @@ class HttpError extends Error {
 }
 
 async function authInterceptor(config) {
-  await window.insights.chrome.auth.getUser();
   return config;
 }
 
@@ -54,7 +53,6 @@ function interceptor401(err) {
   }
 
   if (err.response && err.response.status === 401) {
-    window.insights.chrome.auth.logout();
     return false;
   }
 

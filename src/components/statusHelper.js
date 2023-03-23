@@ -17,15 +17,18 @@ import {
   TextVariants,
   Tooltip,
 } from '@patternfly/react-core';
+import { useChrome } from '@redhat-cloud-services/frontend-components/useChrome';
 
 import { CancelButton } from '../containers/CancelButton';
 
 import { capitalize } from '../Utilities/utils';
 
-const connectorUrl = () =>
-  insights.chrome.isBeta()
+const connectorUrl = () => {
+  const chrome = useChrome();
+  return chrome.isBeta()
     ? `${window.location.origin}/beta/settings/connector`
     : `${window.location.origin}/settings/connector`;
+};
 
 export const normalizeStatus = (status) =>
   ({

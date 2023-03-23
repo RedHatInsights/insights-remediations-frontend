@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { createContext, Component } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Routes } from './Routes';
@@ -13,111 +14,100 @@ import NotificationsPortal from '@redhat-cloud-services/frontend-components-noti
 
 export const PermissionContext = createContext();
 
-class App extends Component {
-  unregister;
-  constructor() {
-    super();
-    this.state = {
-      readPermission: undefined,
-      writePermission: undefined,
-      executePermission: undefined,
-      isReceptorConfigured: undefined,
-      arePermissionLoaded: false,
-      hasSmartManagement: undefined,
-    };
-  }
+const App = (props) => {
+  const chrome = useChrome();
+  const [
+    { readPermission, writePermission, executePermission, arePermissionLoaded },
+    setPermissions,
+  ] = useState({
+    readPermission: undefined,
+    writePermission: undefined,
+    executePermission: undefined,
+    arePermissionLoaded: false,
+  });
+  const [isReceptorConfigured, setIsReceptorConfigured] = useState(undefined);
+  const [hasSmartManagement, setHasSmartManagement] = useState(undefined);
 
-  handlePermissionUpdate = (hasRead, hasWrite, hasExecute) =>
-    this.setState({
+  const handlePermissionUpdate = (hasRead, hasWrite, hasExecute) =>
+    setPermissions({
       readPermission: hasRead,
       writePermission: hasWrite,
       executePermission: hasExecute,
       arePermissionLoaded: true,
     });
 
-  componentWillUnmount() {
-    if (typeof this.unregister === 'function') {
-      this.unregister();
-    }
-  }
-  async componentDidMount() {
-    insights.chrome.init();
-    insights.chrome?.hideGlobalFilter?.();
-    insights.chrome.identifyApp('remediations');
-    // wait for auth first, otherwise the call to RBAC may 401
-    await window.insights.chrome.auth.getUser().then((user) =>
-      this.setState({
-        hasSmartManagement: user.entitlements.smart_management.is_entitled,
-      })
-    );
-    getIsReceptorConfigured().then((isConfigured) =>
-      this.setState({
-        isReceptorConfigured: isConfigured.data.length > 0,
-      })
-    );
-    this.unregister = insights.chrome.on('APP_NAVIGATION', (event) => {
-      if (typeof event?.domEvent?.href === 'string') {
-        this.props.history.push('/');
-      }
-    });
-    window.insights.chrome
-      .getUserPermissions('remediations')
-      .then((remediationsPermissions) => {
-        const permissionList = remediationsPermissions.map(
-          (permissions) => permissions.permission
+  useEffect(() => {
+    let unregister;
+    if (chrome) {
+      chrome.identifyApp('remediations');
+      chrome?.hideGlobalFilter();
+
+      // wait for auth first, otherwise the call to RBAC may 401
+      chrome?.auth
+        .getUser()
+        .then((user) =>
+          setHasSmartManagement(user.entitlements.smart_management.is_entitled)
         );
-        if (
-          permissionList.includes(
-            'remediations:*:*' || 'remediations:remediation:*'
-          )
-        ) {
-          this.handlePermissionUpdate(true, true, true);
-        } else {
-          this.handlePermissionUpdate(
-            permissionList.includes(
-              'remediations:remediation:read' || 'remediations:*:read'
-            ),
-            permissionList.includes(
-              'remediations:remediation:write' || 'remediations:*:write'
-            ),
-            permissionList.includes(
-              'remediations:remediation:execute' || 'remediations:*:execute'
-            )
+
+      getIsReceptorConfigured().then((isConfigured) =>
+        setIsReceptorConfigured(isConfigured.data.length > 0)
+      );
+
+      unregister = chrome.on('APP_NAVIGATION', (event) =>
+        history.push(`/${event.navId}`)
+      );
+
+      chrome
+        .getUserPermissions('remediations')
+        .then((remediationsPermissions) => {
+          const permissionList = remediationsPermissions.map(
+            (permissions) => permissions.permission
           );
-        }
-      });
-  }
+          if (
+            permissionList.includes(
+              'remediations:*:*' || 'remediations:remediation:*'
+            )
+          ) {
+            handlePermissionUpdate(true, true, true, true);
+          } else {
+            handlePermissionUpdate(
+              permissionList.includes(
+                'remediations:remediation:read' || 'remediations:*:read'
+              ),
+              permissionList.includes(
+                'remediations:remediation:write' || 'remediations:*:write'
+              ),
+              permissionList.includes(
+                'remediations:remediation:execute' || 'remediations:*:execute'
+              )
+            );
+          }
+        });
+    }
+    return () => {
+      unregister();
+    };
+  }, []);
 
-  render() {
-    const {
-      readPermission,
-      writePermission,
-      executePermission,
-      arePermissionLoaded,
-      isReceptorConfigured,
-      hasSmartManagement,
-    } = this.state;
-
-    return arePermissionLoaded ? (
-      <PermissionContext.Provider
-        value={{
-          permissions: {
-            read: readPermission,
-            write: writePermission,
-            execute: executePermission,
-          },
-          isReceptorConfigured,
-          hasSmartManagement,
-        }}
-      >
-        <NotificationsPortal />
-        <Routes childProps={this.props} />
-      </PermissionContext.Provider>
-    ) : (
-      <GlobalSkeleton />
-    );
-  }
-}
+  return arePermissionLoaded ? (
+    <PermissionContext.Provider
+      value={{
+        permissions: {
+          read: readPermission,
+          write: writePermission,
+          execute: executePermission,
+        },
+        isReceptorConfigured,
+        hasSmartManagement,
+      }}
+    >
+      <NotificationsPortal />
+      <Routes childProps={props} />
+    </PermissionContext.Provider>
+  ) : (
+    <GlobalSkeleton />
+  );
+};
 
 App.propTypes = {
   history: PropTypes.object,

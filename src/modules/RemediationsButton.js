@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import propTypes from 'prop-types';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import validate from './RemediationsModal/validate';
 
 import { CAN_REMEDIATE, matchPermissions } from '../Utilities/utils';
@@ -18,13 +19,14 @@ const RemediationButton = ({
   const [hasPermissions, setHasPermissions] = useState(false);
   const [remediationsData, setRemediationsData] = useState();
   const [isNoDataModalOpen, setNoDataModalOpen] = useState(false);
+  const chrome = useChrome();
 
   useEffect(() => {
-    insights.chrome.getUserPermissions('remediations').then((permissions) => {
+    chrome.getUserPermissions('remediations').then((permissions) => {
       setHasPermissions(
-        permissions.some(({ permission }) =>
-          matchPermissions(permission, CAN_REMEDIATE)
-        )
+        permissions.some(({ permission }) => {
+          return matchPermissions(permission, CAN_REMEDIATE);
+        })
       );
     });
   }, []);
