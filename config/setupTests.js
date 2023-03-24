@@ -7,6 +7,10 @@ configure({ adapter: new Adapter() });
 
 enableFetchMocks();
 
+jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
+  useChrome: () => null,
+}));
+
 global.shallow = shallow;
 global.render = render;
 global.mount = mount;

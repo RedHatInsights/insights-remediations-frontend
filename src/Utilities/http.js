@@ -14,11 +14,6 @@ async function checkResponse(r) {
     return r;
   }
 
-  if (r.status === 401) {
-    window.insights.chrome.auth.logout();
-    return;
-  }
-
   if (r.headers.get('content-type').includes('application/json')) {
     // let's try to extract some more info
     let data = false;
