@@ -69,7 +69,7 @@ export const ExecuteModal = ({
   }, [data]);
 
   const generateRowsStatus = (con) => {
-    return styledConnectionStatus(con.connection_status);
+    return styledConnectionStatus(con.connection_status, chrome?.isBeta?.());
   };
 
   const rows = [...connected, ...disconnected].map((con) => ({

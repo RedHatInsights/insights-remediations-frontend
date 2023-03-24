@@ -40,11 +40,11 @@ const App = (props) => {
     let unregister;
     if (chrome) {
       chrome.identifyApp('remediations');
-      chrome?.hideGlobalFilter();
+      chrome?.hideGlobalFilter?.();
 
       // wait for auth first, otherwise the call to RBAC may 401
       chrome?.auth
-        .getUser()
+        .getUser?.()
         .then((user) =>
           setHasSmartManagement(user.entitlements.smart_management.is_entitled)
         );
@@ -68,7 +68,7 @@ const App = (props) => {
               'remediations:*:*' || 'remediations:remediation:*'
             )
           ) {
-            handlePermissionUpdate(true, true, true, true);
+            handlePermissionUpdate(true, true, true);
           } else {
             handlePermissionUpdate(
               permissionList.includes(

@@ -17,18 +17,15 @@ import {
   TextVariants,
   Tooltip,
 } from '@patternfly/react-core';
-import { useChrome } from '@redhat-cloud-services/frontend-components/useChrome';
 
 import { CancelButton } from '../containers/CancelButton';
 
 import { capitalize } from '../Utilities/utils';
 
-const connectorUrl = () => {
-  const chrome = useChrome();
-  return chrome.isBeta()
+const connectorUrl = (isBeta) =>
+  isBeta
     ? `${window.location.origin}/beta/settings/connector`
     : `${window.location.origin}/settings/connector`;
-};
 
 export const normalizeStatus = (status) =>
   ({
@@ -197,7 +194,7 @@ export const StatusSummary = ({
   return statusBar;
 };
 
-export const styledConnectionStatus = (status) =>
+export const styledConnectionStatus = (status, isBeta) =>
   ({
     connected: (
       <TextContent>
@@ -306,7 +303,7 @@ export const styledConnectionStatus = (status) =>
               variant="link"
               component="a"
               // eslint-disable-next-line max-len
-              href={connectorUrl()}
+              href={connectorUrl(isBeta)}
             >
               RHC (Red Hat connector)
             </Button>
@@ -360,7 +357,7 @@ export const styledConnectionStatus = (status) =>
               variant="link"
               component="a"
               // eslint-disable-next-line max-len
-              href={connectorUrl()}
+              href={connectorUrl(isBeta)}
             >
               RHC (Red Hat connector)
             </Button>
