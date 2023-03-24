@@ -9,7 +9,6 @@ import SystemsTable from '../components/SystemsTable/SystemsTable';
 import RemediationActivityTable from '../components/RemediationActivityTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
 import { normalizeStatus } from '../components/statusHelper';
-import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
@@ -77,7 +76,7 @@ const RemediationDetails = ({
 
   const context = useContext(PermissionContext);
 
-  const { isFedramp } = useChrome();
+  const { isFedramp, isBeta } = useChrome();
   const handleUpsellToggle = () => {
     setUpsellBannerVisible(false);
     localStorage.setItem('remediations:bannerStatus', 'dismissed');
@@ -118,7 +117,7 @@ const RemediationDetails = ({
     setActiveTabKey(tabIndex !== -1 ? tabIndex : 0);
     history.push(`?${tabMapper[tabIndex !== -1 ? tabIndex : 0]}`);
 
-    if (isBeta) {
+    if (isBeta?.()) {
       loadRemediationStatus(id);
     }
     checkExecutable(id);

@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 import { loadRemediations, deleteRemediationIssue } from '../actions';
-import { isBeta } from '../config';
 
 import DeleteButton from '../components/DeleteButton';
 
@@ -32,7 +31,7 @@ export const DeleteActionsButton = withRouter(
       dialogTitle: `Remove action${issues.length > 1 ? 's' : ''}`,
       dialogConfirmationText: `Remove action${issues.length > 1 ? 's' : ''}`,
     }),
-    (dispatch, { remediation, issues, afterDelete }) => ({
+    (dispatch, { remediation, issues, afterDelete, isBeta }) => ({
       onDelete: async () => {
         await Promise.all(
           issues.map((issueId) =>

@@ -36,6 +36,7 @@ import * as debug from '../Utilities/debug';
 import './RemediationDetailsTable.scss';
 import { PermissionContext } from '../App';
 import { EmptyActions } from './EmptyStates/EmptyActions';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 
 function resolutionDescriptionCell(remediation, issue) {
   const url = buildIssueUrl(issue.id);
@@ -152,6 +153,8 @@ function RemediationDetailsTable(props) {
   const permission = useContext(PermissionContext);
   const [filterText, setFilterText] = useState('');
   const [prevRemediationsCount, setPrevRemediationsCount] = useState(0); // eslint-disable-line
+  const chrome = useChrome();
+
   useEffect(() => {
     filter.setValue(filterText);
   }, [filterText]);
@@ -273,6 +276,7 @@ function RemediationDetailsTable(props) {
                 });
                 selector.reset;
               }}
+              isBeta={chrome?.isBeta?.()}
             />,
           ],
         }}
