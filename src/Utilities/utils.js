@@ -29,16 +29,16 @@ export const TOGGLE_BULK_SELECT = 'toggle-bulk-select';
 export const getGroup = () =>
   window.location.pathname
     .split('/')
-    .filter((s) => s !== 'beta' && s.length > 0)
+    .filter((s) => s !== 'preview' && s.length > 0)
     .shift();
 
 export const getEnvUrl = () => {
   const pathName = window.location.pathname.split('/');
-  return pathName[1] === 'beta' ? 'beta/' : '';
+  return pathName[1] === 'preview' ? 'preview/' : '';
 };
 
 export const getBaseUri = () =>
-  `${document.baseURI.replace('beta/', '')}${getEnvUrl()}`;
+  `${document.baseURI.replace('preview/', '')}${getEnvUrl()}`;
 
 export const remediationUrl = (id) =>
   `${getBaseUri()}${getGroup()}/remediations${id ? `/${id}` : ''}`;

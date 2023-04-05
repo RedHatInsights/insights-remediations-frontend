@@ -24,7 +24,7 @@ import { capitalize } from '../Utilities/utils';
 
 const connectorUrl = (isBeta) =>
   isBeta
-    ? `${window.location.origin}/beta/settings/connector`
+    ? `${window.location.origin}/preview/settings/connector`
     : `${window.location.origin}/settings/connector`;
 
 export const normalizeStatus = (status) =>
