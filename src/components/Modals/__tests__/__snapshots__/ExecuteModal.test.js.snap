@@ -69,6 +69,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
           toggleText="About remote execution with Cloud connector"
           toggleTextCollapsed=""
           toggleTextExpanded=""
+          variant="default"
         >
           Playbooks can be executed on systems which:
           <List>
@@ -141,6 +142,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       </Button>
     </TextContent>
     <Table
+      actionsMenuAppendTo="inline"
       aria-label="Systems"
       borders={true}
       canCollapseAll={false}
@@ -258,6 +260,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
           toggleText="About remote execution with Cloud connector"
           toggleTextCollapsed=""
           toggleTextExpanded=""
+          variant="default"
         >
           Playbooks can be executed on systems which:
           <List>
@@ -330,6 +333,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       </Button>
     </TextContent>
     <Table
+      actionsMenuAppendTo="inline"
       aria-label="Systems"
       borders={true}
       canCollapseAll={false}

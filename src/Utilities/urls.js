@@ -5,7 +5,7 @@ import { getIssuePrefix } from './model';
 export function getGroup() {
   const pathName = window.location.pathname.split('/');
 
-  if (pathName[1] === 'beta') {
+  if (pathName[1] === 'preview') {
     return pathName[2];
   }
 
