@@ -322,28 +322,6 @@ export const styledConnectionStatus = (status, isBeta) =>
         </Text>
       </TextContent>
     ),
-    no_smart_management: (
-      <TextContent>
-        <Text component={TextVariants.p}>
-          Cannot remediate - Not entitled
-          <Text component={TextVariants.small} style={{ margin: '0px' }}>
-            Remediation from Insights is supported only for systems with Cloud
-            connector, a feature of Smart Management
-          </Text>
-          <Button
-            className="pf-u-p-0"
-            key="download"
-            variant="link"
-            component="a"
-            // eslint-disable-next-line max-len
-            href="#"
-          >
-            Learn about Smart Management &nbsp;
-            <ExternalLinkAltIcon />
-          </Button>
-        </Text>
-      </TextContent>
-    ),
     disabled: (
       <TextContent>
         <Text component={TextVariants.p}>
