@@ -71,7 +71,8 @@ export const SystemsStatusModal = ({
     if (inventory && inventory.current) {
       setPage(options.page);
       setPageSize(options.per_page);
-      inventory.current.onRefreshData(options);
+      //FIX_ME: onRefreshData is triggered multiple times with same options
+      inventory.current.onRefreshData({ timestamp: Date.now(), ...options });
     }
   };
 
