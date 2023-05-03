@@ -158,7 +158,10 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
             "title": "Systems",
             "value": "count",
           },
-          false,
+          Object {
+            "title": "Connection status",
+            "value": "status",
+          },
         ]
       }
       className=""
@@ -349,7 +352,10 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
             "title": "Systems",
             "value": "count",
           },
-          false,
+          Object {
+            "title": "Connection status",
+            "value": "status",
+          },
         ]
       }
       className=""
