@@ -26,7 +26,6 @@ const App = (props) => {
     arePermissionLoaded: false,
   });
   const [isReceptorConfigured, setIsReceptorConfigured] = useState(undefined);
-  const [hasSmartManagement, setHasSmartManagement] = useState(undefined);
 
   const handlePermissionUpdate = (hasRead, hasWrite, hasExecute) =>
     setPermissions({
@@ -41,13 +40,6 @@ const App = (props) => {
     if (chrome) {
       chrome.identifyApp('remediations');
       chrome?.hideGlobalFilter?.();
-
-      // wait for auth first, otherwise the call to RBAC may 401
-      chrome?.auth
-        .getUser?.()
-        .then((user) =>
-          setHasSmartManagement(user.entitlements.smart_management.is_entitled)
-        );
 
       getIsReceptorConfigured().then((isConfigured) =>
         setIsReceptorConfigured(isConfigured.data.length > 0)
@@ -98,7 +90,6 @@ const App = (props) => {
           execute: executePermission,
         },
         isReceptorConfigured,
-        hasSmartManagement,
       }}
     >
       <NotificationsPortal />

@@ -42,19 +42,10 @@ export const ExecuteModal = ({
   etag,
   setEtag,
 }) => {
-  const [isUserEntitled, setIsUserEntitled] = useState(false);
   const [connected, setConnected] = useState([]);
   const [disconnected, setDisconnected] = useState([]);
   const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
   const chrome = useChrome();
-
-  useEffect(() => {
-    chrome.auth
-      .getUser()
-      .then((user) =>
-        setIsUserEntitled(user.entitlements.smart_management.is_entitled)
-      );
-  }, []);
 
   useEffect(() => {
     const [con, dis] = data.reduce(
@@ -88,7 +79,7 @@ export const ExecuteModal = ({
         ),
       },
       con.system_count,
-      isUserEntitled && {
+      {
         title: generateRowsStatus(con),
       },
     ],
@@ -282,7 +273,7 @@ export const ExecuteModal = ({
                 title: 'Systems',
                 value: 'count',
               },
-              isUserEntitled && {
+              {
                 title: 'Connection status',
                 value: 'status',
               },

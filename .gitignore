@@ -27,4 +27,4 @@ codecov*
 .nyc_output
 reports
 
-.jest-coverage/
+jest-coverage
