@@ -20,14 +20,14 @@ const ActivityTabUpsell = () => (
         Get more with Find it Fix it capabilities
       </Title>
       <EmptyStateBody>
-        Upgrade to Red Hat Smart Management to remediate all your systems,
-        across regions and geographies directly from Red Hat Insights.
+        Upgrade to Red Hat Satellite to remediate all your systems, across
+        regions and geographies directly from Red Hat Insights.
       </EmptyStateBody>
       <Button
         variant="link"
         component="a"
         ouiaId="learn_more"
-        href="https://www.redhat.com/en/technologies/management/smart-management"
+        href="https://www.redhat.com/en/technologies/management/satellite"
       >
         Learn more
       </Button>

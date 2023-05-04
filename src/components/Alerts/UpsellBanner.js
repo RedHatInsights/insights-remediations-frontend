@@ -20,10 +20,10 @@ const UpsellBanner = ({ onClose, ...props }) => {
       <Stack hasGutter>
         <StackItem>
           Enable push-button remediation across your hybrid cloud environment
-          with Red Hat Smart Management.
+          with Red Hat Satellite.
         </StackItem>
         <StackItem>
-          <a href="https://www.redhat.com/en/technologies/management/smart-management">
+          <a href="https://www.redhat.com/en/technologies/management/satellite">
             Learn more
           </a>
         </StackItem>
