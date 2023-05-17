@@ -26,13 +26,12 @@ const sortByIndex = (issue) => [
   issue.resolved,
 ];
 
-const IssuesColumn = ({ issues, status, display_name }) => {
+const IssuesColumn = ({ issues, display_name }) => {
   const [sortByConfig, setSortByConfig] = useState({
     index: 0,
     direction: 'asc',
   });
   const [isOpen, setIsOpen] = useState();
-  const StatusIcon = status ? CheckIcon : TimesIcon;
   const sortedIssues = sortBy(
     issues,
     (sortIssue) => sortByIndex(sortIssue)[sortByConfig.index]
@@ -80,7 +79,7 @@ const IssuesColumn = ({ issues, status, display_name }) => {
             {
               title: (
                 <Fragment>
-                  <StatusIcon />{' '}
+                  {issue.resolved ? <CheckIcon /> : <TimesIcon />}{' '}
                   {issue.resolved ? 'Remediated' : 'Not remediated'}
                 </Fragment>
               ),
@@ -119,8 +118,6 @@ const IssuesColumn = ({ issues, status, display_name }) => {
 
 IssuesColumn.propTypes = {
   issues: PropTypes.arrayOf(PropTypes.shape()),
-  rebootRequired: PropTypes.bool,
-  status: PropTypes.bool,
   display_name: PropTypes.string,
 };
 
