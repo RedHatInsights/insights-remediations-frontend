@@ -15,6 +15,7 @@ import NotificationsPortal from '@redhat-cloud-services/frontend-components-noti
 export const PermissionContext = createContext();
 
 const App = (props) => {
+  console.log("Do not merge");
   const chrome = useChrome();
   const [
     { readPermission, writePermission, executePermission, arePermissionLoaded },
