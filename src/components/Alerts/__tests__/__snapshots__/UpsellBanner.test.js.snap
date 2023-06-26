@@ -15,11 +15,11 @@ exports[`UpsellBanner component should render 1`] = `
     hasGutter={true}
   >
     <StackItem>
-      Enable push-button remediation across your hybrid cloud environment with Red Hat Smart Management.
+      Enable push-button remediation across your hybrid cloud environment with Red Hat Satellite.
     </StackItem>
     <StackItem>
       <a
-        href="https://www.redhat.com/en/technologies/management/smart-management"
+        href="https://www.redhat.com/en/technologies/management/satellite"
       >
         Learn more
       </a>

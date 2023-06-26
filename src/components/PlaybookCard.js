@@ -100,7 +100,7 @@ const PlaybookCardHeader = ({
     <DropdownItem
       key="download"
       onClick={() => {
-        downloadPlaybook(remediation.id);
+        downloadPlaybook([remediation.id]);
         setIsOpen(false);
         dispatchNotification({
           title: `Preparing playbook for download`,

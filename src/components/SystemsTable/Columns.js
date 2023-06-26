@@ -16,8 +16,8 @@ export default [
     key: 'issues',
     title: 'Issues',
     // eslint-disable-next-line react/display-name
-    renderFunc: (issues, id, { display_name }) => (
-      <IssuesColumn issues={issues} id={id} display_name={display_name} />
+    renderFunc: (issues, _, { display_name }) => (
+      <IssuesColumn issues={issues} display_name={display_name} />
     ),
     props: {
       width: 15,

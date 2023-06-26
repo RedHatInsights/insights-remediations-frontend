@@ -96,7 +96,7 @@ const RemediationDetails = ({
     if (!context.permissions.execute) {
       return 'You do not have the required execute permissions to perform this action.';
     } else if (!executable) {
-      return 'Your account must be entitled to Smart Management to execute playbooks.';
+      return 'Your account must be entitled to Satellite to execute playbooks.';
     }
     return 'Unable to execute playbook.';
   };
