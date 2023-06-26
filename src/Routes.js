@@ -51,6 +51,7 @@ export const Routes = () => {
       scope="dashboard"
       ErrorComponent={<ErrorState />}
       app="Remediation"
+      appId="remediation_zero_state"
     />
   ) : (
     <Suspense fallback={<Fragment />}>
