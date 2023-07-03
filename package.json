@@ -114,6 +114,7 @@
     "build": "webpack --config config/prod.webpack.config.js",
     "build:prod": "NODE_ENV=production webpack --config config/prod.webpack.config.js",
     "test:jest": "jest --env=jsdom",
+    "test": "TZ=UTC jest --verbose --no-cache",
     "lint": "npm-run-all lint:*",
     "lint-fix": "eslint config src --fix",
     "lint:js": "eslint config src",
