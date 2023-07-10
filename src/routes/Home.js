@@ -29,6 +29,7 @@ import {
 } from '../hooks/table';
 import ConfirmationDialog from '../components/ConfirmationDialog';
 import keyBy from 'lodash/keyBy';
+import { useChrome } from '@redhat-cloud-services/frontend-components/useChrome';
 
 function verifyDownload(selectedIds, data) {
   let valid = [];
@@ -97,7 +98,10 @@ const SORTING_ITERATEES = [
 ];
 
 function Home() {
-  document.title = 'Remediations | Red Hat Insights';
+  const chrome = useChrome();
+  useEffect(() => {
+    chrome.updateDocumentTitle('Remediations | Red Hat Insights');
+  }, [chrome]);
 
   const [noReceptorBannerVisible, setNoReceptorBannerVisible] = useState(
     localStorage.getItem('remediations:receptorBannerStatus') !== 'dismissed'

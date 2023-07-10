@@ -163,10 +163,14 @@ const RemediationDetails = ({
   };
 
   const { status, remediation } = selectedRemediation;
+  const chrome = useChrome();
 
-  if (remediation) {
-    document.title = `${remediation.name} | Remediations | Red Hat Insights`;
-  }
+  useEffect(() => {
+    remediation &&
+      chrome.updateDocumentTitle(
+        `${remediation.name} - Remediations | Red Hat Insights`
+      );
+  }, [chrome, remediation]);
 
   if (status !== 'fulfilled' && status !== 'rejected') {
     return <RemediationDetailsSkeleton />;
