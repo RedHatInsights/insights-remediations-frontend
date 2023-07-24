@@ -145,7 +145,7 @@ const buildRow = (remediation) => (issue) => {
   return row;
 };
 
-function RemediationDetailsTable(props) {
+function RemediationDetailsTable({ refetchRemediation }) {
   const pagination = usePagination();
   const sorter = useSorter(1, 'asc');
   const filter = useFilter();
@@ -155,6 +155,7 @@ function RemediationDetailsTable(props) {
   const [prevRemediationsCount, setPrevRemediationsCount] = useState(0); // eslint-disable-line
   const chrome = useChrome();
 
+  const remediation = refetchRemediation();
   useEffect(() => {
     filter.setValue(filterText);
   }, [filterText]);
@@ -162,7 +163,7 @@ function RemediationDetailsTable(props) {
   sorter.onChange(pagination.reset);
   filter.onChange(pagination.reset);
 
-  const filtered = props.remediation.issues.filter((i) =>
+  const filtered = remediation.issues.filter((i) =>
     includesIgnoreCase(i.description, filter.value.trim())
   );
   const sorted = orderBy(
@@ -175,7 +176,7 @@ function RemediationDetailsTable(props) {
     pagination.offset + pagination.pageSize
   );
 
-  const rows = flatMap(paged, buildRow(props.remediation));
+  const rows = flatMap(paged, buildRow(remediation));
 
   selector.register(rows);
   const selectedIds = selector.getSelectedIds();
@@ -237,10 +238,10 @@ function RemediationDetailsTable(props) {
               : {},
             rows.length > 0
               ? {
-                  title: `Select all (${props?.remediation?.issues.length})`,
+                  title: `Select all (${remediation?.issues.length})`,
                   onClick: () => {
-                    selector.register(props?.remediation.issues);
-                    selectedIds?.length < props?.remediation?.issues.length
+                    selector.register(remediation.issues);
+                    selectedIds?.length < remediation?.issues.length
                       ? selector.props.onSelect('page', true, 0)
                       : selector.props.onSelect('page', false, 0);
                   },
@@ -261,14 +262,14 @@ function RemediationDetailsTable(props) {
         actionsConfig={{
           actions: [
             <DeleteActionsButton
-              key={props.remediation.id}
+              key={remediation.id}
               variant="secondary"
               isDisabled={!selectedIds.length}
-              remediation={props.remediation}
+              remediation={remediation}
               issues={selectedIds}
               afterDelete={() => {
                 dispatchNotification({
-                  title: `Removed ${selectedIds.length} actions from ${props.remediation.name}`,
+                  title: `Removed ${selectedIds.length} actions from ${remediation.name}`,
                   description: '',
                   variant: 'success',
                   dismissable: true,
@@ -339,8 +340,8 @@ function RemediationDetailsTable(props) {
 }
 
 RemediationDetailsTable.propTypes = {
-  remediation: PropTypes.object.isRequired,
-  status: PropTypes.object.isRequired,
+  refetchRemediation: PropTypes.func.isRequired,
+  statusCounts: PropTypes.array,
 };
 
 export default RemediationDetailsTable;

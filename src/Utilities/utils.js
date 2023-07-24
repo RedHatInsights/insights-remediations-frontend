@@ -436,3 +436,28 @@ export const matchPermissions = (permissionA, permissionB) => {
       segmentsB[index] === '*'
   );
 };
+
+export const calculateCounts = (playbookRuns) => {
+  return (
+    (playbookRuns?.length &&
+      playbookRuns[0].executors.reduce(
+        (acc, ex) => ({
+          pending: acc.pending + ex.counts.pending,
+          running: acc.running + ex.counts.running,
+          success: acc.success + ex.counts.success,
+          failure: acc.failure + ex.counts.failure,
+          canceled: acc.canceled + ex.counts.canceled,
+          acked: (acc.acked || 0) + ex.counts.acked,
+        }),
+        {
+          pending: 0,
+          running: 0,
+          success: 0,
+          failure: 0,
+          canceled: 0,
+          acked: 0,
+        }
+      )) ||
+    {}
+  );
+};
