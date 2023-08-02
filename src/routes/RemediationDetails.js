@@ -76,7 +76,7 @@ const RemediationDetails = ({
 
   const context = useContext(PermissionContext);
 
-  const { isFedramp, isBeta } = useChrome();
+  const { isFedramp, isBeta, isOrgAdmin } = useChrome();
   const handleUpsellToggle = () => {
     setUpsellBannerVisible(false);
     localStorage.setItem('remediations:bannerStatus', 'dismissed');
@@ -94,7 +94,14 @@ const RemediationDetails = ({
 
   const getDisabledStateText = () => {
     if (!context.permissions.execute) {
-      return 'You do not have the required execute permissions to perform this action.';
+      if (isOrgAdmin()) {
+        return 'Executing the playbook requires having the remediations:remediation:execute permission'
+          + ' which is included in the Remediations administrator role. Manage your roles in User access.';
+      }
+      else {
+        return 'Executing the playbook requires having the remediations:remediation:execute permission'
+        + ' which is included in the Remediations administrator role. Contact your Organization Administrator for access.';
+      }
     } else if (!executable) {
       return 'Your account must be entitled to Satellite to execute playbooks.';
     }
