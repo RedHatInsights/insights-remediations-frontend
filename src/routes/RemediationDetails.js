@@ -95,12 +95,15 @@ const RemediationDetails = ({
   const getDisabledStateText = () => {
     if (!context.permissions.execute) {
       if (isOrgAdmin()) {
-        return 'Executing the playbook requires having the remediations:remediation:execute permission'
-          + ' which is included in the Remediations administrator role. Manage your roles in User access.';
-      }
-      else {
-        return 'Executing the playbook requires having the remediations:remediation:execute permission'
-        + ' which is included in the Remediations administrator role. Contact your Organization Administrator for access.';
+        return (
+          'Executing the playbook requires having the remediations:remediation:execute permission' +
+          ' which is included in the Remediations administrator role. Manage your roles in User access.'
+        );
+      } else {
+        return (
+          'Executing the playbook requires having the remediations:remediation:execute permission' +
+          ' which is included in the Remediations administrator role. Contact your Organization Administrator for access.'
+        );
       }
     } else if (!executable) {
       return 'Your account must be entitled to Satellite to execute playbooks.';
