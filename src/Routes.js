@@ -50,7 +50,7 @@ export const Routes = () => {
       module="./AppZeroState"
       scope="dashboard"
       ErrorComponent={<ErrorState />}
-      app="Remediation"
+      app="Remediations"
       appId="remediation_zero_state"
     />
   ) : (
