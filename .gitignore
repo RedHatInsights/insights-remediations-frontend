@@ -26,3 +26,5 @@ cypress/videos
 codecov*
 .nyc_output
 reports
+
+jest-coverage

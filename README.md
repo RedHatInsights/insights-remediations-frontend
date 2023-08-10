@@ -24,7 +24,7 @@ npm run start:proxy
 npm i
 npm run start:proxy:beta
 ```
-2. Open browser at [https://ci.foo.redhat.com:1337/beta/insights/remediations](https://ci.foo.redhat.com:1337/beta/insights/remediations)
+2. Open browser at [https://ci.foo.redhat.com:1337/preview/insights/remediations](https://ci.foo.redhat.com:1337/preview/insights/remediations)
 
 #### Using other environments
 
@@ -37,7 +37,7 @@ For example, for prod-beta add following:
   env: 'prod-beta'
 }
 ```
- and run `npm run start:proxy:beta` (the `:beta` suffix configures webpack to serve assets at /beta location.)
+ and run `npm run start:proxy:beta` (the `:beta` suffix configures webpack to serve assets at /preview location.)
 
 
 ### Running with another app
@@ -88,5 +88,5 @@ Use `remediations:debug` localStorage entry to unlock testing utilities in the U
 
 ### Releases
 
-Any change commited to the `master` branch is automatically promoted to `/beta` in all environments.
+Any change commited to the `master` branch is automatically promoted to `/preview` in all environments.
 Any change commited to the `stable` branch is automatically promoted to the main version of the application in all environments.

@@ -69,6 +69,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
           toggleText="About remote execution with Cloud connector"
           toggleTextCollapsed=""
           toggleTextExpanded=""
+          variant="default"
         >
           Playbooks can be executed on systems which:
           <List>
@@ -78,7 +79,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
               <Button
                 className="pf-u-p-0"
                 component="a"
-                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index"
+                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index"
                 isInline={true}
                 key="download"
                 rel="noreferrer"
@@ -99,7 +100,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
               <Button
                 className="pf-u-p-0"
                 component="a"
-                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html/red_hat_connector_configuration_guide/index"
+                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html/red_hat_connector_configuration_guide/index"
                 isInline={true}
                 key="configure"
                 rel="noreferrer"
@@ -141,6 +142,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       </Button>
     </TextContent>
     <Table
+      actionsMenuAppendTo="inline"
       aria-label="Systems"
       borders={true}
       canCollapseAll={false}
@@ -156,7 +158,10 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
             "title": "Systems",
             "value": "count",
           },
-          false,
+          Object {
+            "title": "Connection status",
+            "value": "status",
+          },
         ]
       }
       className=""
@@ -258,6 +263,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
           toggleText="About remote execution with Cloud connector"
           toggleTextCollapsed=""
           toggleTextExpanded=""
+          variant="default"
         >
           Playbooks can be executed on systems which:
           <List>
@@ -267,7 +273,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
               <Button
                 className="pf-u-p-0"
                 component="a"
-                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index"
+                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index"
                 isInline={true}
                 key="download"
                 rel="noreferrer"
@@ -288,7 +294,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
               <Button
                 className="pf-u-p-0"
                 component="a"
-                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html/red_hat_connector_configuration_guide/index"
+                href="https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html/red_hat_connector_configuration_guide/index"
                 isInline={true}
                 key="configure"
                 rel="noreferrer"
@@ -330,6 +336,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       </Button>
     </TextContent>
     <Table
+      actionsMenuAppendTo="inline"
       aria-label="Systems"
       borders={true}
       canCollapseAll={false}
@@ -345,7 +352,10 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
             "title": "Systems",
             "value": "count",
           },
-          false,
+          Object {
+            "title": "Connection status",
+            "value": "status",
+          },
         ]
       }
       className=""

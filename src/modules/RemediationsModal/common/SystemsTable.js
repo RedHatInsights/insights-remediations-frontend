@@ -52,7 +52,6 @@ const SystemsTable = ({
       hasCheckbox={hasCheckbox}
       showTags
       bulkSelect={bulkSelect}
-      onRefresh={(options) => inventory.current.onRefreshData(options)}
       ref={inventory}
       getEntities={(_i, config, showTags, defaultGetEntities) =>
         fetchSystemsInfo(

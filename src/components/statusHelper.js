@@ -22,9 +22,9 @@ import { CancelButton } from '../containers/CancelButton';
 
 import { capitalize } from '../Utilities/utils';
 
-const connectorUrl = () =>
-  insights.chrome.isBeta()
-    ? `${window.location.origin}/beta/settings/connector`
+const connectorUrl = (isBeta) =>
+  isBeta
+    ? `${window.location.origin}/preview/settings/connector`
     : `${window.location.origin}/settings/connector`;
 
 export const normalizeStatus = (status) =>
@@ -194,7 +194,7 @@ export const StatusSummary = ({
   return statusBar;
 };
 
-export const styledConnectionStatus = (status) =>
+export const styledConnectionStatus = (status, isBeta) =>
   ({
     connected: (
       <TextContent>
@@ -238,7 +238,7 @@ export const styledConnectionStatus = (status) =>
             variant="link"
             component="a"
             // eslint-disable-next-line max-len
-            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2020-10/html/remediating_issues_across_your_red_hat_satellite_infrastructure_using_red_hat_insights/configuring-your-satellite-infrastructure-to-communicate-with-insights"
+            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/configuring-your-satellite-infrastructure-to-communicate-with-insights"
           >
             Learn how to connect &nbsp;
             <ExternalLinkAltIcon />
@@ -282,7 +282,7 @@ export const styledConnectionStatus = (status) =>
             variant="link"
             component="a"
             // eslint-disable-next-line max-len
-            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html-single/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index#configuring-your-satellite-infrastructure-to-communicate-with-insights"
+            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html-single/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index#configuring-your-satellite-infrastructure-to-communicate-with-insights"
           >
             Learn how to configure &nbsp;
             <ExternalLinkAltIcon />
@@ -303,7 +303,7 @@ export const styledConnectionStatus = (status) =>
               variant="link"
               component="a"
               // eslint-disable-next-line max-len
-              href={connectorUrl()}
+              href={connectorUrl(isBeta)}
             >
               RHC (Red Hat connector)
             </Button>
@@ -314,31 +314,9 @@ export const styledConnectionStatus = (status) =>
             variant="link"
             component="a"
             // eslint-disable-next-line max-len
-            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html/red_hat_connector_configuration_guide/index"
+            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html/red_hat_connector_configuration_guide/index"
           >
             Learn how to configure &nbsp;
-            <ExternalLinkAltIcon />
-          </Button>
-        </Text>
-      </TextContent>
-    ),
-    no_smart_management: (
-      <TextContent>
-        <Text component={TextVariants.p}>
-          Cannot remediate - Not entitled
-          <Text component={TextVariants.small} style={{ margin: '0px' }}>
-            Remediation from Insights is supported only for systems with Cloud
-            connector, a feature of Smart Management
-          </Text>
-          <Button
-            className="pf-u-p-0"
-            key="download"
-            variant="link"
-            component="a"
-            // eslint-disable-next-line max-len
-            href="#"
-          >
-            Learn about Smart Management &nbsp;
             <ExternalLinkAltIcon />
           </Button>
         </Text>
@@ -357,7 +335,7 @@ export const styledConnectionStatus = (status) =>
               variant="link"
               component="a"
               // eslint-disable-next-line max-len
-              href={connectorUrl()}
+              href={connectorUrl(isBeta)}
             >
               RHC (Red Hat connector)
             </Button>
@@ -368,7 +346,7 @@ export const styledConnectionStatus = (status) =>
             variant="link"
             component="a"
             // eslint-disable-next-line max-len
-            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html/red_hat_connector_configuration_guide/index"
+            href="https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html/red_hat_connector_configuration_guide/index"
           >
             Learn how to configure &nbsp;
             <ExternalLinkAltIcon />

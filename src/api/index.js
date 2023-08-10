@@ -36,7 +36,6 @@ class HttpError extends Error {
 }
 
 async function authInterceptor(config) {
-  await window.insights.chrome.auth.getUser();
   return config;
 }
 
@@ -54,7 +53,6 @@ function interceptor401(err) {
   }
 
   if (err.response && err.response.status === 401) {
-    window.insights.chrome.auth.logout();
     return false;
   }
 
@@ -100,10 +98,10 @@ export function downloadPlaybook(selectedIds) {
       selectedIds.length > 1
         ? new RemediationsApiAxiosParamCreator()
             .downloadPlaybooks(selectedIds)
-            .then((value) => window.open(API_BASE + value.url))
+            .then((value) => window.location.assign(API_BASE + value.url))
         : new RemediationsApiAxiosParamCreator()
             .getRemediationPlaybook(selectedIds[0])
-            .then((value) => window.open(API_BASE + value.url));
+            .then((value) => window.location.assign(API_BASE + value.url));
 
     if (!tab) {
       return reject();

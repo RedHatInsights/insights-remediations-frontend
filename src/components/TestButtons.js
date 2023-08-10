@@ -169,7 +169,6 @@ class TestButtons extends React.Component {
 
   async componentDidMount() {
     if (this.isEnabled()) {
-      await window.insights.chrome.auth.getUser();
       getHosts().then((hosts) =>
         this.setState({
           allHosts: hosts.results.map((result) => result.id),

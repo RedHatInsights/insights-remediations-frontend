@@ -4,6 +4,7 @@ import RemediationButton from '../RemediationsButton';
 import { mount } from 'enzyme';
 import { CAN_REMEDIATE } from '../../Utilities/utils';
 import { remediationWizardTestData } from './testData';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 
 jest.mock('../../api/inventory', () => {
   const api = jest.requireActual('../../api/inventory');
@@ -13,6 +14,11 @@ jest.mock('../../api/inventory', () => {
     getHostsById: () => Promise.resolve({}),
   };
 });
+
+jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
 
 describe('RemediationButton', () => {
   let initialProps;
@@ -26,18 +32,6 @@ describe('RemediationButton', () => {
       })),
     };
     tmpInsights = global.insights;
-    global.insights = {
-      ...insights,
-      chrome: {
-        ...insights.chrome,
-        getApp: () => 'remediations',
-        auth: {
-          getUser: () => ({}),
-        },
-        getUserPermissions: () =>
-          Promise.resolve([{ permission: CAN_REMEDIATE }]),
-      },
-    };
   });
 
   afterEach(() => {
@@ -47,6 +41,10 @@ describe('RemediationButton', () => {
   it('should open wizard with permissions', async () => {
     let wrapper;
     fetch.mockResponse(JSON.stringify({}));
+    useChrome.mockImplementation(() => ({
+      getUserPermissions: () =>
+        new Promise((resolve) => resolve([{ permission: CAN_REMEDIATE }])),
+    }));
 
     await act(async () => {
       wrapper = mount(<RemediationButton {...initialProps} />);
@@ -62,7 +60,9 @@ describe('RemediationButton', () => {
 
   it('should not open wizard without permissions', async () => {
     fetch.mockResponse(JSON.stringify({}));
-    insights.chrome.getUserPermissions = () => Promise.resolve([]);
+    useChrome.mockImplementation(() => ({
+      getUserPermissions: () => new Promise((resolve) => resolve([])),
+    }));
     let wrapper;
 
     await act(async () => {

@@ -76,10 +76,7 @@ const PlaybookCardHeader = ({
       key="execute"
       id="execute"
       isDisabled={!permission.isReceptorConfigured || isArchived}
-      className={`${
-        (!permission.hasSmartManagement || !permission.permissions.execute) &&
-        'ins-m-not-entitled'
-      }`}
+      className={`${!permission.permissions.execute && 'ins-m-not-entitled'}`}
       onClick={() => {
         setExecuteOpen(false);
         actionWrapper(
@@ -103,7 +100,7 @@ const PlaybookCardHeader = ({
     <DropdownItem
       key="download"
       onClick={() => {
-        downloadPlaybook(remediation.id);
+        downloadPlaybook([remediation.id]);
         setIsOpen(false);
         dispatchNotification({
           title: `Preparing playbook for download`,

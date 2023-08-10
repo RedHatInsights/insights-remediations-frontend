@@ -27,6 +27,7 @@ import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
 import EmptyExecutePlaybookState from '../EmptyExecutePlaybookState';
 import { dispatchNotification } from '../../Utilities/dispatcher';
+import { useChrome } from '@redhat-cloud-services/frontend-components/useChrome';
 
 export const ExecuteModal = ({
   isOpen,
@@ -41,18 +42,10 @@ export const ExecuteModal = ({
   etag,
   setEtag,
 }) => {
-  const [isUserEntitled, setIsUserEntitled] = useState(false);
   const [connected, setConnected] = useState([]);
   const [disconnected, setDisconnected] = useState([]);
   const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
-
-  useEffect(() => {
-    window.insights.chrome.auth
-      .getUser()
-      .then((user) =>
-        setIsUserEntitled(user.entitlements.smart_management.is_entitled)
-      );
-  }, []);
+  const chrome = useChrome();
 
   useEffect(() => {
     const [con, dis] = data.reduce(
@@ -67,7 +60,7 @@ export const ExecuteModal = ({
   }, [data]);
 
   const generateRowsStatus = (con) => {
-    return styledConnectionStatus(con.connection_status);
+    return styledConnectionStatus(con.connection_status, chrome?.isBeta?.());
   };
 
   const rows = [...connected, ...disconnected].map((con) => ({
@@ -86,7 +79,7 @@ export const ExecuteModal = ({
         ),
       },
       con.system_count,
-      isUserEntitled && {
+      {
         title: generateRowsStatus(con),
       },
     ],
@@ -210,7 +203,7 @@ export const ExecuteModal = ({
                     isInline
                     component="a"
                     // eslint-disable-next-line max-len
-                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index"
+                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index"
                     rel="noreferrer"
                     target="_blank"
                   >
@@ -229,7 +222,7 @@ export const ExecuteModal = ({
                     isInline
                     component="a"
                     // eslint-disable-next-line max-len
-                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/2022/html/red_hat_connector_configuration_guide/index"
+                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html/red_hat_connector_configuration_guide/index"
                     rel="noreferrer"
                     target="_blank"
                   >
@@ -280,7 +273,7 @@ export const ExecuteModal = ({
                 title: 'Systems',
                 value: 'count',
               },
-              isUserEntitled && {
+              {
                 title: 'Connection status',
                 value: 'status',
               },

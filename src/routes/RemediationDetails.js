@@ -9,7 +9,6 @@ import SystemsTable from '../components/SystemsTable/SystemsTable';
 import RemediationActivityTable from '../components/RemediationActivityTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
 import { normalizeStatus } from '../components/statusHelper';
-import { isBeta } from '../config';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
@@ -77,7 +76,7 @@ const RemediationDetails = ({
 
   const context = useContext(PermissionContext);
 
-  const { isFedramp } = useChrome();
+  const { isFedramp, isBeta, isOrgAdmin } = useChrome();
   const handleUpsellToggle = () => {
     setUpsellBannerVisible(false);
     localStorage.setItem('remediations:bannerStatus', 'dismissed');
@@ -95,9 +94,19 @@ const RemediationDetails = ({
 
   const getDisabledStateText = () => {
     if (!context.permissions.execute) {
-      return 'You do not have the required execute permissions to perform this action.';
+      if (isOrgAdmin()) {
+        return (
+          'Executing the playbook requires having the remediations:remediation:execute permission' +
+          ' which is included in the Remediations administrator role. Manage your roles in User access.'
+        );
+      } else {
+        return (
+          'Executing the playbook requires having the remediations:remediation:execute permission' +
+          ' which is included in the Remediations administrator role. Contact your Organization Administrator for access.'
+        );
+      }
     } else if (!executable) {
-      return 'Your account must be entitled to Smart Management to execute playbooks.';
+      return 'Your account must be entitled to Satellite to execute playbooks.';
     }
     return 'Unable to execute playbook.';
   };
@@ -118,7 +127,7 @@ const RemediationDetails = ({
     setActiveTabKey(tabIndex !== -1 ? tabIndex : 0);
     history.push(`?${tabMapper[tabIndex !== -1 ? tabIndex : 0]}`);
 
-    if (isBeta) {
+    if (isBeta?.()) {
       loadRemediationStatus(id);
     }
     checkExecutable(id);
@@ -164,10 +173,14 @@ const RemediationDetails = ({
   };
 
   const { status, remediation } = selectedRemediation;
+  const chrome = useChrome();
 
-  if (remediation) {
-    document.title = `${remediation.name} | Remediations | Red Hat Insights`;
-  }
+  useEffect(() => {
+    remediation &&
+      chrome.updateDocumentTitle(
+        `${remediation.name} - Remediations | Red Hat Insights`
+      );
+  }, [chrome, remediation]);
 
   if (status !== 'fulfilled' && status !== 'rejected') {
     return <RemediationDetailsSkeleton />;
