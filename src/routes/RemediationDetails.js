@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useMemo } from 'react';
 import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -65,7 +65,11 @@ const RemediationDetails = ({
   checkExecutable,
   executable,
 }) => {
+  const chrome = useChrome();
+  const { isFedramp, isBeta, isOrgAdmin = () => false } = chrome;
+  const context = useContext(PermissionContext);
   const id = match.params.id;
+
   const [upsellBannerVisible, setUpsellBannerVisible] = useState(
     localStorage.getItem('remediations:bannerStatus') !== 'dismissed'
   );
@@ -74,9 +78,6 @@ const RemediationDetails = ({
   );
   const [activeTabKey, setActiveTabKey] = useState(0);
 
-  const context = useContext(PermissionContext);
-
-  const { isFedramp, isBeta, isOrgAdmin } = useChrome();
   const handleUpsellToggle = () => {
     setUpsellBannerVisible(false);
     localStorage.setItem('remediations:bannerStatus', 'dismissed');
@@ -92,7 +93,7 @@ const RemediationDetails = ({
     history.push(`?${tabMapper[tabIndex]}`);
   };
 
-  const getDisabledStateText = () => {
+  const disabledStateText = useMemo(() => {
     if (!context.permissions.execute) {
       if (isOrgAdmin()) {
         return (
@@ -108,8 +109,9 @@ const RemediationDetails = ({
     } else if (!executable) {
       return 'Your account must be entitled to Satellite to execute playbooks.';
     }
+
     return 'Unable to execute playbook.';
-  };
+  }, [chrome]);
 
   useEffect(() => {
     loadRemediation(id).catch((e) => {
@@ -173,7 +175,6 @@ const RemediationDetails = ({
   };
 
   const { status, remediation } = selectedRemediation;
-  const chrome = useChrome();
 
   useEffect(() => {
     remediation &&
@@ -213,7 +214,7 @@ const RemediationDetails = ({
                     isDisabled={
                       !context.permissions.execute || !executable || isFedramp
                     }
-                    disabledStateText={getDisabledStateText()}
+                    disabledStateText={disabledStateText}
                     remediationId={remediation.id}
                     remediationName={remediation.name}
                   ></ExecutePlaybookButton>
