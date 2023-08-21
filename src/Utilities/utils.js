@@ -9,7 +9,6 @@ import * as api from '../api';
 import uniqWith from 'lodash/uniqWith';
 import isEqual from 'lodash/isEqual';
 import { applyReducerHash } from '@redhat-cloud-services/frontend-components-utilities/ReducerRegistry/ReducerRegistry';
-import { BrowserRouter as Router } from 'react-router-dom';
 import { SystemsTableWithContext } from '../modules/RemediationsModal/common/SystemsTable';
 
 export const CAN_REMEDIATE = 'remediations:remediation:write';
@@ -123,13 +122,11 @@ export const buildRows = (
   );
 
 const buildSystemRow = (allSystemsNamed = [], allSystems = []) => (
-  <Router>
-    <SystemsTableWithContext
-      allSystemsNamed={allSystemsNamed}
-      allSystems={allSystems}
-      disabledColumns={['updated']}
-    />
-  </Router>
+  <SystemsTableWithContext
+    allSystemsNamed={allSystemsNamed}
+    allSystems={allSystems}
+    disabledColumns={['updated']}
+  />
 );
 
 export const onCollapse = (event, rowKey, isOpen, rows, setRows) => {

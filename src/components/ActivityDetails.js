@@ -2,7 +2,8 @@
 
 import React, { useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import Link from '@redhat-cloud-services/frontend-components/InsightsLink';
 import { connect } from 'react-redux';
 import { Main } from '@redhat-cloud-services/frontend-components/Main';
 import {
@@ -37,23 +38,21 @@ import { PermissionContext } from '../App';
 import './ActivityDetails.scss';
 
 const ActivityDetail = ({
-  match: {
-    params: { id, run_id },
-  },
   remediation,
   playbookRun,
   getPlaybookRun,
   getPlaybookRuns,
   loadRemediation,
 }) => {
+  const { id, run_id } = useParams();
+  const permission = useContext(PermissionContext);
+  const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
+
   useEffect(() => {
     loadRemediation(id);
     getPlaybookRuns(id);
     getPlaybookRun(id, run_id);
   }, []);
-
-  const permission = useContext(PermissionContext);
-  const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
   return remediation && playbookRun && playbookRun.data ? (
     <React.Fragment>
@@ -207,7 +206,6 @@ ActivityDetail.propTypes = {
   getPlaybookRun: PropTypes.func,
   getPlaybookRuns: PropTypes.func,
   loadRemediation: PropTypes.func,
-  match: PropTypes.object,
 };
 
 ActivityDetail.defaultProps = {};

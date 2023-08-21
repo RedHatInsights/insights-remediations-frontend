@@ -3,7 +3,7 @@
 exports[`Execute modal renders ExecuteModal component when given data 1`] = `
 <Modal
   actions={
-    Array [
+    [
       <Button
         isDisabled={true}
         onClick={[Function]}
@@ -149,16 +149,16 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       canSelectAll={true}
       canSortFavorites={true}
       cells={
-        Array [
-          Object {
+        [
+          {
             "title": "Connection type",
             "value": "type",
           },
-          Object {
+          {
             "title": "Systems",
             "value": "count",
           },
-          Object {
+          {
             "title": "Connection status",
             "value": "status",
           },
@@ -178,7 +178,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
       ouiaSafe={true}
       role="grid"
       rowLabeledBy="simple-node"
-      rows={Array []}
+      rows={[]}
       selectVariant="checkbox"
       variant="compact"
     >
@@ -192,7 +192,7 @@ exports[`Execute modal renders ExecuteModal component when given data 1`] = `
 exports[`Execute modal renders ExecuteModal with refresh message when showRefresh is true 1`] = `
 <Modal
   actions={
-    Array [
+    [
       <Button
         isDisabled={true}
         onClick={[Function]}
@@ -343,16 +343,16 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       canSelectAll={true}
       canSortFavorites={true}
       cells={
-        Array [
-          Object {
+        [
+          {
             "title": "Connection type",
             "value": "type",
           },
-          Object {
+          {
             "title": "Systems",
             "value": "count",
           },
-          Object {
+          {
             "title": "Connection status",
             "value": "status",
           },
@@ -372,7 +372,7 @@ exports[`Execute modal renders ExecuteModal with refresh message when showRefres
       ouiaSafe={true}
       role="grid"
       rowLabeledBy="simple-node"
-      rows={Array []}
+      rows={[]}
       selectVariant="checkbox"
       variant="compact"
     >

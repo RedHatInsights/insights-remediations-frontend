@@ -20,7 +20,7 @@ import {
 import { CheckCircleIcon } from '@patternfly/react-icons';
 import { DateFormat } from '@redhat-cloud-services/frontend-components/DateFormat';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
-import { Link } from 'react-router-dom';
+import Link from '@redhat-cloud-services/frontend-components/InsightsLink';
 import { PropTypes } from 'prop-types';
 import { patchRemediation } from '../actions.js';
 import { dispatchNotification } from '../Utilities/dispatcher.js';

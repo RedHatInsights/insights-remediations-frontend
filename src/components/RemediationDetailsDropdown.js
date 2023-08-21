@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import useNavigate from '@redhat-cloud-services/frontend-components-utilities/useInsightsNavigate';
 
 import {
   Button,
@@ -24,6 +24,7 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const permission = useContext(PermissionContext);
+  const navigate = useNavigate();
 
   return (
     <React.Fragment>
@@ -63,6 +64,7 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
               dismissable: true,
               autoDismiss: true,
             });
+            navigate('/');
           }
         }}
       />
@@ -97,20 +99,9 @@ RemediationDetailsDropdown.propTypes = {
   onDelete: PropTypes.func.isRequired,
 };
 
-const connected = withRouter(
-  connect(null, (dispatch, { history }) => ({
-    onRename: (id, name) => {
-      if (!name) {
-        name = EMPTY_NAME;
-      }
-
-      dispatch(patchRemediation(id, { name }));
-    },
-    onDelete: async (id) => {
-      await dispatch(deleteRemediation(id));
-      history.push('/');
-    },
-  }))(RemediationDetailsDropdown)
-);
+const connected = connect(null, (dispatch) => ({
+  onRename: (id, name = EMPTY_NAME) => dispatch(patchRemediation(id, { name })),
+  onDelete: (id) => dispatch(deleteRemediation(id)),
+}))(RemediationDetailsDropdown);
 
 export default connected;

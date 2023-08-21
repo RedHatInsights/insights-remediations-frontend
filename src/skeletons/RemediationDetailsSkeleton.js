@@ -1,7 +1,5 @@
 import React from 'react';
-
-import { Link } from 'react-router-dom';
-
+import Link from '@redhat-cloud-services/frontend-components/InsightsLink';
 import {
   PageHeader,
   PageHeaderTitle,

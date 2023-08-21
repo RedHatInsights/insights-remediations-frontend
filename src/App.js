@@ -1,9 +1,7 @@
-import PropTypes from 'prop-types';
 import React, { createContext, useState, useEffect } from 'react';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
-import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Routes } from './Routes';
+import Routes from './Routes';
 import './App.scss';
 import GlobalSkeleton from './skeletons/GlobalSkeleton';
 
@@ -14,7 +12,7 @@ import NotificationsPortal from '@redhat-cloud-services/frontend-components-noti
 
 export const PermissionContext = createContext();
 
-const App = (props) => {
+const App = () => {
   const chrome = useChrome();
   const [
     { readPermission, writePermission, executePermission, arePermissionLoaded },
@@ -36,17 +34,11 @@ const App = (props) => {
     });
 
   useEffect(() => {
-    let unregister;
     if (chrome) {
-      chrome.identifyApp('remediations');
       chrome?.hideGlobalFilter?.();
 
       getIsReceptorConfigured().then((isConfigured) =>
         setIsReceptorConfigured(isConfigured.data.length > 0)
-      );
-
-      unregister = chrome.on('APP_NAVIGATION', (event) =>
-        history.push(`/${event.navId}`)
       );
 
       chrome
@@ -76,9 +68,6 @@ const App = (props) => {
           }
         });
     }
-    return () => {
-      unregister();
-    };
   }, []);
 
   return arePermissionLoaded ? (
@@ -93,20 +82,11 @@ const App = (props) => {
       }}
     >
       <NotificationsPortal />
-      <Routes childProps={props} />
+      <Routes />
     </PermissionContext.Provider>
   ) : (
     <GlobalSkeleton />
   );
 };
 
-App.propTypes = {
-  history: PropTypes.object,
-};
-
-/**
- * withRouter: https://reacttraining.com/react-router/web/api/withRouter
- * connect: https://github.com/reactjs/react-redux/blob/master/docs/api.md
- *          https://reactjs.org/docs/higher-order-components.html
- */
-export default withRouter(connect()(App));
+export default connect()(App);
