@@ -1,37 +1,48 @@
-import { Switch, Route, Redirect } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import React, { Fragment, lazy, Suspense, useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import axios from 'axios';
+import { Routes, Route } from 'react-router-dom';
+import { Spinner } from '@patternfly/react-core';
 import AsyncComponent from '@redhat-cloud-services/frontend-components/AsyncComponent';
 import ErrorState from '@redhat-cloud-services/frontend-components/ErrorState';
-import Home from './routes/Home';
+
 const INVENTORY_TOTAL_FETCH_URL = '/api/inventory/v1/hosts';
 
-const RemediationDetails = lazy(() =>
-  import(
-    /* webpackChunkName: "RemediationDetails" */ './routes/RemediationDetails'
-  )
-);
-const ActivityDetails = lazy(() =>
-  import(
-    /* webpackChunkName: "ActivityDetails" */ './components/ActivityDetails'
-  )
-);
-const ExecutorDetails = lazy(() =>
-  import(
-    /* webpackChunkName: "ExecutorDetails" */ './components/ExecutorDetails/ExecutorDetails'
-  )
-);
-
 export const routes = {
-  home: '/',
-  details: '/:id',
-  runDetails: '/:id/:run_id',
-  executorDetails: '/:id/:run_id/:executor_id',
+  home: {
+    path: '/*',
+    component: lazy(() =>
+      import(/* webpackChunkName: "Home" */ './routes/Home')
+    ),
+  },
+  details: {
+    path: ':id',
+    component: lazy(() =>
+      import(
+        /* webpackChunkName: "RemediationDetails" */ './routes/RemediationDetails'
+      )
+    ),
+  },
+  runDetails: {
+    path: ':id/:run_id',
+    component: lazy(() =>
+      import(
+        /* webpackChunkName: "ActivityDetails" */ './components/ActivityDetails'
+      )
+    ),
+  },
+  executorDetails: {
+    path: ':id/:run_id/:executor_id',
+    component: lazy(() =>
+      import(
+        /* webpackChunkName: "ExecutorDetails" */ './components/ExecutorDetails/ExecutorDetails'
+      )
+    ),
+  },
 };
 
-export const Routes = () => {
+const RemediationRoutes = () => {
   const [hasSystems, setHasSystems] = useState(true);
+
   useEffect(() => {
     try {
       axios
@@ -54,30 +65,14 @@ export const Routes = () => {
       appId="remediation_zero_state"
     />
   ) : (
-    <Suspense fallback={<Fragment />}>
-      <Switch>
-        <Route exact path={routes.home} component={Home} />
-        <Route exact path={routes.details} component={RemediationDetails} />
-        <Route
-          exact
-          path={routes.runDetails}
-          render={(props) => <ActivityDetails remediation={{}} {...props} />}
-        />
-        <Route
-          exact
-          path={routes.executorDetails}
-          render={(props) => <ExecutorDetails {...props} />}
-        />
-        <Redirect path="*" to={routes.home} push />
-      </Switch>
+    <Suspense fallback={<Spinner />}>
+      <Routes>
+        {Object.entries(routes).map(([key, { path, component: Component }]) => (
+          <Route key={key} path={path} element={<Component />} />
+        ))}
+      </Routes>
     </Suspense>
   );
 };
 
-Routes.propTypes = {
-  childProps: PropTypes.shape({
-    history: PropTypes.shape({
-      push: PropTypes.func,
-    }),
-  }),
-};
+export default RemediationRoutes;

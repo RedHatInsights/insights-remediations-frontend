@@ -18,3 +18,8 @@ global.React = React;
 global.insights = {};
 
 window.HTMLElement.prototype.scrollTo = jest.fn();
+
+jest.mock(
+  '@redhat-cloud-services/frontend-components/Inventory/InventoryTable',
+  () => (props) => <div {...props} /> // eslint-disable-line
+);

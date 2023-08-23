@@ -9,7 +9,7 @@ import {
   Stack,
   StackItem,
 } from '@patternfly/react-core';
-import { Link } from 'react-router-dom';
+import Link from '@redhat-cloud-services/frontend-components/InsightsLink';
 import { ChartDonutUtilization, ChartLabel } from '@patternfly/react-charts';
 import {
   CheckCircleIcon,

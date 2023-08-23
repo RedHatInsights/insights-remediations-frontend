@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import Link from '@redhat-cloud-services/frontend-components/InsightsLink';
+import { useParams } from 'react-router-dom';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { InventoryTable } from '@redhat-cloud-services/frontend-components/Inventory';
 import { Main } from '@redhat-cloud-services/frontend-components/Main';
@@ -56,9 +57,6 @@ import columns from './Columns';
 let refreshInterval;
 
 const ExecutorDetails = ({
-  match: {
-    params: { executor_id, run_id, id },
-  },
   remediation,
   playbookRun,
   playbookRunSystems,
@@ -69,6 +67,7 @@ const ExecutorDetails = ({
   onCollapseInventory,
   loadRemediation,
 }) => {
+  const { executor_id, run_id, id } = useParams();
   const [executor, setExecutor] = useState({});
   const [systems, setSystems] = useState([]);
   const [filter, setFilter] = useState('');
@@ -379,7 +378,6 @@ const ExecutorDetails = ({
 };
 
 ExecutorDetails.propTypes = {
-  match: PropTypes.object,
   remediation: PropTypes.object,
   playbookRun: PropTypes.object,
   playbookRunSystems: PropTypes.object,

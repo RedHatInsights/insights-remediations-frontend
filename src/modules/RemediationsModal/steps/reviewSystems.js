@@ -6,7 +6,6 @@ import useFormApi from '@data-driven-forms/react-form-renderer/use-form-api';
 import { Text, TextContent, Stack, StackItem } from '@patternfly/react-core';
 import ReducerRegistry from '@redhat-cloud-services/frontend-components-utilities/ReducerRegistry';
 import { useDispatch, useSelector } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import isEqual from 'lodash/isEqual';
 import SystemsTable from '../common/SystemsTable';
@@ -63,35 +62,33 @@ const ReviewSystems = ({ issues, systems, allSystems, registry, ...props }) => {
         </TextContent>
       </StackItem>
       <StackItem>
-        <Router>
-          <SystemsTable
-            registry={registry}
-            allSystemsNamed={allSystemsNamed}
-            allSystems={allSystems}
-            hasCheckbox={true}
-            bulkSelect={{
-              id: 'select-systems',
-              count: selected.length,
-              items: [
-                {
-                  title: 'Select none (0)',
-                  onClick: () => onSelectRows(false),
-                },
-                ...(loaded && rowsLength > 0
-                  ? [
-                      {
-                        title: `Select page (${rowsLength})`,
-                        onClick: () => onSelectRows(true),
-                      },
-                    ]
-                  : []),
-              ],
-              checked: selected.length > 0,
-              onSelect: (value) => onSelectRows(value),
-            }}
-            onSelectRows
-          />
-        </Router>
+        <SystemsTable
+          registry={registry}
+          allSystemsNamed={allSystemsNamed}
+          allSystems={allSystems}
+          hasCheckbox={true}
+          bulkSelect={{
+            id: 'select-systems',
+            count: selected.length,
+            items: [
+              {
+                title: 'Select none (0)',
+                onClick: () => onSelectRows(false),
+              },
+              ...(loaded && rowsLength > 0
+                ? [
+                    {
+                      title: `Select page (${rowsLength})`,
+                      onClick: () => onSelectRows(true),
+                    },
+                  ]
+                : []),
+            ],
+            checked: selected.length > 0,
+            onSelect: (value) => onSelectRows(value),
+          }}
+          onSelectRows
+        />
       </StackItem>
       {error && loaded && (
         <StackItem>

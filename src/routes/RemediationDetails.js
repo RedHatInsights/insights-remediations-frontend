@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useContext, useMemo } from 'react';
-import { withRouter, Link } from 'react-router-dom';
+import Link from '@redhat-cloud-services/frontend-components/InsightsLink';
+import useNavigate from '@redhat-cloud-services/frontend-components-utilities/useInsightsNavigate';
+import { useSearchParams, useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
@@ -49,14 +51,9 @@ import NoReceptorBanner from '../components/Alerts/NoReceptorBanner';
 import { RemediationSummary } from '../components/RemediationSummary';
 import { dispatchNotification } from '../Utilities/dispatcher';
 
-const tabMapper = ['issues', 'systems', 'activity'];
-
 const RemediationDetails = ({
-  match,
-  location,
   selectedRemediation,
   selectedRemediationStatus,
-  history,
   loadRemediation,
   loadRemediationStatus,
   switchAutoReboot,
@@ -66,9 +63,12 @@ const RemediationDetails = ({
   executable,
 }) => {
   const chrome = useChrome();
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const { isFedramp, isBeta, isOrgAdmin = () => false } = chrome;
   const context = useContext(PermissionContext);
-  const id = match.params.id;
 
   const [upsellBannerVisible, setUpsellBannerVisible] = useState(
     localStorage.getItem('remediations:bannerStatus') !== 'dismissed'
@@ -76,7 +76,6 @@ const RemediationDetails = ({
   const [noReceptorBannerVisible, setNoReceptorBannerVisible] = useState(
     localStorage.getItem('remediations:receptorBannerStatus') !== 'dismissed'
   );
-  const [activeTabKey, setActiveTabKey] = useState(0);
 
   const handleUpsellToggle = () => {
     setUpsellBannerVisible(false);
@@ -88,10 +87,11 @@ const RemediationDetails = ({
     localStorage.setItem('remediations:receptorBannerStatus', 'dismissed');
   };
 
-  const handleTabClick = (event, tabIndex) => {
-    setActiveTabKey(tabIndex);
-    history.push(`?${tabMapper[tabIndex]}`);
-  };
+  const handleTabClick = (event, tabName) =>
+    setSearchParams({
+      ...Object.fromEntries(searchParams),
+      activeTab: tabName,
+    });
 
   const disabledStateText = useMemo(() => {
     if (!context.permissions.execute) {
@@ -116,18 +116,12 @@ const RemediationDetails = ({
   useEffect(() => {
     loadRemediation(id).catch((e) => {
       if (e && e.response && e.response.status === 404) {
-        history.push('/');
+        navigate('/');
         return;
       }
 
       throw e;
     });
-
-    const tabIndex = tabMapper.findIndex(
-      (item) => item === location.search.split('?')[1]
-    );
-    setActiveTabKey(tabIndex !== -1 ? tabIndex : 0);
-    history.push(`?${tabMapper[tabIndex !== -1 ? tabIndex : 0]}`);
 
     if (isBeta?.()) {
       loadRemediationStatus(id);
@@ -264,17 +258,20 @@ const RemediationDetails = ({
               </StackItem>
             )}
             <StackItem className="ins-c-playbookSummary__tabs">
-              <Tabs activeKey={activeTabKey} onSelect={handleTabClick}>
-                <Tab eventKey={0} title="Actions">
+              <Tabs
+                activeKey={searchParams.get('activeTab') || 'issues'}
+                onSelect={handleTabClick}
+              >
+                <Tab eventKey={'issues'} title="Actions">
                   <RemediationDetailsTable
                     remediation={remediation}
                     status={selectedRemediationStatus}
                   />
                 </Tab>
-                <Tab eventKey={1} title="Systems">
+                <Tab eventKey={'systems'} title="Systems">
                   <SystemsTable remediation={remediation} />
                 </Tab>
-                <Tab eventKey={2} title="Activity">
+                <Tab eventKey={'activity'} title="Activity">
                   {renderActivityState(executable, playbookRuns, remediation)}
                 </Tab>
               </Tabs>
@@ -287,15 +284,8 @@ const RemediationDetails = ({
 };
 
 RemediationDetails.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }),
-  }).isRequired,
-  location: PropTypes.object,
   selectedRemediation: PropTypes.object,
   selectedRemediationStatus: PropTypes.object,
-  history: PropTypes.object.isRequired,
   loadRemediation: PropTypes.func.isRequired,
   loadRemediationStatus: PropTypes.func.isRequired,
   switchAutoReboot: PropTypes.func.isRequired,
@@ -309,33 +299,30 @@ RemediationDetails.propTypes = {
   checkExecutable: PropTypes.func,
 };
 
-export default withRouter(
-  connect(
-    ({
-      selectedRemediation,
-      selectedRemediationStatus,
-      executePlaybookBanner,
-      playbookRuns,
-      executable,
-    }) => ({
-      selectedRemediation,
-      selectedRemediationStatus,
-      executePlaybookBanner,
-      playbookRuns: playbookRuns.data,
-      remediation: selectedRemediation.remediation,
-      executable,
-    }),
-    (dispatch) => ({
-      loadRemediation: (id) => dispatch(actions.loadRemediation(id)),
-      loadRemediationStatus: (id) =>
-        dispatch(actions.loadRemediationStatus(id)),
-      // eslint-disable-next-line camelcase
-      switchAutoReboot: (id, auto_reboot) =>
-        dispatch(actions.patchRemediation(id, { auto_reboot })),
-      deleteRemediation: (id) => dispatch(actions.deleteRemediation(id)),
-      addNotification: (content) => dispatch(addNotification(content)),
-      getPlaybookRuns: (id) => dispatch(actions.getPlaybookRuns(id)),
-      checkExecutable: (id) => dispatch(actions.checkExecutable(id)),
-    })
-  )(RemediationDetails)
-);
+export default connect(
+  ({
+    selectedRemediation,
+    selectedRemediationStatus,
+    executePlaybookBanner,
+    playbookRuns,
+    executable,
+  }) => ({
+    selectedRemediation,
+    selectedRemediationStatus,
+    executePlaybookBanner,
+    playbookRuns: playbookRuns.data,
+    remediation: selectedRemediation.remediation,
+    executable,
+  }),
+  (dispatch) => ({
+    loadRemediation: (id) => dispatch(actions.loadRemediation(id)),
+    loadRemediationStatus: (id) => dispatch(actions.loadRemediationStatus(id)),
+    // eslint-disable-next-line camelcase
+    switchAutoReboot: (id, auto_reboot) =>
+      dispatch(actions.patchRemediation(id, { auto_reboot })),
+    deleteRemediation: (id) => dispatch(actions.deleteRemediation(id)),
+    addNotification: (content) => dispatch(addNotification(content)),
+    getPlaybookRuns: (id) => dispatch(actions.getPlaybookRuns(id)),
+    checkExecutable: (id) => dispatch(actions.checkExecutable(id)),
+  })
+)(RemediationDetails);

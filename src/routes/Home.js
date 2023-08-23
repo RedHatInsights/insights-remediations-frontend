@@ -97,7 +97,7 @@ const SORTING_ITERATEES = [
   'updated_at',
 ];
 
-function Home() {
+const Home = () => {
   const chrome = useChrome();
   useEffect(() => {
     chrome.updateDocumentTitle('Remediations | Red Hat Insights');
@@ -330,7 +330,7 @@ function Home() {
                       }
                       text={`${selectedIds.length} ${
                         selectedIds.length > 1 ? 'playbooks' : 'playbook'
-                      } 
+                      }
                                             will be removed from Remediations. This is permanent and cannot be undone.`}
                       confirmText={'Remove'}
                       onClose={async (del) => {
@@ -367,6 +367,6 @@ function Home() {
       </PermissionContext.Consumer>
     </div>
   );
-}
+};
 
 export default Home;

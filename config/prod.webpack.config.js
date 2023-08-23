@@ -24,6 +24,11 @@ plugins.push(
           '../src/modules/RemediationsModal/NoDataModal.js'
         ),
       },
+      shared: [
+        {
+          'react-router-dom': { singleton: true, requiredVersion: '*' },
+        },
+      ],
     }
   )
 );

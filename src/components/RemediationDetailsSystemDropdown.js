@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
 
 import {
   Button,
@@ -65,11 +64,9 @@ RemediationDetailsSystemDropdown.propTypes = {
   onDelete: PropTypes.func.isRequired,
 };
 
-const connected = withRouter(
-  connect(null, (dispatch) => ({
-    onDelete: (id, issue, system) =>
-      dispatch(deleteRemediationIssueSystem(id, issue, system)),
-  }))(RemediationDetailsSystemDropdown)
-);
+const connected = connect(null, (dispatch) => ({
+  onDelete: (id, issue, system) =>
+    dispatch(deleteRemediationIssueSystem(id, issue, system)),
+}))(RemediationDetailsSystemDropdown);
 
 export default connected;
