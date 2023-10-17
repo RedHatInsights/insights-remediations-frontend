@@ -75,7 +75,7 @@ const ActivityDetail = ({
                 normalizeStatus(playbookRun.data.status) === 'running' ? (
                   <React.Fragment>
                     <InProgressIcon
-                      className="rem-c-running"
+                      className="rem-c-running pf-u-mr-sm"
                       aria-label="connection status"
                     />
                     <DateFormat
