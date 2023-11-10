@@ -24,7 +24,7 @@
     "@redhat-cloud-services/sources-client": "^1.0.100",
     "@scalprum/react-core": "^0.1.1",
     "awesome-debounce-promise": "2.1.0",
-    "axios": "^0.21.4",
+    "axios": "^1.6.0",
     "classnames": "^2.3.1",
     "follow-redirects": "^1.14.9",
     "react": "^17.0.2",
