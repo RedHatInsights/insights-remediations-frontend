@@ -2,7 +2,6 @@ const { resolve } = require('path');
 const config = require('@redhat-cloud-services/frontend-components-config');
 
 const insightsProxy = {
-  ...(process.env.BETA && { deployment: 'beta/apps' }),
   ...(process.env.LOCAL_API && {
     routes: {
       ...(process.env.LOCAL_API.split(',') || []).reduce((acc, curr) => {
