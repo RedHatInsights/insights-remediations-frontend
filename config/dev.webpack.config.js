@@ -37,6 +37,7 @@ const webpackProxy = {
   appUrl: process.env.BETA
     ? ['/beta/insights/remediations', '/preview/insights/remediations']
     : ['/insights/remediations'],
+  ...(process.env.BETA === 'true' && { deployment: 'beta/apps' }),
 };
 
 const { config: webpackConfig, plugins } = config({
