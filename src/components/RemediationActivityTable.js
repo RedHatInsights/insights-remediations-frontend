@@ -36,7 +36,9 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
               ),
               cellFormatters: [expandable],
             },
-            `${playbooks.created_by.first_name} ${playbooks.created_by.last_name}`,
+            playbooks.created_by.last_name // for reasons unknown, last_name is not available sometimes
+              ? `${playbooks.created_by.first_name} ${playbooks.created_by.last_name}`
+              : `${playbooks.created_by.username}`,
             {
               title: (
                 <StatusSummary
