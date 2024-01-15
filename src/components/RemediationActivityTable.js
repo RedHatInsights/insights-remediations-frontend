@@ -3,11 +3,13 @@ import Link from '@redhat-cloud-services/frontend-components/InsightsLink';
 import PropTypes from 'prop-types';
 
 import {
-  Table,
-  TableHeader,
-  TableBody,
-  expandable,
+	expandable
 } from '@patternfly/react-table';
+import {
+	Table,
+	TableHeader,
+	TableBody
+} from '@patternfly/react-table/deprecated';
 
 import { DateFormat } from '@redhat-cloud-services/frontend-components/DateFormat';
 

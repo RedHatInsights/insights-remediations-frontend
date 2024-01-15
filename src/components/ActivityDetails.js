@@ -12,20 +12,22 @@ import {
 } from '@redhat-cloud-services/frontend-components/PageHeader';
 import { DateFormat } from '@redhat-cloud-services/frontend-components/DateFormat';
 
+import { Card } from '@patternfly/react-core/dist/dynamic/components/Card';
+import { CardHeader } from '@patternfly/react-core/dist/dynamic/components/Card';
+import { CardBody } from '@patternfly/react-core/dist/dynamic/components/Card';
+import { Stack } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
+import { StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
+import { Breadcrumb } from '@patternfly/react-core/dist/dynamic/components/Breadcrumb';
+import { BreadcrumbItem } from '@patternfly/react-core/dist/dynamic/components/Breadcrumb';
+import { Split } from '@patternfly/react-core/dist/dynamic/layouts/Split';
+import { SplitItem } from '@patternfly/react-core/dist/dynamic/layouts/Split';
+import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
 import {
-  Card,
-  CardHeader,
-  CardBody,
-  Stack,
-  StackItem,
-  Breadcrumb,
-  BreadcrumbItem,
-  Split,
-  SplitItem,
-  Title,
-} from '@patternfly/react-core';
-import { Table, TableHeader, TableBody } from '@patternfly/react-table';
-import { InProgressIcon } from '@patternfly/react-icons';
+  Table,
+  TableHeader,
+  TableBody,
+} from '@patternfly/react-table/deprecated';
+import InProgressIcon from '@patternfly/react-icons/dist/dynamic/icons/in-progress-icon';
 
 import DescriptionList from './Layouts/DescriptionList';
 import { CancelButton } from '../containers/CancelButton';

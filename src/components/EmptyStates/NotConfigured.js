@@ -5,8 +5,7 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
-  Title,
-  Bullseye,
+  Bullseye, EmptyStateHeader, EmptyStateFooter,
 } from '@patternfly/react-core';
 import { WrenchIcon } from '@patternfly/react-icons';
 
@@ -15,15 +14,12 @@ import { WrenchIcon } from '@patternfly/react-icons';
 const NotConfigured = () => (
   <Bullseye>
     <EmptyState>
-      <EmptyStateIcon icon={WrenchIcon} />
-      <Title headingLevel="h5" size="lg">
-        Do more with Find it Fix it.
-      </Title>
+      <EmptyStateHeader titleText="Do more with Find it Fix it." icon={<EmptyStateIcon icon={WrenchIcon} />} headingLevel="h5" />
       <EmptyStateBody>
         Configure Cloud Connector to connect cloud.redhat.com with your
         Satellite instances and execute remediation across all regions,
         geographies, and Satellites in one place.
-      </EmptyStateBody>
+      </EmptyStateBody><EmptyStateFooter>
       <Button
         variant="link"
         component="a"
@@ -33,7 +29,7 @@ const NotConfigured = () => (
       >
         Learn how to configure
       </Button>
-    </EmptyState>
+    </EmptyStateFooter></EmptyState>
   </Bullseye>
 );
 

@@ -1,23 +1,22 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { Card } from '@patternfly/react-core/dist/dynamic/components/Card';
+import { CardBody } from '@patternfly/react-core/dist/dynamic/components/Card';
+import { CardHeader } from '@patternfly/react-core/dist/dynamic/components/Card';
+import { CardTitle } from '@patternfly/react-core/dist/dynamic/components/Card';
+import { Progress } from '@patternfly/react-core/dist/dynamic/components/Progress';
+import { ProgressMeasureLocation } from '@patternfly/react-core';
+import { Split } from '@patternfly/react-core/dist/dynamic/layouts/Split';
+import { SplitItem } from '@patternfly/react-core/dist/dynamic/layouts/Split';
+import { Stack } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
+import { StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
+import { Label } from '@patternfly/react-core/dist/dynamic/components/Label';
 import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardActions,
-  CardTitle,
   Dropdown,
   DropdownItem,
   KebabToggle,
-  Progress,
-  ProgressMeasureLocation,
-  Split,
-  SplitItem,
-  Stack,
-  StackItem,
-  Label,
-} from '@patternfly/react-core';
-import { CheckCircleIcon } from '@patternfly/react-icons';
+} from '@patternfly/react-core/deprecated';
+import CheckCircleIcon from '@patternfly/react-icons/dist/dynamic/icons/check-circle-icon';
 import { DateFormat } from '@redhat-cloud-services/frontend-components/DateFormat';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
 import Link from '@redhat-cloud-services/frontend-components/InsightsLink';
@@ -152,33 +151,41 @@ const PlaybookCardHeader = ({
       );
 
   return (
-    <CardHeader className="rem-c-playbook-card__header">
-      <CardActions>
-        <Dropdown
-          key="dropdown"
-          id={`${remediation.id}-dropdown`}
-          isOpen={isOpen}
-          isPlain
-          onSelect={(f) => f}
-          toggle={
-            <KebabToggle
-              id={`${remediation.id}-toggle`}
-              onToggle={(isOpen) => setIsOpen(isOpen)}
+    <CardHeader
+      actions={{
+        actions: (
+          <>
+            <Dropdown
+              key="dropdown"
+              id={`${remediation.id}-dropdown`}
+              isOpen={isOpen}
+              isPlain
+              onSelect={(f) => f}
+              toggle={
+                <KebabToggle
+                  id={`${remediation.id}-toggle`}
+                  onToggle={(_event, isOpen) => setIsOpen(isOpen)}
+                />
+              }
+              dropdownItems={dropdownItems}
+              position={'right'}
             />
-          }
-          dropdownItems={dropdownItems}
-          position={'right'}
-        />
-        <input
-          type="checkbox"
-          name={`${remediation.id}-checkbox`}
-          checked={selector.getSelectedIds().includes(remediation.id)}
-          onChange={(e) => {
-            selector.props.onSelect(e, e.target.checked, remediationIdx);
-          }}
-          aria-label={`${remediation.id}-checkbox`}
-        />
-      </CardActions>
+            <input
+              type="checkbox"
+              name={`${remediation.id}-checkbox`}
+              checked={selector.getSelectedIds().includes(remediation.id)}
+              onChange={(e) => {
+                selector.props.onSelect(e, e.target.checked, remediationIdx);
+              }}
+              aria-label={`${remediation.id}-checkbox`}
+            />
+          </>
+        ),
+        hasNoOffset: false,
+        className: undefined,
+      }}
+      className="rem-c-playbook-card__header"
+    >
       <CardTitle>
         <Stack hasGutter>
           <StackItem className="rem-c-playbook-card__header--title">

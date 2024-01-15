@@ -4,13 +4,15 @@ import propTypes from 'prop-types';
 import useFieldApi from '@data-driven-forms/react-form-renderer/use-field-api';
 import useFormApi from '@data-driven-forms/react-form-renderer/use-form-api';
 import {
-  Table,
-  TableVariant,
-  TableHeader,
-  TableBody,
-  sortable,
-  expandable,
+	TableVariant,
+	sortable,
+	expandable
 } from '@patternfly/react-table';
+import {
+	Table,
+	TableHeader,
+	TableBody
+} from '@patternfly/react-table/deprecated';
 import {
   Radio,
   Text,

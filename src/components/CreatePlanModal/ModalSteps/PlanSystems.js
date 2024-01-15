@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 
 import {
-  Form,
-  FormGroup,
-  Radio,
-  Select,
-  SelectOption,
+	Form,
+	FormGroup,
+	Radio
 } from '@patternfly/react-core';
+import {
+	Select,
+	SelectOption
+} from '@patternfly/react-core/deprecated';
 
 import './PlanSystems.scss';
 

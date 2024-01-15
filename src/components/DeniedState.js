@@ -1,12 +1,11 @@
 import React from 'react';
 
 import {
-  Title,
   Button,
   EmptyState,
   EmptyStateVariant,
   EmptyStateIcon,
-  EmptyStateBody,
+  EmptyStateBody, EmptyStateHeader, EmptyStateFooter,
 } from '@patternfly/react-core';
 
 import { LockIcon } from '@patternfly/react-icons';
@@ -27,13 +26,10 @@ const DeniedState = () => {
           variant={EmptyStateVariant.full}
           className="rem-c-denied-state"
         >
-          <EmptyStateIcon icon={LockIcon} />
-          <Title headingLevel="h5" size="lg">
-            You do not have access to Remediations
-          </Title>
+          <EmptyStateHeader titleText="You do not have access to Remediations" icon={<EmptyStateIcon icon={LockIcon} />} headingLevel="h5" />
           <EmptyStateBody>
             Contact your organization administrator(s) for more information.
-          </EmptyStateBody>
+          </EmptyStateBody><EmptyStateFooter>
           {document.referrer ? (
             <Button variant="primary" onClick={() => history.back()}>
               Return to previous page
@@ -43,7 +39,7 @@ const DeniedState = () => {
               Go to landing page
             </Button>
           )}
-        </EmptyState>
+        </EmptyStateFooter></EmptyState>
       </Main>
     </React.Fragment>
   );

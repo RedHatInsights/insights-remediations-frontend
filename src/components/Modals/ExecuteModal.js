@@ -17,11 +17,13 @@ import {
 import { downloadPlaybook } from '../../api';
 import { styledConnectionStatus } from '../statusHelper';
 import {
-  TableHeader,
-  Table,
-  TableBody,
-  TableVariant,
+	TableVariant
 } from '@patternfly/react-table';
+import {
+	TableHeader,
+	Table,
+	TableBody
+} from '@patternfly/react-table/deprecated';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';

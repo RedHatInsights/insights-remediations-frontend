@@ -2,12 +2,14 @@ import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal, ModalVariant } from '@patternfly/react-core';
 import {
-  Table,
-  TableBody,
-  TableHeader,
-  cellWidth,
-  sortable,
+	cellWidth,
+	sortable
 } from '@patternfly/react-table';
+import {
+	Table,
+	TableBody,
+	TableHeader
+} from '@patternfly/react-table/deprecated';
 import RebootColumn from './RebootColumn';
 import { CheckIcon, TimesIcon } from '@patternfly/react-icons';
 import { buildIssueUrl } from '../../Utilities/urls';

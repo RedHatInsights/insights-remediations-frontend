@@ -57,7 +57,7 @@ export default function TextInputDialog(props) {
         <TextInput
           value={value}
           type="text"
-          onChange={onChange}
+          onChange={(_event, value) => onChange(value)}
           aria-label={ariaLabel || 'input text'}
           autoFocus
           isValid={valid}
