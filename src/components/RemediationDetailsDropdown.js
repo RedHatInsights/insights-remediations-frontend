@@ -100,7 +100,12 @@ RemediationDetailsDropdown.propTypes = {
 };
 
 const connected = connect(null, (dispatch) => ({
-  onRename: (id, name = EMPTY_NAME) => dispatch(patchRemediation(id, { name })),
+  onRename: (id, name) => {
+    if (!name) {
+      name = EMPTY_NAME;
+    }
+    dispatch(patchRemediation(id, { name }));
+  },
   onDelete: (id) => dispatch(deleteRemediation(id)),
 }))(RemediationDetailsDropdown);
 
