@@ -5,8 +5,7 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
-  Title,
-  Bullseye,
+  Bullseye, EmptyStateHeader, EmptyStateFooter,
 } from '@patternfly/react-core';
 import { CloudIcon } from '@patternfly/react-icons';
 
@@ -15,14 +14,11 @@ import { CloudIcon } from '@patternfly/react-icons';
 const ActivityTabUpsell = () => (
   <Bullseye>
     <EmptyState>
-      <EmptyStateIcon icon={CloudIcon} />
-      <Title headingLevel="h5" size="lg">
-        Get more with Find it Fix it capabilities
-      </Title>
+      <EmptyStateHeader titleText="Get more with Find it Fix it capabilities" icon={<EmptyStateIcon icon={CloudIcon} />} headingLevel="h5" />
       <EmptyStateBody>
         Upgrade to Red Hat Satellite to remediate all your systems, across
         regions and geographies directly from Red Hat Insights.
-      </EmptyStateBody>
+      </EmptyStateBody><EmptyStateFooter>
       <Button
         variant="link"
         component="a"
@@ -31,7 +27,7 @@ const ActivityTabUpsell = () => (
       >
         Learn more
       </Button>
-    </EmptyState>
+    </EmptyStateFooter></EmptyState>
   </Bullseye>
 );
 

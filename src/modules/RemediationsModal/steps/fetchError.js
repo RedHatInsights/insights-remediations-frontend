@@ -2,11 +2,10 @@ import React from 'react';
 import propTypes from 'prop-types';
 import useFieldApi from '@data-driven-forms/react-form-renderer/use-field-api';
 import {
-  Title,
   EmptyState,
   EmptyStateVariant,
   EmptyStateIcon,
-  EmptyStateBody,
+  EmptyStateBody, EmptyStateHeader,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import red from '@patternfly/react-tokens/dist/js/global_palette_red_100';
@@ -19,13 +18,10 @@ const FetchError = (props) => {
 
   return (
     <EmptyState
-      variant={EmptyStateVariant.small}
+      variant={EmptyStateVariant.sm}
       data-component-ouia-id="wizard-fetch-error"
     >
-      <EmptyStateIcon color={red.value} icon={ExclamationCircleIcon} />
-      <Title headingLevel="h4" size="lg">
-        Unexpected error
-      </Title>
+      <EmptyStateHeader titleText="Unexpected error" icon={<EmptyStateIcon color={red.value} icon={ExclamationCircleIcon} />} headingLevel="h4" />
       <EmptyStateBody>
         Please try again later.{' '}
         {resolutionsCount !== 0 && (

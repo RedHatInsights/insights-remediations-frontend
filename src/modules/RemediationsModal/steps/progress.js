@@ -1,12 +1,11 @@
 import React from 'react';
 import {
-  Title,
   Button,
   EmptyState,
   EmptyStateVariant,
   EmptyStateIcon,
   EmptyStateBody,
-  EmptyStateSecondaryActions,
+  EmptyStateActions, EmptyStateHeader, EmptyStateFooter,
 } from '@patternfly/react-core';
 import ProgressBar from '../common/ProgressBar';
 import PropTypes from 'prop-types';
@@ -40,10 +39,14 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
 
   return (
     <EmptyState
-      variant={EmptyStateVariant.large}
+      variant={EmptyStateVariant.lg}
       data-component-ouia-id="wizard-progress"
     >
-      <EmptyStateIcon
+      <EmptyStateHeader titleText={<>{failed
+          ? 'Error: Unable to add items to playbook'
+          : percent === 100
+          ? 'Items added to playbook'
+          : 'Adding items to the playbook'}</>} icon={<EmptyStateIcon
         className="pf-u-mb-lg pf-u-mt-sm"
         color={
           failed
@@ -59,17 +62,10 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
             ? CheckCircleIcon
             : InProgressIcon
         }
-      />
-      <Title headingLevel="h1" size="lg">
-        {failed
-          ? 'Error: Unable to add items to playbook'
-          : percent === 100
-          ? 'Items added to playbook'
-          : 'Adding items to the playbook'}
-      </Title>
+      />} headingLevel="h1" />
       <EmptyStateBody className="pf-c-progress-bar pf-u-mt-md">
         <ProgressBar percent={percent} failed={failed} />
-      </EmptyStateBody>
+      </EmptyStateBody><EmptyStateFooter>
       {(failed || percent === 100) && (
         <EmptyStateBody className="pf-c-progress-message">
           {failed ? (
@@ -101,7 +97,7 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
             ouiaId="CloudConnectorButton"
             icon={<ExternalLinkAltIcon />}
             iconPosition="right"
-            isSmall
+            size="sm"
             onClick={() =>
               (window.location.href = `${
                 window.location.origin
@@ -139,7 +135,7 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
           Return to application
         </Button>
       )}
-      <EmptyStateSecondaryActions>
+      <EmptyStateActions>
         {failed && (
           <Button
             variant="secondary"
@@ -165,8 +161,8 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
             Open playbook {playbook.name}
           </Button>
         )}
-      </EmptyStateSecondaryActions>
-    </EmptyState>
+      </EmptyStateActions>
+    </EmptyStateFooter></EmptyState>
   );
 };
 

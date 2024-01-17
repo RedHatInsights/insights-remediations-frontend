@@ -7,12 +7,14 @@ import orderBy from 'lodash/orderBy';
 import { Pagination } from '@patternfly/react-core';
 
 import {
-  sortable,
-  TableHeader,
-  Table,
-  TableBody,
-  TableVariant,
+	sortable,
+	TableVariant
 } from '@patternfly/react-table';
+import {
+	TableHeader,
+	Table,
+	TableBody
+} from '@patternfly/react-table/deprecated';
 import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/PrimaryToolbar';
 import { TableToolbar } from '@redhat-cloud-services/frontend-components/TableToolbar';
 import { dispatchNotification } from '../Utilities/dispatcher';

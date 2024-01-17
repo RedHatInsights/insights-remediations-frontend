@@ -297,6 +297,7 @@ RemediationDetails.propTypes = {
   playbookRuns: PropTypes.array,
   getPlaybookRuns: PropTypes.func,
   checkExecutable: PropTypes.func,
+  executable: PropTypes.object,
 };
 
 export default connect(

@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardActions,
-  CardTitle,
-  Dropdown,
-  DropdownItem,
-  KebabToggle,
-  Progress,
-  ProgressMeasureLocation,
-  Split,
-  SplitItem,
-  Stack,
-  StackItem,
-  Label,
+	Card,
+	CardBody,
+	CardHeader,
+	CardTitle,
+	Progress,
+	ProgressMeasureLocation,
+	Split,
+	SplitItem,
+	Stack,
+	StackItem,
+	Label
 } from '@patternfly/react-core';
+import {
+	Dropdown,
+	DropdownItem,
+	KebabToggle
+} from '@patternfly/react-core/deprecated';
 import { CheckCircleIcon } from '@patternfly/react-icons';
 import { DateFormat } from '@redhat-cloud-services/frontend-components/DateFormat';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
@@ -152,9 +153,7 @@ const PlaybookCardHeader = ({
       );
 
   return (
-    <CardHeader className="rem-c-playbook-card__header">
-      <CardActions>
-        <Dropdown
+    <CardHeader actions={{ actions: <><Dropdown
           key="dropdown"
           id={`${remediation.id}-dropdown`}
           isOpen={isOpen}
@@ -163,7 +162,7 @@ const PlaybookCardHeader = ({
           toggle={
             <KebabToggle
               id={`${remediation.id}-toggle`}
-              onToggle={(isOpen) => setIsOpen(isOpen)}
+              onToggle={(_event, isOpen) => setIsOpen(isOpen)}
             />
           }
           dropdownItems={dropdownItems}
@@ -177,8 +176,8 @@ const PlaybookCardHeader = ({
             selector.props.onSelect(e, e.target.checked, remediationIdx);
           }}
           aria-label={`${remediation.id}-checkbox`}
-        />
-      </CardActions>
+        /></>, hasNoOffset: false, className: undefined}}  className="rem-c-playbook-card__header">
+      
       <CardTitle>
         <Stack hasGutter>
           <StackItem className="rem-c-playbook-card__header--title">

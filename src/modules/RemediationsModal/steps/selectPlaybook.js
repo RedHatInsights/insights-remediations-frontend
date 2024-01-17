@@ -169,7 +169,7 @@ const SelectPlaybook = (props) => {
           <GridItem sm={12} md={6} lg={4}>
             {existingRemediations && !isLoadingRemediation ? (
               <FormSelect
-                onChange={(val) => {
+                onChange={(_event, val) => {
                   setIsLoadingRemediation(true);
                   api.getRemediation(val).then((remediation) => {
                     setSelectedPlaybook(remediation);
@@ -231,7 +231,7 @@ const SelectPlaybook = (props) => {
               <TextInput
                 type="text"
                 value={newPlaybookName}
-                onChange={(val) => {
+                onChange={(_event, val) => {
                   setNewPlaybookName(val);
                   existingPlaybookSelected || input.onChange(val);
                 }}
