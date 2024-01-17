@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  useMemo,
-  useCallback,
-} from 'react';
+import React, { useEffect, useState, useContext, useMemo } from 'react';
 import Link from '@redhat-cloud-services/frontend-components/InsightsLink';
 import useNavigate from '@redhat-cloud-services/frontend-components-utilities/useInsightsNavigate';
 import { useSearchParams, useParams } from 'react-router-dom';
@@ -25,8 +19,6 @@ import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
 import DeniedState from '../components/DeniedState';
 import SkeletonTable from '../skeletons/SkeletonTable';
 import '../components/Status.scss';
-import instance from '@redhat-cloud-services/frontend-components-utilities/interceptors';
-
 import {
   PageHeader,
   PageHeaderTitle,
@@ -57,7 +49,7 @@ import './RemediationDetails.scss';
 import NoReceptorBanner from '../components/Alerts/NoReceptorBanner';
 import { RemediationSummary } from '../components/RemediationSummary';
 import { dispatchNotification } from '../Utilities/dispatcher';
-import { API_BASE } from '../config';
+import { useConnectionStatus } from '../Utilities/useConnectionStatus';
 
 const RemediationDetails = ({
   selectedRemediation,
@@ -74,7 +66,6 @@ const RemediationDetails = ({
   const navigate = useNavigate();
   const { id } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [isDisabled, setIsDisabled] = useState(true);
 
   const { isFedramp, isBeta, isOrgAdmin = () => false } = chrome;
   const context = useContext(PermissionContext);
@@ -179,26 +170,12 @@ const RemediationDetails = ({
 
   const { status, remediation } = selectedRemediation;
 
-  const fetchDisabledValue = useCallback(async () => {
-    return Promise.resolve(
-      instance.get(
-        `${API_BASE}/remediations/${remediation.id}/connection_status`
-      )
-    ).then(({ data }) => {
-      setIsDisabled(
-        !context.permissions.execute ||
-          !executable ||
-          isFedramp ||
-          data[0].connection_status !== 'connected'
-      );
-    });
-  });
-
-  useEffect(() => {
-    if (remediation) {
-      fetchDisabledValue();
-    }
-  }, [fetchDisabledValue]);
+  const isDisabled = useConnectionStatus(
+    remediation,
+    context,
+    executable,
+    isFedramp
+  );
 
   useEffect(() => {
     remediation &&
