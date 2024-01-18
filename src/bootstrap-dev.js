@@ -1,9 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import logger from 'redux-logger';
 import Remediations from './AppEntry';
+import { createRoot } from 'react-dom/client';
 
-ReactDOM.render(
-  <Remediations logger={logger} />,
-  document.getElementById('root')
-);
+const container = document.getElementById('root');
+const root = createRoot(container);
+root.render(<Remediations logger={logger} />);
