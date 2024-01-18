@@ -170,12 +170,7 @@ const RemediationDetails = ({
 
   const { status, remediation } = selectedRemediation;
 
-  const isDisabled = useConnectionStatus(
-    remediation,
-    context,
-    executable,
-    isFedramp
-  );
+  const isConnected = useConnectionStatus(remediation);
 
   useEffect(() => {
     remediation &&
@@ -212,7 +207,12 @@ const RemediationDetails = ({
               <Split hasGutter>
                 <SplitItem>
                   <ExecutePlaybookButton
-                    isDisabled={isDisabled}
+                    isDisabled={
+                      !isConnected ||
+                      !context.permissions.execute ||
+                      !executable ||
+                      isFedramp
+                    }
                     disabledStateText={disabledStateText}
                     remediationId={remediation.id}
                     remediationName={remediation.name}

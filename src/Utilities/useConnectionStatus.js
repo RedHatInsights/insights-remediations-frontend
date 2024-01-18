@@ -2,14 +2,9 @@ import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/fronten
 const { API_BASE } = require('../config');
 import { useState, useEffect } from 'react';
 
-export const useConnectionStatus = (
-  remediation,
-  context,
-  executable,
-  isFedramp
-) => {
+export const useConnectionStatus = (remediation) => {
   const axios = useAxiosWithPlatformInterceptors();
-  const [isDisabled, setIsDisabled] = useState(true);
+  const [isConnected, setisConnected] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,27 +14,16 @@ export const useConnectionStatus = (
           (await axios.get(
             `${API_BASE}/remediations/${remediation.id}/connection_status`
           ));
-        let connected =
-          connection_status.data.length > 0
-            ? connection_status.data[0].connection_status !== 'connected'
-            : false;
-        if (!connected) {
-          setIsDisabled(true);
-        } else {
-          setIsDisabled(
-            !context.permissions.execute ||
-              !executable ||
-              isFedramp ||
-              connected
-          );
-        }
+        setisConnected(
+          connection_status.data?.[0].connection_status === 'connected'
+        );
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchData();
-  }, [remediation, context, executable, isFedramp]);
+  }, [remediation]);
 
-  return isDisabled;
+  return isConnected;
 };
