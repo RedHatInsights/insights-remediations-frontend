@@ -18,6 +18,7 @@ import UpsellBanner from '../components/Alerts/UpsellBanner';
 import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
 import DeniedState from '../components/DeniedState';
 import SkeletonTable from '../skeletons/SkeletonTable';
+import { calculateCounts } from '../Utilities/utils';
 import '../components/Status.scss';
 
 import {
@@ -48,8 +49,9 @@ import { PermissionContext } from '../App';
 
 import './RemediationDetails.scss';
 import NoReceptorBanner from '../components/Alerts/NoReceptorBanner';
-import { RemediationSummary } from '../components/RemediationSummary';
+import { RemediationSummary } from '../components/RemediationSummary/RemediationSummary';
 import { dispatchNotification } from '../Utilities/dispatcher';
+import useRefetchRemediation from '../hooks/useRefetchRemediation';
 
 const RemediationDetails = ({
   selectedRemediation,
@@ -70,6 +72,12 @@ const RemediationDetails = ({
   const { isFedramp, isBeta, isOrgAdmin = () => false } = chrome;
   const context = useContext(PermissionContext);
 
+  const refetchRemediation = useRefetchRemediation(
+    selectedRemediation?.remediation,
+    playbookRuns,
+    id
+  );
+  const statusCounts = calculateCounts(playbookRuns);
   const [upsellBannerVisible, setUpsellBannerVisible] = useState(
     localStorage.getItem('remediations:bannerStatus') !== 'dismissed'
   );
@@ -239,10 +247,11 @@ const RemediationDetails = ({
             </LevelItem>
           </Level>
           <RemediationSummary
-            remediation={remediation}
+            refetchRemediation={refetchRemediation}
             playbookRuns={playbookRuns}
             switchAutoReboot={switchAutoReboot}
             context={context}
+            statusCounts={statusCounts}
           />
         </PageHeader>
         <Main>
@@ -264,7 +273,7 @@ const RemediationDetails = ({
               >
                 <Tab eventKey={'issues'} title="Actions">
                   <RemediationDetailsTable
-                    remediation={remediation}
+                    refetchRemediation={refetchRemediation}
                     status={selectedRemediationStatus}
                   />
                 </Tab>

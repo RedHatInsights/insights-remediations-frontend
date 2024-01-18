@@ -11,7 +11,7 @@ function issuesToSystemsIds(issues) {
   );
 }
 
-function computeRebootStats(remediation) {
+export function computeRebootStats(remediation) {
   const systems = issuesToSystemsIds(remediation.issues);
   const rebootRequired = issuesToSystemsIds(
     remediation.issues.filter((issue) => issue.resolution.needs_reboot)
