@@ -41,16 +41,4 @@ describe('useConnectionStatus', () => {
     await waitForNextUpdate();
     expect(result.current).toBe(false);
   });
-
-  //   test('returns false if connection is false', async () => {
-  //     useAxiosWithPlatformInterceptors.mockImplementation(() => ({
-  //       get: () => {
-  //         let res = { data: [{ connection_status: 'dsadsaad' }] };
-  //         return res;
-  //       },
-  //     }));
-  //     const { result } = renderHook(() => useConnectionStatus(remediation));
-
-  //     expect(result.current).toBe(false);
-  //   });
 });
