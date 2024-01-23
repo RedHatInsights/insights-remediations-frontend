@@ -119,7 +119,7 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
           className="pf-u-mt-md pf-u-mb-sm"
           variant="primary"
           ouiaId="TryAgainButton"
-          data-testid={'TryAgainButton'}
+          data-testid="TryAgainButton"
           onClick={() => {
             setState({ failed: false, percent: 0 });
             submitRemediation(false);
@@ -146,6 +146,7 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
           <Button
             variant="secondary"
             ouiaId="BackToWizardButton"
+            data-testid="BackToWizardButton"
             onClick={() => {
               onClose();
             }}
@@ -158,6 +159,7 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
             variant="link"
             component="a"
             ouiaId="OpenPlaybookButton"
+            data-testid="OpenPlaybookButton"
             href={remediationUrl(playbook.id)}
             onClick={() => {
               onClose();

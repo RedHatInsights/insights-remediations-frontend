@@ -58,9 +58,7 @@ const IssuesColumn = ({ issues, display_name }) => {
               title: (
                 <Fragment>
                   <div>
-                    <a variant="link" isInline href={buildIssueUrl(issue.id)}>
-                      {issue.description}
-                    </a>
+                    <a href={buildIssueUrl(issue.id)}>{issue.description}</a>
                   </div>
                   <div>{issue.resolution.description}</div>
                 </Fragment>

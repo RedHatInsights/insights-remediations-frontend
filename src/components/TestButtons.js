@@ -272,6 +272,8 @@ class TestButtons extends React.Component {
 
 TestButtons.propTypes = {
   onRemediationCreated: propTypes.func,
+  dataProvider: propTypes.func,
+  children: propTypes.node,
 };
 
 TestButtons.defaultProps = {

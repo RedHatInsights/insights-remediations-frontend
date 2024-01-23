@@ -6,3 +6,5 @@ extends:
 root: true
 globals:
   insights: readable
+rules:
+  rulesdir/forbid-pf-relative-imports: 'off'
