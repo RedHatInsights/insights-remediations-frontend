@@ -133,7 +133,8 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
   const validatorMapper = {
     'validate-systems': () => (value) =>
       value &&
-      Object.values(value).filter((value) => typeof value !== undefined).length
+      Object.values(value).filter((value) => typeof value !== 'undefined')
+        .length
         ? undefined
         : 'At least one system must be selected. Actions must be associated to a system to be added to a playbook.',
   };
