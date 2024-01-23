@@ -43,6 +43,7 @@ const ExecuteButton = ({
       </Tooltip>
     ) : (
       <Button
+        data-testid="execute-button-enabled"
         onClick={() => {
           setOpen(true);
           getConnectionStatus(remediationId);

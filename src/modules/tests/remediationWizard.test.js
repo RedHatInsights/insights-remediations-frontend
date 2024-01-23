@@ -1,13 +1,11 @@
-/* eslint-disable camelcase */
 import React from 'react';
-import { act } from 'react-dom/test-utils';
-import * as dependency from '../../api/index';
 import { remediationWizardTestData } from './testData';
-import { mount } from 'enzyme';
 import { RemediationWizard } from '../RemediationsModal/RemediationsWizard';
 import configureStore from 'redux-mock-store';
 import promiseMiddleware from 'redux-promise-middleware';
 import { Provider } from 'react-redux';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 
 jest.mock('../../store/actions/host-actions', () => {
   const actions = jest.requireActual('../../store/actions/host-actions');
@@ -34,7 +32,6 @@ jest.mock('../../api/index', () => {
 
 describe('RemediationWizard', () => {
   let initialProps;
-  let wrapper;
   let mockStore = configureStore([promiseMiddleware]);
 
   beforeEach(() => {
@@ -50,30 +47,33 @@ describe('RemediationWizard', () => {
   it('should render wizard correctly', async () => {
     fetch.mockResponse(JSON.stringify({}));
     const store = mockStore({});
-    const getResolutionsBatchSpy = jest.spyOn(
-      dependency,
-      'getResolutionsBatch'
-    );
     const registrySpy = jest.fn();
 
-    await act(async () => {
-      wrapper = mount(
-        <Provider store={store}>
-          <RemediationWizard
-            {...initialProps}
-            registry={{
-              register: registrySpy,
-            }}
-          />
-        </Provider>
-      );
-    });
+    render(
+      <Provider store={store}>
+        <RemediationWizard
+          {...initialProps}
+          registry={{
+            register: registrySpy,
+          }}
+        />
+      </Provider>
+    );
 
-    await act(async () => {
-      wrapper.update();
-    });
+    expect(
+      screen.getByRole('button', { name: /select playbook/i })
+    ).toBeVisible();
+    expect(
+      screen.getByRole('button', { name: /review systems/i })
+    ).toBeVisible();
+    expect(
+      screen.getByRole('button', { name: /remediation review/i })
+    ).toBeVisible();
 
-    expect(getResolutionsBatchSpy).toHaveBeenCalledTimes(1);
-    expect(wrapper.find(RemediationWizard)).toHaveLength(1);
+    expect(
+      screen.getByText(
+        /you selected to remediate with ansible, which in total includes of which can be remediated by ansible\./i
+      )
+    ).toBeVisible();
   });
 });

@@ -1,12 +1,13 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { SystemsTableWithContext } from '../../RemediationsModal/common/SystemsTable';
 
 jest.mock(
   '@redhat-cloud-services/frontend-components/Inventory/InventoryTable',
   () =>
     jest.fn(() => (
-      <div className="testInventroyComponentChild">
+      <div data-testid="systems-table">
         <div>This is child</div>
       </div>
     ))
@@ -14,8 +15,7 @@ jest.mock(
 
 describe('SystemsTable', () => {
   it('should render correctly', async () => {
-    let wrapper;
-    wrapper = mount(
+    render(
       <SystemsTableWithContext
         allSystemsNamed={[]}
         allSystems={[]}
@@ -23,6 +23,6 @@ describe('SystemsTable', () => {
       />
     );
 
-    expect(wrapper.find(SystemsTableWithContext)).toHaveLength(1);
+    expect(screen.getByTestId('systems-table')).toBeVisible();
   });
 });

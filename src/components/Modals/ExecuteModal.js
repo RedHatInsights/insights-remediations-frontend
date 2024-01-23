@@ -92,6 +92,7 @@ export const ExecuteModal = ({
 
   return (
     <Modal
+      data-testid="execute-modal"
       className="remediations rem-c-execute-modal"
       variant={isDebug() ? ModalVariant.large : ModalVariant.small}
       title={'Execute playbook'}

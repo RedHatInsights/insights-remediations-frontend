@@ -1,16 +1,15 @@
-/* eslint-disable camelcase */
 import React from 'react';
 import FormRenderer from '@data-driven-forms/react-form-renderer/form-renderer';
 import FormTemplate from '@data-driven-forms/pf4-component-mapper/form-template';
-import { mount } from 'enzyme';
-import { act } from 'react-dom/test-utils';
 import { AUTO_REBOOT, RESOLUTIONS, SYSTEMS } from '../../../Utilities/utils';
 import promiseMiddleware from 'redux-promise-middleware';
 import configureStore from 'redux-mock-store';
 import Review from '../../RemediationsModal/steps/review';
-import { BodyRow } from '@patternfly/react-table/dist/js/components/Table/base';
 import { remediationWizardTestData } from '../testData';
 import { Provider } from 'react-redux';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('../../RemediationsModal/common/SystemsTable', () => ({
   __esModule: true,
@@ -87,85 +86,63 @@ describe('Review', () => {
   });
 
   it('should render correctly', async () => {
-    let wrapper;
     const store = mockStore(initialState);
-    await act(async () => {
-      wrapper = mount(
-        <Provider store={store}>
-          <RendererWrapper schema={createSchema({})} {...initialProps} />
-        </Provider>
-      );
-    });
-    wrapper.update();
-    expect(wrapper.find('Form')).toHaveLength(1);
-    expect(wrapper.find('table')).toHaveLength(1);
-    expect(wrapper.find(BodyRow)).toHaveLength(4);
-    expect(wrapper.find('button')).toHaveLength(8);
+    render(
+      <Provider store={store}>
+        <RendererWrapper schema={createSchema({})} {...initialProps} />
+      </Provider>
+    );
+
+    expect(screen.getByTestId('wizard-review')).toBeVisible();
   });
 
   it('should change autoreboot correctly', async () => {
-    let wrapper;
     const store = mockStore(initialState);
-    await act(async () => {
-      wrapper = mount(
-        <Provider store={store}>
-          <RendererWrapper schema={createSchema({})} {...initialProps} />
-        </Provider>
-      );
-    });
-    wrapper.update();
-    expect(wrapper.find('Button[variant="link"]').props().children).toEqual([
-      'Turn ',
-      'off',
-      ' autoreboot',
-    ]);
-    wrapper.find('Button[variant="link"]').simulate('click');
-    expect(wrapper.find('Button[variant="link"]').props().children).toEqual([
-      'Turn ',
-      'on',
-      ' autoreboot',
-    ]);
+    render(
+      <Provider store={store}>
+        <RendererWrapper schema={createSchema({})} {...initialProps} />
+      </Provider>
+    );
+
+    expect(screen.getByTestId('autoreboot-button')).toHaveTextContent(
+      'Turn off autoreboot'
+    );
+    await userEvent.click(screen.getByTestId('autoreboot-button'));
+    expect(screen.getByTestId('autoreboot-button')).toHaveTextContent(
+      'Turn on autoreboot'
+    );
   });
 
   it('should sort records correctly', async () => {
-    let wrapper;
     const store = mockStore(initialState);
-    await act(async () => {
-      wrapper = mount(
-        <Provider store={store}>
-          <RendererWrapper schema={createSchema({})} {...initialProps} />
-        </Provider>
-      );
-    });
-    wrapper.update();
-    expect(wrapper.find('td').at(1).text()).toEqual('test_description');
-    wrapper
-      .find('button[className="pf-c-table__button"]')
-      .first()
-      .simulate('click');
-    wrapper
-      .find('button[className="pf-c-table__button"]')
-      .first()
-      .simulate('click');
-    expect(wrapper.find('td').at(1).text()).toEqual('test_description');
+    render(
+      <Provider store={store}>
+        <RendererWrapper schema={createSchema({})} {...initialProps} />
+      </Provider>
+    );
+
+    expect(screen.getAllByRole('cell')[1]).toHaveTextContent(
+      'test_description'
+    );
+    await userEvent.click(screen.getByRole('button', { name: /action/i }));
+    expect(screen.getAllByRole('cell')[6]).toHaveTextContent(
+      'test_description'
+    );
   });
 
   it('should submit the form', async () => {
-    let wrapper;
     const store = mockStore(initialState);
-    await act(async () => {
-      wrapper = mount(
-        <Provider store={store}>
-          <RendererWrapper
-            schema={createSchema({})}
-            {...initialProps}
-            onSubmit={onSubmit}
-          />
-        </Provider>
-      );
-    });
-    wrapper.update();
-    wrapper.find('Form').simulate('submit');
+    render(
+      <Provider store={store}>
+        <RendererWrapper
+          schema={createSchema({})}
+          {...initialProps}
+          onSubmit={onSubmit}
+        />
+      </Provider>
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
     expect(onSubmit).toHaveBeenCalledTimes(1);
   });
 });

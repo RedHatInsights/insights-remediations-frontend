@@ -14,7 +14,12 @@ const UpsellBanner = ({ onClose, ...props }) => {
       variant="info"
       isInline
       title="Put Insights into action"
-      actionClose={<AlertActionCloseButton onClose={onClose} />}
+      actionClose={
+        <AlertActionCloseButton
+          onClose={onClose}
+          data-testid="upselBanner-close"
+        />
+      }
       {...props}
     >
       <Stack hasGutter>

@@ -42,6 +42,7 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
     <EmptyState
       variant={EmptyStateVariant.large}
       data-component-ouia-id="wizard-progress"
+      data-testid="wizard-progress"
     >
       <EmptyStateIcon
         className="pf-u-mb-lg pf-u-mt-sm"
@@ -118,6 +119,7 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
           className="pf-u-mt-md pf-u-mb-sm"
           variant="primary"
           ouiaId="TryAgainButton"
+          data-testid={'TryAgainButton'}
           onClick={() => {
             setState({ failed: false, percent: 0 });
             submitRemediation(false);

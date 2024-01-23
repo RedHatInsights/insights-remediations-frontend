@@ -68,7 +68,11 @@ const ReviewActions = (props) => {
   }, [sortByState]);
 
   return (
-    <Stack hasGutter data-component-ouia-id="wizard-review-actions">
+    <Stack
+      hasGutter
+      data-component-ouia-id="wizard-review-actions"
+      data-testid="wizard-review-actions"
+    >
       <StackItem>
         <TextContent>
           <Text>
