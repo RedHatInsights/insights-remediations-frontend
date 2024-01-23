@@ -90,7 +90,11 @@ const Review = (props) => {
   }, [sortByState]);
 
   return (
-    <Stack hasGutter data-component-ouia-id="wizard-review">
+    <Stack
+      hasGutter
+      data-component-ouia-id="wizard-review"
+      data-testid="wizard-review"
+    >
       <StackItem>
         <TextContent>
           <Text>
@@ -124,6 +128,7 @@ const Review = (props) => {
       </StackItem>
       <StackItem>
         <Button
+          data-testid="autoreboot-button"
           variant="link"
           isInline
           onClick={() => input.onChange(!input.value)}

@@ -187,6 +187,7 @@ const SelectPlaybook = (props) => {
                   [
                     <FormSelectOption
                       key="select-playbook-placeholder"
+                      data-testid="select-playbook-placeholder"
                       value=""
                       label="Select playbook"
                       isDisabled
@@ -204,7 +205,7 @@ const SelectPlaybook = (props) => {
                 )}
               </FormSelect>
             ) : (
-              <Skeleton size={SkeletonSize.lg} />
+              <Skeleton size={SkeletonSize.lg} data-testid="skeleton-loader" />
             )}
           </GridItem>
         </Grid>

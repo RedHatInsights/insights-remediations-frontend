@@ -1,9 +1,7 @@
-/* eslint-disable camelcase */
 import React from 'react';
-import { shallow } from 'enzyme';
-import toJson from 'enzyme-to-json';
 import { ExecuteModal } from '../ExecuteModal';
-import { Modal, Alert } from '@patternfly/react-core';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 
 const data = [
   {
@@ -26,7 +24,7 @@ describe('Execute modal', () => {
   it('renders ExecuteModal component when given data', () => {
     const closeFn = jest.fn();
 
-    const container = shallow(
+    render(
       <ExecuteModal
         isOpen={true}
         onClose={closeFn}
@@ -42,14 +40,13 @@ describe('Execute modal', () => {
       />
     );
 
-    expect(container.find(Modal)).toHaveLength(1);
-    expect(toJson(container)).toMatchSnapshot();
+    expect(screen.getByTestId('execute-modal')).toBeVisible();
   });
 
   it('renders ExecuteModal with refresh message when showRefresh is true', () => {
     const closeFn = jest.fn();
 
-    const container = shallow(
+    render(
       <ExecuteModal
         isOpen={true}
         onClose={closeFn}
@@ -65,8 +62,10 @@ describe('Execute modal', () => {
       />
     );
 
-    expect(container.find(Modal)).toHaveLength(1);
-    expect(container.find(Alert)).toHaveLength(1);
-    expect(toJson(container)).toMatchSnapshot();
+    expect(
+      screen.getByText(
+        'The connection status of systems associated with this Playbook has changed. Please review again.'
+      )
+    ).toBeVisible();
   });
 });

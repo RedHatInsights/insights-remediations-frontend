@@ -53,7 +53,11 @@ const ReviewSystems = ({ issues, systems, allSystems, registry, ...props }) => {
   };
 
   return (
-    <Stack hasGutter data-component-ouia-id="wizard-review-systems">
+    <Stack
+      hasGutter
+      data-component-ouia-id="wizard-review-systems"
+      data-testid="wizard-review-systems"
+    >
       <StackItem>
         <TextContent>
           <Text>

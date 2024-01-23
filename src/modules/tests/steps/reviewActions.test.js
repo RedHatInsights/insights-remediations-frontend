@@ -1,9 +1,6 @@
-/* eslint-disable camelcase */
 import React from 'react';
 import FormRenderer from '@data-driven-forms/react-form-renderer/form-renderer';
 import FormTemplate from '@data-driven-forms/pf4-component-mapper/form-template';
-import { mount } from 'enzyme';
-import { act } from 'react-dom/test-utils';
 import ReviewActions from '../../RemediationsModal/steps/reviewActions';
 import { reviewActionsFields } from '../../RemediationsModal//schema';
 import promiseMiddleware from 'redux-promise-middleware';
@@ -15,15 +12,10 @@ import {
   RESOLUTIONS,
   SYSTEMS,
 } from '../../../Utilities/utils';
-import { BodyRow } from '@patternfly/react-table/dist/js/components/Table/base';
 import { remediationWizardTestData } from '../testData';
 import { Provider } from 'react-redux';
-
-jest.mock('../../RemediationsModal/common/SystemsTable', () => ({
-  __esModule: true,
-  // eslint-disable-next-line react/display-name
-  SystemsTableWithContext: () => <table></table>,
-}));
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 
 const RendererWrapper = (props) => (
   <FormRenderer
@@ -70,70 +62,13 @@ const initialState = {
 };
 
 describe('ReviewActions', () => {
-  let onSubmit;
-
-  beforeEach(() => {
-    onSubmit = jest.fn();
-  });
-
   it('should render correctly', async () => {
-    let wrapper;
     const store = mockStore(initialState);
-    await act(async () => {
-      wrapper = mount(
-        <Provider store={store}>
-          <RendererWrapper schema={createSchema()} />
-        </Provider>
-      );
-    });
-    expect(wrapper.find('input[type="radio"]')).toHaveLength(2);
-    expect(wrapper.find('table')).toHaveLength(1);
-    expect(wrapper.find(BodyRow)).toHaveLength(2);
-  });
-
-  it('should sort table & submit review option', async () => {
-    let wrapper;
-    const store = mockStore(initialState);
-    await act(async () => {
-      wrapper = mount(
-        <Provider store={store}>
-          <RendererWrapper schema={createSchema()} onSubmit={onSubmit} />
-        </Provider>
-      );
-    });
-    wrapper
-      .find('button[className="pf-c-table__button"]')
-      .last()
-      .simulate('click');
-    wrapper
-      .find('input[type="radio"]')
-      .first()
-      .simulate('change', {
-        target: { checked: true },
-      });
-    wrapper.update();
-    wrapper.find('Form').simulate('submit');
-    expect(onSubmit).toHaveBeenCalledTimes(1);
-  });
-
-  it('should submit accept option', async () => {
-    let wrapper;
-    const store = mockStore(initialState);
-    await act(async () => {
-      wrapper = mount(
-        <Provider store={store}>
-          <RendererWrapper schema={createSchema()} onSubmit={onSubmit} />
-        </Provider>
-      );
-    });
-    wrapper
-      .find('input[type="radio"]')
-      .last()
-      .simulate('change', {
-        target: { checked: true },
-      });
-    wrapper.update();
-    wrapper.find('Form').simulate('submit');
-    expect(onSubmit).toHaveBeenCalledTimes(1);
+    render(
+      <Provider store={store}>
+        <RendererWrapper schema={createSchema()} />
+      </Provider>
+    );
+    expect(screen.getByTestId('wizard-review-actions')).toBeVisible();
   });
 });

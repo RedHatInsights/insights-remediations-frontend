@@ -35,7 +35,11 @@ const RemediationButton = ({
     return (
       <Tooltip content="You do not have correct permissions to remediate this entity.">
         <span>
-          <Button isDisabled {...buttonProps}>
+          <Button
+            isDisabled
+            {...buttonProps}
+            data-testid="remediationButton-no-permissions"
+          >
             {children}
           </Button>
         </span>
@@ -47,6 +51,7 @@ const RemediationButton = ({
     <React.Fragment>
       <Button
         isDisabled={isDisabled}
+        data-testid="remediationButton-with-permissions"
         onClick={() => {
           Promise.resolve(dataProvider()).then((data) => {
             if (!data) {

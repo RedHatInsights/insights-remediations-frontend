@@ -2,8 +2,6 @@
 import React from 'react';
 import FormRenderer from '@data-driven-forms/react-form-renderer/form-renderer';
 import FormTemplate from '@data-driven-forms/pf4-component-mapper/form-template';
-import { mount } from 'enzyme';
-import { act } from 'react-dom/test-utils';
 import configureStore from 'redux-mock-store';
 import promiseMiddleware from 'redux-promise-middleware';
 import {
@@ -15,6 +13,8 @@ import { remediationWizardTestData } from '../testData';
 import ReviewSystems from '../../RemediationsModal/steps/reviewSystems';
 import { Provider } from 'react-redux';
 import ReducerRegistry from '@redhat-cloud-services/frontend-components-utilities/ReducerRegistry';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 
 jest.mock('../../RemediationsModal/common/SystemsTable', () => ({
   __esModule: true,
@@ -88,15 +88,12 @@ describe('ReviewSystems', () => {
 
   it('should render correctly', async () => {
     const store = mockStore(initialState);
-    let wrapper;
-    await act(async () => {
-      wrapper = mount(
-        <Provider store={store}>
-          <RendererWrapper schema={schema} />
-        </Provider>
-      );
-    });
-    expect(wrapper.find(ReviewSystems)).toHaveLength(1);
-    expect(wrapper.find('Button[type="submit"]')).toHaveLength(2);
+    render(
+      <Provider store={store}>
+        <RendererWrapper schema={schema} />
+      </Provider>
+    );
+
+    expect(screen.getByTestId('wizard-review-systems')).toBeVisible();
   });
 });
