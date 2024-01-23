@@ -3,15 +3,11 @@ import { useSelector } from 'react-redux';
 import propTypes from 'prop-types';
 import useFieldApi from '@data-driven-forms/react-form-renderer/use-field-api';
 import useFormApi from '@data-driven-forms/react-form-renderer/use-form-api';
+import { TableVariant, sortable, expandable } from '@patternfly/react-table';
 import {
-	TableVariant,
-	sortable,
-	expandable
-} from '@patternfly/react-table';
-import {
-	Table,
-	TableHeader,
-	TableBody
+  Table,
+  TableHeader,
+  TableBody,
 } from '@patternfly/react-table/deprecated';
 import {
   Radio,
@@ -70,7 +66,11 @@ const ReviewActions = (props) => {
   }, [sortByState]);
 
   return (
-    <Stack hasGutter data-component-ouia-id="wizard-review-actions">
+    <Stack
+      hasGutter
+      data-component-ouia-id="wizard-review-actions"
+      data-testid="wizard-review-actions"
+    >
       <StackItem>
         <TextContent>
           <Text>

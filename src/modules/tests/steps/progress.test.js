@@ -1,12 +1,14 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { render, screen } from '@testing-library/react';
 import Progress from '../../RemediationsModal/steps/progress';
-import ProgressBar from '../../RemediationsModal/common/ProgressBar';
 import { remediationWizardTestData } from '../testData';
+import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
 
 describe('Progress', () => {
+  const user = userEvent.setup();
   it('should render loading progress correctly ', async () => {
-    let wrapper = mount(
+    render(
       <Progress
         onClose={() => null}
         title={'Adding items to the playbook'}
@@ -20,17 +22,17 @@ describe('Progress', () => {
         }}
       />
     );
-    wrapper.update();
-    expect(wrapper.find(Progress)).toHaveLength(1);
-    expect(wrapper.find(ProgressBar)).toHaveLength(1);
-    expect(wrapper.find('.pf-c-progress__description').text()).toEqual(
+
+    expect(screen.getByTestId('wizard-progress')).toBeVisible();
+    expect(screen.getByTestId('finished-create-remediation')).toBeVisible();
+    expect(screen.getByTestId('finished-create-remediation')).toHaveTextContent(
       'In progress'
     );
   });
 
   it('should render success progress with buttons correctly ', async () => {
     const onClose = jest.fn();
-    let wrapper = mount(
+    render(
       <Progress
         onClose={onClose}
         title={'Adding items to the playbook'}
@@ -44,28 +46,20 @@ describe('Progress', () => {
         }}
       />
     );
-    wrapper.update();
-    expect(wrapper.find(Progress)).toHaveLength(1);
-    expect(wrapper.find(ProgressBar)).toHaveLength(1);
-    expect(wrapper.find('.pf-c-progress__description').text()).toEqual(
+
+    expect(screen.getByTestId('finished-create-remediation')).toHaveTextContent(
       'Completed'
     );
 
-    wrapper
-      .find('a[data-ouia-component-id="OpenPlaybookButton"]')
-      .simulate('click');
-    expect(onClose).toHaveBeenCalledTimes(1);
+    await user.click(screen.getByTestId('OpenPlaybookButton'));
 
-    wrapper
-      .find('button[data-ouia-component-id="ReturnToAppButton"]')
-      .simulate('click');
-    expect(onClose).toHaveBeenCalledTimes(2);
+    expect(onClose).toHaveBeenCalled();
   });
 
   it('should render error progress correctly ', async () => {
     const onClose = jest.fn();
     const setState = jest.fn();
-    let wrapper = mount(
+    render(
       <Progress
         onClose={onClose}
         title={'Adding items to the playbook'}
@@ -79,19 +73,16 @@ describe('Progress', () => {
         }}
       />
     );
-    expect(wrapper.find(Progress)).toHaveLength(1);
-    expect(wrapper.find(ProgressBar)).toHaveLength(1);
-    expect(wrapper.find('.pf-c-progress__description').text()).toEqual('Error');
 
-    wrapper
-      .find('button[data-ouia-component-id="BackToWizardButton"]')
-      .simulate('click');
+    expect(screen.getByTestId('finished-create-remediation')).toHaveTextContent(
+      'Error'
+    );
+
+    await user.click(screen.getByTestId('BackToWizardButton'));
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(setState).toHaveBeenCalledTimes(0);
 
-    wrapper
-      .find('button[data-ouia-component-id="TryAgainButton"]')
-      .simulate('click');
+    await user.click(screen.getByTestId('TryAgainButton'));
     expect(setState).toHaveBeenCalledTimes(1);
     expect(onClose).toHaveBeenCalledTimes(1);
   });

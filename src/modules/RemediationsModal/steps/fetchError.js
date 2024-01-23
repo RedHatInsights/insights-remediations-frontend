@@ -5,7 +5,8 @@ import {
   EmptyState,
   EmptyStateVariant,
   EmptyStateIcon,
-  EmptyStateBody, EmptyStateHeader,
+  EmptyStateBody,
+  EmptyStateHeader,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import red from '@patternfly/react-tokens/dist/js/global_palette_red_100';
@@ -21,7 +22,11 @@ const FetchError = (props) => {
       variant={EmptyStateVariant.sm}
       data-component-ouia-id="wizard-fetch-error"
     >
-      <EmptyStateHeader titleText="Unexpected error" icon={<EmptyStateIcon color={red.value} icon={ExclamationCircleIcon} />} headingLevel="h4" />
+      <EmptyStateHeader
+        titleText="Unexpected error"
+        icon={<EmptyStateIcon color={red.value} icon={ExclamationCircleIcon} />}
+        headingLevel="h4"
+      />
       <EmptyStateBody>
         Please try again later.{' '}
         {resolutionsCount !== 0 && (

@@ -2,15 +2,11 @@ import React, { useState, useEffect } from 'react';
 import propTypes from 'prop-types';
 import useFieldApi from '@data-driven-forms/react-form-renderer/use-field-api';
 import useFormApi from '@data-driven-forms/react-form-renderer/use-form-api';
+import { TableVariant, sortable, expandable } from '@patternfly/react-table';
 import {
-	TableVariant,
-	sortable,
-	expandable
-} from '@patternfly/react-table';
-import {
-	Table,
-	TableHeader,
-	TableBody
+  Table,
+  TableHeader,
+  TableBody,
 } from '@patternfly/react-table/deprecated';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import {
@@ -92,7 +88,11 @@ const Review = (props) => {
   }, [sortByState]);
 
   return (
-    <Stack hasGutter data-component-ouia-id="wizard-review">
+    <Stack
+      hasGutter
+      data-component-ouia-id="wizard-review"
+      data-testid="wizard-review"
+    >
       <StackItem>
         <TextContent>
           <Text>
@@ -126,6 +126,7 @@ const Review = (props) => {
       </StackItem>
       <StackItem>
         <Button
+          data-testid="autoreboot-button"
           variant="link"
           isInline
           onClick={() => input.onChange(!input.value)}

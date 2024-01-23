@@ -16,13 +16,11 @@ import {
 } from '@patternfly/react-core';
 import { downloadPlaybook } from '../../api';
 import { styledConnectionStatus } from '../statusHelper';
+import { TableVariant } from '@patternfly/react-table';
 import {
-	TableVariant
-} from '@patternfly/react-table';
-import {
-	TableHeader,
-	Table,
-	TableBody
+  TableHeader,
+  Table,
+  TableBody,
 } from '@patternfly/react-table/deprecated';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
@@ -94,6 +92,7 @@ export const ExecuteModal = ({
 
   return (
     <Modal
+      data-testid="execute-modal"
       className="remediations rem-c-execute-modal"
       variant={isDebug() ? ModalVariant.large : ModalVariant.small}
       title={'Execute playbook'}

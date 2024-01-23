@@ -1,22 +1,30 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-import toJson from 'enzyme-to-json';
+import { render, screen } from '@testing-library/react';
 import DescriptionList from '../DescriptionList';
+import '@testing-library/jest-dom';
 
 describe('DescriptionList component', () => {
   it('should render', () => {
-    const wrapper = shallow(
-      <DescriptionList title="title">DescriptionList</DescriptionList>
+    render(
+      <DescriptionList title="description-title">
+        test-description-list
+      </DescriptionList>
     );
-    expect(toJson(wrapper)).toMatchSnapshot();
+    expect(screen.getByText('description-title')).toBeVisible();
+    expect(screen.getByText('test-description-list')).toBeVisible();
   });
 
   it('should render with bold', () => {
-    const wrapper = shallow(
-      <DescriptionList isBold title="title">
-        DescriptionList
+    render(
+      <DescriptionList isBold title="description-title">
+        test-description-list
       </DescriptionList>
     );
-    expect(toJson(wrapper)).toMatchSnapshot();
+
+    const ddElement = screen.getByText('test-description-list');
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(ddElement.closest('dd')).toHaveClass(
+      'rem-c-description-list__description--bold'
+    );
   });
 });
