@@ -19,7 +19,6 @@ import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
 import DeniedState from '../components/DeniedState';
 import SkeletonTable from '../skeletons/SkeletonTable';
 import '../components/Status.scss';
-
 import {
   PageHeader,
   PageHeaderTitle,
@@ -50,6 +49,7 @@ import './RemediationDetails.scss';
 import NoReceptorBanner from '../components/Alerts/NoReceptorBanner';
 import { RemediationSummary } from '../components/RemediationSummary';
 import { dispatchNotification } from '../Utilities/dispatcher';
+import { useConnectionStatus } from '../Utilities/useConnectionStatus';
 
 const RemediationDetails = ({
   selectedRemediation,
@@ -170,6 +170,8 @@ const RemediationDetails = ({
 
   const { status, remediation } = selectedRemediation;
 
+  const isConnected = useConnectionStatus(remediation);
+
   useEffect(() => {
     remediation &&
       chrome.updateDocumentTitle(
@@ -206,7 +208,10 @@ const RemediationDetails = ({
                 <SplitItem>
                   <ExecutePlaybookButton
                     isDisabled={
-                      !context.permissions.execute || !executable || isFedramp
+                      !isConnected ||
+                      !context.permissions.execute ||
+                      !executable ||
+                      isFedramp
                     }
                     disabledStateText={disabledStateText}
                     remediationId={remediation.id}
