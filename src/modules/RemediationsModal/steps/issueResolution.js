@@ -96,14 +96,7 @@ const IssueResolution = ({ issue }) => {
       <StackItem>
         <div className="ins-c-resolution-container">
           {uniqueResolutions.map((resolution, index) => (
-            <div
-              className="ins-c-resolution-option"
-              sm={12}
-              md={6}
-              lg={4}
-              xl={3}
-              key={resolution.id}
-            >
+            <div className="ins-c-resolution-option" key={resolution.id}>
               <Tile
                 onClick={() =>
                   formOptions.change(SELECTED_RESOLUTIONS, {

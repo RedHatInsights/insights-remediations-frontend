@@ -1,10 +1,14 @@
 import React from 'react';
 
-import { EmptyState, EmptyStateBody, EmptyStateHeader,  } from '@patternfly/react-core';
 import {
-	Table,
-	TableHeader,
-	TableBody
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateHeader,
+} from '@patternfly/react-core';
+import {
+  Table,
+  TableHeader,
+  TableBody,
 } from '@patternfly/react-table/deprecated';
 
 import './EmptyActivityTable.scss';

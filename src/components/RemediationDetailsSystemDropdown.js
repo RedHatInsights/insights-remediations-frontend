@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
+import { Button } from '@patternfly/react-core';
 import {
-	Button
-} from '@patternfly/react-core';
-import {
-	Dropdown,
-	DropdownPosition,
-	KebabToggle
+  Dropdown,
+  DropdownPosition,
+  KebabToggle,
 } from '@patternfly/react-core/deprecated';
 import ConfirmationDialog from './ConfirmationDialog';
 import { deleteRemediationIssueSystem } from '../actions';

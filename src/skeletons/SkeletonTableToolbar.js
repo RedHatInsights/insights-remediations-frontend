@@ -1,10 +1,15 @@
 import React, { Fragment } from 'react';
 import { Toolbar, ToolbarItem, ToolbarContent } from '@patternfly/react-core';
-import { Button, InputGroup, TextInput, InputGroupItem } from '@patternfly/react-core';
 import {
-	Dropdown,
-	DropdownToggle,
-	DropdownToggleCheckbox
+  Button,
+  InputGroup,
+  TextInput,
+  InputGroupItem,
+} from '@patternfly/react-core';
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownToggleCheckbox,
 } from '@patternfly/react-core/deprecated';
 import SearchIcon from '@patternfly/react-icons/dist/js/icons/search-icon';
 
@@ -30,21 +35,25 @@ const SkeletonTableToolbar = () => {
       </ToolbarItem>
       <ToolbarItem>
         <InputGroup>
-          <InputGroupItem isFill ><TextInput
-            value="Search"
-            isDisabled
-            name="skeleton-search"
-            id="skeleton-search"
-            type="search"
-            aria-label="search loading"
-          /></InputGroupItem>
-          <InputGroupItem><Button
-            isDisabled
-            variant="control"
-            aria-label="search button for search input"
-          >
-            <SearchIcon />
-          </Button></InputGroupItem>
+          <InputGroupItem isFill>
+            <TextInput
+              value="Search"
+              isDisabled
+              name="skeleton-search"
+              id="skeleton-search"
+              type="search"
+              aria-label="search loading"
+            />
+          </InputGroupItem>
+          <InputGroupItem>
+            <Button
+              isDisabled
+              variant="control"
+              aria-label="search button for search input"
+            >
+              <SearchIcon />
+            </Button>
+          </InputGroupItem>
         </InputGroup>
       </ToolbarItem>
       <ToolbarItem>

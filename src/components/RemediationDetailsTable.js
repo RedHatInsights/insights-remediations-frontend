@@ -6,14 +6,11 @@ import orderBy from 'lodash/orderBy';
 
 import { Pagination } from '@patternfly/react-core';
 
+import { sortable, TableVariant } from '@patternfly/react-table';
 import {
-	sortable,
-	TableVariant
-} from '@patternfly/react-table';
-import {
-	TableHeader,
-	Table,
-	TableBody
+  TableHeader,
+  Table,
+  TableBody,
 } from '@patternfly/react-table/deprecated';
 import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/PrimaryToolbar';
 import { TableToolbar } from '@redhat-cloud-services/frontend-components/TableToolbar';

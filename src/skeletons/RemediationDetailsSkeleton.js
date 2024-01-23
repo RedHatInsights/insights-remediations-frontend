@@ -12,22 +12,19 @@ import SkeletonTableToolbar from './SkeletonTableToolbar';
 import SkeletonTabs from './SkeletonTabs';
 
 import {
-	Stack,
-	StackItem,
-	Level,
-	LevelItem,
-	Breadcrumb,
-	BreadcrumbItem,
-	Split,
-	SplitItem,
-	Button,
-	Flex,
-	FlexItem
+  Stack,
+  StackItem,
+  Level,
+  LevelItem,
+  Breadcrumb,
+  BreadcrumbItem,
+  Split,
+  SplitItem,
+  Button,
+  Flex,
+  FlexItem,
 } from '@patternfly/react-core';
-import {
-	Dropdown,
-	KebabToggle
-} from '@patternfly/react-core/deprecated';
+import { Dropdown, KebabToggle } from '@patternfly/react-core/deprecated';
 import { ChartDonutUtilization, ChartLabel } from '@patternfly/react-charts';
 
 import DescriptionList from '../components/Layouts/DescriptionList';

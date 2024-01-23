@@ -1,11 +1,6 @@
 import React, { Fragment } from 'react';
-import {
-	TableVariant
-} from '@patternfly/react-table';
-import {
-	Table,
-	TableHeader
-} from '@patternfly/react-table/deprecated';
+import { TableVariant } from '@patternfly/react-table';
+import { Table, TableHeader } from '@patternfly/react-table/deprecated';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { TableToolbar } from '@redhat-cloud-services/frontend-components/TableToolbar';
 import { Spinner } from '@redhat-cloud-services/frontend-components/Spinner';

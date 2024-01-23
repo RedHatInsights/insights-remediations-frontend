@@ -1,14 +1,11 @@
 import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal, ModalVariant } from '@patternfly/react-core';
+import { cellWidth, sortable } from '@patternfly/react-table';
 import {
-	cellWidth,
-	sortable
-} from '@patternfly/react-table';
-import {
-	Table,
-	TableBody,
-	TableHeader
+  Table,
+  TableBody,
+  TableHeader,
 } from '@patternfly/react-table/deprecated';
 import RebootColumn from './RebootColumn';
 import { CheckIcon, TimesIcon } from '@patternfly/react-icons';
@@ -60,9 +57,7 @@ const IssuesColumn = ({ issues, display_name }) => {
               title: (
                 <Fragment>
                   <div>
-                    <a variant="link" isInline href={buildIssueUrl(issue.id)}>
-                      {issue.description}
-                    </a>
+                    <a href={buildIssueUrl(issue.id)}>{issue.description}</a>
                   </div>
                   <div>{issue.resolution.description}</div>
                 </Fragment>

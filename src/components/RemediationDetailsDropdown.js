@@ -3,13 +3,11 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import useNavigate from '@redhat-cloud-services/frontend-components-utilities/useInsightsNavigate';
 
+import { Button } from '@patternfly/react-core';
 import {
-	Button
-} from '@patternfly/react-core';
-import {
-	Dropdown,
-	DropdownPosition,
-	KebabToggle
+  Dropdown,
+  DropdownPosition,
+  KebabToggle,
 } from '@patternfly/react-core/deprecated';
 import TextInputDialog from './Dialogs/TextInputDialog';
 import ConfirmationDialog from './ConfirmationDialog';

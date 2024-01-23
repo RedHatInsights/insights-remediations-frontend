@@ -1,4 +1,4 @@
-import { renderHook, act, cleanup } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react-hooks';
 import {
   useExpander,
   useFilter,
@@ -11,8 +11,6 @@ import {
 jest.mock('lodash/debounce', () => (f) => f);
 
 describe('table hooks', () => {
-  afterEach(cleanup);
-
   describe('useFilter', function () {
     test('default', () => {
       const { result } = renderHook(() => useFilter());
