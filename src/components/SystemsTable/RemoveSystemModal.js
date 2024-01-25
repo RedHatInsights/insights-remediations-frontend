@@ -42,7 +42,7 @@ const RemoveSystemModal = ({
   >
     <Split hasGutter>
       <SplitItem>
-        <Icon size="xl" className="ins-m-alert">
+        <Icon size="xl" className="ins-m-alert" status="warning">
           <ExclamationTriangleIcon />
         </Icon>
       </SplitItem>

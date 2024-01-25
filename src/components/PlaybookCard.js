@@ -7,6 +7,7 @@ import {
   CardTitle,
   Progress,
   ProgressMeasureLocation,
+  ProgressVariant,
   Split,
   SplitItem,
   Stack,
@@ -240,10 +241,11 @@ const renderProgress = (complete, total, archived) => {
       className="rem-c-playbook-card__progress rem-c-playbook-card__progress--success"
       value={100}
       measureLocation={ProgressMeasureLocation.none}
+      variant={ProgressVariant.success}
     />
   ) : (
     <Progress
-      className="rem-c-playbook-card__progress"
+      className="rem-c-playbook-card__progress  rem-c-playbook-card__progress--archived"
       value={(complete / total) * 100}
       measureLocation={ProgressMeasureLocation.none}
     />

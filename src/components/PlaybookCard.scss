@@ -53,4 +53,10 @@
 
 .rem-c-playbook-card__progress--archived {
     --pf-c-progress__indicator--BackgroundColor: var(--pf-global--palette--black-500);
+    --pf-v5-c-progress__bar--before--BackgroundColor: var(--pf-v5-global--palette--black-400);
+}
+
+//PF5 has unwanted progress status icon
+.pf-v5-c-progress__status {
+    display: none;
 }
