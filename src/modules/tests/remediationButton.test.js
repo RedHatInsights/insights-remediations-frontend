@@ -1,36 +1,42 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 import RemediationButton from '../RemediationsButton';
-import { mount } from 'enzyme';
 import { CAN_REMEDIATE } from '../../Utilities/utils';
 import { remediationWizardTestData } from './testData';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
-
-jest.mock('../../api/inventory', () => {
-  const api = jest.requireActual('../../api/inventory');
-  return {
-    __esModule: true,
-    ...api,
-    getHostsById: () => Promise.resolve({}),
-  };
-});
+import { render, screen, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
-describe('RemediationButton', () => {
-  let initialProps;
-  let tmpInsights;
+jest.mock('../../modules/RemediationsModal/RemediationsWizard', () => ({
+  __esModule: true,
+  default: jest.fn((props) => (
+    <div {...props} data-testid="remediation-wizard-mock">
+      Remediation Wizard
+    </div>
+  )),
+}));
 
+let initialProps = {
+  dataProvider: jest.fn(() =>
+    Promise.resolve({
+      issues: remediationWizardTestData.issues,
+      systems: ['something'],
+    })
+  ),
+  isDisabled: false,
+  onRemediationCreated: jest.fn(),
+};
+
+const user = userEvent.setup();
+
+describe('RemediationButton', () => {
+  let tmpInsights;
   beforeEach(() => {
-    initialProps = {
-      dataProvider: jest.fn(() => ({
-        issues: remediationWizardTestData.issues,
-        systems: ['something'],
-      })),
-    };
     tmpInsights = global.insights;
   });
 
@@ -38,42 +44,39 @@ describe('RemediationButton', () => {
     global.insights = tmpInsights;
   });
 
-  it('should open wizard with permissions', async () => {
-    let wrapper;
-    fetch.mockResponse(JSON.stringify({}));
+  it('should open remediation wizard with permissions', async () => {
     useChrome.mockImplementation(() => ({
-      getUserPermissions: () =>
-        new Promise((resolve) => resolve([{ permission: CAN_REMEDIATE }])),
+      getUserPermissions: jest.fn(
+        () => new Promise((resolve) => resolve([{ permission: CAN_REMEDIATE }]))
+      ),
     }));
 
-    await act(async () => {
-      wrapper = mount(<RemediationButton {...initialProps} />);
-    });
-    wrapper.update();
+    render(<RemediationButton {...initialProps} />);
 
-    await act(async () => {
-      wrapper.find('button').simulate('click');
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('remediationButton-with-permissions')
+      ).toBeInTheDocument();
     });
 
-    expect(initialProps.dataProvider).toHaveBeenCalledTimes(1);
+    await user.click(screen.getByTestId('remediationButton-with-permissions'));
+
+    expect(screen.getByTestId('remediation-wizard-mock')).toBeVisible();
   });
 
   it('should not open wizard without permissions', async () => {
-    fetch.mockResponse(JSON.stringify({}));
     useChrome.mockImplementation(() => ({
-      getUserPermissions: () => new Promise((resolve) => resolve([])),
+      getUserPermissions: jest.fn(() => new Promise((resolve) => resolve([]))),
     }));
-    let wrapper;
 
-    await act(async () => {
-      wrapper = mount(<RemediationButton {...initialProps} />);
-    });
-    wrapper.update();
+    render(<RemediationButton {...initialProps} />);
 
-    await act(async () => {
-      wrapper.find('button').simulate('click');
-    });
+    expect(
+      screen.getByTestId('remediationButton-no-permissions')
+    ).toBeInTheDocument();
 
-    expect(initialProps.dataProvider).toHaveBeenCalledTimes(0);
+    expect(
+      screen.queryByTestId('remediation-wizard-mock')
+    ).not.toBeInTheDocument();
   });
 });

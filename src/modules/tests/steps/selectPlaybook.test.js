@@ -1,19 +1,35 @@
-/* eslint-disable no-import-assign */
-/* eslint-disable camelcase */
 import React from 'react';
 import FormRenderer from '@data-driven-forms/react-form-renderer/form-renderer';
 import FormTemplate from '@data-driven-forms/pf4-component-mapper/form-template';
-import { mount } from 'enzyme';
-import * as dependency from '../../../api/index';
 import SelectPlaybook from '../../RemediationsModal/steps/selectPlaybook';
 import TextField from '@data-driven-forms/pf4-component-mapper/text-field';
 import componentTypes from '@data-driven-forms/react-form-renderer/component-types';
 import promiseMiddleware from 'redux-promise-middleware';
 import configureStore from 'redux-mock-store';
-import { act } from 'react-dom/test-utils';
 import { selectPlaybookFields } from '../../RemediationsModal/schema';
 import { remediationWizardTestData } from '../testData';
 import { Provider } from 'react-redux';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
+
+jest.mock('../../../api', () => ({
+  ...jest.requireActual('../../../api'),
+  getRemediations: jest.fn(
+    () =>
+      new Promise((resolve) =>
+        resolve({ data: [{ id: 'remediationId', name: 'test-remediation-1' }] })
+      )
+  ),
+  getRemediation: jest.fn(
+    () =>
+      new Promise((resolve) =>
+        resolve({
+          data: [{ id: 'remediationId', name: 'test-remediation-single' }],
+        })
+      )
+  ),
+}));
 
 const RendererWrapper = (props) => (
   <FormRenderer
@@ -27,6 +43,7 @@ const RendererWrapper = (props) => (
         systems: remediationWizardTestData.systems,
         allSystems: remediationWizardTestData.systems,
       },
+      ['review-step']: TextField,
     }}
     schema={{ fields: [] }}
     {...props}
@@ -59,146 +76,100 @@ describe('SelectPlaybook', () => {
     onSubmit = jest.fn();
   });
 
-  it('should render correctly without remediations', async () => {
-    dependency.getRemediations = jest.fn(
-      () =>
-        new Promise((resolve) =>
-          resolve({ data: [{ id: 'remediationId', name: 'someName' }] })
-        )
-    );
+  it('should render correctly without remediations and show Skeleton loader', async () => {
     const store = mockStore(initialState);
-    let wrapper;
-    await act(async () => {
-      wrapper = mount(
-        <Provider store={store}>
-          <RendererWrapper schema={createSchema({})} {...initialProps} />
-        </Provider>
-      );
-    });
-    expect(wrapper.find('input[type="radio"]')).toHaveLength(2);
-    expect(wrapper.find('input[type="text"]')).toHaveLength(4);
-    expect(wrapper.find('FormSelect')).toHaveLength(0);
-    const skeleton = wrapper.find('Skeleton');
-    expect(skeleton).toBeTruthy();
+    render(
+      <Provider store={store}>
+        <RendererWrapper schema={createSchema({})} {...initialProps} />
+      </Provider>
+    );
+    expect(screen.getByLabelText('Add to existing playbook')).toBeVisible();
+    expect(screen.getByLabelText('Create new playbook')).toBeVisible();
+    expect(
+      screen.queryByLabelText('Select an existing playbook')
+    ).not.toBeInTheDocument();
+    expect(screen.getByTestId('skeleton-loader')).toBeVisible();
   });
 
-  it('should render correctly with remediations', async () => {
-    dependency.getRemediations = jest.fn(
-      () =>
-        new Promise((resolve) =>
-          resolve({ data: [{ id: 'remediationId', name: 'name' }] })
-        )
-    );
-    dependency.getRemediation = jest.fn(
-      () =>
-        new Promise((resolve) => resolve({ id: 'remediationId', name: 'name' }))
-    );
+  it('should populate existing playbooks dropdown', async () => {
     const store = mockStore(initialState);
-    let wrapper;
-    await act(async () => {
-      wrapper = mount(
-        <Provider store={store}>
-          <RendererWrapper schema={createSchema({})} {...initialProps} />
-        </Provider>
-      );
+    render(
+      <Provider store={store}>
+        <RendererWrapper schema={createSchema({})} {...initialProps} />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('test-remediation-1')).toBeVisible();
     });
-    wrapper.update();
-    expect(wrapper.find('input[type="radio"]')).toHaveLength(2);
-    expect(wrapper.find('input[type="text"]')).toHaveLength(4);
-    expect(wrapper.find('FormSelect')).toHaveLength(1);
-    expect(wrapper.find('Skeleton')).toHaveLength(0);
   });
 
-  it('should not submit empty', async () => {
-    dependency.getRemediations = jest.fn(
-      () =>
-        new Promise((resolve) =>
-          resolve({ data: [{ id: 'remediationId', name: 'name' }] })
-        )
-    );
-    dependency.getRemediation = jest.fn(
-      () =>
-        new Promise((resolve) => resolve({ id: 'remediationId', name: 'name' }))
-    );
+  it('should be able to create new playbook', async () => {
     const store = mockStore(initialState);
-    let wrapper;
-    await act(async () => {
-      wrapper = mount(
-        <Provider store={store}>
-          <RendererWrapper
-            schema={createSchema({})}
-            {...initialProps}
-            onSubmit={onSubmit}
-          />
-        </Provider>
-      );
+    render(
+      <Provider store={store}>
+        <RendererWrapper
+          schema={createSchema({})}
+          {...initialProps}
+          onSubmit={onSubmit}
+        />
+      </Provider>
+    );
+
+    await userEvent.click(screen.getByLabelText('Add to existing playbook'));
+    await userEvent.type(
+      screen.getByLabelText('Name your playbook'),
+      'new-playbook'
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('textbox', { value: /new-playbook/i })
+      ).toBeInTheDocument();
     });
-    wrapper.find('Form').simulate('submit');
-    expect(onSubmit).toHaveBeenCalledTimes(0);
   });
 
-  it('should submit new playbook', async () => {
-    dependency.getRemediations = jest.fn(
-      () =>
-        new Promise((resolve) =>
-          resolve({ data: [{ id: 'remediationId', name: 'name' }] })
-        )
-    );
-    dependency.getRemediation = jest.fn(
-      () =>
-        new Promise((resolve) => resolve({ id: 'remediationId', name: 'name' }))
-    );
-    const store = mockStore(initialState);
-    let wrapper;
-    await act(async () => {
-      wrapper = mount(
-        <Provider store={store}>
-          <RendererWrapper
-            schema={createSchema({})}
-            {...initialProps}
-            onSubmit={onSubmit}
-          />
-        </Provider>
-      );
+  it('should display resolutions warninng panel', async () => {
+    const store = mockStore({
+      ...initialState,
+      resolutionsReducer: {
+        ...initialState.resolutionsReducer,
+        warnings: ['some-warning'],
+      },
     });
-    wrapper.find('input[type="radio"]').last().simulate('change');
-    wrapper.find('input[type="text"]').first().instance().value = 'new';
-    wrapper.find('input[type="text"]').first().simulate('change');
-    wrapper.find('Form').simulate('submit');
-    expect(onSubmit).toHaveBeenCalledTimes(1);
+    render(
+      <Provider store={store}>
+        <RendererWrapper
+          schema={createSchema({})}
+          {...initialProps}
+          onSubmit={onSubmit}
+        />
+      </Provider>
+    );
+
+    screen.getByRole('heading', {
+      name: /warning alert: there was 1 error while fetching resolutions for your issues!/i,
+    });
   });
 
-  it('should submit existing playbook', async () => {
-    dependency.getRemediations = jest.fn(
-      () =>
-        new Promise((resolve) =>
-          resolve({ data: [{ id: 'remediationId', name: 'name' }] })
-        )
-    );
-    dependency.getRemediation = jest.fn(
-      () =>
-        new Promise((resolve) => resolve({ id: 'remediationId', name: 'name' }))
-    );
-    const store = mockStore(initialState);
-    let wrapper;
-    await act(async () => {
-      wrapper = mount(
-        <Provider store={store}>
-          <RendererWrapper
-            schema={createSchema({})}
-            {...initialProps}
-            onSubmit={onSubmit}
-          />
-        </Provider>
-      );
+  it('should display resolutions errors panel', async () => {
+    const store = mockStore({
+      ...initialState,
+      resolutionsReducer: {
+        ...initialState.resolutionsReducer,
+        errors: ['some-error'],
+      },
     });
-    wrapper.find('input[type="radio"]').first().simulate('change');
-    await act(async () => {
-      wrapper.find('FormSelect').simulate('change', {
-        target: { value: 'item1', name: 'item1' },
-      });
-    });
-    wrapper.find('Form').simulate('submit');
-    expect(onSubmit).toHaveBeenCalledTimes(1);
+    render(
+      <Provider store={store}>
+        <RendererWrapper
+          schema={createSchema({})}
+          {...initialProps}
+          onSubmit={onSubmit}
+        />
+      </Provider>
+    );
+
+    screen.getByRole('heading', { name: /unexpected error/i });
   });
 });

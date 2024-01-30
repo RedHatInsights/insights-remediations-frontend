@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Link from '@redhat-cloud-services/frontend-components/InsightsLink';
 import { useParams } from 'react-router-dom';
-import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { InventoryTable } from '@redhat-cloud-services/frontend-components/Inventory';
 import { Main } from '@redhat-cloud-services/frontend-components/Main';
 import {
@@ -12,10 +11,6 @@ import {
 } from '@redhat-cloud-services/frontend-components/PageHeader';
 import { DateFormat } from '@redhat-cloud-services/frontend-components/DateFormat';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
-import {
-  ConditionalFilter,
-  conditionalFilterType,
-} from '@redhat-cloud-services/frontend-components/ConditionalFilter';
 
 import {
   Button,
@@ -28,9 +23,6 @@ import {
   BreadcrumbItem,
   Split,
   SplitItem,
-  ToolbarItem,
-  Toolbar,
-  ToolbarContent,
 } from '@patternfly/react-core';
 import { InProgressIcon } from '@patternfly/react-icons';
 import reducers from '../../store/reducers';
@@ -38,14 +30,12 @@ import DescriptionList from '../Layouts/DescriptionList';
 import {
   getPlaybookRuns,
   getPlaybookRun,
-  getPlaybookRunSystems,
   getPlaybookRunSystemDetails,
   expandInventoryTable,
   loadRemediation,
 } from '../../actions';
 import { downloadPlaybook } from '../../api';
 import { normalizeStatus, StatusSummary } from '../statusHelper';
-import PlaybookSystemDetails from '../SystemDetails';
 import ExecutorDetailsSkeleton from '../../skeletons/ExecutorDetailsSkeleton';
 import RunFailed from '../Alerts/RunFailed';
 import './ExecutorDetails.scss';
@@ -53,50 +43,28 @@ import { PermissionContext } from '../../App';
 import { register } from '../../store';
 import { mergedColumns } from '../SystemsTable/helpers';
 import columns from './Columns';
+import { useGetEntities } from './helpers';
 
 let refreshInterval;
 
 const ExecutorDetails = ({
   remediation,
   playbookRun,
-  playbookRunSystems,
   playbookRunSystemDetails,
   getPlaybookRun,
-  getPlaybookRunSystems,
   getPlaybookRunSystemDetails,
   onCollapseInventory,
   loadRemediation,
 }) => {
   const { executor_id, run_id, id } = useParams();
   const [executor, setExecutor] = useState({});
-  const [systems, setSystems] = useState([]);
-  const [filter, setFilter] = useState('');
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(50);
   const [openId, setOpenId] = useState();
   const [firstExpand, setFirstExpand] = useState(false);
-  const [debouncedGetPlaybookRunSystems, setDebounce] = useState();
   const inventory = useRef(null);
-
-  const onRefresh = (options) => {
-    if (inventory && inventory.current) {
-      getPlaybookRunSystems(
-        id,
-        run_id,
-        executor_id,
-        options.per_page,
-        options.per_page * (options.page - 1)
-      );
-      setPage(options.page);
-      setPageSize(options.per_page);
-      inventory.current.onRefreshData(options);
-    }
-  };
 
   useEffect(() => {
     loadRemediation(id);
     getPlaybookRun(id, run_id);
-    setDebounce(() => AwesomeDebouncePromise(getPlaybookRunSystems, 500));
 
     return () => {
       if (refreshInterval) {
@@ -104,23 +72,13 @@ const ExecutorDetails = ({
       }
     };
   }, []);
+
   useEffect(() => {
     if (playbookRun && playbookRun.data) {
       setExecutor(
         playbookRun.data.executors.find(
           (executor) => executor.executor_id === executor_id
         ) || {}
-      );
-    }
-
-    if (playbookRunSystems.status !== 'pending') {
-      getPlaybookRunSystems(
-        id,
-        run_id,
-        executor_id,
-        pageSize,
-        pageSize * (page - 1),
-        filter
       );
     }
   }, [playbookRun]);
@@ -140,18 +98,8 @@ const ExecutorDetails = ({
     setFirstExpand(false);
   }, [playbookRunSystemDetails.status]);
 
-  useEffect(() => {
-    setSystems(() =>
-      playbookRunSystems.data.map(({ system_id, system_name, status }) => ({
-        id: system_id,
-        display_name: system_name,
-        status,
-        isOpen: openId === system_id,
-        children: <PlaybookSystemDetails systemId={system_id} />,
-      }))
-    );
-  }, [playbookRunSystems]);
-
+  const getEntites = useGetEntities({ id, run_id, executor_id, openId });
+  console.log(remediation, 'remediation');
   const renderInventorycard = (status) => (
     <Main>
       <Stack hasGutter>
@@ -171,12 +119,7 @@ const ExecutorDetails = ({
                   ),
                 })
               }
-              items={playbookRunSystems.status !== 'pending' ? systems : []}
-              isLoaded={playbookRunSystems.status !== 'pending'}
-              onRefresh={onRefresh}
-              page={page}
-              total={playbookRunSystems.meta.total}
-              perPage={pageSize}
+              getEntities={getEntites}
               hasCheckbox={false}
               expandable
               showTags
@@ -220,47 +163,19 @@ const ExecutorDetails = ({
                       onCollapseInventory(isOpen, id);
                     }
               }
-            >
-              <Toolbar>
-                <ToolbarContent>
-                  <ToolbarItem>
-                    <ConditionalFilter
-                      items={[
-                        {
-                          value: 'display_name',
-                          label: 'Name',
-                          filterValues: {
-                            placeholder: 'Filter by name',
-                            type: conditionalFilterType.text,
-                            value: filter,
-                            onChange: (e, selected) => {
-                              setFilter(selected);
-                              setPage(1);
-                              debouncedGetPlaybookRunSystems(
-                                id,
-                                run_id,
-                                executor_id,
-                                pageSize,
-                                0,
-                                selected
-                              );
-                            },
-                          },
-                        },
-                      ]}
-                    />
-                  </ToolbarItem>
-                  <ToolbarItem>
-                    <Button
-                      variant="secondary"
-                      onClick={() => downloadPlaybook(remediation.id)}
-                    >
-                      Download playbook
-                    </Button>
-                  </ToolbarItem>
-                </ToolbarContent>
-              </Toolbar>
-            </InventoryTable>
+              actionsConfig={{
+                actions: [
+                  <Button
+                    key="download-playbook"
+                    variant="secondary"
+                    onClick={() => downloadPlaybook([remediation.id])}
+                  >
+                    Download playbook
+                  </Button>,
+                ],
+              }}
+              hideFilters={{ all: true, name: false }}
+            />
           </CardBody>
         </Card>
       </Stack>
@@ -380,10 +295,8 @@ const ExecutorDetails = ({
 ExecutorDetails.propTypes = {
   remediation: PropTypes.object,
   playbookRun: PropTypes.object,
-  playbookRunSystems: PropTypes.object,
   playbookRunSystemDetails: PropTypes.object,
   getPlaybookRun: PropTypes.func,
-  getPlaybookRunSystems: PropTypes.func,
   getPlaybookRunSystemDetails: PropTypes.func,
   onCollapseInventory: PropTypes.func,
   loadRemediation: PropTypes.func,
@@ -397,37 +310,17 @@ const connected = connect(
   ({
     playbookRuns,
     playbookRun,
-    playbookRunSystems,
     playbookRunSystemDetails,
     selectedRemediation,
   }) => ({
     playbookRuns: playbookRuns.data,
     playbookRun,
     playbookRunSystemDetails,
-    playbookRunSystems,
     remediation: selectedRemediation.remediation,
   }),
   (dispatch) => ({
     getPlaybookRuns: (id) => dispatch(getPlaybookRuns(id)),
     getPlaybookRun: (id, runId) => dispatch(getPlaybookRun(id, runId)),
-    getPlaybookRunSystems: (
-      remediationId,
-      runId,
-      executorId,
-      limit,
-      offset,
-      ansibleHost
-    ) =>
-      dispatch(
-        getPlaybookRunSystems(
-          remediationId,
-          runId,
-          executorId,
-          limit,
-          offset,
-          ansibleHost
-        )
-      ),
     getPlaybookRunSystemDetails: (remediationId, runId, systemId) =>
       dispatch(getPlaybookRunSystemDetails(remediationId, runId, systemId)),
     onCollapseInventory: (isOpen, id) =>

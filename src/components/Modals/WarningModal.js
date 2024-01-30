@@ -1,6 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Modal, ModalVariant, Button, Title } from '@patternfly/react-core';
+import {
+  Modal,
+  ModalVariant,
+  Button,
+  Title,
+  Icon,
+} from '@patternfly/react-core';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import './WarningModal.scss';
 
@@ -12,10 +18,12 @@ export const WarningModal = ({ isOpen, onModalCancel, onConfirmCancel }) => (
         size="2xl"
         className="ins-c-modal__cancel-run-warning-header"
       >
-        <ExclamationTriangleIcon
+        <Icon
           size="md"
           className="ins-c-modal__cancel-run-warning-header--icon"
-        />
+        >
+          <ExclamationTriangleIcon />
+        </Icon>
         Cancel remediation process
       </Title>
     }

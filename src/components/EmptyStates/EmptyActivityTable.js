@@ -1,7 +1,15 @@
 import React from 'react';
 
-import { EmptyState, EmptyStateBody, Title } from '@patternfly/react-core';
-import { Table, TableHeader, TableBody } from '@patternfly/react-table';
+import {
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateHeader,
+} from '@patternfly/react-core';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+} from '@patternfly/react-table/deprecated';
 
 import './EmptyActivityTable.scss';
 
@@ -16,9 +24,7 @@ const EmptyActivityTable = () => (
           {
             title: (
               <EmptyState className="rem-c-activity-table__empty">
-                <Title headingLevel="h5" size="lg">
-                  No activity
-                </Title>
+                <EmptyStateHeader titleText="No activity" headingLevel="h5" />
                 <EmptyStateBody>
                   Execute this playbook to see a history and summary of the
                   activity.

@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import useNavigate from '@redhat-cloud-services/frontend-components-utilities/useInsightsNavigate';
 
+import { Button } from '@patternfly/react-core';
 import {
-  Button,
   Dropdown,
   DropdownPosition,
   KebabToggle,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/deprecated';
 import TextInputDialog from './Dialogs/TextInputDialog';
 import ConfirmationDialog from './ConfirmationDialog';
 import { deleteRemediation, patchRemediation } from '../actions';
@@ -81,9 +81,10 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
             Rename
           </Button>
           <Button
-            className=" rem-c-button__danger-link"
+            className="rem-c-button__danger-link"
             onClick={() => setDeleteDialogOpen(true)}
             variant="link"
+            isDanger
           >
             Delete
           </Button>

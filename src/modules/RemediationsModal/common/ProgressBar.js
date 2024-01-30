@@ -22,7 +22,7 @@ const ProgressBar = ({ percent, failed }) => {
 
   return (
     <Progress
-      id={'finished-create-remediation'}
+      data-testid={'finished-create-remediation'}
       value={percent}
       title={title}
       variant={variant}

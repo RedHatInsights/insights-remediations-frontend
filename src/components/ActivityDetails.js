@@ -24,7 +24,11 @@ import {
   SplitItem,
   Title,
 } from '@patternfly/react-core';
-import { Table, TableHeader, TableBody } from '@patternfly/react-table';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+} from '@patternfly/react-table/deprecated';
 import { InProgressIcon } from '@patternfly/react-icons';
 
 import DescriptionList from './Layouts/DescriptionList';

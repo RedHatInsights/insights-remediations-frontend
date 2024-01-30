@@ -12,8 +12,6 @@ import SkeletonTableToolbar from './SkeletonTableToolbar';
 import SkeletonTabs from './SkeletonTabs';
 
 import {
-  Dropdown,
-  KebabToggle,
   Stack,
   StackItem,
   Level,
@@ -26,6 +24,7 @@ import {
   Flex,
   FlexItem,
 } from '@patternfly/react-core';
+import { Dropdown, KebabToggle } from '@patternfly/react-core/deprecated';
 import { ChartDonutUtilization, ChartLabel } from '@patternfly/react-charts';
 
 import DescriptionList from '../components/Layouts/DescriptionList';

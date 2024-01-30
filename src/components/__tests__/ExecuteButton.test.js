@@ -1,9 +1,10 @@
 /* eslint-disable camelcase */
 import React from 'react';
-import { mount } from 'enzyme';
 import ExecuteButton from '../ExecuteButton';
-import toJson from 'enzyme-to-json';
 import * as api from '../../api';
+import { render, screen, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
 
 // eslint-disable-next-line no-import-assign
 api.downloadPlaybook = jest.fn();
@@ -36,33 +37,59 @@ const data = [
 ];
 
 describe('Execute button', () => {
-  test('fullfiled request', () => {
-    const tree = mount(
+  test('Renders execute button as disabled', async () => {
+    render(
+      <ExecuteButton
+        data={[]}
+        isDisabled={true}
+        remediationStatus={'pending'}
+        issueCount={1}
+        remediationId="id"
+        getConnectionStatus={() => null}
+      />
+    );
+
+    expect(
+      screen.getByRole('button', { 'aria-disabled': 'true' })
+    ).toHaveTextContent('Execute playbook');
+  });
+
+  test('Renders execute playbook button as enabled', () => {
+    render(
       <ExecuteButton
         data={data}
         isLoading
-        status={'fullfiled'}
+        remediationStatus={'fullfiled'}
         issueCount={1}
         remediationId="id"
         isDisabled={false}
         getConnectionStatus={() => null}
       />
     );
-    expect(toJson(tree)).toMatchSnapshot();
+
+    expect(
+      screen.getByRole('button', { 'aria-disabled': 'false' })
+    ).toHaveTextContent('Execute playbook');
   });
 
-  test('pending request', () => {
-    const tree = mount(
+  test('Opens execute modal on execute button click', async () => {
+    render(
       <ExecuteButton
-        data={[]}
+        data={data}
         isLoading
-        status={'pending'}
+        remediationStatus={'fullfiled'}
         issueCount={1}
         remediationId="id"
         isDisabled={false}
         getConnectionStatus={() => null}
       />
     );
-    expect(toJson(tree)).toMatchSnapshot();
+
+    expect(screen.queryByTestId('execute-button')).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByTestId('execute-button-enabled'));
+    await waitFor(() =>
+      expect(screen.getByTestId('execute-modal')).toBeVisible()
+    );
   });
 });

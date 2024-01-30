@@ -20,7 +20,8 @@ import FormRenderer from '@data-driven-forms/react-form-renderer/form-renderer';
 import Pf4FormTemplate from '@data-driven-forms/pf4-component-mapper/form-template';
 import schemaBuilder from './schema';
 import WizardMapper from '@data-driven-forms/pf4-component-mapper/wizard';
-import { Modal, Wizard } from '@patternfly/react-core';
+import { Modal } from '@patternfly/react-core';
+import { Wizard } from '@patternfly/react-core/deprecated';
 import TextField from '@data-driven-forms/pf4-component-mapper/text-field';
 import componentTypes from '@data-driven-forms/react-form-renderer/component-types';
 import SelectPlaybook from './steps/selectPlaybook';
@@ -132,7 +133,8 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
   const validatorMapper = {
     'validate-systems': () => (value) =>
       value &&
-      Object.values(value).filter((value) => typeof value !== undefined).length
+      Object.values(value).filter((value) => typeof value !== 'undefined')
+        .length
         ? undefined
         : 'At least one system must be selected. Actions must be associated to a system to be added to a playbook.',
   };

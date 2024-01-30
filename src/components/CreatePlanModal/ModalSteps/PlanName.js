@@ -26,7 +26,7 @@ class PlanName extends Component {
               isRequired
               type="text"
               value={value}
-              onChange={this.handleTextInputChange}
+              onChange={(_event, value) => this.handleTextInputChange(value)}
               placeholder="What do you want to call your grand plan?"
               aria-label="Name your plan"
               autoFocus

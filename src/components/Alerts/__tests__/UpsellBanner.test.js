@@ -1,25 +1,24 @@
 import React from 'react';
-import { shallow, mount } from 'enzyme';
-import toJson from 'enzyme-to-json';
 import UpsellBanner from '../UpsellBanner';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
 
 describe('UpsellBanner component', () => {
   it('should render', () => {
-    const wrapper = shallow(<UpsellBanner />);
-    expect(toJson(wrapper)).toMatchSnapshot();
+    render(<UpsellBanner />);
+    expect(screen.getByText('Put Insights into action')).toBeVisible();
+    expect(
+      screen.getByText(
+        'Enable push-button remediation across your hybrid cloud environment with Red Hat Satellite.'
+      )
+    ).toBeVisible();
   });
 
-  it('should call default prop', () => {
+  it('should click close', async () => {
     const mockCallBack = jest.fn();
-    const wrapper = mount(<UpsellBanner />);
-    wrapper.find('Button').simulate('click');
-    expect(mockCallBack.mock.results[0]).toBeUndefined();
-  });
-
-  it('should click close', () => {
-    const mockCallBack = jest.fn();
-    const wrapper = mount(<UpsellBanner onClose={mockCallBack} />);
-    wrapper.find('Button').simulate('click');
+    render(<UpsellBanner onClose={mockCallBack} />);
+    await userEvent.click(screen.getByTestId('upselBanner-close'));
     expect(mockCallBack.mock.calls.length).toEqual(1);
   });
 });

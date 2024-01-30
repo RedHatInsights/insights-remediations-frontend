@@ -8,6 +8,7 @@ import {
   SplitItem,
   Stack,
   StackItem,
+  Icon,
 } from '@patternfly/react-core';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import { pluralize } from '../statusHelper';
@@ -41,7 +42,9 @@ const RemoveSystemModal = ({
   >
     <Split hasGutter>
       <SplitItem>
-        <ExclamationTriangleIcon size="xl" className="ins-m-alert" />
+        <Icon size="xl" className="ins-m-alert" status="warning">
+          <ExclamationTriangleIcon />
+        </Icon>
       </SplitItem>
       <SplitItem isFilled>
         <Stack hasGutter>

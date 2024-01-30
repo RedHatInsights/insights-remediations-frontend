@@ -1,5 +1,5 @@
 import React from 'react';
-
+import PropTypes from 'prop-types';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -192,6 +192,16 @@ export const StatusSummary = ({
   }
 
   return statusBar;
+};
+
+StatusSummary.propTypes = {
+  executorStatus: PropTypes.string,
+  permission: PropTypes.object,
+  hasCancel: PropTypes.bool,
+  counts: PropTypes.object,
+  remediationName: PropTypes.string,
+  remediationId: PropTypes.string,
+  playbookId: PropTypes.string,
 };
 
 export const styledConnectionStatus = (status, isBeta) =>

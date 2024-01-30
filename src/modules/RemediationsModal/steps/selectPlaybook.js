@@ -169,7 +169,7 @@ const SelectPlaybook = (props) => {
           <GridItem sm={12} md={6} lg={4}>
             {existingRemediations && !isLoadingRemediation ? (
               <FormSelect
-                onChange={(val) => {
+                onChange={(_event, val) => {
                   setIsLoadingRemediation(true);
                   api.getRemediation(val).then((remediation) => {
                     setSelectedPlaybook(remediation);
@@ -187,6 +187,7 @@ const SelectPlaybook = (props) => {
                   [
                     <FormSelectOption
                       key="select-playbook-placeholder"
+                      data-testid="select-playbook-placeholder"
                       value=""
                       label="Select playbook"
                       isDisabled
@@ -204,7 +205,7 @@ const SelectPlaybook = (props) => {
                 )}
               </FormSelect>
             ) : (
-              <Skeleton size={SkeletonSize.lg} />
+              <Skeleton size={SkeletonSize.lg} data-testid="skeleton-loader" />
             )}
           </GridItem>
         </Grid>
@@ -231,7 +232,7 @@ const SelectPlaybook = (props) => {
               <TextInput
                 type="text"
                 value={newPlaybookName}
-                onChange={(val) => {
+                onChange={(_event, val) => {
                   setNewPlaybookName(val);
                   existingPlaybookSelected || input.onChange(val);
                 }}

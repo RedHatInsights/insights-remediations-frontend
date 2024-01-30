@@ -5,8 +5,9 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
-  Title,
   Bullseye,
+  EmptyStateHeader,
+  EmptyStateFooter,
 } from '@patternfly/react-core';
 import { WrenchIcon } from '@patternfly/react-icons';
 
@@ -15,24 +16,27 @@ import { WrenchIcon } from '@patternfly/react-icons';
 const NotConfigured = () => (
   <Bullseye>
     <EmptyState>
-      <EmptyStateIcon icon={WrenchIcon} />
-      <Title headingLevel="h5" size="lg">
-        Do more with Find it Fix it.
-      </Title>
+      <EmptyStateHeader
+        titleText="Do more with Find it Fix it."
+        icon={<EmptyStateIcon icon={WrenchIcon} />}
+        headingLevel="h5"
+      />
       <EmptyStateBody>
         Configure Cloud Connector to connect cloud.redhat.com with your
         Satellite instances and execute remediation across all regions,
         geographies, and Satellites in one place.
       </EmptyStateBody>
-      <Button
-        variant="link"
-        component="a"
-        ouiaId="learn-configure"
-        // eslint-disable-next-line max-len
-        href="https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html-single/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index"
-      >
-        Learn how to configure
-      </Button>
+      <EmptyStateFooter>
+        <Button
+          variant="link"
+          component="a"
+          ouiaId="learn-configure"
+          // eslint-disable-next-line max-len
+          href="https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html-single/using_cloud_connector_to_remediate_issues_across_your_red_hat_satellite_infrastructure/index"
+        >
+          Learn how to configure
+        </Button>
+      </EmptyStateFooter>
     </EmptyState>
   </Bullseye>
 );

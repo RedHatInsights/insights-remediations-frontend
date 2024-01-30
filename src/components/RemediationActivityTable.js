@@ -2,12 +2,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import Link from '@redhat-cloud-services/frontend-components/InsightsLink';
 import PropTypes from 'prop-types';
 
+import { expandable } from '@patternfly/react-table';
 import {
   Table,
   TableHeader,
   TableBody,
-  expandable,
-} from '@patternfly/react-table';
+} from '@patternfly/react-table/deprecated';
 
 import { DateFormat } from '@redhat-cloud-services/frontend-components/DateFormat';
 
