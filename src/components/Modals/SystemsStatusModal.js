@@ -132,9 +132,9 @@ export const SystemsStatusModal = ({
                       {
                         value: 'display_name',
                         label: 'Name',
+                        type: conditionalFilterType.text,
                         filterValues: {
                           placeholder: 'Search by name',
-                          type: conditionalFilterType.text,
                           value: filterText,
                           onChange: (e, selected) => setFilterText(selected),
                         },
