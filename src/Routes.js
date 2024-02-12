@@ -6,6 +6,8 @@ import AsyncComponent from '@redhat-cloud-services/frontend-components/AsyncComp
 import ErrorState from '@redhat-cloud-services/frontend-components/ErrorState';
 
 const INVENTORY_TOTAL_FETCH_URL = '/api/inventory/v1/hosts';
+const RHEL_ONLY_FILTER =
+  '?filter[system_profile][operating_system][RHEL][version][gte]=0';
 
 export const routes = {
   home: {
@@ -46,7 +48,9 @@ const RemediationRoutes = () => {
   useEffect(() => {
     try {
       axios
-        .get(`${INVENTORY_TOTAL_FETCH_URL}?page=1&per_page=1`)
+        .get(
+          `${INVENTORY_TOTAL_FETCH_URL}${RHEL_ONLY_FILTER}&page=1&per_page=1`
+        )
         .then(({ data }) => {
           setHasSystems(data.total > 0);
         });
@@ -55,7 +59,7 @@ const RemediationRoutes = () => {
     }
   }, [hasSystems]);
 
-  return !hasSystems ? (
+  return (
     <AsyncComponent
       appName="dashboard"
       module="./AppZeroState"
@@ -63,15 +67,18 @@ const RemediationRoutes = () => {
       ErrorComponent={<ErrorState />}
       app="Remediations"
       appId="remediation_zero_state"
-    />
-  ) : (
-    <Suspense fallback={<Spinner />}>
-      <Routes>
-        {Object.entries(routes).map(([key, { path, component: Component }]) => (
-          <Route key={key} path={path} element={<Component />} />
-        ))}
-      </Routes>
-    </Suspense>
+      customFetchResults={hasSystems}
+    >
+      <Suspense fallback={<Spinner />}>
+        <Routes>
+          {Object.entries(routes).map(
+            ([key, { path, component: Component }]) => (
+              <Route key={key} path={path} element={<Component />} />
+            )
+          )}
+        </Routes>
+      </Suspense>
+    </AsyncComponent>
   );
 };
 
