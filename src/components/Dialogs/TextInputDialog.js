@@ -7,9 +7,6 @@ import {
   Modal,
   TextInput,
   ModalVariant,
-  HelperText,
-  HelperTextItem,
-  FormHelperText,
 } from '@patternfly/react-core';
 
 export default function TextInputDialog(props) {
@@ -65,13 +62,6 @@ export default function TextInputDialog(props) {
           autoFocus
           isValid={valid}
         />
-        <FormHelperText>
-          <HelperText>
-            <HelperTextItem>
-              Include your middle name if you have one.
-            </HelperTextItem>
-          </HelperText>
-        </FormHelperText>
       </FormGroup>
     </Modal>
   );
