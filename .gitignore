@@ -28,3 +28,6 @@ codecov*
 reports
 
 jest-coverage
+
+#cache
+.cache/

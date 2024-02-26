@@ -3,11 +3,12 @@ const { resolve } = require('path');
 module.exports = {
   appUrl: '/insights/remediations',
   debug: true,
-  useProxy: true,
+  useProxy: process.env.PROXY === 'true',
   proxyVerbose: true,
   interceptChromeConfig: false,
   plugins: [],
   hotReload: process.env.HOT === 'true',
+  ...(process.env.port ? { port: parseInt(process.env.port) } : {}),
   moduleFederation: {
     exclude: ['react-router-dom'],
     shared: [
