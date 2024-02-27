@@ -116,7 +116,6 @@
   },
   "scripts": {
     "build": "fec build",
-    "build:prod": "NODE_ENV=production webpack --config config/prod.webpack.config.js",
     "test:jest": "jest --env=jsdom",
     "test": "TZ=UTC jest --verbose --no-cache",
     "lint": "npm-run-all lint:*",
@@ -126,8 +125,7 @@
     "server:ctr": "node src/server/generateServerKey.js",
     "start": "PROXY=true HOT=true fec dev",
     "start:linking": "PROXY=false port=8003 HOT=true fec dev",
-    "travis:build": "NODE_ENV=production webpack --config config/test.webpack.config.js",
-    "travis:verify": "npm-run-all build:prod lint test:ct",
+    "travis:verify": "npm-run-all build lint test:ct",
     "verify": "npm-run-all build lint test:jest",
     "nightly": "npm run travis:verify:ct",
     "test:ct": "BABEL_ENV=componentTest cypress run --component",
