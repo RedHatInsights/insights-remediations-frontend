@@ -39,11 +39,6 @@ If you want to run advisor and for instance vulnerability just add new entry to 
 LOCAL_API=advisor:8003~https,vulnerability:8004
 ```
 
-If you want to make remediation app ready for linking to other applications run:
-```
-npm run start:linking
-```
-
 ### Testing
 
 Run `npm run verify` to run build, linters and tests
