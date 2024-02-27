@@ -115,7 +115,7 @@
     "webpack-cli": "^4.7.2"
   },
   "scripts": {
-    "build": "webpack --config config/prod.webpack.config.js",
+    "build": "fec build",
     "build:prod": "NODE_ENV=production webpack --config config/prod.webpack.config.js",
     "test:jest": "jest --env=jsdom",
     "test": "TZ=UTC jest --verbose --no-cache",
