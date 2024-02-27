@@ -7,7 +7,7 @@ module.exports = {
   proxyVerbose: true,
   interceptChromeConfig: false,
   plugins: [],
-  hotReload: process.env.HOT === 'true',
+  hotReload: true,
   ...(process.env.port ? { port: parseInt(process.env.port) } : {}),
   moduleFederation: {
     exclude: ['react-router-dom'],
