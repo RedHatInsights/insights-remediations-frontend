@@ -4,7 +4,7 @@
   "private": false,
   "repository": "https://github.com/RedHatInsights/insights-remediations-frontend",
   "engines": {
-    "node": ">=15.0.0",
+    "node": ">=16.0.0",
     "npm": ">=7.0.0"
   },
   "dependencies": {
@@ -125,7 +125,7 @@
     "server:ctr": "node src/server/generateServerKey.js",
     "start": "fec dev",
     "start:proxy": "PROXY=true fec dev",
-    "travis:verify": "npm-run-all build lint test:ct",
+    "travis:verify": "npm-run-all build test:ct",
     "verify": "npm-run-all build lint test:jest",
     "nightly": "npm run travis:verify:ct",
     "test:ct": "BABEL_ENV=componentTest cypress run --component",
