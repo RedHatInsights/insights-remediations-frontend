@@ -81,13 +81,12 @@ export const SystemsStatusModal = ({
       <Modal
         className="remediations"
         variant={ModalVariant.large}
-        title={`System${issue.systems.length > 1 ? 's' : ''} for action ${
-          issue.description
-        }`}
+        title={`System${issue.systems.length > 1 ? 's' : ''} for action`}
         isOpen={isOpen}
         onClose={onClose}
         isFooterLeftAligned
       >
+        <b>Action:</b> {issue.description}
         <div className="rem-c-toolbar__filter">
           <InventoryTable
             onLoad={({ mergeWithEntities, INVENTORY_ACTION_TYPES }) =>
