@@ -9,9 +9,7 @@ module.exports = {
   ],
   env: {
     componentTest: {
-      plugins: [
-        'istanbul'
-      ]
-    }
-  }
+      plugins: ['istanbul'],
+    },
+  },
 };
