@@ -15,6 +15,7 @@ const RemediationButton = ({
   dataProvider,
   onRemediationCreated,
   buttonProps,
+  patchNoAdvisoryText,
 }) => {
   const [hasPermissions, setHasPermissions] = useState(false);
   const [remediationsData, setRemediationsData] = useState();
@@ -67,7 +68,11 @@ const RemediationButton = ({
       >
         {children}
       </Button>
-      <NoDataModal isOpen={isNoDataModalOpen} setOpen={setNoDataModalOpen} />
+      <NoDataModal
+        isOpen={isNoDataModalOpen}
+        setOpen={setNoDataModalOpen}
+        patchNoAdvisoryText={patchNoAdvisoryText}
+      />
       {remediationsData && (
         <RemediationWizard
           setOpen={(isOpen) =>
@@ -93,6 +98,7 @@ RemediationButton.propTypes = {
   buttonProps: propTypes.shape({
     [propTypes.string]: propTypes.any,
   }),
+  patchNoAdvisoryText: propTypes.string,
 };
 
 RemediationButton.defaultProps = {

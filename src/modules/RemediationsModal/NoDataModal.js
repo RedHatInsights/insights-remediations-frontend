@@ -2,7 +2,7 @@ import React from 'react';
 import propTypes from 'prop-types';
 import { Button, Modal, ModalVariant } from '@patternfly/react-core';
 
-export const NoDataModal = ({ isOpen, setOpen }) => {
+export const NoDataModal = ({ isOpen, setOpen, patchNoAdvisoryText }) => {
   return (
     <Modal
       variant={ModalVariant.small}
@@ -15,11 +15,17 @@ export const NoDataModal = ({ isOpen, setOpen }) => {
         </Button>,
       ]}
     >
-      None of the selected issues can be remediated with Ansible.
-      <br />
-      <br />
-      To remediate these issues, review the manual remediation steps associated
-      with each.
+      {patchNoAdvisoryText ? (
+        patchNoAdvisoryText
+      ) : (
+        <>
+          None of the selected issues can be remediated with Ansible.
+          <br />
+          <br />
+          To remediate these issues, review the manual remediation steps
+          associated with each.
+        </>
+      )}
     </Modal>
   );
 };
@@ -27,6 +33,7 @@ export const NoDataModal = ({ isOpen, setOpen }) => {
 NoDataModal.propTypes = {
   isOpen: propTypes.bool,
   setOpen: propTypes.func,
+  patchNoAdvisoryText: propTypes.string,
 };
 
 export default NoDataModal;
