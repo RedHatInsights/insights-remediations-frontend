@@ -210,13 +210,13 @@ export const submitRemediation = (formValues, data, basePath, setState) => {
 
   const add = { issues, systems: [] };
 
-  const { id } = formValues[EXISTING_PLAYBOOK] || {};
+  const { id: existing_id } = formValues[EXISTING_PLAYBOOK] || {};
   const isUpdate = formValues[EXISTING_PLAYBOOK_SELECTED];
 
   (
     (isUpdate &&
       api.patchRemediation(
-        id,
+        existing_id,
         { add, auto_reboot: formValues[AUTO_REBOOT] },
         basePath
       )) ||
@@ -229,12 +229,18 @@ export const submitRemediation = (formValues, data, basePath, setState) => {
       basePath
     )
   )
+    // watch out, id is only returned from createRemediation endpoint,
+    // not patchRemediation, thus we use existing_id as well
     .then(({ id }) => {
-      setState({ id, percent: 100 });
+      setState({ id: id ?? existing_id, percent: 100 });
       data?.onRemediationCreated?.({
         remediation: { id, name },
         getNotification: () =>
-          createNotification(id, formValues[SELECT_PLAYBOOK], !isUpdate),
+          createNotification(
+            id ?? existing_id,
+            formValues[SELECT_PLAYBOOK],
+            !isUpdate
+          ),
       });
     })
     .catch(() => {
