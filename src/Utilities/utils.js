@@ -230,9 +230,9 @@ export const submitRemediation = (formValues, data, basePath, setState) => {
     )
   )
     // watch out, id is only returned from createRemediation endpoint,
-    // not patchRemediation
+    // not patchRemediation, thus we use existing_id as well
     .then(({ id }) => {
-      setState({ id, percent: 100 });
+      setState({ id: id ?? existing_id, percent: 100 });
       data?.onRemediationCreated?.({
         remediation: { id, name },
         getNotification: () =>
