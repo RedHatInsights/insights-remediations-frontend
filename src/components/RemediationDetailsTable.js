@@ -273,7 +273,7 @@ function RemediationDetailsTable(props) {
                   dismissable: true,
                   autoDismiss: true,
                 });
-                selector.reset;
+                selector.reset();
               }}
               isBeta={chrome?.isBeta?.()}
             />,
