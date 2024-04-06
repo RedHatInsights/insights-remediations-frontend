@@ -104,13 +104,12 @@ describe('Review', () => {
       </Provider>
     );
 
-    expect(screen.getByTestId('autoreboot-button')).toHaveTextContent(
-      'Turn off autoreboot'
-    );
-    await userEvent.click(screen.getByTestId('autoreboot-button'));
-    expect(screen.getByTestId('autoreboot-button')).toHaveTextContent(
-      'Turn on autoreboot'
-    );
+    const autoreboot_switch = screen.getByTestId('autoreboot-switch');
+    expect(autoreboot_switch).toBeChecked();
+    expect(autoreboot_switch).toHaveAccessibleName('Turn off autoreboot');
+    await userEvent.click(autoreboot_switch);
+    expect(autoreboot_switch).not.toBeChecked();
+    expect(autoreboot_switch).toHaveAccessibleName('Turn on autoreboot');
   });
 
   it('should sort records correctly', async () => {
