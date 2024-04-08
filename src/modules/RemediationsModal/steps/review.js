@@ -10,11 +10,11 @@ import {
 } from '@patternfly/react-table/deprecated';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import {
-  Button,
   Text,
   TextContent,
   Stack,
   StackItem,
+  Switch,
 } from '@patternfly/react-core';
 import {
   buildRows,
@@ -125,14 +125,13 @@ const Review = (props) => {
         </TextContent>
       </StackItem>
       <StackItem>
-        <Button
-          data-testid="autoreboot-button"
-          variant="link"
-          isInline
-          onClick={() => input.onChange(!input.value)}
-        >
-          Turn {input.value ? 'off' : 'on'} autoreboot
-        </Button>
+        <Switch
+          data-testid="autoreboot-switch"
+          label="Turn off autoreboot"
+          labelOff="Turn on autoreboot"
+          isChecked={input.value}
+          onChange={() => input.onChange(!input.value)}
+        />
       </StackItem>
       <Table
         aria-label="Actions"
