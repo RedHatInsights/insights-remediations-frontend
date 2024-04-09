@@ -56,6 +56,7 @@ const PlaybookCardHeader = ({
   getConnectionStatus,
   downloadPlaybook,
   permission,
+  showArchived,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isArchived, setIsArchived] = useState(archived);
@@ -66,6 +67,12 @@ const PlaybookCardHeader = ({
     actionWrapper(
       [patchRemediation(remediation.id, { archived: !isArchived })],
       () => {
+        if (
+          selector.getSelectedIds().includes(remediation.id) &&
+          !showArchived
+        ) {
+          selector.props.onSelect(undefined, false, remediationIdx);
+        }
         setIsArchived(!isArchived);
         update(true);
       },
@@ -217,6 +224,7 @@ PlaybookCardHeader.propTypes = {
   getConnectionStatus: PropTypes.func.isRequired,
   downloadPlaybook: PropTypes.func.isRequired,
   permission: PropTypes.object.isRequired,
+  showArchived: PropTypes.bool.isRequired,
 };
 
 const renderActionStatus = (complete, total) => {
@@ -264,6 +272,7 @@ export const PlaybookCard = ({
   getConnectionStatus,
   downloadPlaybook,
   permission,
+  showArchived,
 }) => {
   // const [ poll, setPoll ] = useState(executeOpen => !executeOpen);
   // const [ curResolved, setCurResolved ] = useState(remediation.resolved_count);
@@ -313,6 +322,7 @@ export const PlaybookCard = ({
         getConnectionStatus={getConnectionStatus}
         downloadPlaybook={downloadPlaybook}
         permission={permission}
+        showArchived={showArchived}
       />
       <CardBody className="rem-c-playbook-card__body">
         <Split hasGutter className="rem-c-playbook-card__body--split">
@@ -356,10 +366,11 @@ PlaybookCard.propTypes = {
   archived: PropTypes.bool.isRequired,
   selector: PropTypes.object.isRequired,
   setExecuteOpen: PropTypes.func.isRequired,
-  executeOpen: PropTypes.bool.isRequired,
+  //executeOpen: PropTypes.bool.isRequired,
   update: PropTypes.func.isRequired,
   loadRemediation: PropTypes.func.isRequired,
   getConnectionStatus: PropTypes.func.isRequired,
   downloadPlaybook: PropTypes.func.isRequired,
   permission: PropTypes.object.isRequired,
+  showArchived: PropTypes.bool.isRequired,
 };

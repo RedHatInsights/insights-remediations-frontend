@@ -4,7 +4,11 @@ import { enableFetchMocks } from 'jest-fetch-mock';
 enableFetchMocks();
 
 jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
-  useChrome: () => null,
+  useChrome: () => ({
+    isBeta: jest.fn(),
+    chrome: jest.fn(),
+    updateDocumentTitle: jest.fn(),
+  }),
 }));
 
 global.React = React;

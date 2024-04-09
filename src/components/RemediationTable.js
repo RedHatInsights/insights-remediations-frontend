@@ -182,6 +182,7 @@ function RemediationTable({
                     getConnectionStatus={getConnectionStatus}
                     downloadPlaybook={downloadPlaybook}
                     permission={permission}
+                    showArchived={showArchived}
                   />
                 </GridItem>
               );
