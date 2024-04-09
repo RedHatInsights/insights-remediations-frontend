@@ -99,7 +99,6 @@ const ExecutorDetails = ({
   }, [playbookRunSystemDetails.status]);
 
   const getEntites = useGetEntities({ id, run_id, executor_id, openId });
-  console.log(remediation, 'remediation');
   const renderInventorycard = (status) => (
     <Main>
       <Stack hasGutter>
