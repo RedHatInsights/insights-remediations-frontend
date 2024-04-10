@@ -2,15 +2,15 @@
 import React, { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
-import { Button, Tooltip } from '@patternfly/react-core';
+import { Button, Flex, Spinner, Title, Tooltip } from '@patternfly/react-core';
 import { ExecuteModal } from './Modals/ExecuteModal';
 import './ExecuteButton.scss';
 import './Status.scss';
+import { CheckIcon, TimesIcon } from '@patternfly/react-icons';
 
 const ExecuteButton = ({
   isLoading,
   isDisabled,
-  disabledStateText,
   data,
   getConnectionStatus,
   remediationId,
@@ -20,10 +20,13 @@ const ExecuteButton = ({
   etag,
   remediationStatus,
   setEtag,
+  connectionDetails,
+  areDetailsLoading,
+  detailsError,
+  permissions,
 }) => {
   const [open, setOpen] = useState(false);
   const [showRefreshMessage, setShowRefreshMessage] = useState(false);
-
   const isEnabled = () =>
     true || localStorage.getItem('remediations:fifi:debug') === 'true';
 
@@ -36,11 +39,74 @@ const ExecuteButton = ({
     }
   }, [remediationStatus]);
 
-  const buttonWithTooltip = () => {
-    return isDisabled ? (
-      <Tooltip content={disabledStateText} position="auto">
+  const disabledButton = () => {
+    return (
+      <Tooltip
+        minWidth="400px"
+        aria-label="details Tooltip"
+        content={
+          <>
+            <Flex
+              className="pf-v5-u-ml-md"
+              direction={{ default: 'column' }}
+              spaceItems={{ default: 'spaceItemsNone' }}
+              alignItems={{ default: 'alignItemsFlexStart' }}
+            >
+              <Title headingLevel="h6" className="pf-v5-u-mb-md">
+                Remediations Readiness Check
+              </Title>
+
+              <span className="pf-v5-u-font-size-sm">
+                {connectionDetails?.system_count === 4 ? (
+                  <CheckIcon className="pf-v5-u-mr-sm" />
+                ) : (
+                  <TimesIcon className="pf-v5-u-mr-sm" />
+                )}
+                Connected Systems ({connectionDetails?.system_count}/4). See
+                systems tab.
+              </span>
+
+              <span className="pf-v5-u-font-size-sm">
+                {detailsError ? (
+                  <TimesIcon className="pf-v5-u-mr-sm" />
+                ) : (
+                  <CheckIcon className="pf-v5-u-mr-sm" />
+                )}
+                <a
+                  href="https://console.redhat.com/insights/connector"
+                  style={{ textDecoration: 'underline', color: 'white' }}
+                >
+                  RHC manager
+                </a>
+                is {detailsError ? 'disabled' : 'enabled'}.
+              </span>
+
+              <span className="pf-v5-u-font-size-sm pf-v5-u-mb-sm">
+                {permissions ? (
+                  <CheckIcon className="pf-v5-u-mr-sm" />
+                ) : (
+                  <TimesIcon className="pf-v5-u-mr-sm" />
+                )}
+                <a
+                  href="https://console.redhat.com/iam/user-access/overview"
+                  style={{ textDecoration: 'underline', color: 'white' }}
+                >
+                  User access permissions
+                </a>
+                are {permissions ? '' : 'not'} granted.
+              </span>
+            </Flex>
+          </>
+        }
+      >
         <Button isAriaDisabled>Execute playbook</Button>
       </Tooltip>
+    );
+  };
+
+  const buttonWithTooltip = () => {
+    return isDisabled ? (
+      disabledButton()
     ) : (
       <Button
         data-testid="execute-button-enabled"
@@ -54,7 +120,7 @@ const ExecuteButton = ({
     );
   };
 
-  return isEnabled() ? (
+  return isEnabled() && !areDetailsLoading ? (
     <React.Fragment>
       {buttonWithTooltip()}
       {open && (
@@ -76,6 +142,8 @@ const ExecuteButton = ({
         />
       )}
     </React.Fragment>
+  ) : areDetailsLoading ? (
+    <Spinner size="lg" />
   ) : null;
 };
 
@@ -92,6 +160,10 @@ ExecuteButton.propTypes = {
   setEtag: PropTypes.func,
   isDisabled: PropTypes.bool,
   disabledStateText: PropTypes.string,
+  connectionDetails: PropTypes.object,
+  areDetailsLoading: PropTypes.bool,
+  detailsError: PropTypes.any,
+  permissions: PropTypes.bool,
 };
 
 ExecuteButton.defaultProps = {
