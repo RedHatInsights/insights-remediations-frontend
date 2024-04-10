@@ -67,7 +67,7 @@ const ExecuteButton = ({
               </span>
 
               <span className="pf-v5-u-font-size-sm">
-                {detailsError ? (
+                {detailsError === 403 ? (
                   <TimesIcon className="pf-v5-u-mr-sm" />
                 ) : (
                   <CheckIcon className="pf-v5-u-mr-sm" />
@@ -78,7 +78,7 @@ const ExecuteButton = ({
                 >
                   RHC manager
                 </a>
-                is {detailsError ? 'disabled' : 'enabled'}.
+                is {detailsError === 403 ? 'disabled' : 'enabled'}.
               </span>
 
               <span className="pf-v5-u-font-size-sm pf-v5-u-mb-sm">

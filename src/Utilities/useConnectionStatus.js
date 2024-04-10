@@ -27,7 +27,7 @@ export const useConnectionStatus = (remediation) => {
         setAreDetailsLoading(false);
       } catch (error) {
         console.error(error);
-        setDetailsError(error);
+        setDetailsError(error.errors[0].status);
       }
     };
 
