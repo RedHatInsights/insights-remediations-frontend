@@ -5,6 +5,9 @@ import { useState, useEffect, useRef } from 'react';
 export const useConnectionStatus = (remediation) => {
   const axios = useAxiosWithPlatformInterceptors();
   const [isConnected, setisConnected] = useState();
+  const [areDetailsLoading, setAreDetailsLoading] = useState(true);
+  const [connectionDetails, setConnectionDetails] = useState();
+  const [detailsError, setDetailsError] = useState();
   const mounted = useRef(false);
 
   useEffect(() => {
@@ -20,8 +23,11 @@ export const useConnectionStatus = (remediation) => {
           setisConnected(
             connection_status.data?.[0].connection_status === 'connected'
           );
+        setConnectionDetails(connection_status.data[0]);
+        setAreDetailsLoading(false);
       } catch (error) {
         console.error(error);
+        setDetailsError(error.errors[0].status);
       }
     };
 
@@ -31,5 +37,5 @@ export const useConnectionStatus = (remediation) => {
     };
   }, [remediation]);
 
-  return isConnected;
+  return [isConnected, connectionDetails, areDetailsLoading, detailsError];
 };

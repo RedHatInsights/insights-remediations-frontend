@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import Link from '@redhat-cloud-services/frontend-components/InsightsLink';
 import useNavigate from '@redhat-cloud-services/frontend-components-utilities/useInsightsNavigate';
 import { useSearchParams, useParams } from 'react-router-dom';
@@ -67,7 +67,7 @@ const RemediationDetails = ({
   const { id } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { isFedramp, isBeta, isOrgAdmin = () => false } = chrome;
+  const { isFedramp, isBeta } = chrome;
   const context = useContext(PermissionContext);
 
   const [upsellBannerVisible, setUpsellBannerVisible] = useState(
@@ -92,26 +92,6 @@ const RemediationDetails = ({
       ...Object.fromEntries(searchParams),
       activeTab: tabName,
     });
-
-  const disabledStateText = useMemo(() => {
-    if (!context.permissions.execute) {
-      if (isOrgAdmin()) {
-        return (
-          'Executing the playbook requires having the remediations:remediation:execute permission' +
-          ' which is included in the Remediations administrator role. Manage your roles in User access.'
-        );
-      } else {
-        return (
-          'Executing the playbook requires having the remediations:remediation:execute permission' +
-          ' which is included in the Remediations administrator role. Contact your Organization Administrator for access.'
-        );
-      }
-    } else if (!executable) {
-      return 'Your account must be entitled to Satellite to execute playbooks.';
-    }
-
-    return 'Unable to execute playbook.';
-  }, [chrome]);
 
   useEffect(() => {
     loadRemediation(id).catch((e) => {
@@ -170,7 +150,8 @@ const RemediationDetails = ({
 
   const { status, remediation } = selectedRemediation;
 
-  const isConnected = useConnectionStatus(remediation);
+  const [isConnected, connectionDetails, areDetailsLoading, detailsError] =
+    useConnectionStatus(remediation);
 
   useEffect(() => {
     remediation &&
@@ -213,9 +194,12 @@ const RemediationDetails = ({
                       !executable ||
                       isFedramp
                     }
-                    disabledStateText={disabledStateText}
                     remediationId={remediation.id}
                     remediationName={remediation.name}
+                    connectionDetails={connectionDetails}
+                    areDetailsLoading={areDetailsLoading}
+                    detailsError={detailsError}
+                    permissions={context.permissions.execute}
                   ></ExecutePlaybookButton>
                 </SplitItem>
                 <SplitItem>
