@@ -36,6 +36,7 @@ import './RemediationDetailsTable.scss';
 import { PermissionContext } from '../App';
 import { EmptyActions } from './EmptyStates/EmptyActions';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
+import { getResolvedSystems } from '../Utilities/utils';
 
 function resolutionDescriptionCell(remediation, issue) {
   const url = buildIssueUrl(issue.id);
@@ -86,16 +87,6 @@ function systemsForAction(issue, remediation, title) {
       title={title}
     />
   );
-}
-
-export function getResolvedSystems(issue) {
-  let count = 0;
-  issue.systems.map((system) => {
-    if (system.resolved) {
-      count++;
-    }
-  });
-  return count;
 }
 
 const SORTING_ITERATEES = [

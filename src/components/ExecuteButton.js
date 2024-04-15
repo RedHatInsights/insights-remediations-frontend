@@ -7,7 +7,7 @@ import { ExecuteModal } from './Modals/ExecuteModal';
 import './ExecuteButton.scss';
 import './Status.scss';
 import { CheckIcon, TimesIcon } from '@patternfly/react-icons';
-import { getResolvedSystems } from './RemediationDetailsTable';
+import { getResolvedSystems } from '../Utilities/utils';
 
 const ExecuteButton = ({
   isLoading,
