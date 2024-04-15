@@ -7,14 +7,13 @@ import { ExecuteModal } from './Modals/ExecuteModal';
 import './ExecuteButton.scss';
 import './Status.scss';
 import { CheckIcon, TimesIcon } from '@patternfly/react-icons';
+import { getResolvedSystems } from './RemediationDetailsTable';
 
 const ExecuteButton = ({
   isLoading,
   isDisabled,
   data,
   getConnectionStatus,
-  remediationId,
-  remediationName,
   issueCount,
   runRemediation,
   etag,
@@ -24,6 +23,7 @@ const ExecuteButton = ({
   areDetailsLoading,
   detailsError,
   permissions,
+  remediation,
 }) => {
   const [open, setOpen] = useState(false);
   const [showRefreshMessage, setShowRefreshMessage] = useState(false);
@@ -32,7 +32,7 @@ const ExecuteButton = ({
 
   useEffect(() => {
     if (remediationStatus === 'changed') {
-      getConnectionStatus(remediationId);
+      getConnectionStatus(remediation.id);
       setShowRefreshMessage(true);
     } else if (remediationStatus === 'fulfilled') {
       setOpen(false);
@@ -62,8 +62,13 @@ const ExecuteButton = ({
                 ) : (
                   <TimesIcon className="pf-v5-u-mr-sm" />
                 )}
-                Connected Systems ({connectionDetails?.system_count}/4). See
-                systems tab.
+                Connected Systems (
+                {`${
+                  getResolvedSystems(remediation.issues[0]) +
+                  '/' +
+                  remediation.issues[0].systems.length
+                }`}
+                ). See systems tab.
               </span>
 
               <span className="pf-v5-u-font-size-sm">
@@ -75,6 +80,7 @@ const ExecuteButton = ({
                 <a
                   href="https://console.redhat.com/insights/connector"
                   style={{ textDecoration: 'underline', color: 'white' }}
+                  className="pf-v5-u-mr-xs"
                 >
                   RHC manager
                 </a>
@@ -90,6 +96,7 @@ const ExecuteButton = ({
                 <a
                   href="https://console.redhat.com/iam/user-access/overview"
                   style={{ textDecoration: 'underline', color: 'white' }}
+                  className="pf-v5-u-mr-xs"
                 >
                   User access permissions
                 </a>
@@ -112,7 +119,7 @@ const ExecuteButton = ({
         data-testid="execute-button-enabled"
         onClick={() => {
           setOpen(true);
-          getConnectionStatus(remediationId);
+          getConnectionStatus(remediation.id);
         }}
       >
         Execute playbook
@@ -131,8 +138,8 @@ const ExecuteButton = ({
             setOpen(false);
           }}
           showRefresh={showRefreshMessage}
-          remediationId={remediationId}
-          remediationName={remediationName}
+          remediationId={remediation.id}
+          remediationName={remediation.name}
           data={data}
           etag={etag}
           isLoading={isLoading}
@@ -152,8 +159,7 @@ ExecuteButton.propTypes = {
   data: PropTypes.array,
   getConnectionStatus: PropTypes.func,
   runRemediation: PropTypes.func,
-  remediationId: PropTypes.string,
-  remediationName: PropTypes.string,
+  remediation: PropTypes.string,
   remediationStatus: PropTypes.string,
   issueCount: PropTypes.number,
   etag: PropTypes.string,

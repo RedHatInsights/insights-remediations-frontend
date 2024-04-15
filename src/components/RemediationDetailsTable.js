@@ -88,7 +88,7 @@ function systemsForAction(issue, remediation, title) {
   );
 }
 
-function getResolvedSystems(issue) {
+export function getResolvedSystems(issue) {
   let count = 0;
   issue.systems.map((system) => {
     if (system.resolved) {

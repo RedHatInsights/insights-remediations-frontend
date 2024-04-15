@@ -14,24 +14,22 @@ export const useConnectionStatus = (remediation) => {
     mounted.current = true;
     const fetchData = async () => {
       try {
-        const connection_status =
-          remediation &&
-          (await axios.get(
-            `${API_BASE}/remediations/${remediation.id}/connection_status`
-          ));
+        const connection_status = await axios.get(
+          `${API_BASE}/remediations/${remediation.id}/connection_status`
+        );
         mounted.current &&
           setisConnected(
             connection_status.data?.[0].connection_status === 'connected'
           );
         setConnectionDetails(connection_status.data[0]);
-        setAreDetailsLoading(false);
       } catch (error) {
         console.error(error);
         setDetailsError(error.errors[0].status);
       }
+      setAreDetailsLoading(false);
     };
 
-    fetchData();
+    remediation && fetchData();
     return () => {
       mounted.current = false;
     };
