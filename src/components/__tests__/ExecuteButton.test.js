@@ -44,7 +44,21 @@ describe('Execute button', () => {
         isDisabled={true}
         remediationStatus={'pending'}
         issueCount={1}
-        remediationId="id"
+        remediation={{
+          id: 'id',
+          issues: [
+            {
+              systems: [
+                {
+                  display_name: 'test',
+                  hostname: 'test2',
+                  id: 'id',
+                  resolved: false,
+                },
+              ],
+            },
+          ],
+        }}
         getConnectionStatus={() => null}
       />
     );
@@ -61,7 +75,21 @@ describe('Execute button', () => {
         isLoading
         remediationStatus={'fullfiled'}
         issueCount={1}
-        remediationId="id"
+        remediation={{
+          id: 'id',
+          issues: [
+            {
+              systems: [
+                {
+                  display_name: 'test',
+                  hostname: 'test2',
+                  id: 'id',
+                  resolved: false,
+                },
+              ],
+            },
+          ],
+        }}
         isDisabled={false}
         getConnectionStatus={() => null}
       />
@@ -79,7 +107,21 @@ describe('Execute button', () => {
         isLoading
         remediationStatus={'fullfiled'}
         issueCount={1}
-        remediationId="id"
+        remediation={{
+          id: 'id',
+          issues: [
+            {
+              systems: [
+                {
+                  display_name: 'test',
+                  hostname: 'test2',
+                  id: 'id',
+                  resolved: false,
+                },
+              ],
+            },
+          ],
+        }}
         isDisabled={false}
         getConnectionStatus={() => null}
       />

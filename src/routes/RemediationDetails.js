@@ -194,12 +194,11 @@ const RemediationDetails = ({
                       !executable ||
                       isFedramp
                     }
-                    remediationId={remediation.id}
-                    remediationName={remediation.name}
                     connectionDetails={connectionDetails}
                     areDetailsLoading={areDetailsLoading}
                     detailsError={detailsError}
                     permissions={context.permissions.execute}
+                    remediation={remediation}
                   ></ExecutePlaybookButton>
                 </SplitItem>
                 <SplitItem>

@@ -442,3 +442,13 @@ export const matchPermissions = (permissionA, permissionB) => {
       segmentsB[index] === '*'
   );
 };
+
+export const getResolvedSystems = (issue) => {
+  let count = 0;
+  issue.systems.map((system) => {
+    if (system.resolved) {
+      count++;
+    }
+  });
+  return count;
+};
