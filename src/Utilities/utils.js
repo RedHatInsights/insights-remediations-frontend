@@ -350,7 +350,16 @@ export const fetchSystemsInfo = async (
   );
   const data =
     sliced.length > 0
-      ? await getEntities(sliced, { ...config, hasItems: true, page: 1 }, true)
+      ? await getEntities(
+          sliced,
+          {
+            ...config,
+            fields: { system_profile: ['operating_system', 'bootc_status'] },
+            hasItems: true,
+            page: 1,
+          },
+          true
+        )
       : {};
   return {
     ...{
