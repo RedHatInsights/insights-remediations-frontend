@@ -150,7 +150,7 @@ const RemediationDetails = ({
 
   const { status, remediation } = selectedRemediation;
 
-  const [isConnected, connectionDetails, areDetailsLoading, detailsError] =
+  const [connectedSystems, totalSystems, areDetailsLoading, detailsError] =
     useConnectionStatus(remediation);
 
   useEffect(() => {
@@ -189,12 +189,13 @@ const RemediationDetails = ({
                 <SplitItem>
                   <ExecutePlaybookButton
                     isDisabled={
-                      !isConnected ||
+                      connectedSystems === 0 ||
                       !context.permissions.execute ||
                       !executable ||
                       isFedramp
                     }
-                    connectionDetails={connectionDetails}
+                    connectedSystems={connectedSystems}
+                    totalSystems={totalSystems}
                     areDetailsLoading={areDetailsLoading}
                     detailsError={detailsError}
                     permissions={context.permissions.execute}
