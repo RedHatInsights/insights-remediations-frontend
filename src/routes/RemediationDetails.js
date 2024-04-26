@@ -50,6 +50,7 @@ import NoReceptorBanner from '../components/Alerts/NoReceptorBanner';
 import { RemediationSummary } from '../components/RemediationSummary';
 import { dispatchNotification } from '../Utilities/dispatcher';
 import { useConnectionStatus } from '../Utilities/useConnectionStatus';
+import { useRemediationsList } from '../Utilities/useRemediationsList';
 
 const RemediationDetails = ({
   selectedRemediation,
@@ -153,6 +154,8 @@ const RemediationDetails = ({
   const [connectedSystems, totalSystems, areDetailsLoading, detailsError] =
     useConnectionStatus(remediation);
 
+  const remediationsList = useRemediationsList(remediation);
+
   useEffect(() => {
     remediation &&
       chrome.updateDocumentTitle(
@@ -222,7 +225,10 @@ const RemediationDetails = ({
                   </Button>
                 </SplitItem>
                 <SplitItem>
-                  <RemediationDetailsDropdown remediation={remediation} />
+                  <RemediationDetailsDropdown
+                    remediation={remediation}
+                    remediationsList={remediationsList}
+                  />
                 </SplitItem>
               </Split>
             </LevelItem>

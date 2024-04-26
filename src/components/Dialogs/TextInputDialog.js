@@ -7,7 +7,9 @@ import {
   Modal,
   TextInput,
   ModalVariant,
+  Spinner,
 } from '@patternfly/react-core';
+import { useVerifyName } from '../../Utilities/useVerifyName';
 
 export default function TextInputDialog(props) {
   const [value, setValue] = useState(props.value || '');
@@ -22,21 +24,30 @@ export default function TextInputDialog(props) {
     }
   }
 
+  const [isVerifyingName, isDisabled] = useVerifyName(
+    value,
+    props.remediationsList
+  );
+
   return (
     <Modal
       title={title}
       isOpen={true}
       onClose={(event) => onCancel(event)}
       actions={[
-        <Button
-          key="confirm"
-          variant="primary"
-          onClick={() => onSubmit(value)}
-          isDisabled={!valid}
-          ouiaId="save"
-        >
-          Save
-        </Button>,
+        isVerifyingName ? (
+          <Spinner size="lg" className="pf-u-mr-sm" />
+        ) : (
+          <Button
+            key="confirm"
+            variant="primary"
+            onClick={() => onSubmit(value)}
+            isDisabled={!valid || isVerifyingName || isDisabled}
+            ouiaId="save"
+          >
+            Save
+          </Button>
+        ),
         <Button
           key="cancel"
           variant="secondary"
@@ -75,4 +86,5 @@ TextInputDialog.propTypes = {
   value: PropTypes.string,
   className: PropTypes.string,
   pattern: PropTypes.instanceOf(RegExp),
+  remediationsList: PropTypes.array,
 };
