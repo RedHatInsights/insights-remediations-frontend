@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import propTypes from 'prop-types';
 import useFieldApi from '@data-driven-forms/react-form-renderer/use-field-api';
 import useFormApi from '@data-driven-forms/react-form-renderer/use-form-api';
@@ -18,11 +18,18 @@ const ReviewSystems = ({ issues, systems, allSystems, registry, ...props }) => {
   const formOptions = useFormApi();
 
   const error = formOptions.getState().errors?.systems;
+  const [bootcError, setBootcError] = useState(null);
 
   const rowsLength = useSelector(
     ({ entities }) => (entities?.rows || []).length
   );
   const selected = useSelector(({ entities }) => entities?.selected || []);
+  const bootcIds = useSelector(
+    ({ entities }) =>
+      entities?.rows
+        ?.filter((r) => r.system_profile?.bootc_status?.booted?.image)
+        .map((r) => r.id) || []
+  );
   const loaded = useSelector(({ entities }) => entities?.loaded);
   const allSystemsNamed = useSelector(
     ({ hostReducer: { hosts } }) =>
@@ -30,6 +37,16 @@ const ReviewSystems = ({ issues, systems, allSystems, registry, ...props }) => {
   );
 
   useEffect(() => {
+    const hasBootc = selected.some((s) => bootcIds.includes(s));
+    const isAdvisor = issues?.some((i) => i?.id?.startsWith('advisor'));
+
+    if (hasBootc && !isAdvisor) {
+      setBootcError(
+        'Image mode systems cannot be added to a remediation playbook.'
+      );
+      return input.onChange({});
+    }
+    setBootcError(null);
     const value = issues?.reduce((acc, curr) => {
       const tempSystems = dedupeArray([
         ...systems,
@@ -94,10 +111,12 @@ const ReviewSystems = ({ issues, systems, allSystems, registry, ...props }) => {
           onSelectRows
         />
       </StackItem>
-      {error && loaded && (
+      {(bootcError || error) && loaded && (
         <StackItem>
           <ExclamationCircleIcon className="ins-c-remediations-error pf-u-mr-sm" />
-          <span className="ins-c-remediations-error">{error}</span>
+          <span className="ins-c-remediations-error">
+            {bootcError || error}
+          </span>
         </StackItem>
       )}
     </Stack>
