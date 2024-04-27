@@ -100,7 +100,7 @@ const SORTING_ITERATEES = [
 const Home = () => {
   const chrome = useChrome();
   useEffect(() => {
-    chrome.updateDocumentTitle('Remediations | Red Hat Insights');
+    chrome.updateDocumentTitle('Remediations - Automation | RHEL');
   }, [chrome]);
 
   const [noReceptorBannerVisible, setNoReceptorBannerVisible] = useState(

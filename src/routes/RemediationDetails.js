@@ -156,7 +156,7 @@ const RemediationDetails = ({
   useEffect(() => {
     remediation &&
       chrome.updateDocumentTitle(
-        `${remediation.name} - Remediations | Red Hat Insights`
+        `${remediation.name} - Remediations - Automation | RHEL`
       );
   }, [chrome, remediation]);
 
