@@ -7,7 +7,10 @@ import {
   Modal,
   TextInput,
   ModalVariant,
+  Spinner,
+  ValidatedOptions,
 } from '@patternfly/react-core';
+import { useVerifyName } from '../../Utilities/useVerifyName';
 
 export default function TextInputDialog(props) {
   const [value, setValue] = useState(props.value || '');
@@ -22,21 +25,30 @@ export default function TextInputDialog(props) {
     }
   }
 
+  const [isVerifyingName, isDisabled] = useVerifyName(
+    value,
+    props.remediationsList
+  );
+
   return (
     <Modal
       title={title}
       isOpen={true}
       onClose={(event) => onCancel(event)}
       actions={[
-        <Button
-          key="confirm"
-          variant="primary"
-          onClick={() => onSubmit(value)}
-          isDisabled={!valid}
-          ouiaId="save"
-        >
-          Save
-        </Button>,
+        isVerifyingName ? (
+          <Spinner size="lg" className="pf-u-mr-sm" />
+        ) : (
+          <Button
+            key="confirm"
+            variant="primary"
+            onClick={() => onSubmit(value)}
+            isDisabled={!valid || isVerifyingName || isDisabled}
+            ouiaId="save"
+          >
+            Save
+          </Button>
+        ),
         <Button
           key="cancel"
           variant="secondary"
@@ -61,7 +73,18 @@ export default function TextInputDialog(props) {
           aria-label={ariaLabel || 'input text'}
           autoFocus
           isValid={valid}
+          validated={(isDisabled || !valid) && ValidatedOptions.error}
         />
+        {isDisabled && (
+          <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
+            Playbook with the same name already exists.
+          </p>
+        )}
+        {!valid && (
+          <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
+            Playbook name cannot be empty.
+          </p>
+        )}
       </FormGroup>
     </Modal>
   );
@@ -75,4 +98,5 @@ TextInputDialog.propTypes = {
   value: PropTypes.string,
   className: PropTypes.string,
   pattern: PropTypes.instanceOf(RegExp),
+  remediationsList: PropTypes.array,
 };
