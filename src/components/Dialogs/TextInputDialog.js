@@ -8,6 +8,7 @@ import {
   TextInput,
   ModalVariant,
   Spinner,
+  ValidatedOptions,
 } from '@patternfly/react-core';
 import { useVerifyName } from '../../Utilities/useVerifyName';
 
@@ -72,7 +73,18 @@ export default function TextInputDialog(props) {
           aria-label={ariaLabel || 'input text'}
           autoFocus
           isValid={valid}
+          validated={(isDisabled || !valid) && ValidatedOptions.error}
         />
+        {isDisabled && (
+          <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
+            Playbook with the same name already exists.
+          </p>
+        )}
+        {!valid && (
+          <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
+            Playbook name cannot be empty.
+          </p>
+        )}
       </FormGroup>
     </Modal>
   );
