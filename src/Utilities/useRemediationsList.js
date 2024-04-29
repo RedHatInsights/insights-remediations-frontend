@@ -12,7 +12,7 @@ export const useRemediationsList = (remediation) => {
     const fetchData = async () => {
       try {
         const nameList = await axios.get(
-          `${API_BASE}/remediations/?fields[data]=${remediation.name}`
+          `${API_BASE}/remediations/?fields[data]=name`
         );
         mounted.current && setRemediationsList(nameList.data);
       } catch (error) {
