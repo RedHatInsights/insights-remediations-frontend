@@ -7,7 +7,6 @@ import { ExecuteModal } from './Modals/ExecuteModal';
 import './ExecuteButton.scss';
 import './Status.scss';
 import { CheckIcon, TimesIcon } from '@patternfly/react-icons';
-import { getResolvedSystems } from '../Utilities/utils';
 
 const ExecuteButton = ({
   isLoading,
@@ -19,11 +18,12 @@ const ExecuteButton = ({
   etag,
   remediationStatus,
   setEtag,
-  connectionDetails,
   areDetailsLoading,
   detailsError,
   permissions,
   remediation,
+  connectedSystems,
+  totalSystems,
 }) => {
   const [open, setOpen] = useState(false);
   const [showRefreshMessage, setShowRefreshMessage] = useState(false);
@@ -39,7 +39,7 @@ const ExecuteButton = ({
     }
   }, [remediationStatus]);
 
-  const disabledButton = () => {
+  const buttonWithTooltip = () => {
     return (
       <Tooltip
         minWidth="400px"
@@ -57,17 +57,12 @@ const ExecuteButton = ({
               </Title>
 
               <span className="pf-v5-u-font-size-sm">
-                {connectionDetails?.system_count === 4 ? (
-                  <CheckIcon className="pf-v5-u-mr-sm" />
-                ) : (
+                {connectedSystems === 0 ? (
                   <TimesIcon className="pf-v5-u-mr-sm" />
+                ) : (
+                  <CheckIcon className="pf-v5-u-mr-sm" />
                 )}
-                Connected Systems (
-                {`${
-                  getResolvedSystems(remediation.issues[0]) +
-                  '/' +
-                  remediation.issues[0].systems.length
-                }`}
+                Connected Systems ({`${connectedSystems + '/' + totalSystems}`}
                 ). See systems tab.
               </span>
 
@@ -106,24 +101,17 @@ const ExecuteButton = ({
           </>
         }
       >
-        <Button isAriaDisabled>Execute playbook</Button>
+        <Button
+          isAriaDisabled={isDisabled}
+          data-testid="execute-button-enabled"
+          onClick={() => {
+            setOpen(true);
+            getConnectionStatus(remediation.id);
+          }}
+        >
+          Execute playbook
+        </Button>
       </Tooltip>
-    );
-  };
-
-  const buttonWithTooltip = () => {
-    return isDisabled ? (
-      disabledButton()
-    ) : (
-      <Button
-        data-testid="execute-button-enabled"
-        onClick={() => {
-          setOpen(true);
-          getConnectionStatus(remediation.id);
-        }}
-      >
-        Execute playbook
-      </Button>
     );
   };
 
@@ -166,10 +154,11 @@ ExecuteButton.propTypes = {
   setEtag: PropTypes.func,
   isDisabled: PropTypes.bool,
   disabledStateText: PropTypes.string,
-  connectionDetails: PropTypes.object,
+  connectedSystems: PropTypes.number,
   areDetailsLoading: PropTypes.bool,
   detailsError: PropTypes.any,
   permissions: PropTypes.bool,
+  totalSystems: PropTypes.number,
 };
 
 ExecuteButton.defaultProps = {
