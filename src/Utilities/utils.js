@@ -222,7 +222,7 @@ export const submitRemediation = (formValues, data, basePath, setState) => {
       )) ||
     api.createRemediation(
       {
-        name: formValues[SELECT_PLAYBOOK],
+        name: formValues[SELECT_PLAYBOOK].trim(),
         add,
         auto_reboot: formValues[AUTO_REBOOT],
       },

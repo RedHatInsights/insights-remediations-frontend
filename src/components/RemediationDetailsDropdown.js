@@ -110,7 +110,8 @@ const connected = connect(null, (dispatch) => ({
     if (!name) {
       name = EMPTY_NAME;
     }
-    dispatch(patchRemediation(id, { name }));
+    const trimmedName = name.trim();
+    dispatch(patchRemediation(id, { name: trimmedName }));
   },
   onDelete: (id) => dispatch(deleteRemediation(id)),
 }))(RemediationDetailsDropdown);

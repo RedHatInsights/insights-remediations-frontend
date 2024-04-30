@@ -28,7 +28,9 @@ export const useConnectionStatus = (remediation) => {
           setTotalSystems(totalSystemsCount);
       } catch (error) {
         console.error(error);
-        setDetailsError(error.errors[0].status);
+        setDetailsError(error?.errors[0].status || '');
+        //When backend endpoint fails, it will stop here and not continue - forever loading
+        setAreDetailsLoading(false);
       }
       setAreDetailsLoading(false);
     };

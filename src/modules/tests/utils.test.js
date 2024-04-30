@@ -17,6 +17,7 @@ import {
   getPlaybookSystems,
   createNotification,
   sortByAttr,
+  SELECT_PLAYBOOK,
 } from '../../Utilities/utils';
 import { remediationWizardTestData } from './testData';
 
@@ -111,7 +112,11 @@ describe('submitRemediation', () => {
     const setState = jest.fn();
     dependency.createRemediation = createFunction;
     submitRemediation(
-      { ...formValues, [EXISTING_PLAYBOOK_SELECTED]: false },
+      {
+        ...formValues,
+        [EXISTING_PLAYBOOK_SELECTED]: false,
+        [SELECT_PLAYBOOK]: 'TEST',
+      },
       data,
       undefined,
       setState
@@ -125,7 +130,11 @@ describe('submitRemediation', () => {
     const setState = jest.fn();
     dependency.createRemediation = createFunction;
     submitRemediation(
-      { ...formValues, [EXISTING_PLAYBOOK_SELECTED]: false },
+      {
+        ...formValues,
+        [EXISTING_PLAYBOOK_SELECTED]: false,
+        [SELECT_PLAYBOOK]: 'TEST',
+      },
       data,
       undefined,
       setState
