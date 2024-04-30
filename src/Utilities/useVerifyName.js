@@ -5,6 +5,7 @@ export const useVerifyName = (name, remediationsList) => {
   const [isDisabled, setIsDisabled] = useState(false);
   const mounted = useRef(false);
   const timerRef = useRef(null);
+  const playbookNamePattern = /^(?!$).*[\w\d]+.*$/;
 
   useEffect(() => {
     mounted.current = true;
@@ -17,18 +18,19 @@ export const useVerifyName = (name, remediationsList) => {
     }
 
     const compareData = async () => {
+      const trimmedVal = name.trim();
+
       const dataHashmap = {};
       remediationsList &&
         remediationsList.forEach((item) => {
           dataHashmap[item.name] = true;
         });
 
-      const foundExistingRemediation = (name) => {
-        return dataHashmap[name];
-      };
-      foundExistingRemediation(name)
-        ? setIsDisabled(true)
-        : setIsDisabled(false);
+      if (dataHashmap[trimmedVal] && playbookNamePattern.test(trimmedVal)) {
+        setIsDisabled(true);
+      } else {
+        setIsDisabled(false);
+      }
     };
 
     timerRef.current = setTimeout(() => {

@@ -16,7 +16,6 @@ import { dispatchNotification } from '../Utilities/dispatcher';
 
 import { PermissionContext } from '../App';
 
-const playbookNamePattern = /^(?!$).*[\w\d]+.*$/;
 const EMPTY_NAME = 'Unnamed Playbook';
 
 function RemediationDetailsDropdown({
@@ -50,7 +49,6 @@ function RemediationDetailsDropdown({
               autoDismiss: true,
             });
           }}
-          pattern={playbookNamePattern}
           remediationsList={remediationsList}
         />
       )}

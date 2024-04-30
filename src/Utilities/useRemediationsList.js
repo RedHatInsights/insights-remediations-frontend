@@ -20,7 +20,7 @@ export const useRemediationsList = (remediation) => {
       }
     };
 
-    remediation && fetchData();
+    fetchData();
     return () => {
       mounted.current = false;
     };

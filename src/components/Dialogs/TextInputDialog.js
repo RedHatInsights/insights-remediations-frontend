@@ -14,16 +14,7 @@ import { useVerifyName } from '../../Utilities/useVerifyName';
 
 export default function TextInputDialog(props) {
   const [value, setValue] = useState(props.value || '');
-  const [valid, setValid] = useState(true);
   const { title, onCancel, onSubmit, ariaLabel, className } = props;
-
-  function onChange(value) {
-    setValue(value);
-
-    if (props.pattern) {
-      setValid(props.pattern.test(value));
-    }
-  }
 
   const [isVerifyingName, isDisabled] = useVerifyName(
     value,
@@ -43,7 +34,7 @@ export default function TextInputDialog(props) {
             key="confirm"
             variant="primary"
             onClick={() => onSubmit(value)}
-            isDisabled={!valid || isVerifyingName || isDisabled}
+            isDisabled={isDisabled || value.trim() === ''}
             ouiaId="save"
           >
             Save
@@ -64,23 +55,29 @@ export default function TextInputDialog(props) {
       <FormGroup
         fieldId="remediation-name"
         helperTextInvalid="Playbook name has to contain alphanumeric characters"
-        isValid={valid}
+        isValid={isDisabled}
       >
         <TextInput
           value={value}
           type="text"
-          onChange={(_event, value) => onChange(value)}
+          onChange={(_event, value) => setValue(value)}
           aria-label={ariaLabel || 'input text'}
           autoFocus
-          isValid={valid}
-          validated={(isDisabled || !valid) && ValidatedOptions.error}
+          isValid={!isDisabled}
+          validated={
+            //isDisabled check if item exist in current remList,
+            //if exist and is current rem, dont show error message
+            value === props.value && isDisabled
+              ? ValidatedOptions.default
+              : (value.trim() === '' || isDisabled) && ValidatedOptions.error
+          }
         />
-        {isDisabled && (
+        {isDisabled && value !== props.value && (
           <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
             Playbook with the same name already exists.
           </p>
         )}
-        {!valid && (
+        {value.trim() === '' && (
           <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
             Playbook name cannot be empty.
           </p>
