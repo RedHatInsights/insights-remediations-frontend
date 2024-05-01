@@ -16,7 +16,6 @@ import { dispatchNotification } from '../Utilities/dispatcher';
 
 import { PermissionContext } from '../App';
 
-const playbookNamePattern = /^(?!$).*[\w\d]+.*$/;
 const EMPTY_NAME = 'Unnamed Playbook';
 
 function RemediationDetailsDropdown({
@@ -50,7 +49,6 @@ function RemediationDetailsDropdown({
               autoDismiss: true,
             });
           }}
-          pattern={playbookNamePattern}
           remediationsList={remediationsList}
         />
       )}
@@ -112,7 +110,8 @@ const connected = connect(null, (dispatch) => ({
     if (!name) {
       name = EMPTY_NAME;
     }
-    dispatch(patchRemediation(id, { name }));
+    const trimmedName = name.trim();
+    dispatch(patchRemediation(id, { name: trimmedName }));
   },
   onDelete: (id) => dispatch(deleteRemediation(id)),
 }))(RemediationDetailsDropdown);

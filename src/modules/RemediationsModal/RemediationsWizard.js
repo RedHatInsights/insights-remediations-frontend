@@ -45,6 +45,7 @@ import {
 } from '../../Utilities/utils';
 import Progress from './steps/progress';
 import { ModalVariant } from '@patternfly/react-core';
+import { useRemediationsList } from '../../Utilities/useRemediationsList';
 
 const initialState = {
   submitted: false,
@@ -74,6 +75,7 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
       )
     )
   );
+  const remediationsList = useRemediationsList();
 
   const dispatch = useDispatch();
 
@@ -90,7 +92,11 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
   };
 
   useEffect(() => {
-    setState({ type: 'schema', payload: schemaBuilder(data.issues) });
+    remediationsList &&
+      setState({
+        type: 'schema',
+        payload: schemaBuilder(data.issues, remediationsList),
+      });
     registry.register({
       hostReducer: applyReducerHash(hostReducer, hostsInitialState),
       resolutionsReducer: applyReducerHash(
@@ -100,7 +106,7 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
     });
     dispatch(fetchResolutions(data.issues));
     fetchHostNames(allSystems.current);
-  }, []);
+  }, [remediationsList]);
 
   const mapperExtension = {
     'select-playbook': {
@@ -108,6 +114,7 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
       issues: data.issues,
       systems: data.systems,
       allSystems: allSystems.current,
+      remediationsList: remediationsList,
     },
     'review-systems': {
       component: ReviewSystems,
@@ -263,6 +270,7 @@ RemediationWizard.propTypes = {
   registry: propTypes.shape({
     register: propTypes.func,
   }).isRequired,
+  remediationsList: propTypes.array,
 };
 
 const RemediationWizardWithContext = (props) => {

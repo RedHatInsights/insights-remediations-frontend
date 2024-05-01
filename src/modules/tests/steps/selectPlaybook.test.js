@@ -49,9 +49,26 @@ const RendererWrapper = (props) => (
     {...props}
   />
 );
+const remediationsList = [
+  {
+    name: 'aaaa',
+  },
+  {
+    name: 'aaaaaaa',
+  },
+  {
+    name: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  },
+  {
+    name: 'asddfgd',
+  },
+  {
+    name: 'asdf',
+  },
+];
 
 const createSchema = () => ({
-  fields: selectPlaybookFields,
+  fields: selectPlaybookFields(remediationsList),
 });
 
 describe('SelectPlaybook', () => {
