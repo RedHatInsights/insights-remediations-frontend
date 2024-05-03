@@ -26,10 +26,15 @@ export const selectPlaybookFields = (remediationsList) => [
       {
         type: validatorTypes.REQUIRED,
       },
-      (value) =>
-        verifyName(value, remediationsList)
-          ? 'Duplicate names are not allowed'
-          : undefined,
+      (value, formValues) => {
+        const isPlaybookSelected = formValues[EXISTING_PLAYBOOK_SELECTED];
+        if (!isPlaybookSelected && value) {
+          return verifyName(value, remediationsList)
+            ? 'Duplicate names are not allowed'
+            : undefined;
+        }
+        return undefined;
+      },
     ],
   },
   {
