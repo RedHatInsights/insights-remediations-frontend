@@ -10,13 +10,12 @@ import * as api from '../../../api';
 import { Fragment } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import FetchError from './fetchError';
+import ExistingPlaybookTypeahead from '../common/ExistingPlaybookTypeahead';
 import {
   FormGroup,
   Grid,
   GridItem,
   Radio,
-  FormSelect,
-  FormSelectOption,
   Text,
   TextContent,
   TextInput,
@@ -191,42 +190,15 @@ const SelectPlaybook = (props) => {
           </GridItem>
           <GridItem sm={12} md={6} lg={4}>
             {existingRemediations && !isLoadingRemediation ? (
-              <FormSelect
-                onChange={(_event, val) => {
-                  setIsLoadingRemediation(true);
-                  api.getRemediation(val).then((remediation) => {
-                    setSelectedPlaybook(remediation);
-                    setIsLoadingRemediation(false);
-                    existingPlaybookSelected &&
-                      input.onChange(remediation.name);
-                    existingPlaybookSelected &&
-                      formOptions.change(EXISTING_PLAYBOOK, remediation);
-                  });
-                }}
-                value={selectedPlaybook?.id || ''}
-                aria-label="Select an existing playbook"
-              >
-                {existingRemediations?.length ? (
-                  [
-                    <FormSelectOption
-                      key="select-playbook-placeholder"
-                      data-testid="select-playbook-placeholder"
-                      value=""
-                      label="Select playbook"
-                      isDisabled
-                    />,
-                    ...existingRemediations.map(({ id, name }) => (
-                      <FormSelectOption key={id} value={id} label={name} />
-                    )),
-                  ]
-                ) : (
-                  <FormSelectOption
-                    key="empty"
-                    value="empty"
-                    label="No existing playbooks"
-                  />
-                )}
-              </FormSelect>
+              <ExistingPlaybookTypeahead
+                selectedPlaybook={selectedPlaybook}
+                setIsLoadingRemediation={setIsLoadingRemediation}
+                setSelectedPlaybook={setSelectedPlaybook}
+                existingPlaybookSelected={existingPlaybookSelected}
+                existingRemediations={existingRemediations}
+                input={input}
+                formOptions={formOptions}
+              />
             ) : (
               <Skeleton size={SkeletonSize.lg} data-testid="skeleton-loader" />
             )}
