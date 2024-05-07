@@ -222,7 +222,7 @@ export const submitRemediation = (formValues, data, basePath, setState) => {
       )) ||
     api.createRemediation(
       {
-        name: formValues[SELECT_PLAYBOOK],
+        name: formValues[SELECT_PLAYBOOK].trim(),
         add,
         auto_reboot: formValues[AUTO_REBOOT],
       },
@@ -350,7 +350,16 @@ export const fetchSystemsInfo = async (
   );
   const data =
     sliced.length > 0
-      ? await getEntities(sliced, { ...config, hasItems: true, page: 1 }, true)
+      ? await getEntities(
+          sliced,
+          {
+            ...config,
+            fields: { system_profile: ['operating_system', 'bootc_status'] },
+            hasItems: true,
+            page: 1,
+          },
+          true
+        )
       : {};
   return {
     ...{

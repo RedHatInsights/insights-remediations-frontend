@@ -25,6 +25,7 @@ import {
   Popover,
   Button,
   Alert,
+  ValidatedOptions,
 } from '@patternfly/react-core';
 import differenceWith from 'lodash/differenceWith';
 import isEqual from 'lodash/isEqual';
@@ -39,10 +40,11 @@ import {
 import './selectPlaybook.scss';
 
 const SelectPlaybook = (props) => {
-  const { issues, systems, allSystems } = props;
+  const { issues, systems, allSystems, remediationsList } = props;
   const { input } = useFieldApi(props);
   const formOptions = useFormApi();
   const values = formOptions.getState().values;
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const [existingRemediations, setExistingRemediations] = useState();
   const [existingPlaybookSelected, setExistingPlaybookSelected] = useState(
@@ -90,6 +92,27 @@ const SelectPlaybook = (props) => {
       );
     }
   });
+
+  //cannot use hook here, as it needs to be called in the OnChange function
+  const verifyName = (val) => {
+    setNewPlaybookName(val);
+    existingPlaybookSelected || input.onChange(val);
+    const trimmedVal = val.trim();
+    const compareData = () => {
+      const dataHashmap = {};
+      remediationsList &&
+        remediationsList.forEach((item) => {
+          dataHashmap[item.name] = true;
+        });
+
+      if (dataHashmap[trimmedVal]) {
+        setIsDisabled(true);
+      } else {
+        setIsDisabled(false);
+      }
+    };
+    return compareData();
+  };
 
   return errors.length <= 0 ? (
     <Stack hasGutter data-component-ouia-id="wizard-select-playbook">
@@ -233,12 +256,22 @@ const SelectPlaybook = (props) => {
                 type="text"
                 value={newPlaybookName}
                 onChange={(_event, val) => {
-                  setNewPlaybookName(val);
-                  existingPlaybookSelected || input.onChange(val);
+                  verifyName(val);
                 }}
                 aria-label="Name your playbook"
                 autoFocus
+                validated={
+                  isDisabled &&
+                  !existingPlaybookSelected &&
+                  ValidatedOptions.error
+                }
               />
+
+              {isDisabled && !existingPlaybookSelected && (
+                <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
+                  Playbook with the same name already exists.
+                </p>
+              )}
             </FormGroup>
           </GridItem>
         </Grid>
@@ -258,6 +291,7 @@ SelectPlaybook.propTypes = {
   ).isRequired,
   systems: propTypes.arrayOf(propTypes.string).isRequired,
   allSystems: propTypes.arrayOf(propTypes.string).isRequired,
+  remediationsList: propTypes.array,
 };
 
 export default SelectPlaybook;

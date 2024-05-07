@@ -4,12 +4,13 @@ import { useState, useEffect, useRef } from 'react';
 
 export const useConnectionStatus = (remediation) => {
   const axios = useAxiosWithPlatformInterceptors();
-  const [isConnected, setisConnected] = useState();
+  const [connectedSystems, setConnectedSystems] = useState(0);
+  const [totalSystems, setTotalSystems] = useState(0);
   const [areDetailsLoading, setAreDetailsLoading] = useState(true);
-  const [connectionDetails, setConnectionDetails] = useState();
   const [detailsError, setDetailsError] = useState();
   const mounted = useRef(false);
-
+  let connectedSystemCount = 0;
+  let totalSystemsCount = 0;
   useEffect(() => {
     mounted.current = true;
     const fetchData = async () => {
@@ -18,13 +19,18 @@ export const useConnectionStatus = (remediation) => {
           `${API_BASE}/remediations/${remediation.id}/connection_status`
         );
         mounted.current &&
-          setisConnected(
-            connection_status.data?.[0].connection_status === 'connected'
-          );
-        setConnectionDetails(connection_status.data[0]);
+          (connection_status.data.forEach((connected_group) => {
+            (totalSystemsCount += connected_group.system_count),
+              connected_group.connection_status === 'connected' &&
+                (connectedSystemCount = connected_group.system_count);
+          }),
+          setConnectedSystems(connectedSystemCount)),
+          setTotalSystems(totalSystemsCount);
       } catch (error) {
         console.error(error);
-        setDetailsError(error.errors[0].status);
+        setDetailsError(error?.errors[0].status || '');
+        //When backend endpoint fails, it will stop here and not continue - forever loading
+        setAreDetailsLoading(false);
       }
       setAreDetailsLoading(false);
     };
@@ -35,5 +41,5 @@ export const useConnectionStatus = (remediation) => {
     };
   }, [remediation]);
 
-  return [isConnected, connectionDetails, areDetailsLoading, detailsError];
+  return [connectedSystems, totalSystems, areDetailsLoading, detailsError];
 };

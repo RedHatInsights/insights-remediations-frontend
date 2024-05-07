@@ -7,20 +7,19 @@ import {
   Modal,
   TextInput,
   ModalVariant,
+  Spinner,
+  ValidatedOptions,
 } from '@patternfly/react-core';
+import { useVerifyName } from '../../Utilities/useVerifyName';
 
 export default function TextInputDialog(props) {
   const [value, setValue] = useState(props.value || '');
-  const [valid, setValid] = useState(true);
   const { title, onCancel, onSubmit, ariaLabel, className } = props;
 
-  function onChange(value) {
-    setValue(value);
-
-    if (props.pattern) {
-      setValid(props.pattern.test(value));
-    }
-  }
+  const [isVerifyingName, isDisabled] = useVerifyName(
+    value,
+    props.remediationsList
+  );
 
   return (
     <Modal
@@ -28,15 +27,19 @@ export default function TextInputDialog(props) {
       isOpen={true}
       onClose={(event) => onCancel(event)}
       actions={[
-        <Button
-          key="confirm"
-          variant="primary"
-          onClick={() => onSubmit(value)}
-          isDisabled={!valid}
-          ouiaId="save"
-        >
-          Save
-        </Button>,
+        isVerifyingName ? (
+          <Spinner size="lg" className="pf-u-mr-sm" />
+        ) : (
+          <Button
+            key="confirm"
+            variant="primary"
+            onClick={() => onSubmit(value)}
+            isDisabled={isDisabled || value.trim() === ''}
+            ouiaId="save"
+          >
+            Save
+          </Button>
+        ),
         <Button
           key="cancel"
           variant="secondary"
@@ -52,16 +55,33 @@ export default function TextInputDialog(props) {
       <FormGroup
         fieldId="remediation-name"
         helperTextInvalid="Playbook name has to contain alphanumeric characters"
-        isValid={valid}
+        isValid={isDisabled}
       >
         <TextInput
           value={value}
           type="text"
-          onChange={(_event, value) => onChange(value)}
+          onChange={(_event, value) => setValue(value)}
           aria-label={ariaLabel || 'input text'}
           autoFocus
-          isValid={valid}
+          isValid={!isDisabled}
+          validated={
+            //isDisabled check if item exist in current remList,
+            //if exist and is current rem, dont show error message
+            value === props.value && isDisabled
+              ? ValidatedOptions.default
+              : (value.trim() === '' || isDisabled) && ValidatedOptions.error
+          }
         />
+        {isDisabled && value !== props.value && (
+          <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
+            Playbook with the same name already exists.
+          </p>
+        )}
+        {value.trim() === '' && (
+          <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
+            Playbook name cannot be empty.
+          </p>
+        )}
       </FormGroup>
     </Modal>
   );
@@ -75,4 +95,5 @@ TextInputDialog.propTypes = {
   value: PropTypes.string,
   className: PropTypes.string,
   pattern: PropTypes.instanceOf(RegExp),
+  remediationsList: PropTypes.array,
 };

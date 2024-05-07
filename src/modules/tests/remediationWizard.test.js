@@ -30,6 +30,41 @@ jest.mock('../../api/index', () => {
   };
 });
 
+jest.mock(
+  '@redhat-cloud-services/frontend-components-utilities/interceptors',
+  () => ({
+    __esModule: true,
+    useAxiosWithPlatformInterceptors: jest.fn(() => ({
+      get: () => {
+        let res = {
+          meta: {
+            count: 2,
+            total: 2,
+          },
+          data: [
+            {
+              name: 'aaaa',
+            },
+            {
+              name: 'aaaaaaa',
+            },
+            {
+              name: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+            },
+            {
+              name: 'asddfgd',
+            },
+            {
+              name: 'asdf',
+            },
+          ],
+        };
+        return res;
+      },
+    })),
+  })
+);
+
 describe('RemediationWizard', () => {
   let initialProps;
   let mockStore = configureStore([promiseMiddleware]);
@@ -46,6 +81,7 @@ describe('RemediationWizard', () => {
 
   it('should render wizard correctly', async () => {
     fetch.mockResponse(JSON.stringify({}));
+
     const store = mockStore({});
     const registrySpy = jest.fn();
 
@@ -59,6 +95,10 @@ describe('RemediationWizard', () => {
         />
       </Provider>
     );
+
+    await screen.findByRole('button', { name: /select playbook/i });
+    await screen.findByRole('button', { name: /review systems/i });
+    await screen.findByRole('button', { name: /remediation review/i });
 
     expect(
       screen.getByRole('button', { name: /select playbook/i })

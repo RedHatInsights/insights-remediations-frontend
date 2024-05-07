@@ -12,8 +12,9 @@ import {
   RESOLUTIONS,
   shortenIssueId,
 } from '../../Utilities/utils';
+import { verifyName } from './common/helpers';
 
-export const selectPlaybookFields = [
+export const selectPlaybookFields = (remediationsList) => [
   {
     name: SELECT_PLAYBOOK,
     component: 'select-playbook',
@@ -24,6 +25,15 @@ export const selectPlaybookFields = [
       },
       {
         type: validatorTypes.REQUIRED,
+      },
+      (value, formValues) => {
+        const isPlaybookSelected = formValues[EXISTING_PLAYBOOK_SELECTED];
+        if (!isPlaybookSelected && value) {
+          return verifyName(value, remediationsList)
+            ? 'Duplicate names are not allowed'
+            : undefined;
+        }
+        return undefined;
       },
     ],
   },
@@ -101,7 +111,7 @@ export const reviewSystemsNextStep = (values) => {
   return filteredIssues.length > 0 ? 'actions' : 'review';
 };
 
-export default (issues) => ({
+export default (issues, remediationsList) => ({
   fields: [
     {
       component: componentTypes.WIZARD,
@@ -115,7 +125,7 @@ export default (issues) => ({
         {
           name: 'playbook',
           title: 'Select playbook',
-          fields: selectPlaybookFields,
+          fields: selectPlaybookFields(remediationsList),
           nextStep: 'systems',
         },
         {

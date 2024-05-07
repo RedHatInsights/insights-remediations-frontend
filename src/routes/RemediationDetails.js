@@ -50,6 +50,7 @@ import NoReceptorBanner from '../components/Alerts/NoReceptorBanner';
 import { RemediationSummary } from '../components/RemediationSummary';
 import { dispatchNotification } from '../Utilities/dispatcher';
 import { useConnectionStatus } from '../Utilities/useConnectionStatus';
+import { useRemediationsList } from '../Utilities/useRemediationsList';
 
 const RemediationDetails = ({
   selectedRemediation,
@@ -150,8 +151,10 @@ const RemediationDetails = ({
 
   const { status, remediation } = selectedRemediation;
 
-  const [isConnected, connectionDetails, areDetailsLoading, detailsError] =
+  const [connectedSystems, totalSystems, areDetailsLoading, detailsError] =
     useConnectionStatus(remediation);
+
+  const remediationsList = useRemediationsList(remediation);
 
   useEffect(() => {
     remediation &&
@@ -189,12 +192,13 @@ const RemediationDetails = ({
                 <SplitItem>
                   <ExecutePlaybookButton
                     isDisabled={
-                      !isConnected ||
+                      connectedSystems === 0 ||
                       !context.permissions.execute ||
                       !executable ||
                       isFedramp
                     }
-                    connectionDetails={connectionDetails}
+                    connectedSystems={connectedSystems}
+                    totalSystems={totalSystems}
                     areDetailsLoading={areDetailsLoading}
                     detailsError={detailsError}
                     permissions={context.permissions.execute}
@@ -221,7 +225,10 @@ const RemediationDetails = ({
                   </Button>
                 </SplitItem>
                 <SplitItem>
-                  <RemediationDetailsDropdown remediation={remediation} />
+                  <RemediationDetailsDropdown
+                    remediation={remediation}
+                    remediationsList={remediationsList}
+                  />
                 </SplitItem>
               </Split>
             </LevelItem>

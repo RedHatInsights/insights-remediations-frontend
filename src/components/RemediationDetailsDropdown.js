@@ -16,10 +16,14 @@ import { dispatchNotification } from '../Utilities/dispatcher';
 
 import { PermissionContext } from '../App';
 
-const playbookNamePattern = /^$|^.*[\w\d]+.*$/;
 const EMPTY_NAME = 'Unnamed Playbook';
 
-function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
+function RemediationDetailsDropdown({
+  remediation,
+  onRename,
+  onDelete,
+  remediationsList,
+}) {
   const [open, setOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -45,7 +49,7 @@ function RemediationDetailsDropdown({ remediation, onRename, onDelete }) {
               autoDismiss: true,
             });
           }}
-          pattern={playbookNamePattern}
+          remediationsList={remediationsList}
         />
       )}
 
@@ -98,6 +102,7 @@ RemediationDetailsDropdown.propTypes = {
   remediation: PropTypes.object.isRequired,
   onRename: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
+  remediationsList: PropTypes.array,
 };
 
 const connected = connect(null, (dispatch) => ({
@@ -105,7 +110,8 @@ const connected = connect(null, (dispatch) => ({
     if (!name) {
       name = EMPTY_NAME;
     }
-    dispatch(patchRemediation(id, { name }));
+    const trimmedName = name.trim();
+    dispatch(patchRemediation(id, { name: trimmedName }));
   },
   onDelete: (id) => dispatch(deleteRemediation(id)),
 }))(RemediationDetailsDropdown);
