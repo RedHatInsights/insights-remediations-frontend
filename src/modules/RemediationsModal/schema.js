@@ -30,7 +30,7 @@ export const selectPlaybookFields = (remediationsList) => [
         const isPlaybookSelected = formValues[EXISTING_PLAYBOOK_SELECTED];
         if (!isPlaybookSelected && value) {
           return verifyName(value, remediationsList)
-            ? 'Duplicate names are not allowed'
+            ? 'A playbook with the same name already exists within your organization. Try a different name.'
             : undefined;
         }
         return undefined;

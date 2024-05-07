@@ -269,7 +269,8 @@ const SelectPlaybook = (props) => {
 
               {isDisabled && !existingPlaybookSelected && (
                 <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
-                  Playbook with the same name already exists.
+                  A playbook with the same name already exists within your
+                  organization. Try a different name.
                 </p>
               )}
             </FormGroup>
