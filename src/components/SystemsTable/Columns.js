@@ -39,10 +39,13 @@ export default [
   },
   {
     key: 'connection_status',
-    title: 'Connected Status',
+    title: 'Connection Status',
     // eslint-disable-next-line react/display-name
-    renderFunc: (connection_status) => (
-      <ConnectionStatusColumn connection_status={connection_status} />
+    renderFunc: (connection_status, _, { executor_type }) => (
+      <ConnectionStatusColumn
+        connection_status={connection_status}
+        executor_type={executor_type}
+      />
     ),
     props: {
       width: 15,

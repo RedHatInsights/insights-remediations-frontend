@@ -57,7 +57,11 @@ export const fetchInventoryData = async (
       item.system_ids.includes(systemId)
     );
     if (matchedItem) {
-      return { ...result, connection_status: matchedItem.connection_status };
+      return {
+        ...result,
+        connection_status: matchedItem.connection_status,
+        executor_type: matchedItem.executor_type,
+      };
     } else {
       return result;
     }
