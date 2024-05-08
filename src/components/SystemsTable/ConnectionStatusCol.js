@@ -9,7 +9,6 @@ import {
 import { Flex, Popover, Title } from '@patternfly/react-core';
 
 const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
-  console.log(connection_status, 'status here + ', executor_type, 'execture');
   return (
     <Fragment>
       {connection_status === 'connected' && (
@@ -114,7 +113,7 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
           <Flex>
             <DisconnectedIcon className="pf-u-mr-xs" />
             <p style={{ borderBottomStyle: 'dotted', maxWidth: 'fit-content' }}>
-              Disconnected
+              Not configured
             </p>
           </Flex>
         </Popover>

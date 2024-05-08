@@ -34,7 +34,6 @@ const SystemsTableWrapper = ({
   );
   const loaded = useSelector(({ entities }) => entities?.loaded);
   const rows = useSelector(({ entities }) => entities?.rows);
-  console.log(rows, 'rows here');
 
   const onConfirm = () => {
     (async () => {
