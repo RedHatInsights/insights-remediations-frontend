@@ -151,8 +151,13 @@ const RemediationDetails = ({
 
   const { status, remediation } = selectedRemediation;
 
-  const [connectedSystems, totalSystems, areDetailsLoading, detailsError] =
-    useConnectionStatus(remediation);
+  const [
+    connectedSystems,
+    totalSystems,
+    areDetailsLoading,
+    detailsError,
+    connectedData,
+  ] = useConnectionStatus(remediation);
 
   const remediationsList = useRemediationsList(remediation);
 
@@ -264,7 +269,10 @@ const RemediationDetails = ({
                   />
                 </Tab>
                 <Tab eventKey={'systems'} title="Systems">
-                  <SystemsTable remediation={remediation} />
+                  <SystemsTable
+                    remediation={remediation}
+                    connectedData={connectedData}
+                  />
                 </Tab>
                 <Tab eventKey={'activity'} title="Activity">
                   {renderActivityState(executable, playbookRuns, remediation)}

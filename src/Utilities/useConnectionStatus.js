@@ -8,6 +8,7 @@ export const useConnectionStatus = (remediation) => {
   const [totalSystems, setTotalSystems] = useState(0);
   const [areDetailsLoading, setAreDetailsLoading] = useState(true);
   const [detailsError, setDetailsError] = useState();
+  const [connectedData, setConnectedData] = useState();
   const mounted = useRef(false);
   let connectedSystemCount = 0;
   let totalSystemsCount = 0;
@@ -25,7 +26,8 @@ export const useConnectionStatus = (remediation) => {
                 (connectedSystemCount = connected_group.system_count);
           }),
           setConnectedSystems(connectedSystemCount)),
-          setTotalSystems(totalSystemsCount);
+          setTotalSystems(totalSystemsCount),
+          setConnectedData(connection_status.data);
       } catch (error) {
         console.error(error);
         setDetailsError(error?.errors[0].status || '');
@@ -41,5 +43,11 @@ export const useConnectionStatus = (remediation) => {
     };
   }, [remediation]);
 
-  return [connectedSystems, totalSystems, areDetailsLoading, detailsError];
+  return [
+    connectedSystems,
+    totalSystems,
+    areDetailsLoading,
+    detailsError,
+    connectedData,
+  ];
 };

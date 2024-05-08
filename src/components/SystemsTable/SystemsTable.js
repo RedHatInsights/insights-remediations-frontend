@@ -18,7 +18,12 @@ import {
 } from './helpers';
 import systemsColumns from './Columns';
 
-const SystemsTableWrapper = ({ remediation, registry, refreshRemediation }) => {
+const SystemsTableWrapper = ({
+  remediation,
+  registry,
+  refreshRemediation,
+  connectedData,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const systemsRef = useRef();
   const getEntitiesRef = useRef(() => undefined);
@@ -29,6 +34,7 @@ const SystemsTableWrapper = ({ remediation, registry, refreshRemediation }) => {
   );
   const loaded = useSelector(({ entities }) => entities?.loaded);
   const rows = useSelector(({ entities }) => entities?.rows);
+  console.log(rows, 'rows here');
 
   const onConfirm = () => {
     (async () => {
@@ -89,7 +95,6 @@ const SystemsTableWrapper = ({ remediation, registry, refreshRemediation }) => {
   useEffect(() => {
     systemsRef.current = calculateSystems(remediation);
   }, [remediation.id]);
-
   return (
     <InventoryTable
       variant="compact"
@@ -150,7 +155,12 @@ const SystemsTableWrapper = ({ remediation, registry, refreshRemediation }) => {
         },
       }}
       getEntities={async (_i, config) =>
-        fetchInventoryData(config, systemsRef.current, getEntitiesRef.current)
+        fetchInventoryData(
+          config,
+          systemsRef.current,
+          getEntitiesRef.current,
+          connectedData
+        )
       }
       onLoad={({ INVENTORY_ACTION_TYPES, mergeWithEntities, api }) => {
         getEntitiesRef.current = api?.getEntities;
