@@ -9,7 +9,7 @@ import {
 } from '@patternfly/react-core';
 import propTypes from 'prop-types';
 import { EXISTING_PLAYBOOK } from '../../../Utilities/utils';
-import * as api from '../../../api';
+import { getRemediation } from '../../../api';
 
 const ExistingPlaybookTypeahead = ({
   selectedPlaybook,
@@ -21,6 +21,7 @@ const ExistingPlaybookTypeahead = ({
   formOptions,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [inputValue, setInputValue] = useState(selectedPlaybook?.name);
   const [filterValue, setFilterValue] = useState('');
   const [selectOptions, setSelectOptions] = useState(existingRemediations);
   const [focusedItemIndex, setFocusedItemIndex] = useState(null);
@@ -58,17 +59,21 @@ const ExistingPlaybookTypeahead = ({
 
   const onSelect = (_event, value) => {
     setIsLoadingRemediation(true);
-    api.getRemediation(value).then((remediation) => {
+    getRemediation(value).then((remediation) => {
       setSelectedPlaybook(remediation);
       setIsLoadingRemediation(false);
-      existingPlaybookSelected && input.onChange(remediation.name);
-      existingPlaybookSelected &&
+      if (existingPlaybookSelected) {
+        setInputValue(remediation.name);
+        setFilterValue('');
+        input.onChange(remediation.name);
         formOptions.change(EXISTING_PLAYBOOK, remediation);
+      }
     });
   };
 
   const onTextInputChange = (_event, value) => {
     setFilterValue(value);
+    setInputValue(value);
   };
 
   const handleMenuArrowKeys = (key) => {
@@ -113,15 +118,11 @@ const ExistingPlaybookTypeahead = ({
       : firstMenuItem;
     switch (event.key) {
       case 'Enter':
-        if (isOpen && focusedItem.name !== 'no results') {
+        if (isOpen && !focusedItem.name.includes('No results found for')) {
           onSelect(null, focusedItem.id);
         }
         setIsOpen((prevIsOpen) => !prevIsOpen);
         setFocusedItemIndex(null);
-        setActiveItem(null);
-        break;
-      case 'Escape':
-        setIsOpen(false);
         setActiveItem(null);
         break;
       case 'ArrowUp':
@@ -142,7 +143,7 @@ const ExistingPlaybookTypeahead = ({
     >
       <TextInputGroup isPlain>
         <TextInputGroupMain
-          value={selectedPlaybook?.name || filterValue}
+          value={inputValue}
           onClick={onToggleClick}
           onChange={onTextInputChange}
           onKeyDown={onInputKeyDown}
