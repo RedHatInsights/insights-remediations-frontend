@@ -8,7 +8,7 @@ export const useConnectionStatus = (remediation) => {
   const [totalSystems, setTotalSystems] = useState(0);
   const [areDetailsLoading, setAreDetailsLoading] = useState(true);
   const [detailsError, setDetailsError] = useState();
-  const [connectedData, setConnectedData] = useState();
+  const [connectedData, setConnectedData] = useState([]);
   const mounted = useRef(false);
   let connectedSystemCount = 0;
   let totalSystemsCount = 0;
@@ -31,6 +31,7 @@ export const useConnectionStatus = (remediation) => {
       } catch (error) {
         console.error(error);
         setDetailsError(error?.errors[0].status || '');
+        setConnectedData(error?.errors[0].status);
         //When backend endpoint fails, it will stop here and not continue - forever loading
         setAreDetailsLoading(false);
       }
