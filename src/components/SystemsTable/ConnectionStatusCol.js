@@ -39,10 +39,16 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
             <span>
               <UnknownIcon className="pf-u-mr-xs" />
               To view connection status, contact your administrator to request
-              the remediations:remediation:execute permission within RBAC, and
-              the "Allow Insights users to use 'Remediations' to send Ansible
-              Playbooks to fix issues on your systems" permission within Remote
-              Host Configuration Manager.
+              the{' '}
+              <p className="pf-v5-u-font-weight-bold">
+                remediations:remediation:execute{' '}
+              </p>
+              permission within RBAC, and the{' '}
+              <p className="pf-v5-u-font-weight-bold">
+                "Allow Insights users to use 'Remediations' to send Ansible
+                Playbooks to fix issues on your systems"
+              </p>{' '}
+              permission within Remote Host Configuration Manager.
               <a
                 href="https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide/host-communication-with-insights_red-hat-insights-remediation-guide"
                 style={{ textDecoration: 'underline' }}
