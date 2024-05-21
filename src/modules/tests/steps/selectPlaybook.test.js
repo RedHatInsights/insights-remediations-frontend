@@ -12,13 +12,19 @@ import { Provider } from 'react-redux';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
+import { getRemediation } from '../../../api';
 
 jest.mock('../../../api', () => ({
   ...jest.requireActual('../../../api'),
   getRemediations: jest.fn(
     () =>
       new Promise((resolve) =>
-        resolve({ data: [{ id: 'remediationId', name: 'test-remediation-1' }] })
+        resolve({
+          data: [
+            { id: 'remediationId', name: 'test-remediation-1' },
+            { id: '1234', name: 'bretheren' },
+          ],
+        })
       )
   ),
   getRemediation: jest.fn(
@@ -117,8 +123,136 @@ describe('SelectPlaybook', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('test-remediation-1')).toBeVisible();
+      expect(screen.queryByTestId('skeleton-loader')).not.toBeInTheDocument();
     });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('combobox', {
+          name: /type to filter/i,
+        })
+      ).toBeVisible();
+    });
+  });
+
+  it('should use type ahead on existing playbooks dropdown', async () => {
+    const store = mockStore(initialState);
+    render(
+      <Provider store={store}>
+        <RendererWrapper schema={createSchema({})} {...initialProps} />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('skeleton-loader')).not.toBeInTheDocument();
+    });
+
+    const typeaheadBox = screen.getByRole('combobox', {
+      name: /type to filter/i,
+    });
+    await userEvent.click(typeaheadBox);
+
+    expect(
+      screen.getByRole('option', {
+        name: /test-remediation-1/i,
+      })
+    ).toBeVisible();
+
+    expect(
+      screen.getByRole('option', {
+        name: /bretheren/i,
+      })
+    ).toBeVisible();
+
+    await userEvent.type(typeaheadBox, 'br');
+
+    expect(
+      screen.queryByRole('option', {
+        name: /test-remediation-1/i,
+      })
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByRole('option', {
+        name: /bretheren/i,
+      })
+    ).toBeVisible();
+  });
+
+  it('should display no results found on typeahead', async () => {
+    const store = mockStore(initialState);
+    render(
+      <Provider store={store}>
+        <RendererWrapper schema={createSchema({})} {...initialProps} />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('skeleton-loader')).not.toBeInTheDocument();
+    });
+
+    const typeaheadBox = screen.getByRole('combobox', {
+      name: /type to filter/i,
+    });
+    await userEvent.click(typeaheadBox);
+
+    expect(
+      screen.getByRole('option', {
+        name: /test-remediation-1/i,
+      })
+    ).toBeVisible();
+
+    expect(
+      screen.getByRole('option', {
+        name: /bretheren/i,
+      })
+    ).toBeVisible();
+
+    await userEvent.type(typeaheadBox, 'tooted');
+
+    expect(
+      screen.queryByRole('option', {
+        name: /test-remediation-1/i,
+      })
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole('option', {
+        name: /bretheren/i,
+      })
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByRole('option', {
+        name: /no results found for "tooted"/i,
+      })
+    ).toBeVisible();
+  });
+
+  it('should call getRemediation on select', async () => {
+    const store = mockStore(initialState);
+    render(
+      <Provider store={store}>
+        <RendererWrapper schema={createSchema({})} {...initialProps} />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('skeleton-loader')).not.toBeInTheDocument();
+    });
+
+    const typeaheadBox = screen.getByRole('combobox', {
+      name: /type to filter/i,
+    });
+    await userEvent.click(typeaheadBox);
+
+    await userEvent.click(
+      screen.queryByRole('option', {
+        name: /test-remediation-1/i,
+      })
+    );
+
+    expect(getRemediation).toHaveBeenCalled();
   });
 
   it('should be able to create new playbook', async () => {
