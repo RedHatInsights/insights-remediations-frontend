@@ -34,7 +34,8 @@ export const calculateSystems = (remediation) =>
 export const fetchInventoryData = async (
   { page = 0, ...config } = {},
   systems,
-  getEntities
+  getEntities,
+  connectedData
 ) => {
   const currSystems = systems.filter(({ display_name }) =>
     config.filters?.hostnameOrId
@@ -50,10 +51,26 @@ export const fetchInventoryData = async (
     true
   );
 
+  const updatedResults = data.results.map((result) => {
+    const systemId = result.id;
+    const matchedItem = connectedData.find((item) =>
+      item.system_ids.includes(systemId)
+    );
+    if (matchedItem) {
+      return {
+        ...result,
+        connection_status: matchedItem.connection_status,
+        executor_type: matchedItem.executor_type,
+      };
+    } else {
+      return result;
+    }
+  });
+
   return {
     ...data,
     page,
-    results: data.results.map((host) => ({
+    results: updatedResults.map((host) => ({
       ...currSystems.find(({ id }) => id === host.id),
       ...host,
     })),

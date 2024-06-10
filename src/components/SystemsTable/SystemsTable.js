@@ -18,7 +18,13 @@ import {
 } from './helpers';
 import systemsColumns from './Columns';
 
-const SystemsTableWrapper = ({ remediation, registry, refreshRemediation }) => {
+const SystemsTableWrapper = ({
+  remediation,
+  registry,
+  refreshRemediation,
+  connectedData,
+  areDetailsLoading,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const systemsRef = useRef();
   const getEntitiesRef = useRef(() => undefined);
@@ -89,115 +95,121 @@ const SystemsTableWrapper = ({ remediation, registry, refreshRemediation }) => {
   useEffect(() => {
     systemsRef.current = calculateSystems(remediation);
   }, [remediation.id]);
-
   return (
-    <InventoryTable
-      variant="compact"
-      showTags
-      noDetail
-      hideFilters={{
-        all: true,
-        name: false,
-      }}
-      tableProps={{
-        canSelectAll: false,
-      }}
-      columns={(defaultColumns) =>
-        mergedColumns(defaultColumns, systemsColumns)
-      }
-      bulkSelect={{
-        isDisabled: rows ? false : true,
-        count: selected ? selected.size : 0,
-        items: [
-          {
-            title: 'Select none (0)',
-            onClick: () => bulkSelectorSwitch('none'),
-          },
-          {
-            ...(loaded && rows && rows.length > 0
-              ? {
-                  title: `Select page (${rows.length})`,
-                  onClick: () => {
-                    !selected //if nothing is selected - select the page
-                      ? bulkSelectorSwitch('page')
-                      : bulkSelectCheck(rows).length === rows.length //it compares the selected rows to the total selected values so you can deselect the page
-                      ? bulkSelectorSwitch('deselect page')
-                      : systemsRef.current.length > selected.size //it compares the total amount of rows to the selected values, so you can select additional page
-                      ? bulkSelectorSwitch('page')
-                      : bulkSelectorSwitch('deselect page');
-                  },
-                }
-              : {}),
-          },
-          {
-            ...(loaded && rows && rows.length > 0
-              ? {
-                  title: `Select all (${systemsRef.current.length})`,
-                  onClick: () => {
-                    calculateChecked(systemsRef.current, selected)
-                      ? bulkSelectorSwitch('deselect all')
-                      : bulkSelectorSwitch('all');
-                  },
-                }
-              : {}),
-          },
-        ],
-        checked: calculateChecked(systemsRef.current, selected),
-        onSelect: () => {
-          bulkSelectCheck(rows).length === rows.length
-            ? bulkSelectorSwitch('deselect page')
-            : bulkSelectorSwitch('page');
-        },
-      }}
-      getEntities={async (_i, config) =>
-        fetchInventoryData(config, systemsRef.current, getEntitiesRef.current)
-      }
-      onLoad={({ INVENTORY_ACTION_TYPES, mergeWithEntities, api }) => {
-        getEntitiesRef.current = api?.getEntities;
-        registry?.register?.({
-          ...mergeWithEntities(remediationSystems(INVENTORY_ACTION_TYPES)),
-        });
-      }}
-      actions={[
-        {
-          title: 'Remove system',
-          onClick: (_event, _index, { id, display_name }) => {
-            activeSystem.current = {
-              id,
-              display_name,
-              issues: remediation.issues.filter((issue) =>
-                issue.systems.find(({ id: systemId }) => systemId === id)
-              ),
-            };
-            setIsOpen(true);
-          },
-        },
-      ]}
-    >
-      {loaded && (
-        <Button
-          variant="secondary"
-          onClick={() => setIsOpen(true)}
-          isDisabled={selected.size === 0}
-        >
-          Remove system
-        </Button>
-      )}
-      <RemoveSystemModal
-        isOpen={isOpen}
-        onConfirm={onConfirm}
-        selected={
-          selected.size > 0
-            ? Array.from(selected, ([, value]) => value)
-            : [activeSystem.current]
-        }
-        onClose={() => {
-          activeSystem.current = undefined;
-          setIsOpen(false);
+    !areDetailsLoading && (
+      <InventoryTable
+        variant="compact"
+        showTags
+        noDetail
+        hideFilters={{
+          all: true,
+          name: false,
         }}
-        remediationName={remediation.name}
-      />
-    </InventoryTable>
+        tableProps={{
+          canSelectAll: false,
+        }}
+        columns={(defaultColumns) =>
+          mergedColumns(defaultColumns, systemsColumns)
+        }
+        bulkSelect={{
+          isDisabled: rows ? false : true,
+          count: selected ? selected.size : 0,
+          items: [
+            {
+              title: 'Select none (0)',
+              onClick: () => bulkSelectorSwitch('none'),
+            },
+            {
+              ...(loaded && rows && rows.length > 0
+                ? {
+                    title: `Select page (${rows.length})`,
+                    onClick: () => {
+                      !selected //if nothing is selected - select the page
+                        ? bulkSelectorSwitch('page')
+                        : bulkSelectCheck(rows).length === rows.length //it compares the selected rows to the total selected values so you can deselect the page
+                        ? bulkSelectorSwitch('deselect page')
+                        : systemsRef.current.length > selected.size //it compares the total amount of rows to the selected values, so you can select additional page
+                        ? bulkSelectorSwitch('page')
+                        : bulkSelectorSwitch('deselect page');
+                    },
+                  }
+                : {}),
+            },
+            {
+              ...(loaded && rows && rows.length > 0
+                ? {
+                    title: `Select all (${systemsRef.current.length})`,
+                    onClick: () => {
+                      calculateChecked(systemsRef.current, selected)
+                        ? bulkSelectorSwitch('deselect all')
+                        : bulkSelectorSwitch('all');
+                    },
+                  }
+                : {}),
+            },
+          ],
+          checked: calculateChecked(systemsRef.current, selected),
+          onSelect: () => {
+            bulkSelectCheck(rows).length === rows.length
+              ? bulkSelectorSwitch('deselect page')
+              : bulkSelectorSwitch('page');
+          },
+        }}
+        getEntities={async (_i, config) =>
+          fetchInventoryData(
+            config,
+            systemsRef.current,
+            getEntitiesRef.current,
+            connectedData
+          )
+        }
+        onLoad={({ INVENTORY_ACTION_TYPES, mergeWithEntities, api }) => {
+          getEntitiesRef.current = api?.getEntities;
+          registry?.register?.({
+            ...mergeWithEntities(remediationSystems(INVENTORY_ACTION_TYPES)),
+          });
+        }}
+        actions={[
+          {
+            title: 'Remove system',
+            onClick: (_event, _index, { id, display_name }) => {
+              activeSystem.current = {
+                id,
+                display_name,
+                issues: remediation.issues.filter((issue) =>
+                  issue.systems.find(({ id: systemId }) => systemId === id)
+                ),
+              };
+              setIsOpen(true);
+            },
+          },
+        ]}
+      >
+        {loaded && (
+          <Button
+            variant="secondary"
+            onClick={() => setIsOpen(true)}
+            isDisabled={selected.size === 0}
+          >
+            Remove system
+          </Button>
+        )}
+        <RemoveSystemModal
+          isOpen={isOpen}
+          onConfirm={onConfirm}
+          selected={
+            selected.size > 0
+              ? Array.from(selected, ([, value]) => value)
+              : [activeSystem.current]
+          }
+          onClose={() => {
+            activeSystem.current = undefined;
+            setIsOpen(false);
+          }}
+          remediationName={remediation.name}
+        />
+      </InventoryTable>
+    )
   );
 };
 

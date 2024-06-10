@@ -4,6 +4,17 @@ import {
   fetchInventoryData,
 } from './helpers';
 
+const mockData = [
+  {
+    endpoint_id: null,
+    executor_id: null,
+    executor_type: 'None',
+    executor_name: null,
+    system_count: 1,
+    system_ids: ['1'],
+    connection_status: 'no_rhc',
+  },
+];
 describe('calculateChecked', () => {
   it('should return false', () => {
     expect(calculateChecked([], new Map())).toBe(false);
@@ -87,7 +98,8 @@ describe('fetchInventoryData', () => {
     const data = await fetchInventoryData(
       { per_page: 10 },
       [{ id: 'one' }],
-      getFn
+      getFn,
+      mockData
     );
     expect(getFn).toHaveBeenCalled();
     expect(data).toMatchObject({
@@ -108,7 +120,8 @@ describe('fetchInventoryData', () => {
         { id: 'one', display_name: 'foo' },
         { id: 'two', display_name: 'bar' },
       ],
-      getFn
+      getFn,
+      mockData
     );
     expect(getFn).toHaveBeenCalled();
     expect(data).toMatchObject({
@@ -126,7 +139,8 @@ describe('fetchInventoryData', () => {
         { id: 'one', display_name: 'foo' },
         { id: 'two', display_name: 'bar' },
       ],
-      getFn
+      getFn,
+      mockData
     );
     expect(getFn).toHaveBeenCalled();
     expect(data).toMatchObject({
