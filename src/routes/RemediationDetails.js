@@ -272,6 +272,7 @@ const RemediationDetails = ({
                   <SystemsTable
                     remediation={remediation}
                     connectedData={connectedData}
+                    areDetailsLoading={areDetailsLoading}
                   />
                 </Tab>
                 <Tab eventKey={'activity'} title="Activity">

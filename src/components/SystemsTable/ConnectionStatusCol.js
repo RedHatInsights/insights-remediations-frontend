@@ -74,6 +74,7 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
         <ConnectedIcon className="pf-u-mr-xs" /> Connected
       </span>
     );
+    //When execType === 'none' connection_status is no_rhc
   } else if (execType === 'none') {
     return (
       <Popover
@@ -113,7 +114,7 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
       </Popover>
     );
   } else if (status === 'disconnected') {
-    if (executor_type === 'rhc') {
+    if (execType === 'rhc') {
       return (
         <Popover
           triggerAction="hover"
@@ -150,7 +151,7 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
           </Flex>
         </Popover>
       );
-    } else if (executor_type === 'rhc-satellite') {
+    } else if (execType === 'rhc-satellite') {
       return (
         <Popover
           triggerAction="hover"
