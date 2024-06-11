@@ -53,9 +53,9 @@ export const fetchInventoryData = async (
 
   const updatedResults = data.results.map((result) => {
     const systemId = result.id;
-    const matchedItem = connectedData.find((item) =>
-      item.system_ids.includes(systemId)
-    );
+    const matchedItem =
+      connectedData !== 403 &&
+      connectedData.find((item) => item.system_ids.includes(systemId));
     if (matchedItem) {
       return {
         ...result,

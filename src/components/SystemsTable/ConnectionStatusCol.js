@@ -20,55 +20,7 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
     execType = executor_type.toLowerCase();
   }
 
-  if (status === 403) {
-    return (
-      <Popover
-        triggerAction="hover"
-        headerContent={
-          <Title headingLevel="h4">
-            <UnknownIcon className="pf-u-mr-xs" />
-            Connection status unknown
-          </Title>
-        }
-        position="left"
-        bodyContent={
-          <Flex
-            direction={{ default: 'column' }}
-            spaceItems={{ default: 'spaceItemsNone' }}
-          >
-            <span>
-              <UnknownIcon className="pf-u-mr-xs" />
-              To view connection status, contact your administrator to request
-              the{' '}
-              <p className="pf-v5-u-font-weight-bold">
-                remediations:remediation:execute{' '}
-              </p>
-              permission within RBAC, and the{' '}
-              <p className="pf-v5-u-font-weight-bold">
-                "Allow Insights users to use 'Remediations' to send Ansible
-                Playbooks to fix issues on your systems"
-              </p>{' '}
-              permission within Remote Host Configuration Manager.
-              <a
-                href="https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide/host-communication-with-insights_red-hat-insights-remediation-guide"
-                style={{ textDecoration: 'underline' }}
-                className="pf-u-ml-xs"
-              >
-                Remote Host Configuration Manager.
-              </a>
-            </span>
-          </Flex>
-        }
-      >
-        <Flex>
-          <UnknownIcon className="pf-u-mr-xs" />
-          <p style={{ borderBottomStyle: 'dotted', maxWidth: 'fit-content' }}>
-            Unknown
-          </p>
-        </Flex>
-      </Popover>
-    );
-  } else if (status === 'connected') {
+  if (status === 'connected') {
     return (
       <span>
         <ConnectedIcon className="pf-u-mr-xs" /> Connected
@@ -190,6 +142,54 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
         </Popover>
       );
     }
+  } else {
+    return (
+      <Popover
+        triggerAction="hover"
+        headerContent={
+          <Title headingLevel="h4">
+            <UnknownIcon className="pf-u-mr-xs" />
+            Connection status unknown
+          </Title>
+        }
+        position="left"
+        bodyContent={
+          <Flex
+            direction={{ default: 'column' }}
+            spaceItems={{ default: 'spaceItemsNone' }}
+          >
+            <span>
+              <UnknownIcon className="pf-u-mr-xs" />
+              To view connection status, contact your administrator to request
+              the{' '}
+              <p className="pf-v5-u-font-weight-bold">
+                remediations:remediation:execute{' '}
+              </p>
+              permission within RBAC, and the{' '}
+              <p className="pf-v5-u-font-weight-bold">
+                "Allow Insights users to use 'Remediations' to send Ansible
+                Playbooks to fix issues on your systems"
+              </p>{' '}
+              permission within Remote Host Configuration Manager.
+              <a
+                href="https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide/host-communication-with-insights_red-hat-insights-remediation-guide"
+                style={{ textDecoration: 'underline' }}
+                className="pf-u-ml-xs"
+              >
+                Remote Host Configuration Manager.
+              </a>
+            </span>
+          </Flex>
+        }
+      >
+        <Flex>
+          <UnknownIcon className="pf-u-mr-xs" />
+          <p style={{ borderBottomStyle: 'dotted', maxWidth: 'fit-content' }}>
+            Unknown
+          </p>
+        </Flex>
+      </Popover>
+    );
   }
 };
 
