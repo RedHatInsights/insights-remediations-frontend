@@ -170,9 +170,9 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
                 "Allow Insights users to use 'Remediations' to send Ansible
                 Playbooks to fix issues on your systems"
               </p>{' '}
-              permission within Remote Host Configuration Manager.
+              permission within{' '}
               <a
-                href="https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide/host-communication-with-insights_red-hat-insights-remediation-guide"
+                href="https://console.redhat.com/insights/connector "
                 style={{ textDecoration: 'underline' }}
                 className="pf-u-ml-xs"
               >
