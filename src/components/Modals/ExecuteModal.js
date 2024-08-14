@@ -66,17 +66,22 @@ export const ExecuteModal = ({
   const rows = [...connected, ...disconnected].map((con) => ({
     cells: [
       {
-        title: con.executor_name ? (
-          <Tooltip content={`${con.executor_name}`}>
-            <span>
-              {con.executor_name.length > 25
-                ? `${con.executor_name.slice(0, 22)}...`
-                : con.executor_name}
-            </span>
-          </Tooltip>
-        ) : (
-          'Direct connection'
-        ),
+        title:
+          con.connection_status === 'connected' ? (
+            con.executor_name ? (
+              <Tooltip content={`${con.executor_name}`}>
+                <span>
+                  {con.executor_name.length > 25
+                    ? `${con.executor_name.slice(0, 22)}...`
+                    : con.executor_name}
+                </span>
+              </Tooltip>
+            ) : (
+              'Direct connection'
+            )
+          ) : (
+            'Not available'
+          ),
       },
       con.system_count,
       {
