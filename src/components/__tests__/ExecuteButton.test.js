@@ -5,6 +5,7 @@ import * as api from '../../api';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 // eslint-disable-next-line no-import-assign
 api.downloadPlaybook = jest.fn();
@@ -102,29 +103,31 @@ describe('Execute button', () => {
 
   test('Opens execute modal on execute button click', async () => {
     render(
-      <ExecuteButton
-        data={data}
-        isLoading
-        remediationStatus={'fullfiled'}
-        issueCount={1}
-        remediation={{
-          id: 'id',
-          issues: [
-            {
-              systems: [
-                {
-                  display_name: 'test',
-                  hostname: 'test2',
-                  id: 'id',
-                  resolved: false,
-                },
-              ],
-            },
-          ],
-        }}
-        isDisabled={false}
-        getConnectionStatus={() => null}
-      />
+      <Router>
+        <ExecuteButton
+          data={data}
+          isLoading
+          remediationStatus={'fullfiled'}
+          issueCount={1}
+          remediation={{
+            id: 'id',
+            issues: [
+              {
+                systems: [
+                  {
+                    display_name: 'test',
+                    hostname: 'test2',
+                    id: 'id',
+                    resolved: false,
+                  },
+                ],
+              },
+            ],
+          }}
+          isDisabled={false}
+          getConnectionStatus={() => null}
+        />
+      </Router>
     );
 
     expect(screen.queryByTestId('execute-button')).not.toBeInTheDocument();

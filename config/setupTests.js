@@ -4,6 +4,11 @@ import { enableFetchMocks } from 'jest-fetch-mock';
 enableFetchMocks();
 
 jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
+  __esModule: true,
+  default: () => ({
+    getApp: () => 'remediations',
+    getBundle: () => 'insights',
+  }),
   useChrome: () => ({
     isBeta: jest.fn(),
     chrome: jest.fn(),
