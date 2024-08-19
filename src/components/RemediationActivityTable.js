@@ -17,6 +17,8 @@ import { PermissionContext } from '../App';
 
 import './RemediationActivityTable.scss';
 
+export const ACTIVITY_LIST_COLUMNS = ['Run on', 'Run by', 'Status'];
+
 const RemediationActivityTable = ({ remediation, playbookRuns }) => {
   const [rows, setRows] = useState([]);
   const permission = useContext(PermissionContext);
@@ -128,15 +130,13 @@ const RemediationActivityTable = ({ remediation, playbookRuns }) => {
     setRows(collapseRows);
   };
 
-  const columns = ['Run on', 'Run by', 'Status'];
-
   return (
     <Table
       className="rem-c-activity-table"
       aria-label="Collapsible table"
       onCollapse={handleOnCollapse}
       rows={rows}
-      cells={columns}
+      cells={ACTIVITY_LIST_COLUMNS}
     >
       <TableHeader />
       <TableBody />
