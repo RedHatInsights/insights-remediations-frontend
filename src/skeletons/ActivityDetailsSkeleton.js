@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import {
   PageHeader,
@@ -6,8 +7,6 @@ import {
 } from '@redhat-cloud-services/frontend-components/PageHeader';
 import { Main } from '@redhat-cloud-services/frontend-components/Main';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
-
-import SkeletonTable from './SkeletonTable';
 
 import {
   Card,
@@ -25,8 +24,10 @@ import {
 import DescriptionList from '../components/Layouts/DescriptionList';
 
 import './RemediationDetailsSkeleton.scss';
+import { Th } from '@patternfly/react-table';
+import { SkeletonTable } from '@patternfly/react-component-groups';
 
-const ActivityDetailsSkeleton = () => {
+const ActivityDetailsSkeleton = ({ columns }) => {
   return (
     <React.Fragment>
       <PageHeader>
@@ -81,13 +82,24 @@ const ActivityDetailsSkeleton = () => {
               </Title>
             </CardHeader>
             <CardBody>
-              <SkeletonTable />
+              <SkeletonTable
+                columns={columns.map((column) => (
+                  <Th key={column.title} width={20}>
+                    {column.title}
+                  </Th>
+                ))}
+                rows={10}
+              />
             </CardBody>
           </Card>
         </Stack>
       </Main>
     </React.Fragment>
   );
+};
+
+ActivityDetailsSkeleton.propTypes = {
+  columns: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default ActivityDetailsSkeleton;

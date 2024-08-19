@@ -58,6 +58,12 @@ const ActivityDetail = ({
     getPlaybookRun(id, run_id);
   }, []);
 
+  const COLUMNS = [
+    { title: 'Connection' },
+    { title: 'Systems' },
+    { title: 'Playbook run status' },
+  ];
+
   return remediation && playbookRun && playbookRun.data ? (
     <React.Fragment>
       <PageHeader>
@@ -184,11 +190,7 @@ const ActivityDetail = ({
                     },
                   ],
                 }))}
-                cells={[
-                  { title: 'Connection' },
-                  { title: 'Systems' },
-                  { title: 'Playbook run status' },
-                ]}
+                cells={COLUMNS}
               >
                 <TableHeader />
                 <TableBody />
@@ -199,7 +201,7 @@ const ActivityDetail = ({
       </Main>
     </React.Fragment>
   ) : (
-    <ActivityDetailsSkeleton />
+    <ActivityDetailsSkeleton columns={COLUMNS} />
   );
 };
 
