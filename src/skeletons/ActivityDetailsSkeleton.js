@@ -84,9 +84,7 @@ const ActivityDetailsSkeleton = ({ columns }) => {
             <CardBody>
               <SkeletonTable
                 columns={columns.map((column) => (
-                  <Th key={column.title} width={20}>
-                    {column.title}
-                  </Th>
+                  <Th key={column.title}>{column.title}</Th>
                 ))}
                 rows={10}
               />
