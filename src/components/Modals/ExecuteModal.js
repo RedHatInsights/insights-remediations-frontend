@@ -293,7 +293,7 @@ export const ExecuteModal = ({
             rows={rows}
           >
             <TableHeader />
-            <TableBody />
+            <TableBody role="tablebody" />
           </Table>
         )}
         {!isLoading && systemCount === 0 && <EmptyExecutePlaybookState />}
