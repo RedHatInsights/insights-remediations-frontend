@@ -21,11 +21,7 @@ import {
 import { CancelButton } from '../containers/CancelButton';
 
 import { capitalize } from '../Utilities/utils';
-
-const connectorUrl = (isBeta) =>
-  isBeta
-    ? `${window.location.origin}/preview/settings/connector`
-    : `${window.location.origin}/settings/connector`;
+import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 
 export const normalizeStatus = (status) =>
   ({
@@ -204,7 +200,7 @@ StatusSummary.propTypes = {
   playbookId: PropTypes.string,
 };
 
-export const styledConnectionStatus = (status, isBeta) =>
+export const styledConnectionStatus = (status) =>
   ({
     connected: (
       <TextContent>
@@ -307,16 +303,13 @@ export const styledConnectionStatus = (status, isBeta) =>
           <Text component={TextVariants.small} style={{ margin: '0px' }}>
             Remediation from Insights requires Cloud connector. Cloud connector
             can be enabled via Satelite, or through &nbsp;
-            <Button
-              className="pf-u-p-0"
-              key="configure"
-              variant="link"
-              component="a"
-              // eslint-disable-next-line max-len
-              href={connectorUrl(isBeta)}
+            <InsightsLink
+              app="connector"
+              to="/"
+              className="pf-v5-u-font-size-md pf-v5-u-display-inline-block"
             >
               RHC (Red Hat connector)
-            </Button>
+            </InsightsLink>
           </Text>
           <Button
             className="pf-u-p-0"
@@ -339,16 +332,13 @@ export const styledConnectionStatus = (status, isBeta) =>
           <Text component={TextVariants.small} style={{ margin: '0px' }}>
             Remediation from Insights requires Cloud connector. Cloud connector
             can be enabled via Satelite, or through &nbsp;
-            <Button
-              className="pf-u-p-0"
-              key="configure"
-              variant="link"
-              component="a"
-              // eslint-disable-next-line max-len
-              href={connectorUrl(isBeta)}
+            <InsightsLink
+              app="connector"
+              to="/"
+              className="pf-v5-u-font-size-md pf-v5-u-display-inline-block"
             >
               RHC (Red Hat connector)
-            </Button>
+            </InsightsLink>
           </Text>
           <Button
             className="pf-u-p-0"

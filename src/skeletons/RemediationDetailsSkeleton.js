@@ -7,7 +7,6 @@ import {
 import { Main } from '@redhat-cloud-services/frontend-components/Main';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 
-import SkeletonTable from './SkeletonTable';
 import SkeletonTableToolbar from './SkeletonTableToolbar';
 import SkeletonTabs from './SkeletonTabs';
 
@@ -30,6 +29,7 @@ import { ChartDonutUtilization, ChartLabel } from '@patternfly/react-charts';
 import DescriptionList from '../components/Layouts/DescriptionList';
 
 import './RemediationDetailsSkeleton.scss';
+import { SkeletonTable } from '@patternfly/react-component-groups';
 
 const RemediationDetailsSkeleton = () => {
   return (
@@ -57,7 +57,7 @@ const RemediationDetailsSkeleton = () => {
           <LevelItem>
             <Split hasGutter>
               <SplitItem>
-                <Button isDisabled variant="link">
+                <Button isDisabled variant="secondary">
                   Download playbook
                 </Button>
               </SplitItem>
@@ -78,7 +78,7 @@ const RemediationDetailsSkeleton = () => {
           <StackItem className="ins-c-playbookSummary__tabs">
             <SkeletonTabs />
             <SkeletonTableToolbar />
-            <SkeletonTable />
+            <SkeletonTable rows={10} numberOfColumns={5} />
           </StackItem>
         </Stack>
       </Main>
