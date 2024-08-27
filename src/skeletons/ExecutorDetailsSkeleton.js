@@ -6,11 +6,9 @@ import {
 } from '@redhat-cloud-services/frontend-components/PageHeader';
 import { Main } from '@redhat-cloud-services/frontend-components/Main';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
-import SkeletonTable from './SkeletonTable';
 
 import {
   Card,
-  CardHeader,
   CardBody,
   Stack,
   StackItem,
@@ -18,7 +16,8 @@ import {
   BreadcrumbItem,
   Split,
   SplitItem,
-  Button,
+  Spinner,
+  Bullseye,
 } from '@patternfly/react-core';
 
 import DescriptionList from '../components/Layouts/DescriptionList';
@@ -77,12 +76,10 @@ const ExecutorDetailsSkeleton = () => {
       <Main>
         <Stack hasGutter>
           <Card>
-            <CardHeader className="rem-m-card__header-bold">
-              <Button>Download playbook</Button>
-            </CardHeader>
-
             <CardBody>
-              <SkeletonTable />
+              <Bullseye>
+                <Spinner />
+              </Bullseye>
             </CardBody>
           </Card>
         </Stack>

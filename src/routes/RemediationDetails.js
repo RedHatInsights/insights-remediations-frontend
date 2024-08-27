@@ -8,7 +8,9 @@ import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
 import RemediationDetailsTable from '../components/RemediationDetailsTable';
 import SystemsTable from '../components/SystemsTable/SystemsTable';
-import RemediationActivityTable from '../components/RemediationActivityTable';
+import RemediationActivityTable, {
+  ACTIVITY_LIST_COLUMNS,
+} from '../components/RemediationActivityTable';
 import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
 import { normalizeStatus } from '../components/statusHelper';
 import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
@@ -17,7 +19,6 @@ import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import UpsellBanner from '../components/Alerts/UpsellBanner';
 import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
 import DeniedState from '../components/DeniedState';
-import SkeletonTable from '../skeletons/SkeletonTable';
 import '../components/Status.scss';
 import {
   PageHeader,
@@ -51,6 +52,8 @@ import { RemediationSummary } from '../components/RemediationSummary';
 import { dispatchNotification } from '../Utilities/dispatcher';
 import { useConnectionStatus } from '../Utilities/useConnectionStatus';
 import { useRemediationsList } from '../Utilities/useRemediationsList';
+import { SkeletonTable } from '@patternfly/react-component-groups';
+import { Th } from '@patternfly/react-table';
 
 const RemediationDetails = ({
   selectedRemediation,
@@ -146,7 +149,14 @@ const RemediationDetails = ({
       return <EmptyActivityTable />;
     }
 
-    return <SkeletonTable />;
+    return (
+      <SkeletonTable
+        columns={ACTIVITY_LIST_COLUMNS.map((column) => (
+          <Th key={column}>{column}</Th>
+        ))}
+        rows={10}
+      />
+    );
   };
 
   const { status, remediation } = selectedRemediation;

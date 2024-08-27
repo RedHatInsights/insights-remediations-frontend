@@ -7,6 +7,8 @@ import { ExecuteModal } from './Modals/ExecuteModal';
 import './ExecuteButton.scss';
 import './Status.scss';
 import { CheckIcon, TimesIcon } from '@patternfly/react-icons';
+import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
+import { Link } from 'react-router-dom';
 
 const ExecuteButton = ({
   isLoading,
@@ -72,13 +74,14 @@ const ExecuteButton = ({
                 ) : (
                   <CheckIcon className="pf-v5-u-mr-sm" />
                 )}
-                <a
-                  href="https://console.redhat.com/insights/connector"
+                <InsightsLink
+                  app="connector"
+                  to="/"
                   style={{ textDecoration: 'underline', color: 'white' }}
                   className="pf-v5-u-mr-xs"
                 >
                   RHC manager
-                </a>
+                </InsightsLink>
                 is {detailsError === 403 ? 'disabled' : 'enabled'}.
               </span>
 
@@ -88,13 +91,13 @@ const ExecuteButton = ({
                 ) : (
                   <TimesIcon className="pf-v5-u-mr-sm" />
                 )}
-                <a
-                  href="https://console.redhat.com/iam/user-access/overview"
+                <Link
+                  to="/iam/user-access/overview"
                   style={{ textDecoration: 'underline', color: 'white' }}
                   className="pf-v5-u-mr-xs"
                 >
                   User access permissions
-                </a>
+                </Link>
                 are {permissions ? '' : 'not'} granted.
               </span>
             </Flex>
