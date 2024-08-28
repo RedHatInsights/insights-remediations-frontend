@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { Button } from '@patternfly/react-core';
@@ -6,44 +6,42 @@ import ConfirmationDialog from './ConfirmationDialog';
 
 import './DeleteButton.scss';
 
-class DeleteButton extends Component {
-  state = {
-    dialogOpen: false,
+const DeleteButton = ({
+  label,
+  dialogTitle,
+  dialogMessage,
+  dialogConfirmationText,
+  isDisabled,
+  onDelete,
+  variant,
+}) => {
+  const [isDialogOpen, setDialogOpen] = useState(false);
+
+  const onDialogClose = (result) => {
+    setDialogOpen(false);
+    result && onDelete();
   };
 
-  onButtonClicked = () => {
-    this.setState({ dialogOpen: true });
-  };
-
-  onDialogClose = (result) => {
-    this.setState({ dialogOpen: false });
-    result && this.props.onDelete();
-  };
-
-  render() {
-    const { dialogOpen } = this.state;
-
-    return (
-      <React.Fragment>
-        <Button
-          onClick={this.onButtonClicked}
-          isDisabled={this.props.isDisabled}
-          variant={this.props.variant}
-        >
-          {this.props.label}
-        </Button>
-        {dialogOpen && (
-          <ConfirmationDialog
-            title={this.props.dialogTitle}
-            confirmText={this.props.dialogConfirmationText}
-            text={this.props.dialogMessage}
-            onClose={this.onDialogClose}
-          />
-        )}
-      </React.Fragment>
-    );
-  }
-}
+  return (
+    <React.Fragment>
+      <Button
+        onClick={() => setDialogOpen(true)}
+        isDisabled={isDisabled}
+        variant={variant}
+      >
+        {label}
+      </Button>
+      {isDialogOpen && (
+        <ConfirmationDialog
+          title={dialogTitle}
+          confirmText={dialogConfirmationText}
+          text={dialogMessage}
+          onClose={onDialogClose}
+        />
+      )}
+    </React.Fragment>
+  );
+};
 
 DeleteButton.propTypes = {
   label: PropTypes.string,
