@@ -339,6 +339,7 @@ const Home = () => {
                           await deleteRemediations(selectedIds);
 
                           loadRemediations();
+                          activeFiltersConfig.onDelete();
                           selector.reset();
                         }
                       }}
