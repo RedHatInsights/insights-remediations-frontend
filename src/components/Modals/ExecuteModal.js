@@ -59,6 +59,26 @@ export const ExecuteModal = ({
     setDisconnected(dis);
   }, [data]);
 
+  const generateStatus = (con) => {
+    if (con.connection_status !== 'connected') {
+      return 'Not available';
+    }
+
+    if (!con.executor_name) {
+      return 'Direct connection';
+    }
+
+    return (
+      <Tooltip content={`${con.executor_name}`}>
+        <span>
+          {con.executor_name.length > 25
+            ? `${con.executor_name.slice(0, 22)}...`
+            : con.executor_name}
+        </span>
+      </Tooltip>
+    );
+  };
+
   const generateRowsStatus = (con) => {
     return styledConnectionStatus(con.connection_status, chrome?.isBeta?.());
   };
@@ -66,17 +86,7 @@ export const ExecuteModal = ({
   const rows = [...connected, ...disconnected].map((con) => ({
     cells: [
       {
-        title: con.executor_name ? (
-          <Tooltip content={`${con.executor_name}`}>
-            <span>
-              {con.executor_name.length > 25
-                ? `${con.executor_name.slice(0, 22)}...`
-                : con.executor_name}
-            </span>
-          </Tooltip>
-        ) : (
-          'Direct connection'
-        ),
+        title: generateStatus(con),
       },
       con.system_count,
       {
@@ -84,6 +94,7 @@ export const ExecuteModal = ({
       },
     ],
   }));
+
   const connectedCount = connected.reduce((acc, e) => e.system_count + acc, 0);
   const systemCount = data.reduce((acc, e) => e.system_count + acc, 0);
 
@@ -282,7 +293,7 @@ export const ExecuteModal = ({
             rows={rows}
           >
             <TableHeader />
-            <TableBody />
+            <TableBody role="tablebody" />
           </Table>
         )}
         {!isLoading && systemCount === 0 && <EmptyExecutePlaybookState />}

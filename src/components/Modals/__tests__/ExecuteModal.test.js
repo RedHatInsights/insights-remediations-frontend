@@ -1,6 +1,6 @@
 import React from 'react';
 import { ExecuteModal } from '../ExecuteModal';
-import { render, screen } from '@testing-library/react';
+import { queryHelpers, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 const data = [
@@ -16,12 +16,19 @@ const data = [
     executor_type: null,
     executor_name: null,
     system_count: 4,
+    connection_status: 'connected',
+  },
+  {
+    executor_id: null,
+    executor_type: null,
+    executor_name: null,
+    system_count: 4,
     connection_status: 'no_executor',
   },
 ];
 
 describe('Execute modal', () => {
-  it('renders ExecuteModal component when given data', () => {
+  it('renders ExecuteModal component with correct connection type when given data', () => {
     const closeFn = jest.fn();
 
     render(
@@ -41,6 +48,22 @@ describe('Execute modal', () => {
     );
 
     expect(screen.getByTestId('execute-modal')).toBeVisible();
+
+    const queryAllByLabel = queryHelpers.queryAllByAttribute.bind(
+      null,
+      'data-label'
+    );
+
+    const connectionTypeColumn = queryAllByLabel(
+      screen.getByRole('tablebody'),
+      'Connection type'
+    );
+
+    expect(connectionTypeColumn[0]).toHaveTextContent(
+      'Satellite 1 (connected)'
+    );
+    expect(connectionTypeColumn[1]).toHaveTextContent('Direct connection');
+    expect(connectionTypeColumn[2]).toHaveTextContent('Not available');
   });
 
   it('renders ExecuteModal with refresh message when showRefresh is true', () => {
