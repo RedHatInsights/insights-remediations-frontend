@@ -218,7 +218,7 @@ export const styledConnectionStatus = (status) =>
         <Text component={TextVariants.p}>
           Connection issue
           <Text component={TextVariants.small} style={{ margin: '0px' }}>
-            Receptor not responding
+            RHC not responding
           </Text>
           {/* <Button
                     style={ { padding: '0px' } }
