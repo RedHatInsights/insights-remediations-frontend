@@ -6,6 +6,18 @@ This is the frontend application for [Insights Remediations](https://github.com/
 
 ## Getting Started
 
+### Initial etc/hosts setup
+
+In order to access the https://[env].foo.redhat.com in your browser, you have to add entries to your `/etc/hosts` file. This is a **one-time** setup that has to be done only once (unless you modify hosts) on each devel machine.
+
+Best way is to edit manually `/etc/hosts` on your localhost line:
+
+```
+127.0.0.1 <your-fqdn> localhost prod.foo.redhat.com stage.foo.redhat.com
+```
+
+more info [insights-frontend-starter-app README](https://github.com/RedHatInsights/frontend-starter-app/blob/master/README.md#initial-etchosts-setup)
+
 ### Running the application
 
 1. install and start the dev server in an environment of your choice:
