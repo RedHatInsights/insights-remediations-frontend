@@ -12,7 +12,7 @@ This is the frontend application for [Insights Remediations](https://github.com/
 
 ```sh
 npm i
-npm run start
+npm run start:proxy
 ```
 While you run the command above, you will be prompted to choose an enviroment.
 
