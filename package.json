@@ -53,7 +53,7 @@
       "!**/node_modules/**"
     ],
     "transformIgnorePatterns": [
-      "/node_modules/(?!@redhat-cloud-services)"
+      "/node_modules/(?!(uuid|@redhat-cloud-services|react-syntax-highlighter))"
     ],
     "setupFiles": [
       "<rootDir>/config/setupTests.js"
