@@ -155,6 +155,10 @@ export const getPlaybookRunSystemDetails = (
   ),
 });
 
+export const clearPlaybookRunSystemDetails = () => ({
+  type: ACTION_TYPES.CLEAR_PLAYBOOK_RUN_SYSTEM_DETAILS,
+});
+
 export const expandInventoryTable = (id, isOpen) => ({
   type: ACTION_TYPES.EXPAND_INVENTORY_TABLE,
   payload: {

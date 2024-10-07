@@ -1,4 +1,5 @@
 import React from 'react';
+import { TextEncoder } from 'util';
 import { enableFetchMocks } from 'jest-fetch-mock';
 
 enableFetchMocks();
@@ -18,6 +19,7 @@ jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
 
 global.React = React;
 global.insights = {};
+global.TextEncoder = TextEncoder;
 
 window.HTMLElement.prototype.scrollTo = jest.fn();
 

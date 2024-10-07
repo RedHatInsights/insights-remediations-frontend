@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 import Link from '@redhat-cloud-services/frontend-components/InsightsLink';
 import { useParams } from 'react-router-dom';
 import { InventoryTable } from '@redhat-cloud-services/frontend-components/Inventory';
@@ -11,7 +10,6 @@ import {
 } from '@redhat-cloud-services/frontend-components/PageHeader';
 import { DateFormat } from '@redhat-cloud-services/frontend-components/DateFormat';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
-
 import {
   Button,
   Card,
@@ -28,11 +26,11 @@ import { InProgressIcon } from '@patternfly/react-icons';
 import reducers from '../../store/reducers';
 import DescriptionList from '../Layouts/DescriptionList';
 import {
-  getPlaybookRuns,
   getPlaybookRun,
   getPlaybookRunSystemDetails,
   expandInventoryTable,
   loadRemediation,
+  clearPlaybookRunSystemDetails,
 } from '../../actions';
 import { downloadPlaybook } from '../../api';
 import { normalizeStatus, StatusSummary } from '../statusHelper';
@@ -44,27 +42,37 @@ import { register } from '../../store';
 import { mergedColumns } from '../SystemsTable/helpers';
 import columns from './Columns';
 import { useGetEntities } from './helpers';
+import isEmpty from 'lodash/isEmpty';
 
 let refreshInterval;
 
-const ExecutorDetails = ({
-  remediation,
-  playbookRun,
-  playbookRunSystemDetails,
-  getPlaybookRun,
-  getPlaybookRunSystemDetails,
-  onCollapseInventory,
-  loadRemediation,
-}) => {
+const ExecutorDetails = () => {
   const { executor_id, run_id, id } = useParams();
   const [executor, setExecutor] = useState({});
   const [openId, setOpenId] = useState();
   const [firstExpand, setFirstExpand] = useState(false);
   const inventory = useRef(null);
+  const dispatch = useDispatch();
+
+  const remediation = useSelector(({ selectedRemediation }) => {
+    return selectedRemediation.remediation;
+  });
+  const playbookRun = useSelector(({ playbookRun }) => {
+    return playbookRun;
+  });
+  const playbookRunSystemDetails = useSelector(
+    ({ playbookRunSystemDetails }) => playbookRunSystemDetails
+  );
 
   useEffect(() => {
-    loadRemediation(id);
-    getPlaybookRun(id, run_id);
+    dispatch(clearPlaybookRunSystemDetails());
+    if (!remediation) {
+      dispatch(loadRemediation(id));
+    }
+
+    if (isEmpty(playbookRun)) {
+      dispatch(getPlaybookRun(id, run_id));
+    }
 
     return () => {
       if (refreshInterval) {
@@ -85,7 +93,7 @@ const ExecutorDetails = ({
 
   useEffect(() => {
     if (!firstExpand) {
-      getPlaybookRun(id, run_id);
+      dispatch(getPlaybookRun(id, run_id));
     }
 
     if (
@@ -98,88 +106,105 @@ const ExecutorDetails = ({
     setFirstExpand(false);
   }, [playbookRunSystemDetails.status]);
 
-  const getEntites = useGetEntities({ id, run_id, executor_id, openId });
-  const renderInventorycard = (status) => (
-    <Main>
-      <Stack hasGutter>
-        <Card className="rem-c-card__playbook-log">
-          <CardBody>
-            <InventoryTable
-              ref={inventory}
-              columns={(defaultColumns) =>
-                mergedColumns(defaultColumns, columns)
-              }
-              onLoad={({ INVENTORY_ACTION_TYPES, mergeWithEntities }) =>
-                register({
-                  ...mergeWithEntities(
-                    reducers.playbookActivityIntentory({
-                      INVENTORY_ACTION_TYPES,
-                    })()
-                  ),
-                })
-              }
-              getEntities={getEntites}
-              hasCheckbox={false}
-              expandable
-              showTags
-              onExpandClick={
-                status === 'running'
-                  ? (_e, _i, isOpen, { id }) => {
-                      setFirstExpand(true);
-                      if (isOpen) {
-                        setOpenId(id);
-                        if (refreshInterval) {
-                          clearInterval(refreshInterval);
-                        }
+  const getEntities = useGetEntities({ id, run_id, executor_id, openId });
+  const renderInventorycard = (status) => {
+    return (
+      <Main>
+        <Stack hasGutter>
+          <Card className="rem-c-card__playbook-log">
+            <CardBody>
+              <InventoryTable
+                initialLoading
+                ref={inventory}
+                columns={(defaultColumns) =>
+                  mergedColumns(defaultColumns, columns)
+                }
+                onLoad={({ INVENTORY_ACTION_TYPES, mergeWithEntities }) =>
+                  register({
+                    ...mergeWithEntities(
+                      reducers.playbookActivityIntentory({
+                        INVENTORY_ACTION_TYPES,
+                      })()
+                    ),
+                  })
+                }
+                getEntities={getEntities}
+                hasCheckbox={false}
+                expandable
+                showTags
+                onExpandClick={
+                  status === 'running'
+                    ? (_e, _i, isOpen, { id }) => {
+                        setFirstExpand(true);
+                        if (isOpen) {
+                          setOpenId(id);
+                          if (refreshInterval) {
+                            clearInterval(refreshInterval);
+                          }
 
-                        getPlaybookRunSystemDetails(remediation.id, run_id, id);
-                        refreshInterval = setInterval(
-                          () =>
+                          dispatch(
                             getPlaybookRunSystemDetails(
                               remediation.id,
                               run_id,
                               id
-                            ),
-                          5000
-                        );
-                      } else {
-                        setOpenId(undefined);
+                            )
+                          );
+                          refreshInterval = setInterval(
+                            () =>
+                              dispatch(
+                                getPlaybookRunSystemDetails(
+                                  remediation.id,
+                                  run_id,
+                                  id
+                                )
+                              ),
+                            5000
+                          );
+                        } else {
+                          setOpenId(undefined);
+                          clearInterval(refreshInterval);
+                        }
+
+                        dispatch(expandInventoryTable(isOpen, id));
+                      }
+                    : (_e, _i, isOpen, { id }) => {
+                        setFirstExpand(true);
+                        if (isOpen) {
+                          setOpenId(id);
+                          dispatch(
+                            getPlaybookRunSystemDetails(
+                              remediation.id,
+                              run_id,
+                              id
+                            )
+                          );
+                        } else {
+                          setOpenId(undefined);
+                        }
+
                         clearInterval(refreshInterval);
+                        dispatch(expandInventoryTable(id, isOpen));
                       }
-
-                      onCollapseInventory(isOpen, id);
-                    }
-                  : (_e, _i, isOpen, { id }) => {
-                      setFirstExpand(true);
-                      if (isOpen) {
-                        setOpenId(id);
-                        getPlaybookRunSystemDetails(remediation.id, run_id, id);
-                      } else {
-                        setOpenId(undefined);
-                      }
-
-                      clearInterval(refreshInterval);
-                      onCollapseInventory(isOpen, id);
-                    }
-              }
-              actionsConfig={{
-                actions: [
-                  <Button
-                    key="download-playbook"
-                    variant="secondary"
-                    onClick={() => downloadPlaybook([remediation.id])}
-                  >
-                    Download playbook
-                  </Button>,
-                ],
-              }}
-              hideFilters={{ all: true, name: false }}
-            />
-          </CardBody>
-        </Card>
-      </Stack>
-    </Main>
-  );
+                }
+                actionsConfig={{
+                  actions: [
+                    <Button
+                      key="download-playbook"
+                      variant="secondary"
+                      onClick={() => downloadPlaybook([remediation.id])}
+                    >
+                      Download playbook
+                    </Button>,
+                  ],
+                }}
+                hideFilters={{ all: true, name: false }}
+              />
+            </CardBody>
+          </Card>
+        </Stack>
+      </Main>
+    );
+  };
 
   const renderMain = (status) =>
     ({
@@ -291,40 +316,4 @@ const ExecutorDetails = ({
   );
 };
 
-ExecutorDetails.propTypes = {
-  remediation: PropTypes.object,
-  playbookRun: PropTypes.object,
-  playbookRunSystemDetails: PropTypes.object,
-  getPlaybookRun: PropTypes.func,
-  getPlaybookRunSystemDetails: PropTypes.func,
-  onCollapseInventory: PropTypes.func,
-  loadRemediation: PropTypes.func,
-};
-
-ExecutorDetails.defaultProps = {
-  remediation: {},
-};
-
-const connected = connect(
-  ({
-    playbookRuns,
-    playbookRun,
-    playbookRunSystemDetails,
-    selectedRemediation,
-  }) => ({
-    playbookRuns: playbookRuns.data,
-    playbookRun,
-    playbookRunSystemDetails,
-    remediation: selectedRemediation.remediation,
-  }),
-  (dispatch) => ({
-    getPlaybookRuns: (id) => dispatch(getPlaybookRuns(id)),
-    getPlaybookRun: (id, runId) => dispatch(getPlaybookRun(id, runId)),
-    getPlaybookRunSystemDetails: (remediationId, runId, systemId) =>
-      dispatch(getPlaybookRunSystemDetails(remediationId, runId, systemId)),
-    onCollapseInventory: (isOpen, id) =>
-      dispatch(expandInventoryTable(id, isOpen)),
-    loadRemediation: (id) => dispatch(loadRemediation(id)),
-  })
-)(ExecutorDetails);
-export default connected;
+export default ExecutorDetails;

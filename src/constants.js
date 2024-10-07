@@ -29,7 +29,12 @@ const asyncActions = flatMap(
   (a) => [a, `${a}_PENDING`, `${a}_FULFILLED`, `${a}_REJECTED`]
 );
 
-const actions = ['SET_ETAG', 'EXPAND_INVENTORY_TABLE', 'SELECT_ENTITY'];
+const actions = [
+  'SET_ETAG',
+  'EXPAND_INVENTORY_TABLE',
+  'SELECT_ENTITY',
+  'CLEAR_PLAYBOOK_RUN_SYSTEM_DETAILS',
+];
 export const ACTION_TYPES = keyBy([...asyncActions, ...actions], (k) => k);
 
 export const SEARCH_DEBOUNCE_DELAY = 500;
