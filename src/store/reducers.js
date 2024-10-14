@@ -314,6 +314,7 @@ const reducers = {
     ) => ({
       ...action.payload,
     }),
+    [ACTION_TYPES.CLEAR_PLAYBOOK_RUN_SYSTEM_DETAILS]: () => ({}),
   }),
 
   runRemediation: applyReducerHash(
