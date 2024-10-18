@@ -1,16 +1,14 @@
 const { resolve } = require('path');
+const packageJson = require('./package.json');
+
+const bundle = 'insights';
+const appName = packageJson[bundle].appname;
 
 module.exports = {
+  appName,
   appUrl: '/insights/remediations',
-  debug: true,
   useProxy: process.env.PROXY === 'true',
-  proxyVerbose: true,
-  interceptChromeConfig: false,
-  plugins: [],
-  ...(process.env.HOT ? { hotReload: process.env.HOT === 'true' } : { hotReload: true }),
-  ...(process.env.port ? { port: parseInt(process.env.port) } : {}),
   moduleFederation: {
-    exclude: ['react-router-dom'],
     shared: [
       {
         'react-router-dom': {
