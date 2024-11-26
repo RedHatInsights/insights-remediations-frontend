@@ -164,8 +164,7 @@ const ExecutorDetails = () => {
                           setOpenId(undefined);
                           clearInterval(refreshInterval);
                         }
-
-                        dispatch(expandInventoryTable(isOpen, id));
+                        dispatch(expandInventoryTable(id, isOpen));
                       }
                     : (_e, _i, isOpen, { id }) => {
                         setFirstExpand(true);
