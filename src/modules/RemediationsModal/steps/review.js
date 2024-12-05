@@ -127,8 +127,8 @@ const Review = (props) => {
       <StackItem>
         <Switch
           data-testid="autoreboot-switch"
-          label="Turn off autoreboot"
-          labelOff="Turn on autoreboot"
+          label="Auto reboot is on"
+          labelOff="Auto reboot is off"
           isChecked={input.value}
           onChange={() => input.onChange(!input.value)}
         />

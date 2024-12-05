@@ -106,10 +106,10 @@ describe('Review', () => {
 
     const autoreboot_switch = screen.getByTestId('autoreboot-switch');
     expect(autoreboot_switch).toBeChecked();
-    expect(autoreboot_switch).toHaveAccessibleName('Turn off autoreboot');
+    expect(autoreboot_switch).toHaveAccessibleName('Auto reboot is on');
     await userEvent.click(autoreboot_switch);
     expect(autoreboot_switch).not.toBeChecked();
-    expect(autoreboot_switch).toHaveAccessibleName('Turn on autoreboot');
+    expect(autoreboot_switch).toHaveAccessibleName('Auto reboot is off');
   });
 
   it('should sort records correctly', async () => {
