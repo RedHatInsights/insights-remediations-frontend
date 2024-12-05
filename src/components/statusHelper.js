@@ -16,6 +16,7 @@ import {
   Text,
   TextVariants,
   Tooltip,
+  Icon,
 } from '@patternfly/react-core';
 
 import { CancelButton } from '../containers/CancelButton';
@@ -36,60 +37,62 @@ export const normalizeStatus = (status) =>
 export const renderStatusIcon = (status) =>
   ({
     running: (
-      <InProgressIcon
-        className="rem-c-running"
-        aria-label="connection status"
-      />
+      <Icon>
+        <InProgressIcon aria-label="connection status" />
+      </Icon>
     ),
     success: (
-      <CheckCircleIcon
-        className="rem-c-success"
-        aria-label="connection status"
-      />
+      <Icon status="success">
+        <CheckCircleIcon aria-label="connection status" />
+      </Icon>
     ),
     failure: (
-      <TimesCircleIcon
-        className="rem-c-failure"
-        aria-label="connection status"
-      />
+      <Icon status="danger">
+        <TimesCircleIcon aria-label="connection status" />
+      </Icon>
     ),
     canceled: (
-      <TimesCircleIcon
-        className="rem-c-canceled"
-        aria-label="connection status"
-      />
+      <Icon>
+        <TimesCircleIcon aria-label="connection status" />
+      </Icon>
     ),
   }[status]);
 
 export const renderStatus = (status, text) =>
   ({
     running: (
-      <Flex className="rem-c-running" spacer={{ default: 'space-items-sm' }}>
+      <Flex spacer={{ default: 'space-items-sm' }}>
         <FlexItem>
           <b>{text || 'Running'}</b>
         </FlexItem>
         <FlexItem>
-          <InProgressIcon aria-label="connection status: running" />
+          <Icon>
+            <InProgressIcon aria-label="connection status: running" />
+          </Icon>
         </FlexItem>
       </Flex>
     ),
     success: (
-      <Flex className="rem-c-success" spacer={{ default: 'space-items-sm' }}>
+      <Flex spacer={{ default: 'space-items-sm' }}>
         <FlexItem>
           <b>{text || 'Success'}</b>
         </FlexItem>
         <FlexItem>
-          <CheckCircleIcon aria-label="connection status: success" />
+          <Icon status="success">
+            <CheckCircleIcon aria-label="connection status: success" />
+          </Icon>
         </FlexItem>
       </Flex>
     ),
     failure: (
-      <Flex className="rem-c-failure" spacer={{ default: 'space-items-sm' }}>
+      <Flex spacer={{ default: 'space-items-sm' }}>
         <FlexItem>
           <b>{text || 'Failed'}</b>
         </FlexItem>
         <FlexItem>
-          <TimesCircleIcon aria-label="connection status: failed" />
+          <Icon status="danger">
+            <TimesCircleIcon aria-label="connection status: failed" />
+          </Icon>
         </FlexItem>
       </Flex>
     ),
@@ -99,7 +102,9 @@ export const renderStatus = (status, text) =>
           <b>{text || 'Canceled'}</b>
         </FlexItem>
         <FlexItem>
-          <TimesCircleIcon aria-label="connection status: canceled" />
+          <Icon>
+            <TimesCircleIcon aria-label="connection status: canceled" />
+          </Icon>
         </FlexItem>
       </Flex>
     ),
@@ -139,8 +144,12 @@ export const StatusSummary = ({
   const statusBar = (
     <Flex className="rem-c-status-bar">
       {executorStatus && <FlexItem>{statusText(executorStatus)}</FlexItem>}
-      <FlexItem>{renderStatus('success', `${passCount}`)}</FlexItem>
-      <FlexItem>{renderStatus('failure', `${failCount}`)}</FlexItem>
+      <FlexItem className="rem-c-success">
+        {renderStatus('success', `${passCount}`)}
+      </FlexItem>
+      <FlexItem className="rem-c-failure">
+        {renderStatus('failure', `${failCount}`)}
+      </FlexItem>
       <FlexItem>{renderStatus('running', `${runningCount}`)}</FlexItem>
       {isDebug() &&
         hasCancel &&
@@ -220,13 +229,6 @@ export const styledConnectionStatus = (status) =>
           <Text component={TextVariants.small} style={{ margin: '0px' }}>
             RHC not responding
           </Text>
-          {/* <Button
-                    style={ { padding: '0px' } }
-                    key="troubleshoot"
-                    // eslint-disable-next-line no-console
-                    variant='link' onClick={ () => console.log('TODO: add link') }>
-                    Troubleshoot
-                </Button> */}
         </Text>
       </TextContent>
     ),
@@ -260,13 +262,6 @@ export const styledConnectionStatus = (status) =>
           <Text component={TextVariants.small} style={{ margin: '0px' }}>
             Satellite not registered for Playbook execution
           </Text>
-          {/* <Button
-                    style={ { padding: '0px' } }
-                    key="configure"
-                    // eslint-disable-next-line no-console
-                    variant='link' onClick={ () => console.log('TODO: add link') }>
-                    Learn how to register Satellite
-                </Button> */}
         </Text>
       </TextContent>
     ),
