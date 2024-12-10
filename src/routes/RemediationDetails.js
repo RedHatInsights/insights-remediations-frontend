@@ -30,8 +30,6 @@ import { InvalidObject } from '@redhat-cloud-services/frontend-components/Invali
 import {
   Stack,
   StackItem,
-  Level,
-  LevelItem,
   Breadcrumb,
   BreadcrumbItem,
   Button,
@@ -39,6 +37,8 @@ import {
   SplitItem,
   Tabs,
   Tab,
+  Flex,
+  FlexItem,
 } from '@patternfly/react-core';
 
 import RemediationDetailsSkeleton from '../skeletons/RemediationDetailsSkeleton';
@@ -198,11 +198,13 @@ const RemediationDetails = ({
             </BreadcrumbItem>
             <BreadcrumbItem isActive> {remediation.name} </BreadcrumbItem>
           </Breadcrumb>
-          <Level className="rem-l-level">
-            <LevelItem>
+
+          <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
+            <FlexItem style={{ width: '50%' }}>
               <PageHeaderTitle title={remediation.name} />
-            </LevelItem>
-            <LevelItem>
+            </FlexItem>
+
+            <FlexItem>
               <Split hasGutter>
                 <SplitItem>
                   <ExecutePlaybookButton
@@ -246,8 +248,8 @@ const RemediationDetails = ({
                   />
                 </SplitItem>
               </Split>
-            </LevelItem>
-          </Level>
+            </FlexItem>
+          </Flex>
           <RemediationSummary
             remediation={remediation}
             playbookRuns={playbookRuns}
