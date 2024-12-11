@@ -4,6 +4,7 @@ import {
   Button,
   Flex,
   FlexItem,
+  Icon,
   Split,
   SplitItem,
   Stack,
@@ -55,7 +56,9 @@ export const RemediationSummary = ({
   const rebootEnabled = () => {
     return (
       <div>
-        <CheckCircleIcon className="rem-c-success" />
+        <Icon status="success" className="pf-v5-u-pr-sm">
+          <CheckCircleIcon />
+        </Icon>
         <b className="ins-c-remediation-summary__reboot--enabled"> Enabled </b>
         {context.permissions.write && (
           <Button
@@ -72,7 +75,9 @@ export const RemediationSummary = ({
   const rebootDisabled = (required) => {
     return (
       <div>
-        <OffIcon />
+        <Icon className="pf-v5-u-pr-sm">
+          <OffIcon />
+        </Icon>
         <b
           className={`ins-c-remediation-summary__reboot--disabled${
             required ? '--warning' : ''
@@ -82,7 +87,9 @@ export const RemediationSummary = ({
         </b>
         {required && (
           <React.Fragment>
-            <ExclamationTriangleIcon className="ins-c-remediation-summary__reboot--required--icon" />
+            <Icon>
+              <ExclamationTriangleIcon className="ins-c-remediation-summary__reboot--required--icon" />
+            </Icon>
             <b className="ins-c-remediation-summary__reboot--required">
               {generateNumRebootString(generateNumIssuesReboot())}
             </b>
