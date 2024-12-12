@@ -116,19 +116,21 @@ const Review = (props) => {
           <Text>
             The playbook <b>{formOptions.getState().values[SELECT_PLAYBOOK]}</b>
             {input.value ? (
-              ' does'
+              ' auto reboots systems.'
             ) : (
-              <span className="ins-c-remediation-danger-text"> does not</span>
-            )}{' '}
-            auto reboot systems.
+              <span className="ins-c-remediation-danger-text">
+                {' '}
+                does not auto reboot systems.
+              </span>
+            )}
           </Text>
         </TextContent>
       </StackItem>
       <StackItem>
         <Switch
           data-testid="autoreboot-switch"
-          label="Turn off autoreboot"
-          labelOff="Turn on autoreboot"
+          label="Auto reboot is on"
+          labelOff="Auto reboot is off"
           isChecked={input.value}
           onChange={() => input.onChange(!input.value)}
         />
