@@ -362,11 +362,8 @@ export const fetchSystemsInfo = async (
         )
       : {};
   return {
-    ...{
-      ...data,
-      results: sortByAttr(data.results, 'display_name', config.orderDirection),
-    },
-    total: systems.length,
+    ...data,
+    results: sortByAttr(data.results, 'display_name', config.orderDirection),
     page: config.page,
     per_page: config.per_page,
     orderBy: config.orderBy,
