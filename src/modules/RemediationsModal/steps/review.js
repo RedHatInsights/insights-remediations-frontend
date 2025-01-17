@@ -133,6 +133,7 @@ const Review = (props) => {
           labelOff="Auto reboot is off"
           isChecked={input.value}
           onChange={() => input.onChange(!input.value)}
+          ouiaId="autoreboot-switch"
         />
       </StackItem>
       <Table
