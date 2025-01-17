@@ -288,7 +288,7 @@ describe('fetchSystemsInfo', () => {
       { page: 1, per_page: 1 },
       ['display_name'],
       [{ id: '123' }, { id: '456' }],
-      (systems) => Promise.resolve({ results: systems })
+      (systems) => Promise.resolve({ results: systems, total: 2 })
     );
     expect(value).toEqual({
       orderBy: undefined,
@@ -313,7 +313,7 @@ describe('fetchSystemsInfo', () => {
         { id: '456', name: 'test' },
         { id: '789', name: '12test' },
       ],
-      (systems) => Promise.resolve({ results: systems })
+      (systems) => Promise.resolve({ results: systems, total: 1 })
     );
     expect(value).toEqual({
       orderBy: undefined,
