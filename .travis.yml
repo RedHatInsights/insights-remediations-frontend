@@ -13,6 +13,10 @@ jobs:
   include:
   - stage: Lint
     script: npm run lint  
+  - stage: Test
+    script: npm run travis:verify
+  - stage: Build
+    script: npm run build
   - stage: Deploy
     script: npm run travis:verify && curl -sSL https://raw.githubusercontent.com/RedHatInsights/insights-frontend-builder-common/master/src/bootstrap.sh | bash -s
 env:

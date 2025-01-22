@@ -23,7 +23,9 @@ cypress/downloads
 cypress/screenshots
 cypress/videos
 
-codecov*
+codecov
+coverage/*
+coverage-*
 .nyc_output
 reports
 
