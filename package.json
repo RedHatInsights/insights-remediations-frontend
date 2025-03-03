@@ -26,7 +26,7 @@
     "@scalprum/react-core": "^0.1.1",
     "@sentry/webpack-plugin": "^3.1.0",
     "awesome-debounce-promise": "2.1.0",
-    "axios": "^0.21.4",
+    "axios": "^1.7.9",
     "classnames": "^2.3.1",
     "follow-redirects": "^1.15.6",
     "react": "^18.0.0",
