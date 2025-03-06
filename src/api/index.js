@@ -9,8 +9,8 @@ import {
 import { DefaultApi } from '@redhat-cloud-services/sources-client';
 
 /*
- * TODO: replace these with generated clients
- */
+//  * TODO: replace these with generated clients
+//  */
 import { doGet } from '../Utilities/http';
 import urijs from 'urijs';
 
@@ -25,8 +25,8 @@ export function getHosts() {
   return doGet('/api/inventory/v1/hosts');
 }
 /*
- * end of TODO
- */
+//  * end of TODO
+//  */
 
 class HttpError extends Error {
   constructor(description) {
@@ -179,6 +179,7 @@ export function patchRemediation(id, data) {
 }
 
 export function getRemediations() {
+  console.log('firing off here');
   const uri = new urijs(API_BASE)
     .segment('remediations')
     .query({ limit: 200 })
