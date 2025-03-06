@@ -40,6 +40,12 @@ export const routes = {
       )
     ),
   },
+  overViewPage: {
+    path: '/hidden',
+    component: lazy(() =>
+      import(/* webpackChunkName: "hidden" */ './routes/OverViewPage')
+    ),
+  },
 };
 
 const RemediationRoutes = () => {
