@@ -179,7 +179,6 @@ export function patchRemediation(id, data) {
 }
 
 export function getRemediations() {
-  console.log('firing off here');
   const uri = new urijs(API_BASE)
     .segment('remediations')
     .query({ limit: 200 })
