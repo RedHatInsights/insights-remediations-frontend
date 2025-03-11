@@ -17,7 +17,6 @@ import {
 } from './Filters';
 
 const getRemediations = (axios) => (params) => {
-  console.log('firing off here with params', params);
   return axios.get(`${API_BASE}/remediations`, { params });
 };
 
@@ -34,7 +33,6 @@ export const OverViewPage = () => {
     setSelectedItems(newSelectedItems);
   };
 
-  console.log(data, 'data here');
   return (
     <RemediationsTable
       items={data}
