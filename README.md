@@ -61,3 +61,7 @@ Use `remediations:debug` localStorage entry to unlock testing utilities in the U
 
 Any change commited to the `master` branch is automatically promoted to `/preview` in all environments.
 Any change commited to the `stable` branch is automatically promoted to the main version of the application in all environments.
+
+### AsyncTableTools
+
+All improvements to the AsyncTableTools framework need to be ported back to the compliance repository. The version in compliance should be treated as the canonical source (until migrated over to FEC)

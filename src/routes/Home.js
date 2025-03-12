@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector as reduxSelector } from 'react-redux';
-import { StackItem, Stack } from '@patternfly/react-core';
+import { StackItem, Stack, Spinner, Bullseye } from '@patternfly/react-core';
 
 import * as actions from '../actions';
 import { downloadPlaybook } from '../api';
@@ -30,6 +30,8 @@ import {
 import ConfirmationDialog from '../components/ConfirmationDialog';
 import keyBy from 'lodash/keyBy';
 import { useChrome } from '@redhat-cloud-services/frontend-components/useChrome';
+import { useFeatureFlag } from '../Utilities/Hooks/useFeatureFlag';
+import OverViewPageProvider from './OverViewPage';
 
 function verifyDownload(selectedIds, data) {
   let valid = [];
@@ -370,4 +372,17 @@ const Home = () => {
   );
 };
 
-export default Home;
+const RemediationHome = () => {
+  const remediationsV2 = useFeatureFlag('remediationsV2');
+  return remediationsV2 === undefined ? (
+    <Bullseye>
+      <Spinner />
+    </Bullseye>
+  ) : remediationsV2 ? (
+    <OverViewPageProvider />
+  ) : (
+    <Home />
+  );
+};
+
+export default RemediationHome;
