@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector as reduxSelector } from 'react-redux';
 import { StackItem, Stack, Spinner, Bullseye } from '@patternfly/react-core';
 

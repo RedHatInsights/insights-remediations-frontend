@@ -45,11 +45,9 @@ const useQuery = (fn, options = {}) => {
   const [meta, setMeta] = useState(undefined);
   const [error, setError] = useState(undefined);
   const [loading, setLoading] = useState(false);
-  console.log(params, 'params outside useQuery here');
-
+  const [availableIDs, setAvailableIDs] = useState([]);
   const fetchFn = useDeepCompareCallback(
     async (fn, params, setDataState = true) => {
-      console.log(params, 'params in useQuery here');
       if (loading) {
         return;
       }
@@ -61,7 +59,6 @@ const useQuery = (fn, options = {}) => {
             const convertedParams = convertToArray
               ? convertToArray(params)
               : params;
-
             if (Array.isArray(convertedParams)) {
               return await fn(...convertedParams);
             } else {
@@ -70,10 +67,11 @@ const useQuery = (fn, options = {}) => {
           })(params);
 
           if (mounted.current) {
-            console.log(data, 'data inside the mount');
             setData(data?.data || data);
             setMeta(data?.meta || null);
             setLoading(false);
+            const ids = data?.data?.map((item) => item.id) || [];
+            setAvailableIDs(ids);
           }
         } catch (e) {
           console.log(e);
@@ -135,8 +133,7 @@ const useQuery = (fn, options = {}) => {
     };
   }, [skip, params, typeof refetch !== 'undefined']);
 
-  console.log(data, 'data here in useQuery');
-  return { data, meta, error, loading, fetch, refetch };
+  return { data, meta, error, loading, fetch, refetch, availableIDs };
 };
 
 export default useQuery;
