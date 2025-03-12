@@ -34,7 +34,7 @@ import { TABLE_STATE_NAMESPACE } from './constants';
  *
  */
 const useTableSort = (columns, options = {}) => {
-  const { sortBy: initialSortBy, serialisers, onSort: onSortOption } = options;
+  const { filter: initialSortBy, serialisers, onSort: onSortOption } = options;
   const serialiser = useCallback(
     (state) => options.serialisers.sort(state, columns),
     [JSON.stringify(columns), JSON.stringify(options.serialisers)]
@@ -56,8 +56,8 @@ const useTableSort = (columns, options = {}) => {
   const [sortBy, setSortBy] = useTableState(
     TABLE_STATE_NAMESPACE,
     initialSortBy || {
-      index: 0,
-      direction: 'asc',
+      index: 6,
+      direction: 'desc',
     },
     stateOptions
   );
@@ -77,7 +77,6 @@ const useTableSort = (columns, options = {}) => {
     ...sortBy,
     index: sortBy?.index + offset,
   };
-
   return {
     tableProps: {
       onSort,
