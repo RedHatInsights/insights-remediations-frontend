@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector as reduxSelector } from 'react-redux';
 import { StackItem, Stack, Spinner, Bullseye } from '@patternfly/react-core';
 
@@ -31,7 +31,7 @@ import ConfirmationDialog from '../components/ConfirmationDialog';
 import keyBy from 'lodash/keyBy';
 import { useChrome } from '@redhat-cloud-services/frontend-components/useChrome';
 import { useFeatureFlag } from '../Utilities/Hooks/useFeatureFlag';
-import OverViewPageProvider, { OverViewPage } from './OverViewPage';
+import OverViewPageProvider from './OverViewPage';
 
 function verifyDownload(selectedIds, data) {
   let valid = [];

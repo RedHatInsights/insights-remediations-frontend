@@ -58,7 +58,6 @@ const useAsyncTableTools = (items, columns, options = {}) => {
           ...((columnManagerAction && [columnManagerAction]) || []),
         ],
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(columnManagerAction), JSON.stringify(options)]
   );
 
@@ -118,14 +117,11 @@ const useAsyncTableTools = (items, columns, options = {}) => {
       ...toolbarPropsOption,
       ...tableViewToolbarProps,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       toolbarActionsProps,
       paginationToolbarProps,
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       JSON.stringify(conditionalFilterProps),
       bulkSelectToolbarProps,
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       JSON.stringify(exportConfig.toolbarProps),
       tableViewToolbarProps,
       toolbarPropsOption,
