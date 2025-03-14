@@ -35,7 +35,7 @@ const CONCURRENT_REQUESTS = 2;
  *
  */
 const useFetchTotalBatched = (fetchFn, options = {}) => {
-  const { batchSize = DEFAULT_BATCH_SIZE, skip = false } = options;
+  const { batchSize = DEFAULT_BATCH_SIZE, skip = false, meta } = options; // Accept meta in the options
   const loading = useRef(false);
   const mounted = useRef(true);
   const [totalResult, setTotalResult] = useState();
@@ -70,7 +70,7 @@ const useFetchTotalBatched = (fetchFn, options = {}) => {
           const newTotalResult = {
             data: allPages,
             meta: {
-              total: firstPage.meta.total,
+              total: meta.total,
             },
           };
 
@@ -86,7 +86,7 @@ const useFetchTotalBatched = (fetchFn, options = {}) => {
         }
       }
     },
-    [fetchFn, batchSize]
+    [fetchFn, batchSize, meta]
   );
 
   useDeepCompareEffect(() => {
