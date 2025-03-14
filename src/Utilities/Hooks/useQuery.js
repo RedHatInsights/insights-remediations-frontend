@@ -45,7 +45,6 @@ const useQuery = (fn, options = {}) => {
   const [meta, setMeta] = useState(undefined);
   const [error, setError] = useState(undefined);
   const [loading, setLoading] = useState(false);
-  const [availableIDs, setAvailableIDs] = useState([]);
   const fetchFn = useDeepCompareCallback(
     async (fn, params, setDataState = true) => {
       if (loading) {
@@ -70,8 +69,6 @@ const useQuery = (fn, options = {}) => {
             setData(data?.data || data);
             setMeta(data?.meta || null);
             setLoading(false);
-            const ids = data?.data?.map((item) => item.id) || [];
-            setAvailableIDs(ids);
           }
         } catch (e) {
           console.log(e);
@@ -133,7 +130,7 @@ const useQuery = (fn, options = {}) => {
     };
   }, [skip, params, typeof refetch !== 'undefined']);
 
-  return { data, meta, error, loading, fetch, refetch, availableIDs };
+  return { data, meta, error, loading, fetch, refetch };
 };
 
 export default useQuery;

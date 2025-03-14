@@ -58,7 +58,6 @@ const useRemediationsQuery = (
     loading: queryLoading,
     fetch: queryFetch,
     meta: metaData,
-    availableIDs: availableIDs,
   } = useQuery(endpoint, {
     skip: batched ? true : skip,
     ...options,
@@ -79,6 +78,7 @@ const useRemediationsQuery = (
   } = useFetchTotalBatched(fetchForBatch, {
     skip: !batched ? true : skip,
     ...batch,
+    meta: metaData,
   });
 
   const exporter = async () => (await batchedFetch()).data;
@@ -92,13 +92,13 @@ const useRemediationsQuery = (
           data: batchedData,
           error: batchedError,
           loading: batchedLoading,
+          meta: metaData,
         }
       : {
           data: queryData,
           error: queryError,
           loading: queryLoading,
           meta: metaData,
-          availableIDs: availableIDs,
         }),
     fetch: queryFetch,
     fetchBatched: batchedFetch,
