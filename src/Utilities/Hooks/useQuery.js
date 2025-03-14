@@ -47,7 +47,6 @@ const useQuery = (fn, options = {}) => {
   const [data, setData] = useState(undefined);
   const [error, setError] = useState(undefined);
   const [loading, setLoading] = useState(false);
-
   const fetchFn = useDeepCompareCallback(
     async (fn, params, setDataState = true) => {
       if (setDataState) {

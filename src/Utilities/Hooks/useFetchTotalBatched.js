@@ -35,7 +35,7 @@ const CONCURRENT_REQUESTS = 2;
  *
  */
 const useFetchTotalBatched = (fetchFn, options = {}) => {
-  const { batchSize = DEFAULT_BATCH_SIZE, skip = false } = options;
+  const { batchSize = DEFAULT_BATCH_SIZE, skip = false, meta } = options; // Accept meta in the options
   const loading = useRef(false);
   const mounted = useRef(true);
   const [totalResult, setTotalResult] = useState();
@@ -45,7 +45,7 @@ const useFetchTotalBatched = (fetchFn, options = {}) => {
       if (!loading.current) {
         loading.current = true;
         const firstPage = await fetchFn(0, batchSize, ...args);
-        const total = firstPage?.meta?.total;
+        const total = meta?.total;
 
         if (total > batchSize) {
           const pages = Math.ceil(total / batchSize) || 1;
@@ -61,16 +61,14 @@ const useFetchTotalBatched = (fetchFn, options = {}) => {
           const results = await pAll(requests, {
             concurrency: CONCURRENT_REQUESTS,
           });
-
           const allPages = [
-            ...(firstPage?.data || []),
-            ...(results?.reduce((acc, { data }) => [...acc, ...data], []) ||
-              []),
+            ...(firstPage || []),
+            ...(results?.reduce((acc, data) => [...acc, ...data], []) || []),
           ];
           const newTotalResult = {
             data: allPages,
             meta: {
-              total: firstPage.meta.total,
+              total: meta.total,
             },
           };
 
@@ -86,7 +84,7 @@ const useFetchTotalBatched = (fetchFn, options = {}) => {
         }
       }
     },
-    [fetchFn, batchSize]
+    [fetchFn, batchSize, meta]
   );
 
   useDeepCompareEffect(() => {
@@ -99,12 +97,9 @@ const useFetchTotalBatched = (fetchFn, options = {}) => {
   }, [skip, fetch]);
 
   return {
-    // TODO this might be redundant... ?
     loading: typeof totalResult === 'undefined',
-    // TODO Maybe consider renaming to "result" to avoid confusion with the wrapped "data" of responses.
     data: totalResult,
     fetch,
   };
 };
-
 export default useFetchTotalBatched;
