@@ -15,12 +15,15 @@ import {
   remediationNameFilter,
   SystemsFilter,
 } from './Filters';
+import { DownloadPlaybookButton } from '../Utilities/DownloadPlaybookButton';
+import { useDispatch } from 'react-redux';
 
 const getRemediations = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations`, { params });
 };
 
 export const OverViewPage = () => {
+  const dispatch = useDispatch();
   const axios = useAxiosWithPlatformInterceptors();
   const [selectedItems, setSelectedItems] = useState([]);
   const { data, meta, fetchAllIds } = useRemediationsQuery(
@@ -54,9 +57,9 @@ export const OverViewPage = () => {
         itemIdsInTable: fetchAllIds,
         manageColumns: true,
         onSelect: handleSelectionChange,
-        itemIdsOnPage: data,
-        identifier: 'id',
-        preselected: data && data[0]?.id,
+        total: meta?.total,
+        dedicatedAction: () =>
+          DownloadPlaybookButton(selectedItems, data, dispatch),
       }}
     />
   );

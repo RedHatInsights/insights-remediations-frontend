@@ -11,7 +11,7 @@ import useFetchTotalBatched from '../Utilities/Hooks/useFetchTotalBatched';
  *  @property {object} [pagination]        API pagination params
  *  @property {object} [pagination.offset] Pagination offset
  *  @property {object} [pagination.limit]  Pagination limit (maximum 100)
- *  @property {object} [sortBy]            SortBy string for the API (usually 'attribute:desc')
+ *  @property {object} [sortBy]            SortBy string for the API (usually 'attribute=desc')
  *
  */
 
@@ -78,6 +78,7 @@ const useRemediationsQuery = (
   } = useFetchTotalBatched(fetchForBatch, {
     skip: !batched ? true : skip,
     ...batch,
+    meta: metaData,
   });
 
   const exporter = async () => (await batchedFetch()).data;
@@ -91,6 +92,7 @@ const useRemediationsQuery = (
           data: batchedData,
           error: batchedError,
           loading: batchedLoading,
+          meta: metaData,
         }
       : {
           data: queryData,
