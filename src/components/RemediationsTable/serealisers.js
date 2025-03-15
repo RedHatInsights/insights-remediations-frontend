@@ -90,5 +90,9 @@ export const filtersSerialiser = (state, filters) => {
  *  ];
  *
  */
-export const sortSerialiser = ({ index, direction } = {}, columns) =>
-  columns[index]?.sortable && `${columns[index].sortable}:${direction}`; // TODO: columns and index are not matching if the first column serves for expandable button
+export const sortSerialiser = ({ index, direction } = {}, columns) => {
+  return (
+    columns[index]?.sortable &&
+    `${direction === 'desc' ? '-' : ''}${columns[index].sortable}`
+  );
+};
