@@ -56,7 +56,7 @@ const useTableSort = (columns, options = {}) => {
   const [sortBy, setSortBy] = useTableState(
     TABLE_STATE_NAMESPACE,
     initialSortBy || {
-      index: 1,
+      index: 0,
       direction: 'asc',
     },
     stateOptions
