@@ -25,6 +25,7 @@ import useFetchTotalBatched from '../Utilities/Hooks/useFetchTotalBatched';
  *  @param   {object}                   [options]               Options for useRemediationsQuery & useQuery
  *  @param   {useRemediationQueryParams} [options.params]        API endpoint params
  *  @param   {boolean}                  [options.useTableState] Use the serialised table state
+ *  @param   {boolean}                  [options.onlyTotal]      Enables a predefined "compileResult" function for the useQuery to only return the meta.total as the `data`
  *
  *  @returns {useQueryReturn}                                   An object containing a data, loading and error state, as well as a fetch and refetch function.
  *
@@ -53,18 +54,15 @@ const useRemediationsQuery = (
   const skip = !!(useTableState && !hasState) || !!skipOption;
 
   const {
-    data: queryData,
+    result: queryData,
     error: queryError,
     loading: queryLoading,
     fetch: queryFetch,
-    meta: metaData,
-    availableIDs: availableIDs,
   } = useQuery(endpoint, {
     skip: batched ? true : skip,
     ...options,
     params,
   });
-
   const fetchForBatch = useCallback(
     async (offset, limit, params) =>
       await queryFetch({ limit, offset, ...params }, false),
@@ -73,7 +71,7 @@ const useRemediationsQuery = (
 
   const {
     loading: batchedLoading,
-    data: batchedData,
+    result: batchedData,
     error: batchedError,
     fetch: batchedFetch,
   } = useFetchTotalBatched(fetchForBatch, {
@@ -85,20 +83,17 @@ const useRemediationsQuery = (
 
   const fetchAllIds = async () =>
     (await batchedFetch()).data.map(({ id }) => id);
-
   return {
     ...(batched
       ? {
-          data: batchedData,
+          result: batchedData,
           error: batchedError,
           loading: batchedLoading,
         }
       : {
-          data: queryData,
+          result: queryData,
           error: queryError,
           loading: queryLoading,
-          meta: metaData,
-          availableIDs: availableIDs,
         }),
     fetch: queryFetch,
     fetchBatched: batchedFetch,
