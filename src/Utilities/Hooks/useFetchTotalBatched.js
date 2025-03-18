@@ -35,7 +35,7 @@ const CONCURRENT_REQUESTS = 2;
  *
  */
 const useFetchTotalBatched = (fetchFn, options = {}) => {
-  const { batchSize = DEFAULT_BATCH_SIZE, skip = false, meta } = options; // Accept meta in the options
+  const { batchSize = DEFAULT_BATCH_SIZE, skip = false } = options;
   const loading = useRef(false);
   const mounted = useRef(true);
   const [totalResult, setTotalResult] = useState();
@@ -45,8 +45,7 @@ const useFetchTotalBatched = (fetchFn, options = {}) => {
       if (!loading.current) {
         loading.current = true;
         const firstPage = await fetchFn(0, batchSize, ...args);
-        const total = meta?.total;
-
+        const total = firstPage?.meta.total;
         if (total > batchSize) {
           const pages = Math.ceil(total / batchSize) || 1;
           const requests = [...new Array(pages)]
@@ -61,14 +60,18 @@ const useFetchTotalBatched = (fetchFn, options = {}) => {
           const results = await pAll(requests, {
             concurrency: CONCURRENT_REQUESTS,
           });
+          console.log(results, 'results here');
           const allPages = [
-            ...(firstPage || []),
-            ...(results?.reduce((acc, data) => [...acc, ...data], []) || []),
+            ...(firstPage.data || []),
+            ...results.reduce(
+              (acc, response) => [...acc, ...(response.data || [])],
+              []
+            ),
           ];
           const newTotalResult = {
             data: allPages,
             meta: {
-              total: meta.total,
+              total: firstPage.meta.total,
             },
           };
 
@@ -84,7 +87,7 @@ const useFetchTotalBatched = (fetchFn, options = {}) => {
         }
       }
     },
-    [fetchFn, batchSize, meta]
+    [fetchFn, batchSize]
   );
 
   useDeepCompareEffect(() => {

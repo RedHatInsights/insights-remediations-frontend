@@ -1,3 +1,12 @@
+export const paginationSerialiser = (state) => {
+  if (state) {
+    const offset = (state.page - 1) * state.perPage;
+    const limit = state.perPage;
+
+    return { offset, limit };
+  }
+};
+
 const filterSerialisers = {
   text: (_config, [value]) => value,
   radio: (_config, [value]) => value,
@@ -34,13 +43,11 @@ export const filtersSerialiser = (state, filters) =>
     const serialiseValue = filterSerialiser
       ? filterSerialiser(filterConfigItem, value)
       : value;
-    console.log(filterConfigItem);
 
     const filterParams = {
       ...allFilters,
       [`filter[${filterConfigItem.filterAttribute}]`]: serialiseValue,
     };
-    console.log(filterParams);
     return filterParams;
   }, {});
 /**
