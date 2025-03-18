@@ -1,4 +1,3 @@
-// TODO correct the serialiser to transform state put into the tablestate to be API consumable
 export const paginationSerialiser = (state) => {
   if (state) {
     const offset = (state.page - 1) * state.perPage;
@@ -8,21 +7,10 @@ export const paginationSerialiser = (state) => {
   }
 };
 
-const textFilterSerialiser = (filterConfigItem, value) =>
-  `${filterConfigItem.filterAttribute} ~ "${value}"`;
-
-const checkboxFilterSerialiser = (filterConfigItem, values) =>
-  `${filterConfigItem.filterAttribute} ^ (${values
-    .map((value) => `${value}`)
-    .join(' ')})`;
-
-const raidoFilterSerialiser = (filterConfigItem, values) =>
-  `${filterConfigItem.filterAttribute} = "${values[0]}"`;
-
 const filterSerialisers = {
-  text: textFilterSerialiser,
-  checkbox: checkboxFilterSerialiser,
-  radio: raidoFilterSerialiser,
+  text: (_config, [value]) => value,
+  radio: (_config, [value]) => value,
+  checkbox: (_config, values) => values.join(','),
 };
 
 const findFilterSerialiser = (filterConfigItem) => {
@@ -48,25 +36,20 @@ const findFilterSerialiser = (filterConfigItem) => {
  *  @tutorial filter-serialiser
  *
  */
-export const filtersSerialiser = (state, filters) => {
-  const queryParts = Object.entries(state || {}).reduce(
-    (filterQueryParts, [filterId, value]) => {
-      const filterConfigItem = filters.find((filter) => filter.id === filterId);
-      const filterSerialiser = findFilterSerialiser(filterConfigItem);
+export const filtersSerialiser = (state, filters) =>
+  Object.entries(state || {}).reduce((allFilters, [filterId, value]) => {
+    const filterConfigItem = filters.find((filter) => filter.id === filterId);
+    const filterSerialiser = findFilterSerialiser(filterConfigItem);
+    const serialiseValue = filterSerialiser
+      ? filterSerialiser(filterConfigItem, value)
+      : value;
 
-      return [
-        ...filterQueryParts,
-        ...(filterSerialiser
-          ? [filterSerialiser(filterConfigItem, value)]
-          : []),
-      ];
-    },
-    []
-  );
-
-  return queryParts.length > 0 ? queryParts.join(' AND ') : undefined;
-};
-
+    const filterParams = {
+      ...allFilters,
+      [`filter[${filterConfigItem.filterAttribute}]`]: serialiseValue,
+    };
+    return filterParams;
+  }, {});
 /**
  * Returns a string consumable by the Remediations API as a "sort_by" parameter for a given column and direction
  * For columns to be sortable they need to have a "sortable" prop, which corresponds to the field name in the Remediations API
@@ -90,5 +73,9 @@ export const filtersSerialiser = (state, filters) => {
  *  ];
  *
  */
-export const sortSerialiser = ({ index, direction } = {}, columns) =>
-  columns[index]?.sortable && `${columns[index].sortable}:${direction}`; // TODO: columns and index are not matching if the first column serves for expandable button
+export const sortSerialiser = ({ index, direction } = {}, columns) => {
+  return (
+    columns[index]?.sortable &&
+    `${direction === 'desc' ? '-' : ''}${columns[index].sortable}`
+  );
+};

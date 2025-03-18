@@ -1,5 +1,6 @@
 import useRemediationsQuery from '../../../api/useRemediationsQuery';
 
+//TODO: This is currently not used, but will be when upgraded to JS Clients
 const convertToArray = (params) => {
   if (Array.isArray(params)) {
     return params;

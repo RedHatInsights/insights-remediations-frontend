@@ -77,7 +77,6 @@ const useTableSort = (columns, options = {}) => {
     ...sortBy,
     index: sortBy?.index + offset,
   };
-
   return {
     tableProps: {
       onSort,
