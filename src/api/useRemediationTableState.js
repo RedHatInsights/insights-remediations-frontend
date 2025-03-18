@@ -12,19 +12,16 @@ const useRemediationTableState = (useTableState, paramsOption) => {
   const params = useDeepCompareMemo(() => {
     if (!Array.isArray(paramsOption)) {
       const { filter: filterParam, ...paramsParam } = paramsOption || {};
-
-      const filter =
-        filterParam && filterState
-          ? `(${filterParam}) AND (${filterState})`
-          : filterState || filterParam;
+      const sort = sortBy;
 
       return useTableState
         ? {
             ...paramsParam,
             limit,
             offset,
-            sortBy,
-            ...(filter ? { filter } : {}),
+            sort,
+            ...filterParam,
+            ...filterState,
           }
         : paramsOption;
     } else {
