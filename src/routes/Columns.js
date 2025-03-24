@@ -8,6 +8,7 @@ import {
   CreatedCell,
   LastModifiedCell,
 } from './Cells.js';
+import { fitContent } from '@patternfly/react-table';
 
 // eslint-disable-next-line react/display-name
 export const renderComponent = (Component, props) => (_data, _id, entity) =>
@@ -15,6 +16,7 @@ export const renderComponent = (Component, props) => (_data, _id, entity) =>
 
 export const Name = {
   title: 'Name',
+  transforms: [fitContent],
   sortable: 'name',
   props: {
     width: 10,
@@ -25,27 +27,30 @@ export const Name = {
 
 export const LastExecuted = {
   title: 'Last executed',
-  sortable: 'LastExecuted',
+  transforms: [fitContent],
+  sortable: 'last_run_at',
   props: {
     width: 30,
   },
-  exportKey: 'LastExecuted',
+  exportKey: 'last_run_at',
   renderFunc: renderComponent(LastExecutedCell),
 };
 
 export const ExecutionStatus = {
   title: 'Execution status',
-  sortable: 'ExecutionStatus',
+  transforms: [fitContent],
+  sortable: 'status',
   props: {
     width: 30,
   },
-  exportKey: 'ExecutionStatus',
+  exportKey: 'status',
   renderFunc: renderComponent(ExecutionStatusCell),
 };
 
 export const Actions = {
   title: 'Actions',
-  sortable: 'Actions',
+  transforms: [fitContent],
+  // sortable: 'Actions',
   props: {
     width: 30,
   },
@@ -55,31 +60,34 @@ export const Actions = {
 
 export const Systems = {
   title: 'Systems',
-  sortable: 'Systems',
+  transforms: [fitContent],
+  sortable: 'system_count',
   props: {
     width: 30,
   },
-  exportKey: 'Systems',
+  exportKey: 'system_count',
   renderFunc: renderComponent(SystemsCell),
 };
 
 export const Created = {
   title: 'Created',
-  sortable: 'Created',
+  transforms: [fitContent],
+  sortable: 'created_at',
   props: {
     width: 30,
   },
-  exportKey: 'Created',
+  exportKey: 'created_at',
   renderFunc: renderComponent(CreatedCell),
 };
 
 export const LastModified = {
   title: 'Last modified',
-  sortable: 'LastModified',
+  transforms: [fitContent],
+  sortable: 'updated_at',
   props: {
     width: 30,
   },
-  exportKey: 'LastModified',
+  exportKey: 'updated_at',
   renderFunc: renderComponent(LastModifiedCell),
 };
 

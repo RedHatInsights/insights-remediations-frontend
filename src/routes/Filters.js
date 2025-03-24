@@ -4,7 +4,7 @@ export const remediationNameFilter = [
   {
     type: conditionalFilterType.text,
     label: 'Remediation',
-    filterAttribute: 'title',
+    filterAttribute: 'name',
   },
 ];
 
@@ -12,15 +12,18 @@ export const LastExecutedFilter = [
   {
     type: conditionalFilterType.text,
     label: 'Last Executed',
-    filterAttribute: 'LastExecuted',
+    filterAttribute: 'last_run_after',
   },
 ];
 
 export const ExecutionStatusFilter = [
   {
-    type: conditionalFilterType.text,
+    type: conditionalFilterType.checkbox,
     label: 'Execution Status',
-    filterAttribute: 'LastExecuted',
+    filterAttribute: 'status',
+    items: ['running', 'success', 'failure', 'timeout', 'cancelled'].map(
+      (value) => ({ label: value, value })
+    ),
   },
 ];
 

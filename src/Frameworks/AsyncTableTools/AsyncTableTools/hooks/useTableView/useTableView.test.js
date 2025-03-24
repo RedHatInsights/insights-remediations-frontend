@@ -44,6 +44,12 @@ describe('useTableView', () => {
       expect(result.current.table.tableProps.rows.length).toEqual(100)
     );
   });
+  //TODO: Add empty state
+  // it('returns an empty state if it is loaded, but has no items', () => {
+  //   const { result } = renderHook(
+  //     () => useRowsView([], columns),
+  //     DEFAULT_RENDER_OPTIONS
+  //   );
 
   // it('returns an empty state if it is loaded, but has no items', () => {
   //   const { result } = renderHook(

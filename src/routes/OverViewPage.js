@@ -23,7 +23,7 @@ const getRemediations = (axios) => (params) => {
 export const OverViewPage = () => {
   const axios = useAxiosWithPlatformInterceptors();
   const [selectedItems, setSelectedItems] = useState([]);
-  const { data, meta, fetchAllIds } = useRemediationsQuery(
+  const { result, /*loading, error,*/ fetchAllIds } = useRemediationsQuery(
     getRemediations(axios),
     {
       useTableState: true,
@@ -35,8 +35,8 @@ export const OverViewPage = () => {
 
   return (
     <RemediationsTable
-      items={data}
-      total={meta?.total}
+      items={result?.data}
+      total={result?.meta?.total}
       columns={[...columns]}
       filters={{
         filterConfig: [
@@ -51,12 +51,15 @@ export const OverViewPage = () => {
       }}
       selectedItems={selectedItems}
       options={{
+        sortBy: {
+          index: 6,
+          direction: 'desc',
+        },
         itemIdsInTable: fetchAllIds,
         manageColumns: true,
         onSelect: handleSelectionChange,
-        itemIdsOnPage: data,
-        identifier: 'id',
-        preselected: data && data[0]?.id,
+        itemIdsOnPage: result?.data.map(({ id }) => id),
+        total: result?.meta?.total,
       }}
     />
   );
