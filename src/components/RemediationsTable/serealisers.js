@@ -7,10 +7,12 @@ export const paginationSerialiser = (state) => {
   }
 };
 
+//make sure the singleSelect is in the right time
 const filterSerialisers = {
   text: (_config, [value]) => value,
   radio: (_config, [value]) => value,
   checkbox: (_config, values) => values.join(','),
+  singleSelect: (_config, [value]) => value,
 };
 
 const findFilterSerialiser = (filterConfigItem) => {
@@ -48,7 +50,6 @@ export const filtersSerialiser = (state, filters) =>
       ...allFilters,
       [`filter[${filterConfigItem.filterAttribute}]`]: serialiseValue,
     };
-    console.log(filterParams);
     return filterParams;
   }, {});
 /**

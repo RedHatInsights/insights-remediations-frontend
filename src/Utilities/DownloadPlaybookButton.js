@@ -19,7 +19,7 @@ const verifyDownload = (selectedIds, data) => {
   }, []);
 };
 
-const download = (selectedIds, data, dispatch) => {
+export const download = (selectedIds, data, dispatch) => {
   const valid = verifyDownload(selectedIds, data);
 
   if (valid.length === 0) {

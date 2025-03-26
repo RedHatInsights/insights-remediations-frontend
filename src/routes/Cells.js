@@ -1,8 +1,13 @@
 import React from 'react';
 import { TextContent } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
-export const Name = ({ name }) => <TextContent>{name}</TextContent>;
+export const Name = ({ name, id }) => (
+  <Link to={id}>
+    <TextContent>{name}</TextContent>
+  </Link>
+);
 
 export const LastExecutedCell = ({ playbook_runs }) => (
   <TextContent>{playbook_runs ? playbook_runs[0].created_at : 0} </TextContent>
@@ -30,6 +35,7 @@ export const LastModifiedCell = ({ updated_at }) => (
 
 Name.propTypes = {
   name: PropTypes.string,
+  id: PropTypes.string,
 };
 LastExecutedCell.propTypes = {
   playbook_runs: PropTypes.object,
