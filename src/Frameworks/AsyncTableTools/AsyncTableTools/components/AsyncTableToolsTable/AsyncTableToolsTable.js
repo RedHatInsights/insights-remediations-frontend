@@ -60,7 +60,6 @@ const AsyncTableToolsTable = ({
     });
 
   const skeletonLoading = !loaded || loading;
-
   return (
     <>
       <PrimaryToolbar aria-label="Table toolbar" {...toolbarProps}>
