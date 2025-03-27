@@ -20,6 +20,7 @@ import { useDispatch } from 'react-redux';
 import RenameModal from '../components/RenameModal';
 import { useRemediationsList } from '../Utilities/useRemediationsList';
 import { dispatchNotification } from '../Utilities/dispatcher';
+import ConfirmationDialog from '../components/ConfirmationDialog';
 
 const getRemediations = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations`, { params });
@@ -49,6 +50,7 @@ export const OverViewPage = () => {
   const axios = useAxiosWithPlatformInterceptors();
   const [selectedItems, setSelectedItems] = useState([]);
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [remediation, setRemediation] = useState('');
   const [showArchived, setShowArchived] = useState(false);
   const remediationsList = useRemediationsList();
@@ -144,19 +146,6 @@ export const OverViewPage = () => {
   const { fetch: deleteRem } = useRemediationsQuery(deleteRemediation(axios), {
     skip: true,
   });
-  const handleDeleteClick = async (itemId) => {
-    //TODO: This does not retrigger the table as expected
-    await deleteRem({ id: itemId }).then(() => {
-      dispatchNotification({
-        title: `Succesfully deleted remediation plan`,
-        description: '',
-        variant: 'success',
-        dismissable: true,
-        autoDismiss: true,
-      });
-      fetchRemediations();
-    });
-  };
 
   const { fetch: deleteReList } = useRemediationsQuery(
     deleteRemediationList(axios),
@@ -189,6 +178,29 @@ export const OverViewPage = () => {
           isRenameModalOpen={isRenameModalOpen}
           setIsRenameModalOpen={setIsRenameModalOpen}
           remediationsList={remediationsList}
+        />
+      )}
+      {isDeleteModalOpen && (
+        <ConfirmationDialog
+          isOpen={isDeleteModalOpen}
+          title="Remove playbook?"
+          text="You will not be able to recover this Playbook"
+          confirmText="Remove playbook"
+          onClose={(confirm) => {
+            setIsDeleteModalOpen(false);
+            if (confirm) {
+              deleteRem({ id: remediation.itemId }).then(() => {
+                dispatchNotification({
+                  title: `Deleted playbook ${remediation.name}`,
+                  variant: 'success',
+                  dismissable: true,
+                  autoDismiss: true,
+                });
+                fetchRemediations();
+                isDeleteModalOpen(false);
+              });
+            }
+          }}
         />
       )}
       <RemediationsTable
@@ -275,8 +287,13 @@ export const OverViewPage = () => {
           },
           {
             title: 'Delete',
-            onClick: (_event, _index, { itemId }) => {
-              handleDeleteClick(itemId);
+            onClick: (_event, _index, item) => {
+              let remediationDetails = {
+                ...item.rowData,
+                itemId: item.itemId,
+              };
+              setRemediation(remediationDetails);
+              setIsDeleteModalOpen(true);
             },
           },
         ]}
