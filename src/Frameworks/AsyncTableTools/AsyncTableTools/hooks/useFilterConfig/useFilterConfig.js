@@ -29,7 +29,7 @@ import { TABLE_STATE_NAMESPACE } from './constants';
  *
  */
 const useFilterConfig = (options = {}) => {
-  const { filters, serialisers } = options;
+  const { filters, serialisers, customFilterTypes } = options;
   const enableFilters = !!filters;
   const { filterConfig = [], activeFilters: initialActiveFilters } =
     filters || {};
@@ -46,8 +46,14 @@ const useFilterConfig = (options = {}) => {
   });
 
   const builtFilterConfig = useMemo(
-    () => toFilterConfig(filterConfig, activeFilters, onFilterUpdate),
-    [filterConfig, activeFilters, onFilterUpdate]
+    () =>
+      toFilterConfig(
+        filterConfig,
+        activeFilters,
+        onFilterUpdate,
+        customFilterTypes
+      ),
+    [filterConfig, activeFilters, onFilterUpdate, customFilterTypes]
   );
 
   const [, setTableState] = useTableState(
