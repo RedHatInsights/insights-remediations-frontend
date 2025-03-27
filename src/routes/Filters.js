@@ -50,16 +50,14 @@ export const ExecutionStatusFilter = [
   },
 ];
 
-//TODO: custom PF Number input component
+//TODO: custom PF Calander
 export const CreatedFilter = (onChange, value) => {
-  console.log(value, 'value here');
   return [
     {
       type: conditionalFilterType.custom,
-      label: 'Systems',
+      label: 'Created By',
       value,
       filterValues: {
-        value,
         children: (
           <>
             <CalanderFilter onChange={onChange} />
@@ -69,15 +67,6 @@ export const CreatedFilter = (onChange, value) => {
     },
   ];
 };
-
-//TODO: calander component
-// export const CreatedFilter = [
-//   {
-//     type: conditionalFilterType.text,
-//     label: 'Created',
-//     filterAttribute: 'created_after',
-//   },
-// ];
 
 export const LastModified = [
   {
