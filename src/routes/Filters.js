@@ -9,7 +9,38 @@ export const remediationNameFilter = [
     placeholder: 'Search',
     filterAttribute: 'name',
   },
+  {
+    type: 'calendar',
+    label: 'Created by',
+    Component: CalanderFilter,
+  },
 ];
+
+export const stringToId = (string) => string.split(' ').join('').toLowerCase();
+export const calendarFilterType = {
+  // Creates the filterValues prop for the filterConfig passed to the toolbar/table provided the current value/state
+  filterValues: ({ Component }, handler, value) => ({
+    value,
+    children: <Component onChange={handler} value={value} />,
+  }),
+  // Returns (all/a) filter chip for a given filter active value(s)
+  filterChips: (configItem, value) => ({
+    category: configItem.label,
+    chips: [{ name: value }],
+  }),
+  // Returns "select" arguments for the selection manager from a selected value
+  // The returning of selectedValue/selectedValues is inconsistent.
+  toSelectValue: (configItem, value) => [
+    value,
+    stringToId(configItem.label),
+    true,
+  ],
+  // Returns "deselect" arguments from a filter chip
+  toDeselectValue: (configItem, chip) => [
+    chip.chips[0].name,
+    stringToId(configItem.label),
+  ],
+};
 
 //Make sure its converted to UTC
 const subtractMinutes = (minutes) =>

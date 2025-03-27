@@ -1,22 +1,34 @@
 import { defaultPlaceholder, stringToId } from './helpers';
 import filterTypeHelpers from './filterTypeHelpers';
+import { conditionalFilterType } from '@redhat-cloud-services/frontend-components/ConditionalFilter';
 
-const getActiveFilters = (configItem, activeFilters) =>
-  filterTypeHelpers(configItem.type)?.getActiveFilterValues?.(
-    configItem,
-    activeFilters
-  ) || activeFilters?.[stringToId(configItem.label)];
+const isCustomFilter = (type) =>
+  !Object.keys(conditionalFilterType).includes(type);
 
-const toFilterConfigItem = (configItem, handler, activeFilters) => {
-  const value = getActiveFilters(configItem, activeFilters);
-  const filterValues = filterTypeHelpers(configItem.type)?.filterValues(
-    configItem,
-    handler,
-    value
-  );
+const getActiveFilters = (configItem, activeFilters, customFilterTypes) =>
+  filterTypeHelpers(
+    configItem.type,
+    customFilterTypes
+  )?.getActiveFilterValues?.(configItem, activeFilters) ||
+  activeFilters?.[stringToId(configItem.label)];
+
+const toFilterConfigItem = (
+  configItem,
+  handler,
+  activeFilters,
+  customFilterTypes
+) => {
+  const value = getActiveFilters(configItem, activeFilters, customFilterTypes);
+  const filterValues = filterTypeHelpers(
+    configItem.type,
+    customFilterTypes
+  )?.filterValues(configItem, handler, value);
+
   return filterValues
     ? {
-        type: configItem.type,
+        type: isCustomFilter(configItem.type)
+          ? conditionalFilterType.custom
+          : configItem.type,
         label: configItem.label,
         className: configItem.className, // TODO questionable... maybe add a props prop
         placeholder:
@@ -31,10 +43,17 @@ export const toIdedFilters = (configItem) => ({
   id: stringToId(configItem.label),
 });
 
-export const toFilterConfig = (filterConfig, activeFilters, handler) => ({
+export const toFilterConfig = (
+  filterConfig,
+  activeFilters,
+  handler,
+  customFilterTypes
+) => ({
   items: filterConfig
     .map(toIdedFilters)
-    .map((configItem) => toFilterConfigItem(configItem, handler, activeFilters))
+    .map((configItem) =>
+      toFilterConfigItem(configItem, handler, activeFilters, customFilterTypes)
+    )
     .filter((v) => !!v),
 });
 

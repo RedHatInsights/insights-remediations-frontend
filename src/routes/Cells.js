@@ -3,6 +3,11 @@ import { TextContent } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
+const formatDate = (dateStr) => {
+  const date = new Date(dateStr);
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return date.toLocaleDateString('en-US', options).replace(' ', ', ');
+};
 export const Name = ({ name, id }) => (
   <Link to={id}>
     <TextContent>{name}</TextContent>
@@ -26,11 +31,11 @@ export const SystemsCell = ({ system_count }) => (
 );
 
 export const CreatedCell = ({ created_at }) => (
-  <TextContent>{created_at} </TextContent>
+  <TextContent>{formatDate(created_at)} </TextContent>
 );
 
 export const LastModifiedCell = ({ updated_at }) => (
-  <TextContent>{updated_at} </TextContent>
+  <TextContent>{formatDate(updated_at)} </TextContent>
 );
 
 Name.propTypes = {

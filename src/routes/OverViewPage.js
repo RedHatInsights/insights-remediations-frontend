@@ -6,7 +6,7 @@ import { API_BASE } from '../config';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import RemediationsTable from '../components/RemediationsTable/RemediationsTable';
 import {
-  // CreatedFilter,
+  calendarFilterType,
   ExecutionStatusFilter,
   LastExecutedFilter,
   LastModified,
@@ -216,8 +216,6 @@ export const OverViewPage = () => {
             ...remediationNameFilter,
             ...LastExecutedFilter,
             ...ExecutionStatusFilter,
-            //TODO: Implement Calander Filter
-            // ...CreatedFilter(),
             ...LastModified,
           ],
         }}
@@ -232,6 +230,10 @@ export const OverViewPage = () => {
           onSelect: handleSelectionChange,
           itemIdsOnPage: result?.data.map(({ id }) => id),
           total: result?.meta?.total,
+          //Connect filter to tableState and send params
+          customFilterTypes: {
+            calendar: calendarFilterType,
+          },
           actions: [
             {
               label: 'Archive',
