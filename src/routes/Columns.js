@@ -50,7 +50,7 @@ export const ExecutionStatus = {
 export const Actions = {
   title: 'Actions',
   transforms: [fitContent],
-  // sortable: 'Actions',
+  sortable: 'issue_count',
   props: {
     width: 30,
   },
