@@ -60,6 +60,7 @@ const useFetchTotalBatched = (fetchFn, options = {}) => {
           const results = await pAll(requests, {
             concurrency: CONCURRENT_REQUESTS,
           });
+          console.log(results, 'results here');
           const allPages = [
             ...(firstPage.data || []),
             ...results.reduce(

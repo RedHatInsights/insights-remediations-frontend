@@ -51,6 +51,7 @@ const useRemediationsQuery = (
     useTableState,
     paramsOption
   );
+
   const skip = !!(useTableState && !hasState) || !!skipOption;
 
   const {
@@ -58,6 +59,7 @@ const useRemediationsQuery = (
     error: queryError,
     loading: queryLoading,
     fetch: queryFetch,
+    refetch: queryRefetch,
   } = useQuery(endpoint, {
     skip: batched ? true : skip,
     ...options,
@@ -94,6 +96,7 @@ const useRemediationsQuery = (
           result: queryData,
           error: queryError,
           loading: queryLoading,
+          refetch: queryRefetch,
         }),
     fetch: queryFetch,
     fetchBatched: batchedFetch,

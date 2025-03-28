@@ -1,11 +1,7 @@
 import React from 'react';
-import {
-  filtersSerialiser,
-  paginationSerialiser,
-  sortSerialiser,
-} from './serealisers';
+import { filtersSerialiser, sortSerialiser } from './serealisers';
 import propTypes from 'prop-types';
-import AsyncTableToolsTable from '../../Frameworks/AsyncTableTools/AsyncTableTools/components/AsyncTableToolsTable';
+import AsyncTableToolsTable from '../../Frameworks/AsyncTableTools/components/AsyncTableToolsTable';
 
 /**
  * This component serves as a place to either use the non-async TableTools or the AsyncTableTools
@@ -24,7 +20,6 @@ const RemediationsTable = (props) => {
       {...props}
       options={{
         serialisers: {
-          pagination: paginationSerialiser,
           filters: filtersSerialiser,
           sort: sortSerialiser,
         },
