@@ -52,7 +52,7 @@ export const OverViewPage = () => {
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [remediation, setRemediation] = useState('');
-  const [showArchived, setShowArchived] = useState(false);
+  const [showArchived, setShowArchived] = useState(true);
   const remediationsList = useRemediationsList();
 
   const {
@@ -61,7 +61,10 @@ export const OverViewPage = () => {
     refetch: fetchRemediations,
   } = useRemediationsQuery(getRemediations(axios), {
     useTableState: true,
+    params: { hide_archived: showArchived },
   });
+
+  console.log(result, 'result updated here');
   const handleSelectionChange = (newSelectedItems) => {
     setSelectedItems(newSelectedItems);
   };
@@ -117,6 +120,7 @@ export const OverViewPage = () => {
     }
   };
 
+  //SelectedItems doesnt get cleared AND page isnt refreshed
   const handleBulkUnArchiveClick = async (selectedIds) => {
     try {
       const archivePromises = selectedIds.map((remId) =>
@@ -129,7 +133,6 @@ export const OverViewPage = () => {
         dismissable: true,
         autoDismiss: true,
       });
-
       fetchRemediations();
       setSelectedItems([]);
     } catch (error) {
@@ -204,11 +207,7 @@ export const OverViewPage = () => {
         />
       )}
       <RemediationsTable
-        items={
-          showArchived
-            ? result?.data
-            : result?.data.filter((item) => item.archived === false)
-        }
+        items={result?.data}
         total={result?.meta?.total}
         columns={[...columns]}
         filters={{
@@ -254,7 +253,7 @@ export const OverViewPage = () => {
               },
             },
             {
-              label: `${showArchived ? 'Hide' : 'Show'} archived`,
+              label: `${!showArchived ? 'Hide' : 'Show'} archived`,
               onClick: () => {
                 setShowArchived(!showArchived);
               },
@@ -263,9 +262,11 @@ export const OverViewPage = () => {
           dedicatedAction: () =>
             DownloadPlaybookButton(selectedItems, result?.data, dispatch),
         }}
+        //This needs to change based on if that item row is archived or not
         actions={[
           {
-            title: 'Archive',
+            title: (_event, _index, item) =>
+              item.rowData.archive ? 'Unarchived' : 'Archive',
             onClick: (_event, _index, item) => {
               handleArchiveClick(item.itemId, item.rowData.name);
             },
