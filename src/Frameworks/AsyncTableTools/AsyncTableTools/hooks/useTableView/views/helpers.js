@@ -142,3 +142,16 @@ export const isBranchChecked = (tableTree, item, isItemSelected) => {
 
   return false;
 };
+
+export const emptyRows = (colSpan) => [
+  {
+    cells: [
+      {
+        title: () => <div> TEST</div>,
+        props: {
+          colSpan,
+        },
+      },
+    ],
+  },
+];

@@ -1,5 +1,5 @@
+import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
-import NoResultsTable from 'Utilities/hooks/useTableTools/Components/NoResultsTable';
 import { Spinner } from '@patternfly/react-core';
 
 import items from '../../__fixtures__/items';
@@ -9,6 +9,7 @@ import tableTree from '../../__fixtures__/tableTree';
 import { DEFAULT_RENDER_OPTIONS } from '../../utils/testHelpers';
 import useItems from '../useItems';
 import useTableView from './useTableView';
+import { TableEmptyState } from './TableEmptyState';
 const exampleItems = items(100).sort((item) => item.name);
 
 const useRowsView = (viewItems, viewColumns) => {
@@ -51,7 +52,7 @@ describe('useTableView', () => {
     );
 
     expect(result.current.table.tableProps.rows[0].cells[0].title()).toEqual(
-      <NoResultsTable />
+      <TableEmptyState />
     );
   });
 

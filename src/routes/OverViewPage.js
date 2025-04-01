@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import columns from './Columns';
 import useRemediationsQuery from '../api/useRemediationsQuery';
 import { API_BASE } from '../config';
@@ -17,15 +17,23 @@ import {
 } from '../Utilities/DownloadPlaybookButton';
 import { useDispatch } from 'react-redux';
 import RenameModal from '../components/RenameModal';
-import { useRemediationsList } from '../Utilities/useRemediationsList';
 import { dispatchNotification } from '../Utilities/dispatcher';
 import ConfirmationDialog from '../components/ConfirmationDialog';
 import { useRawTableState } from '../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
 import TableStateProvider from '../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
 import useStateCallbacks from '../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
+import Main from '@redhat-cloud-services/frontend-components/Main';
+import NoResultsTable from '../components/NoResultsTable';
+import { OverViewPageHeader } from './OverViewPageHeader';
+import { TextContent } from '@patternfly/react-core';
+import { emptyRows } from '../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
 
 const getRemediations = (axios) => (params) => {
-  return axios.get(`${API_BASE}/remediations`, { params });
+  return axios.get(`${API_BASE}/remediations/`, { params });
+};
+
+const getRemediationsList = (axios) => () => {
+  return axios.get(`${API_BASE}/remediations/?fields[data]=name`);
 };
 
 const archiveRemediationPlans = (axios) => (params) => {
@@ -61,23 +69,24 @@ export const OverViewPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [remediation, setRemediation] = useState('');
   const [showArchived, setShowArchived] = useState(true);
-  const remediationsList = useRemediationsList();
+  const [isBulkDelete, setIsBulkDelete] = useState(false);
+  // const remediationsList = useRemediationsList();
   const callbacks = useStateCallbacks();
   const tableState = useRawTableState();
 
-  const selectedRef = useRef([]);
-  useEffect(() => {
-    selectedRef.current = tableState?.selected || [];
-  }, [tableState?.selected]);
-
+  const currentlySelected = tableState?.selected;
   const {
     result,
     /*loading, error,*/ fetchAllIds,
     refetch: fetchRemediations,
   } = useRemediationsQuery(getRemediations(axios), {
     useTableState: true,
-    params: { hide_archived: showArchived },
+    params: { hide_archived: showArchived, 'fields[data]': 'playbook_runs' },
   });
+
+  const { result: allRemediations } = useRemediationsQuery(
+    getRemediationsList(axios)
+  );
 
   const { fetch: archiveRemediation } = useRemediationsQuery(
     archiveRemediationPlans(axios),
@@ -119,10 +128,11 @@ export const OverViewPage = () => {
     skip: true,
   });
 
-  const { fetch: deleteReList } = useRemediationsQuery(
+  const { fetchBatched: deleteRelList } = useRemediationsQuery(
     deleteRemediationList(axios),
     {
       skip: true,
+      batched: true,
     }
   );
 
@@ -138,11 +148,10 @@ export const OverViewPage = () => {
       await Promise.all(archivePromises);
       dispatchNotification({
         variant: 'info',
-        title: `Archived playbooks`,
+        title: `Unarchived playbooks`,
         dismissable: true,
         autoDismiss: true,
       });
-      fetchRemediations();
       callbacks?.current?.resetSelection();
     } catch (error) {
       console.error('Error during bulk archive:', error);
@@ -156,7 +165,7 @@ export const OverViewPage = () => {
     }
   };
   const handleBulkDeleteClick = async (selected) => {
-    await deleteReList({ remediation_ids: selected }).then(() => {
+    await deleteRelList({ remediation_ids: selected }).then(() => {
       dispatchNotification({
         title: `Succesfully deleted remediation plans`,
         description: '',
@@ -164,7 +173,7 @@ export const OverViewPage = () => {
         dismissable: true,
         autoDismiss: true,
       });
-      fetchRemediations();
+      callbacks?.current?.resetSelection();
     });
   };
 
@@ -199,22 +208,22 @@ export const OverViewPage = () => {
       {
         label: 'Archive',
         onClick: () => {
-          const currentSelection = [...selectedRef.current];
-          handleBulkArchiveClick(currentSelection);
+          handleBulkArchiveClick(currentlySelected);
         },
       },
       {
         label: 'Unarchive',
         onClick: () => {
-          const currentSelection = [...selectedRef.current];
-          handleBulkUnArchiveClick(currentSelection);
+          handleBulkUnArchiveClick(currentlySelected);
         },
       },
       {
-        label: 'Delete',
+        label: (
+          <TextContent className="pf-v5-u-danger-color-100">Delete</TextContent>
+        ),
         onClick: () => {
-          const currentSelection = [...selectedRef.current];
-          handleBulkDeleteClick(currentSelection);
+          setIsBulkDelete(true);
+          setIsDeleteModalOpen(true);
         },
       },
       {
@@ -227,11 +236,23 @@ export const OverViewPage = () => {
   }, [
     handleBulkArchiveClick,
     handleBulkUnArchiveClick,
-    tableState?.selected,
+    currentlySelected,
     showArchived,
     handleBulkDeleteClick,
   ]);
-
+  const handleSingleDeleteClick = async (id) => {
+    await deleteRem({ id }).then(() => {
+      dispatchNotification({
+        title: `Succesfully deleted remediation plan`,
+        description: '',
+        variant: 'success',
+        dismissable: true,
+        autoDismiss: true,
+      });
+      callbacks?.current?.resetSelection();
+      fetchRemediations();
+    });
+  };
   return (
     <div>
       {isRenameModalOpen && (
@@ -239,99 +260,112 @@ export const OverViewPage = () => {
           remediation={remediation}
           isRenameModalOpen={isRenameModalOpen}
           setIsRenameModalOpen={setIsRenameModalOpen}
-          remediationsList={remediationsList}
+          remediationsList={allRemediations.data}
+          fetch={fetchRemediations}
         />
       )}
       {isDeleteModalOpen && (
         <ConfirmationDialog
           isOpen={isDeleteModalOpen}
-          title="Remove playbook?"
+          title={`Remove playbook(s)`}
           text="You will not be able to recover this Playbook"
           confirmText="Remove playbook"
           onClose={(confirm) => {
             setIsDeleteModalOpen(false);
             if (confirm) {
-              deleteRem({ id: remediation.itemId }).then(() => {
-                dispatchNotification({
-                  title: `Deleted playbook ${remediation.name}`,
-                  variant: 'success',
-                  dismissable: true,
-                  autoDismiss: true,
-                });
-                fetchRemediations();
-                isDeleteModalOpen(false);
-              });
+              let executeDeleteFunction = isBulkDelete
+                ? handleBulkDeleteClick(currentlySelected)
+                : handleSingleDeleteClick(remediation?.itemId);
+
+              executeDeleteFunction();
+
+              fetchRemediations();
+              setIsDeleteModalOpen(false);
             }
+            setIsBulkDelete(false);
           }}
         />
       )}
-      <RemediationsTable
-        items={result?.data}
-        total={result?.meta?.total}
-        columns={[...columns]}
-        filters={{
-          filterConfig: [
-            ...remediationNameFilter,
-            ...LastExecutedFilter,
-            ...ExecutionStatusFilter,
-            ...LastModified,
-          ],
-        }}
-        options={{
-          sortBy: {
-            index: 6,
-            direction: 'desc',
-          },
-          onSelect: () => '',
-          itemIdsInTable: fetchAllIds,
-          manageColumns: true,
-          itemIdsOnPage: result?.data.map(({ id }) => id),
-          total: result?.meta?.total,
-          //Connect filter to tableState and send params
-          customFilterTypes: {
-            calendar: calendarFilterType,
-          },
-          actionResolver: ({ item }) => {
-            return [
-              {
-                title: item.archived ? 'Unarchived' : 'Archive',
-                onClick: (_event, _index, { item }) => {
-                  item?.archived === true
-                    ? handleUnarchiveClick(item.id, item.name)
-                    : handleArchiveClick(item.id, item.name);
+      {allRemediations?.data.length === 0 ? (
+        <NoResultsTable />
+      ) : (
+        <RemediationsTable
+          aria-label="OverViewTable"
+          ouiaId="OverViewTable"
+          items={result?.data}
+          total={result?.meta?.total}
+          columns={[...columns]}
+          filters={{
+            filterConfig: [
+              ...remediationNameFilter,
+              ...LastExecutedFilter,
+              ...ExecutionStatusFilter,
+              ...LastModified,
+            ],
+          }}
+          options={{
+            sortBy: {
+              index: 6,
+              direction: 'desc',
+            },
+            onSelect: () => '',
+            itemIdsInTable: fetchAllIds,
+            manageColumns: true,
+            itemIdsOnPage: result?.data.map(({ id }) => id),
+            total: result?.meta?.total,
+            //Connect filter to tableState and send params
+            customFilterTypes: {
+              calendar: calendarFilterType,
+            },
+            actionResolver: ({ item }) => {
+              return [
+                {
+                  title: item?.archived ? 'Unarchived' : 'Archive',
+                  onClick: (_event, _index, { item }) => {
+                    item?.archived === true
+                      ? handleUnarchiveClick(item.id, item.name)
+                      : handleArchiveClick(item.id, item.name);
+                  },
                 },
-              },
-              {
-                title: 'Download',
-                onClick: (_event, _index, { item }) => {
-                  handleDownloadClick(item.id);
+                {
+                  title: 'Download',
+                  onClick: (_event, _index, { item }) => {
+                    handleDownloadClick(item.id);
+                  },
                 },
-              },
-              {
-                title: 'Rename',
-                onClick: (_event, _index, { item }) => {
-                  setRemediation(item);
-                  setIsRenameModalOpen(true);
+                {
+                  title: 'Rename',
+                  onClick: (_event, _index, { item }) => {
+                    setRemediation(item);
+                    setIsRenameModalOpen(true);
+                  },
                 },
-              },
-              {
-                title: 'Delete',
-                onClick: (_event, _index, { item }) => {
-                  setRemediation(item);
-                  setIsDeleteModalOpen(true);
+                {
+                  title: (
+                    <TextContent className="pf-v5-u-danger-color-100">
+                      Delete
+                    </TextContent>
+                  ),
+                  onClick: (_event, _index, { item }) => {
+                    setIsBulkDelete(false);
+                    setRemediation(item);
+                    setIsDeleteModalOpen(true);
+                  },
                 },
-              },
-            ];
-          },
-          actions: actions,
-          dedicatedAction: () =>
-            DownloadPlaybookButton(
-              tableState?.selected || [],
-              result?.data,
-              dispatch
+              ];
+            },
+            actions: actions,
+            dedicatedAction: () => (
+              <DownloadPlaybookButton
+                selectedItems={currentlySelected}
+                data={result?.data}
+                dispatch={dispatch}
+              />
             ),
-        }}
-      />
+            emptyRows: emptyRows(columns.length),
+          }}
+        />
+      )}
     </div>
   );
 };
@@ -339,7 +373,10 @@ export const OverViewPage = () => {
 const OverViewPageProvider = () => {
   return (
     <TableStateProvider>
-      <OverViewPage />
+      <OverViewPageHeader />
+      <Main>
+        <OverViewPage />
+      </Main>
     </TableStateProvider>
   );
 };

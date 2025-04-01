@@ -11,6 +11,7 @@ import useTableView from '../useTableView';
 import withExport from '../../utils/withExport';
 import useRadioSelect from '../useRadioSelect';
 import { toToolbarActions } from './helpers';
+import { useDeepCompareMemo } from 'use-deep-compare';
 
 /**
  *  @typedef {object} useAsyncTableToolsReturn
@@ -48,7 +49,7 @@ const useAsyncTableTools = (items, columns, options = {}) => {
     ColumnManager,
   } = useColumnManager(columns, options);
 
-  const { toolbarProps: toolbarActionsProps } = useMemo(
+  const { toolbarProps: toolbarActionsProps } = useDeepCompareMemo(
     () =>
       toToolbarActions({
         ...options,
@@ -59,7 +60,7 @@ const useAsyncTableTools = (items, columns, options = {}) => {
         ],
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(columnManagerAction), JSON.stringify(options)]
+    [columnManagerAction, options]
   );
 
   const { toolbarProps: paginationToolbarProps } = usePagination(options);
