@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Button, Modal, ModalVariant } from '@patternfly/react-core';
-import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import './ConfirmationDialog.scss';
 
 export default function ConfirmationDialog({
@@ -14,17 +13,13 @@ export default function ConfirmationDialog({
 }) {
   return (
     <Modal
-      title={
-        <div>
-          <ExclamationTriangleIcon className="rem-m-alert rem-c-delete-icon pf-u-mr-xs" />
-          {title}
-        </div>
-      }
+      title={title}
       className="remediations rem-c-dialog"
       variant={ModalVariant.small}
       isOpen={isOpen}
       onClose={() => onClose(false)}
       isFooterLeftAligned
+      titleIconVariant={'warning'}
       actions={[
         <Button
           key="confirm"

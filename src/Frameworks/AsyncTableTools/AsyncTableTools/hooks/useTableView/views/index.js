@@ -4,6 +4,7 @@ import { Spinner } from '@patternfly/react-core';
 import { treeColumns, getOnTreeSelect } from './helpers';
 import rowsBuilder from './rowsBuilder';
 import treeChopper from './treeChopper';
+import { TableEmptyState } from '../TableEmptyState';
 
 const views = {
   loading: {
@@ -31,7 +32,7 @@ const views = {
         {
           cells: [
             {
-              title: () => <div />,
+              title: () => <TableEmptyState />,
               props: {
                 colSpan: columns.length,
               },
