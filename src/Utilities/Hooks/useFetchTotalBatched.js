@@ -45,8 +45,7 @@ const useFetchTotalBatched = (fetchFn, options = {}) => {
       if (!loading.current) {
         loading.current = true;
         const firstPage = await fetchFn(0, batchSize, ...args);
-        const total = firstPage?.meta?.total;
-
+        const total = firstPage?.meta.total;
         if (total > batchSize) {
           const pages = Math.ceil(total / batchSize) || 1;
           const requests = [...new Array(pages)]
@@ -61,11 +60,12 @@ const useFetchTotalBatched = (fetchFn, options = {}) => {
           const results = await pAll(requests, {
             concurrency: CONCURRENT_REQUESTS,
           });
-
           const allPages = [
-            ...(firstPage?.data || []),
-            ...(results?.reduce((acc, { data }) => [...acc, ...data], []) ||
-              []),
+            ...(firstPage.data || []),
+            ...results.reduce(
+              (acc, response) => [...acc, ...(response.data || [])],
+              []
+            ),
           ];
           const newTotalResult = {
             data: allPages,
@@ -99,12 +99,9 @@ const useFetchTotalBatched = (fetchFn, options = {}) => {
   }, [skip, fetch]);
 
   return {
-    // TODO this might be redundant... ?
     loading: typeof totalResult === 'undefined',
-    // TODO Maybe consider renaming to "result" to avoid confusion with the wrapped "data" of responses.
     data: totalResult,
     fetch,
   };
 };
-
 export default useFetchTotalBatched;
