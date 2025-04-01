@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import columns from './Columns';
 import useRemediationsQuery from '../api/useRemediationsQuery';
 import { API_BASE } from '../config';
@@ -20,9 +20,9 @@ import RenameModal from '../components/RenameModal';
 import { useRemediationsList } from '../Utilities/useRemediationsList';
 import { dispatchNotification } from '../Utilities/dispatcher';
 import ConfirmationDialog from '../components/ConfirmationDialog';
-import { useRawTableState } from '../Frameworks/AsyncTableTools/hooks/useTableState';
-import TableStateProvider from '../Frameworks/AsyncTableTools/components/TableStateProvider';
-import useStateCallbacks from '../Frameworks/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
+import { useRawTableState } from '../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
+import TableStateProvider from '../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
+import useStateCallbacks from '../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
 
 const getRemediations = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations`, { params });
@@ -43,8 +43,15 @@ const unarchiveRemediationPlans = (axios) => (params) => {
 const deleteRemediation = (axios) => (params) => {
   return axios.delete(`${API_BASE}/remediations/${params.id}`);
 };
+
 const deleteRemediationList = (axios) => (params) => {
-  return axios.delete(`${API_BASE}/remediations`, { params });
+  return axios({
+    method: 'delete',
+    url: `${API_BASE}/remediations`,
+    data: {
+      remediation_ids: params.remediation_ids,
+    },
+  });
 };
 
 export const OverViewPage = () => {
@@ -56,10 +63,13 @@ export const OverViewPage = () => {
   const [showArchived, setShowArchived] = useState(true);
   const remediationsList = useRemediationsList();
   const callbacks = useStateCallbacks();
-
   const tableState = useRawTableState();
-  console.log(tableState, 'tabelState');
-  //How can I force rerender with the refetch
+
+  const selectedRef = useRef([]);
+  useEffect(() => {
+    selectedRef.current = tableState?.selected || [];
+  }, [tableState?.selected]);
+
   const {
     result,
     /*loading, error,*/ fetchAllIds,
@@ -68,8 +78,6 @@ export const OverViewPage = () => {
     useTableState: true,
     params: { hide_archived: showArchived },
   });
-
-  console.log(result, 'result updated here');
 
   const { fetch: archiveRemediation } = useRemediationsQuery(
     archiveRemediationPlans(axios),
@@ -95,36 +103,36 @@ export const OverViewPage = () => {
     });
   };
 
-  const handleBulkArchiveClick = useCallback(async () => {
-    console.log(tableState, 'tableState?.selected here');
-
-    const archivePromises = tableState?.selected.map((remId) =>
-      archiveRemediation({ id: remId })
-    );
-    await Promise.all(archivePromises);
-    dispatchNotification({
-      variant: 'info',
-      title: `Archived playbooks`,
-      dismissable: true,
-      autoDismiss: true,
+  const handleUnarchiveClick = async (itemId, name) => {
+    await unarchiveRemediation({ id: itemId }).then(() => {
+      dispatchNotification({
+        variant: 'info',
+        title: `Unarchived playbook ${name}`,
+        dismissable: true,
+        autoDismiss: true,
+      });
+      fetchRemediations();
     });
+  };
 
-    await fetchRemediations();
-    callbacks?.current?.resetSelection();
+  const { fetch: deleteRem } = useRemediationsQuery(deleteRemediation(axios), {
+    skip: true,
+  });
 
-    // console.error('Error during bulk archive:', error);
-    // dispatchNotification({
-    //   variant: 'danger',
-    //   title: 'Error archiving playbooks',
-    //   description: 'error.messag'e,
-    //   dismissable: true,
-    //   autoDismiss: true,
-    // });
-  }, [tableState?.selected]);
-  //SelectedItems doesnt get cleared AND page isnt refreshed
-  const handleBulkUnArchiveClick = async (selectedIds) => {
+  const { fetch: deleteReList } = useRemediationsQuery(
+    deleteRemediationList(axios),
+    {
+      skip: true,
+    }
+  );
+
+  const handleDownloadClick = async (itemId) => {
+    await download([itemId], result.data, dispatch);
+  };
+
+  const handleBulkUnArchiveClick = async (selected) => {
     try {
-      const archivePromises = selectedIds.map((remId) =>
+      const archivePromises = selected.map((remId) =>
         unarchiveRemediation({ id: remId })
       );
       await Promise.all(archivePromises);
@@ -147,18 +155,8 @@ export const OverViewPage = () => {
       });
     }
   };
-  const { fetch: deleteRem } = useRemediationsQuery(deleteRemediation(axios), {
-    skip: true,
-  });
-
-  const { fetch: deleteReList } = useRemediationsQuery(
-    deleteRemediationList(axios),
-    {
-      skip: true,
-    }
-  );
-  const handleBulkDeleteClick = async () => {
-    await deleteReList({ remediation_ids: tableState?.selected }).then(() => {
+  const handleBulkDeleteClick = async (selected) => {
+    await deleteReList({ remediation_ids: selected }).then(() => {
       dispatchNotification({
         title: `Succesfully deleted remediation plans`,
         description: '',
@@ -170,8 +168,30 @@ export const OverViewPage = () => {
     });
   };
 
-  const handleDownloadClick = async (itemId) => {
-    await download([itemId], result.data, dispatch);
+  const handleBulkArchiveClick = async (selected) => {
+    try {
+      const archivePromises = selected.map((remId) =>
+        archiveRemediation({ id: remId })
+      );
+      await Promise.all(archivePromises);
+      dispatchNotification({
+        variant: 'info',
+        title: `Archived playbooks`,
+        dismissable: true,
+        autoDismiss: true,
+      });
+      await fetchRemediations();
+      callbacks?.current?.resetSelection();
+    } catch (error) {
+      console.error('Error during bulk archive:', error);
+      dispatchNotification({
+        variant: 'danger',
+        title: 'Error archiving playbooks',
+        description: error.message,
+        dismissable: true,
+        autoDismiss: true,
+      });
+    }
   };
 
   const actions = useMemo(() => {
@@ -179,19 +199,22 @@ export const OverViewPage = () => {
       {
         label: 'Archive',
         onClick: () => {
-          handleBulkArchiveClick();
+          const currentSelection = [...selectedRef.current];
+          handleBulkArchiveClick(currentSelection);
         },
       },
       {
         label: 'Unarchive',
         onClick: () => {
-          handleBulkUnArchiveClick(tableState?.selected);
+          const currentSelection = [...selectedRef.current];
+          handleBulkUnArchiveClick(currentSelection);
         },
       },
       {
         label: 'Delete',
         onClick: () => {
-          handleBulkDeleteClick();
+          const currentSelection = [...selectedRef.current];
+          handleBulkDeleteClick(currentSelection);
         },
       },
       {
@@ -201,7 +224,13 @@ export const OverViewPage = () => {
         },
       },
     ];
-  }, [handleBulkArchiveClick]);
+  }, [
+    handleBulkArchiveClick,
+    handleBulkUnArchiveClick,
+    tableState?.selected,
+    showArchived,
+    handleBulkDeleteClick,
+  ]);
 
   return (
     <div>
@@ -248,7 +277,6 @@ export const OverViewPage = () => {
             ...LastModified,
           ],
         }}
-        // selectedItems={selectedItems}
         options={{
           sortBy: {
             index: 6,
@@ -266,37 +294,30 @@ export const OverViewPage = () => {
           actionResolver: ({ item }) => {
             return [
               {
-                //find out wat rowData is
                 title: item.archived ? 'Unarchived' : 'Archive',
-                onClick: (_event, _index, item) => {
-                  handleArchiveClick(item.itemId, item.rowData.name);
+                onClick: (_event, _index, { item }) => {
+                  item?.archived === true
+                    ? handleUnarchiveClick(item.id, item.name)
+                    : handleArchiveClick(item.id, item.name);
                 },
               },
               {
                 title: 'Download',
-                onClick: (_event, _index, { itemId }) => {
-                  handleDownloadClick(itemId);
+                onClick: (_event, _index, { item }) => {
+                  handleDownloadClick(item.id);
                 },
               },
               {
                 title: 'Rename',
-                onClick: (_event, _index, item) => {
-                  let remediationDetails = {
-                    ...item.rowData,
-                    itemId: item.itemId,
-                  };
-                  setRemediation(remediationDetails);
+                onClick: (_event, _index, { item }) => {
+                  setRemediation(item);
                   setIsRenameModalOpen(true);
                 },
               },
               {
                 title: 'Delete',
-                onClick: (_event, _index, item) => {
-                  let remediationDetails = {
-                    ...item.rowData,
-                    itemId: item.itemId,
-                  };
-                  setRemediation(remediationDetails);
+                onClick: (_event, _index, { item }) => {
+                  setRemediation(item);
                   setIsDeleteModalOpen(true);
                 },
               },
@@ -310,8 +331,6 @@ export const OverViewPage = () => {
               dispatch
             ),
         }}
-
-        //This needs to change based on if that item row is archived or not
       />
     </div>
   );
