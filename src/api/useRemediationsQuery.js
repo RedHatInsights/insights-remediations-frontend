@@ -70,7 +70,6 @@ const useRemediationsQuery = (
       await queryFetch({ limit, offset, ...params }, false),
     [queryFetch]
   );
-
   const {
     loading: batchedLoading,
     result: batchedData,
