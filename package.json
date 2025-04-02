@@ -54,7 +54,9 @@
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.{js,jsx}",
-      "!**/node_modules/**"
+      "!**/node_modules/**",
+      "!src/**/*.fixtures.js",
+      "!src/**/*.cy.js"
     ],
     "transformIgnorePatterns": [
       "/node_modules/(?!(uuid|@redhat-cloud-services|react-syntax-highlighter))"
