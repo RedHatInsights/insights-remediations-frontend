@@ -34,6 +34,7 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-dropzone": "^11.3.4",
+    "react-intl": "^6.6.8",
     "react-redux": "^7.2.9",
     "react-router-dom": "^6.8.1",
     "react-syntax-highlighter": "15.4.3",
@@ -141,7 +142,12 @@
     ],
     "exclude": [
       "src/**/*.test.js",
-      "src/**/*.cy.js"
+      "src/**/*.cy.js",
+      "cypress/**/*.js",
+      "config/**/*.js",
+      "src/{App,entry,entry-dev}.js",
+      "**/__fixtures__/**",
+      "**/__factories__/**"
     ]
   }
 }

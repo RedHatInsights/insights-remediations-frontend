@@ -2,7 +2,7 @@ import RemediationsTable from "./RemediationsTable"
 
 describe('RemediationsTable tests', () => {
     beforeEach(() => {
-        cy.mount(RemediationsTable);
+        cy.mountWithContext(RemediationsTable);
     })
     it('renders the table correctly', () => {
         cy.get('body');
