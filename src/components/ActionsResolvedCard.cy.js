@@ -16,17 +16,17 @@ const testStatus = {
 const MountActionsResolvedCard = () => {
   return (
     <Provider>
-      <ActionsResolvedCard status='fulfilled'/>
+      <ActionsResolvedCard status="fulfilled" />
     </Provider>
-  )
-}
+  );
+};
 
 describe('ActionResolvedCard tests', () => {
   beforeEach(() => {
     //cy.mountWithContext(MoundActionsResolvedCard);
     cy.mount(MountActionsResolvedCard);
     cy.get('div[class*="skeleton"]').should('not.exist');
-  })
+  });
   it('renders correctly fulfilled component', () => {
     //mount(<ActionsResolvedCard status={testStatus} />);
     cy.get('.pf-v5-c-card__header-main').contains('Actions Resolved');

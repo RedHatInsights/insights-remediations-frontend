@@ -1,10 +1,10 @@
-import RemediationsTable from "./RemediationsTable"
+import RemediationsTable from './RemediationsTable';
 
 describe('RemediationsTable tests', () => {
-    beforeEach(() => {
-        cy.mountWithContext(RemediationsTable);
-    })
-    it('renders the table correctly', () => {
-        cy.get('body');
-    })
-})
+  beforeEach(() => {
+    cy.mountWithContext(RemediationsTable);
+  });
+  it('renders the table correctly', () => {
+    cy.get('body');
+  });
+});

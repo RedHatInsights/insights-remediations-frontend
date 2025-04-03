@@ -35,6 +35,6 @@ module.exports = {
     fallback: {
       stream: require.resolve('stream-browserify'),
       zlib: require.resolve('browserify-zlib'),
-    }
-  }
+    },
+  },
 };
