@@ -37,7 +37,7 @@ const useTableSort = (columns, options = {}) => {
   const { sortBy: initialSortBy, serialisers, onSort: onSortOption } = options;
   const serialiser = useCallback(
     (state) => options.serialisers.sort(state, columns),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [JSON.stringify(columns), JSON.stringify(options.serialisers)]
   );
 
