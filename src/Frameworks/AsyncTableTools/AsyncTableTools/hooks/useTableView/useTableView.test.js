@@ -1,6 +1,5 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
-// import NoResultsTable from 'Utilities/hooks/useTableTools/Components/NoResultsTable';
 import { Spinner } from '@patternfly/react-core';
 
 import items from '../../__fixtures__/items';
@@ -10,6 +9,7 @@ import tableTree from '../../__fixtures__/tableTree';
 import { DEFAULT_RENDER_OPTIONS } from '../../utils/testHelpers';
 import useItems from '../useItems';
 import useTableView from './useTableView';
+import { TableEmptyState } from './TableEmptyState';
 const exampleItems = items(100).sort((item) => item.name);
 
 const useRowsView = (viewItems, viewColumns) => {
@@ -44,23 +44,17 @@ describe('useTableView', () => {
       expect(result.current.table.tableProps.rows.length).toEqual(100)
     );
   });
-  //TODO: Add empty state
-  // it('returns an empty state if it is loaded, but has no items', () => {
-  //   const { result } = renderHook(
-  //     () => useRowsView([], columns),
-  //     DEFAULT_RENDER_OPTIONS
-  //   );
 
-  // it('returns an empty state if it is loaded, but has no items', () => {
-  //   const { result } = renderHook(
-  //     () => useRowsView([], columns),
-  //     DEFAULT_RENDER_OPTIONS
-  //   );
+  it('returns an empty state if it is loaded, but has no items', () => {
+    const { result } = renderHook(
+      () => useRowsView([], columns),
+      DEFAULT_RENDER_OPTIONS
+    );
 
-  //   expect(result.current.table.tableProps.rows[0].cells[0].title()).toEqual(
-  //     <NoResultsTable />
-  //   );
-  // });
+    expect(result.current.table.tableProps.rows[0].cells[0].title()).toEqual(
+      <TableEmptyState />
+    );
+  });
 
   describe('useTableView TableViewToggle', () => {
     it('returns no toggle by default', () => {
@@ -85,6 +79,7 @@ describe('useTableView', () => {
       const { result } = renderHook(
         () =>
           useTableView(exampleItems, columns, {
+            enableTreeView: true,
             tableTree,
           }),
         DEFAULT_RENDER_OPTIONS

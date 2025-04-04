@@ -1,9 +1,10 @@
 import React from 'react';
 import { ListIcon, TreeviewIcon } from '@patternfly/react-icons';
 import { Spinner } from '@patternfly/react-core';
-import { treeColumns, getOnTreeSelect } from '../helpers';
+import { treeColumns, getOnTreeSelect } from './helpers';
 import rowsBuilder from './rowsBuilder';
 import treeChopper from './treeChopper';
+import { TableEmptyState } from '../TableEmptyState';
 
 const views = {
   loading: {
@@ -12,7 +13,7 @@ const views = {
         {
           cells: [
             {
-              title: () => <Spinner />, // eslint-disable-line react/display-name
+              title: () => <Spinner />,
               props: {
                 colSpan: columns.length,
               },
@@ -31,7 +32,7 @@ const views = {
         {
           cells: [
             {
-              title: () => <React.Fragment />, // eslint-disable-line react/display-name
+              title: () => <TableEmptyState />,
               props: {
                 colSpan: columns.length,
               },
@@ -58,7 +59,7 @@ const views = {
       const cells = treeColumns(
         columns,
         options.expandable?.onCollapse,
-        options.bulkSelect && onSelect
+        options.bulkSelect?.enableBulkSelect && onSelect
       );
 
       return rows
@@ -75,7 +76,7 @@ const views = {
       variant: 'compact',
       bulkSelect: undefined,
     }),
-    checkOptions: ({ tableTree }) => !!tableTree,
+    checkOptions: ({ enableTreeView }) => enableTreeView,
   },
 };
 
