@@ -75,8 +75,8 @@ function download(selectedIds, data, dispatch) {
           selectedIds.length - valid.length > 1
             ? `${
                 selectedIds.length - valid.length
-              } remediations with no issues were not downloaded.`
-            : `1 remediation with no issues was not downloaded.`,
+              } empty remediation plans were not downloaded.`
+            : `1 empty remediation plan was not downloaded.`,
       })
     );
   } else {

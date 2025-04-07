@@ -43,7 +43,7 @@ export const download = (selectedIds, data, dispatch) => {
           valid.length > 1 ? 'Downloading playbooks' : 'Downloading playbook',
         description: `${
           selectedIds.length - valid.length
-        } remediations with no issues were not downloaded.`,
+        } empty remediaton plan was not downloaded`,
       })
     );
   } else {

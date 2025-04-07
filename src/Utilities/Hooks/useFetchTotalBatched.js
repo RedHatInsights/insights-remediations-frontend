@@ -45,7 +45,7 @@ const useFetchTotalBatched = (fetchFn, options = {}) => {
       if (!loading.current) {
         loading.current = true;
         const firstPage = await fetchFn(0, batchSize, ...args);
-        const total = firstPage?.meta.total;
+        const total = firstPage?.meta?.total;
         if (total > batchSize) {
           const pages = Math.ceil(total / batchSize) || 1;
           const requests = [...new Array(pages)]

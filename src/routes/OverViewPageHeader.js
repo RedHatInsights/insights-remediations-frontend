@@ -31,6 +31,8 @@ export const OverViewPageHeader = () => (
         Red Hat Insights.
       </p>
       <InsightsLink
+        style={{ textDecoration: 'none' }}
+        className="pf-v5-u-mr-md"
         to={
           'https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide/index'
         }

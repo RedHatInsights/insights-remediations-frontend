@@ -165,16 +165,7 @@ export const OverViewPage = () => {
     }
   };
   const handleBulkDeleteClick = async (selected) => {
-    await deleteRelList({ remediation_ids: selected }).then(() => {
-      dispatchNotification({
-        title: `Succesfully deleted remediation plans`,
-        description: '',
-        variant: 'success',
-        dismissable: true,
-        autoDismiss: true,
-      });
-      callbacks?.current?.resetSelection();
-    });
+    return deleteRelList({ remediation_ids: selected });
   };
 
   const handleBulkArchiveClick = async (selected) => {
@@ -241,17 +232,7 @@ export const OverViewPage = () => {
     handleBulkDeleteClick,
   ]);
   const handleSingleDeleteClick = async (id) => {
-    await deleteRem({ id }).then(() => {
-      dispatchNotification({
-        title: `Succesfully deleted remediation plan`,
-        description: '',
-        variant: 'success',
-        dismissable: true,
-        autoDismiss: true,
-      });
-      callbacks?.current?.resetSelection();
-      fetchRemediations();
-    });
+    return deleteRem({ id });
   };
   return (
     <div>
@@ -275,12 +256,20 @@ export const OverViewPage = () => {
             if (confirm) {
               let executeDeleteFunction = isBulkDelete
                 ? handleBulkDeleteClick(currentlySelected)
-                : handleSingleDeleteClick(remediation?.itemId);
+                : handleSingleDeleteClick(remediation.itemId);
 
-              executeDeleteFunction();
-
-              fetchRemediations();
-              setIsDeleteModalOpen(false);
+              executeDeleteFunction.then(() => {
+                dispatchNotification({
+                  title: `Succesfully deleted remediation plan(s)`,
+                  description: '',
+                  variant: 'success',
+                  dismissable: true,
+                  autoDismiss: true,
+                });
+                callbacks?.current?.resetSelection();
+                fetchRemediations();
+                setIsDeleteModalOpen(false);
+              });
             }
             setIsBulkDelete(false);
           }}
