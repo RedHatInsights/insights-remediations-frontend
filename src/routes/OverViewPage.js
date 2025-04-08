@@ -27,6 +27,7 @@ import NoResultsTable from '../components/NoResultsTable';
 import { OverViewPageHeader } from './OverViewPageHeader';
 import { TextContent } from '@patternfly/react-core';
 import { emptyRows } from '../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
+import useRemediationFetchExtras from '../api/useRemediationFetchExtras';
 
 const getRemediations = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations/`, { params });
@@ -136,6 +137,10 @@ export const OverViewPage = () => {
     }
   );
 
+  const { fetchQueue } = useRemediationFetchExtras({
+    fetch: deleteRelList,
+  });
+
   const handleDownloadClick = async (itemId) => {
     await download([itemId], result.data, dispatch);
   };
@@ -164,10 +169,22 @@ export const OverViewPage = () => {
       });
     }
   };
-  const handleBulkDeleteClick = async (selected) => {
-    return deleteRelList({ remediation_ids: selected });
+
+  const chunkArray = (array, size) => {
+    const chunks = [];
+    for (let i = 0; i < array.length; i += size) {
+      chunks.push(array.slice(i, i + size));
+    }
+    return chunks;
   };
 
+  const handleBulkDeleteClick = async (selected) => {
+    const chunks = chunkArray(selected, 100);
+    const queue = chunks.map((chunk) => ({
+      remediation_ids: chunk,
+    }));
+    return await fetchQueue(queue);
+  };
   const handleBulkArchiveClick = async (selected) => {
     try {
       const archivePromises = selected.map((remId) =>
