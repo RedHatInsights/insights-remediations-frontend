@@ -1,10 +1,11 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import useSelectionManager from '../useSelectionManager';
 import useTableState from '../useTableState';
 import { toFilterConfig, toIdedFilters } from './filterConfigHelpers';
 import { toFilterChips } from './filterChipHelpers';
 import useEventHandlers from './useEventHandlers';
 import { TABLE_STATE_NAMESPACE } from './constants';
+import useCallbacksCallback from '../useTableState/hooks/useCallbacksCallback';
 
 /**
  *  @typedef {object} FilterConfig
@@ -64,6 +65,12 @@ const useFilterConfig = (options = {}) => {
   useEffect(() => {
     setTableState(activeFilters);
   }, [activeFilters, setTableState]);
+
+  const resetSelection = useCallback(() => {
+    selectionActions.clear();
+  }, [selectionActions]);
+
+  useCallbacksCallback('clearAllFilters', resetSelection);
 
   return enableFilters
     ? {

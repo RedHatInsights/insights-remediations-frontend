@@ -76,11 +76,11 @@ export const ExecutionStatusCell = ({ playbook_runs }) => {
 };
 
 export const ActionsCell = ({ issue_count }) => (
-  <TextContent>{issue_count} </TextContent>
+  <TextContent style={{ justifySelf: 'center' }}>{issue_count} </TextContent>
 );
 
 export const SystemsCell = ({ system_count }) => (
-  <TextContent>{system_count} </TextContent>
+  <TextContent style={{ justifySelf: 'center' }}>{system_count} </TextContent>
 );
 
 export const CreatedCell = ({ created_at }) => (

@@ -9,7 +9,7 @@ import {
   LastModifiedCell,
 } from './Cells.js';
 import { wrappable } from '@patternfly/react-table';
-import { Button, Tooltip } from '@patternfly/react-core';
+import { Button, Flex, Tooltip } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 
 // eslint-disable-next-line react/display-name
@@ -42,8 +42,8 @@ export const ExecutionStatus = {
 
 export const Actions = {
   title: (
-    <>
-      {' Actions '}
+    <Flex direction={{ default: 'row' }} flexWrap={{ default: 'nowrap' }}>
+      <p className="pf-v5-u-mr-xs"> Actions </p>
       <Tooltip
         aria-label={'Actions Popover'}
         content="Actions taken to remediate issues on selected systems when the remediation plan is executed"
@@ -56,7 +56,7 @@ export const Actions = {
           <OutlinedQuestionCircleIcon />
         </Button>
       </Tooltip>
-    </>
+    </Flex>
   ),
   transforms: [wrappable],
   sortable: 'issue_count_min',

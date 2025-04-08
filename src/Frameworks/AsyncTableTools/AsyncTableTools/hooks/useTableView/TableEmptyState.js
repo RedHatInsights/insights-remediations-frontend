@@ -9,8 +9,11 @@ import {
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import React from 'react';
+import useStateCallbacks from '../useTableState/hooks/useStateCallbacks';
 
 export const TableEmptyState = () => {
+  const callbacks = useStateCallbacks();
+
   return (
     <EmptyState>
       <EmptyStateHeader
@@ -23,7 +26,12 @@ export const TableEmptyState = () => {
       </EmptyStateBody>
       <EmptyStateFooter>
         <EmptyStateActions>
-          <Button variant="link">Clear all filters</Button>
+          <Button
+            variant="link"
+            onClick={() => callbacks.current.clearAllFilters()}
+          >
+            Clear all filters
+          </Button>
         </EmptyStateActions>
       </EmptyStateFooter>
     </EmptyState>
