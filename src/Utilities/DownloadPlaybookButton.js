@@ -4,11 +4,12 @@ import { downloadPlaybook } from '../api';
 import { dispatchNotification } from './dispatcher';
 import keyBy from 'lodash/keyBy';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
+import PropTypes from 'prop-types';
 
 const verifyDownload = (selectedIds, data) => {
   const byId = keyBy(data, (r) => r.id);
 
-  return selectedIds.reduce((result, id) => {
+  return selectedIds?.reduce((result, id) => {
     const remediation = byId[id];
 
     if (remediation && remediation.issue_count > 0) {
@@ -19,7 +20,7 @@ const verifyDownload = (selectedIds, data) => {
   }, []);
 };
 
-const download = (selectedIds, data, dispatch) => {
+export const download = (selectedIds, data, dispatch) => {
   const valid = verifyDownload(selectedIds, data);
 
   if (valid.length === 0) {
@@ -42,7 +43,7 @@ const download = (selectedIds, data, dispatch) => {
           valid.length > 1 ? 'Downloading playbooks' : 'Downloading playbook',
         description: `${
           selectedIds.length - valid.length
-        } remediations with no issues were not downloaded.`,
+        } empty remediaton plan was not downloaded`,
       })
     );
   } else {
@@ -57,10 +58,14 @@ const download = (selectedIds, data, dispatch) => {
   }
 };
 
-export const DownloadPlaybookButton = (selectedItems, data, dispatch) => {
+export const DownloadPlaybookButton = ({
+  selectedItems = [],
+  data,
+  dispatch,
+}) => {
   return (
     <Button
-      isDisabled={selectedItems.length < 1}
+      isDisabled={selectedItems?.length < 1}
       variant="primary"
       onClick={() => {
         download(selectedItems, data, dispatch);
@@ -73,7 +78,13 @@ export const DownloadPlaybookButton = (selectedItems, data, dispatch) => {
         });
       }}
     >
-      {`Download playbook${selectedItems.length > 1 ? 's' : ''}`}
+      {`Download`}
     </Button>
   );
+};
+
+DownloadPlaybookButton.propTypes = {
+  selectedItems: PropTypes.array.isRequired,
+  data: PropTypes.array.isRequired,
+  dispatch: PropTypes.func,
 };
