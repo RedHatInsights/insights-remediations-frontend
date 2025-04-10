@@ -22,7 +22,6 @@ import ConfirmationDialog from '../../components/ConfirmationDialog';
 import { useRawTableState } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
 import TableStateProvider from '../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
 import useStateCallbacks from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
-import Main from '@redhat-cloud-services/frontend-components/Main';
 import NoResultsTable from '../../components/NoResultsTable';
 import { TextContent } from '@patternfly/react-core';
 import { emptyRows } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
@@ -380,9 +379,11 @@ const OverViewPageProvider = () => {
   return (
     <TableStateProvider>
       <OverViewPageHeader />
-      <Main>
+      <section
+        className={'pf-v5-l-page__main-section pf-v5-c-page__main-section'}
+      >
         <OverViewPage />
-      </Main>
+      </section>
     </TableStateProvider>
   );
 };
