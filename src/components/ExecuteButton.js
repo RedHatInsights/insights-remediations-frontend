@@ -6,7 +6,11 @@ import { Button, Flex, Spinner, Title, Tooltip } from '@patternfly/react-core';
 import { ExecuteModal } from './Modals/ExecuteModal';
 import './ExecuteButton.scss';
 import './Status.scss';
-import { CheckIcon, TimesIcon } from '@patternfly/react-icons';
+import {
+  CheckIcon,
+  TimesIcon,
+  WarningTriangleIcon,
+} from '@patternfly/react-icons';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import { Link } from 'react-router-dom';
 
@@ -112,7 +116,7 @@ const ExecuteButton = ({
             getConnectionStatus(remediation.id);
           }}
         >
-          Execute playbook
+          {isDisabled && <WarningTriangleIcon />} Execute
         </Button>
       </Tooltip>
     );
