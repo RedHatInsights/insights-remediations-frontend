@@ -1,33 +1,33 @@
 import React, { useMemo, useState } from 'react';
-import columns from './Columns';
-import useRemediationsQuery from '../api/useRemediationsQuery';
-import { API_BASE } from '../config';
+import columns from '../Columns';
+import useRemediationsQuery from '../../api/useRemediationsQuery';
+import { API_BASE } from '../../config';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
-import RemediationsTable from '../components/RemediationsTable/RemediationsTable';
+import RemediationsTable from '../../components/RemediationsTable/RemediationsTable';
 import {
   calendarFilterType,
   ExecutionStatusFilter,
   LastExecutedFilter,
   LastModified,
   remediationNameFilter,
-} from './Filters';
+} from '../Filters';
 import {
   download,
   DownloadPlaybookButton,
-} from '../Utilities/DownloadPlaybookButton';
+} from '../../Utilities/DownloadPlaybookButton';
 import { useDispatch } from 'react-redux';
-import RenameModal from '../components/RenameModal';
-import { dispatchNotification } from '../Utilities/dispatcher';
-import ConfirmationDialog from '../components/ConfirmationDialog';
-import { useRawTableState } from '../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
-import TableStateProvider from '../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
-import useStateCallbacks from '../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
+import RenameModal from '../../components/RenameModal';
+import { dispatchNotification } from '../../Utilities/dispatcher';
+import ConfirmationDialog from '../../components/ConfirmationDialog';
+import { useRawTableState } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
+import TableStateProvider from '../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
+import useStateCallbacks from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
 import Main from '@redhat-cloud-services/frontend-components/Main';
-import NoResultsTable from '../components/NoResultsTable';
-import { OverViewPageHeader } from './OverViewPageHeader';
+import NoResultsTable from '../../components/NoResultsTable';
 import { TextContent } from '@patternfly/react-core';
-import { emptyRows } from '../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
-import useRemediationFetchExtras from '../api/useRemediationFetchExtras';
+import { emptyRows } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
+import useRemediationFetchExtras from '../../api/useRemediationFetchExtras';
+import { OverViewPageHeader } from './OverViewPageHeader';
 
 const getRemediations = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations/`, { params });

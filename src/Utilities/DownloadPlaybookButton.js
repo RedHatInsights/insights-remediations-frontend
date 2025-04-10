@@ -78,7 +78,7 @@ export const DownloadPlaybookButton = ({
         });
       }}
     >
-      {`Download `}
+      {`Download`}
     </Button>
   );
 };

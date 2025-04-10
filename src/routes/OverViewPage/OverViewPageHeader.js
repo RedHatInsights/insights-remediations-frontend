@@ -6,7 +6,7 @@ import {
   PageHeaderTitle,
 } from '@redhat-cloud-services/frontend-components/PageHeader';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
-import { RemediationsPopover } from './RemediationsPopover';
+import { RemediationsPopover } from '../RemediationsPopover';
 
 export const OverViewPageHeader = () => (
   <PageHeader>

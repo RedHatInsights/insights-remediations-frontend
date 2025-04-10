@@ -31,7 +31,7 @@ import ConfirmationDialog from '../components/ConfirmationDialog';
 import keyBy from 'lodash/keyBy';
 import { useChrome } from '@redhat-cloud-services/frontend-components/useChrome';
 import { useFeatureFlag } from '../Utilities/Hooks/useFeatureFlag';
-import OverViewPageProvider from './OverViewPage';
+import OverViewPageProvider from './OverViewPage/OverViewPage';
 
 function verifyDownload(selectedIds, data) {
   let valid = [];
