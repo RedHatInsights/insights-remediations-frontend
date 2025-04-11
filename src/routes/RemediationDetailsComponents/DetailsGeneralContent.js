@@ -1,8 +1,9 @@
 import React from 'react';
-import { Alert, AlertActionLink, Flex, FlexItem } from '@patternfly/react-core';
+import { Flex, FlexItem } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 import DetailsCard from './DetailsCard';
 import ProgressCard from './ProgressCard';
+import DetailsBanner from './DetailsBanners';
 
 const DetailsGeneralContent = ({
   details,
@@ -18,27 +19,11 @@ const DetailsGeneralContent = ({
     <section
       className={'pf-v5-l-page__main-section pf-v5-c-page__main-section'}
     >
-      <Alert
-        isInline
-        variant="success"
-        title="Success alert title"
-        className="pf-v5-u-mb-md"
-        actionLinks={
-          <Flex>
-            <AlertActionLink component="a" href="#">
-              View details
-            </AlertActionLink>
-            <AlertActionLink onClick={() => console.log('Clicked on Ignore')}>
-              Ignore
-            </AlertActionLink>
-          </Flex>
-        }
-      >
-        <p>
-          Success alert description. This should tell the user more information
-          about the alert.
-        </p>
-      </Alert>
+      <DetailsBanner
+        status="succeded"
+        remediationPlanName={details?.name}
+        canceledAt={'today or yesterday'}
+      />
       <Flex
         justifyContent={{ default: 'justifyContentSpaceEvenly' }}
         direction={{ default: 'row' }}
