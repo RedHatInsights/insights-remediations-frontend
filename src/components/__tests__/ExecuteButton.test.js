@@ -66,10 +66,10 @@ describe('Execute button', () => {
 
     expect(
       screen.getByRole('button', { 'aria-disabled': 'true' })
-    ).toHaveTextContent('Execute playbook');
+    ).toHaveTextContent('Execute');
   });
 
-  test('Renders execute playbook button as enabled', () => {
+  test('Renders execute button as enabled', () => {
     render(
       <ExecuteButton
         data={data}
@@ -98,7 +98,7 @@ describe('Execute button', () => {
 
     expect(
       screen.getByRole('button', { 'aria-disabled': 'false' })
-    ).toHaveTextContent('Execute playbook');
+    ).toHaveTextContent('Execute');
   });
 
   test('Opens execute modal on execute button click', async () => {
