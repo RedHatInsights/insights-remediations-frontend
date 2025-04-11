@@ -14,15 +14,16 @@ const DetailsGeneralContent = ({
   onNavigateToTab,
   allRemediations,
   permissions,
+  remediationPlaybookRuns,
 }) => {
   return (
     <section
       className={'pf-v5-l-page__main-section pf-v5-c-page__main-section'}
     >
       <DetailsBanner
-        status="succeded"
+        status={remediationPlaybookRuns?.status}
         remediationPlanName={details?.name}
-        canceledAt={'today or yesterday'}
+        canceledAt={remediationPlaybookRuns?.updated_at}
       />
       <Flex
         justifyContent={{ default: 'justifyContentSpaceEvenly' }}
@@ -38,6 +39,7 @@ const DetailsGeneralContent = ({
             updateRemPlan={updateRemPlan}
             onNavigateToTab={onNavigateToTab}
             allRemediations={allRemediations}
+            remediationPlaybookRuns={remediationPlaybookRuns}
           />
         </FlexItem>
         <FlexItem style={{ flex: '0 0 48%', maxWidth: '48%' }}>
@@ -60,6 +62,7 @@ DetailsGeneralContent.propTypes = {
   onNavigateToTab: PropTypes.func,
   allRemediations: PropTypes.array,
   permissions: PropTypes.object,
+  remediationPlaybookRuns: PropTypes.any,
 };
 
 export default DetailsGeneralContent;

@@ -13,6 +13,7 @@ import {
   ExclamationCircleIcon,
   InProgressIcon,
 } from '@patternfly/react-icons';
+import { getTimeAgo } from './RemediationDetailsComponents/helpers';
 
 export const formatDate = (dateStr) => {
   const date = new Date(dateStr);
@@ -86,34 +87,6 @@ export const SystemsCell = ({ system_count }) => (
 export const CreatedCell = ({ created_at }) => (
   <TextContent>{formatDate(created_at)} </TextContent>
 );
-
-const getTimeAgo = (date) => {
-  const now = new Date();
-  const diffMs = now - date;
-  const diffMinutes = Math.floor(diffMs / 60000);
-
-  if (diffMinutes < 1) {
-    return 'Just now';
-  } else if (diffMinutes < 60) {
-    return `${diffMinutes} minute${diffMinutes === 1 ? '' : 's'} ago`;
-  }
-  //If less than 30 days, report days, if less than 12 months report months, then years
-  const diffHours = Math.floor(diffMinutes / 60);
-  if (diffHours < 24) {
-    return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
-  }
-
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 30) {
-    return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
-  }
-  const diffMonths = Math.floor(diffDays / 30);
-  if (diffMonths < 12) {
-    return `${diffMonths} month${diffMonths === 1 ? '' : 's'} ago`;
-  }
-  const diffYears = Math.floor(diffDays / 365);
-  return `${diffYears} year${diffYears === 1 ? '' : 's'} ago`;
-};
 
 export const LastModifiedCell = ({ updated_at }) => {
   if (!updated_at) {

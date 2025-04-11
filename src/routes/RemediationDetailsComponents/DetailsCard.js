@@ -28,7 +28,7 @@ import {
 import { formatDate } from '../Cells';
 import { useVerifyName } from '../../Utilities/useVerifyName';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
-// import { execStatus } from './helpers';
+import { execStatus } from './helpers';
 
 const DetailsCard = ({
   details,
@@ -37,6 +37,7 @@ const DetailsCard = ({
   onNavigateToTab,
   allRemediations,
   refetch,
+  remediationPlaybookRuns,
 }) => {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(details?.name);
@@ -51,8 +52,7 @@ const DetailsCard = ({
     updateRemPlan({
       id: details.id,
       name: value,
-    });
-    refetch();
+    }).then(() => refetch());
     setEditing(false);
   };
   if (!details) {
@@ -63,6 +63,7 @@ const DetailsCard = ({
     updateRemPlan({ id: details.id, auto_reboot: !rebootToggle });
   };
 
+  const formatedDate = new Date(remediationPlaybookRuns?.updated_at);
   return (
     <Card isFullHeight>
       <CardTitle>
@@ -72,7 +73,7 @@ const DetailsCard = ({
       </CardTitle>
       <CardBody>
         <p className="pf-v5-u-font-size-sm pf-v5-u-mb-md">
-          Overview of the set up an dstatus details for this remediation plan.
+          Overview of the set up and status details for this remediation plan.
         </p>
         <DescriptionList isHorizontal termWidth="20ch">
           {/* Editable Name */}
@@ -163,9 +164,7 @@ const DetailsCard = ({
           <DescriptionListGroup>
             <DescriptionListTerm>Last execution status</DescriptionListTerm>
             <DescriptionListDescription>
-              {remediationStatus?.connectedData?.[0]?.connection_status ||
-                'N/A'}
-              {/* {execStatus(status,date)} */}
+              {execStatus(remediationPlaybookRuns?.status, formatedDate)}
             </DescriptionListDescription>
           </DescriptionListGroup>
           {/* Actions */}
@@ -278,6 +277,7 @@ DetailsCard.propTypes = {
   allRemediations: PropTypes.array,
   updateRemPlan: PropTypes.func,
   refetch: PropTypes.func,
+  remediationPlaybookRuns: PropTypes.object,
 };
 
 export default DetailsCard;

@@ -5,7 +5,6 @@ import {
   InProgressIcon,
 } from '@patternfly/react-icons';
 import React from 'react';
-import { formatDate } from '../Cells';
 
 export const execStatus = (status, date) => {
   let icon;
@@ -33,9 +32,37 @@ export const execStatus = (status, date) => {
       (displayValue = 'Failed');
   }
   return (
-    <Flex spaceItems={{ default: 'spaceItemsXs' }}>
+    <Flex spaceItems={{ default: 'spaceItemsSm' }}>
       {icon}
-      <TextContent>{`${displayValue} ${formatDate(date)}`}</TextContent>
+      <TextContent>{`${displayValue} ${getTimeAgo(date)}`}</TextContent>
     </Flex>
   );
+};
+
+export const getTimeAgo = (date) => {
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMinutes = Math.floor(diffMs / 60000);
+
+  if (diffMinutes < 1) {
+    return 'Just now';
+  } else if (diffMinutes < 60) {
+    return `${diffMinutes} minute${diffMinutes === 1 ? '' : 's'} ago`;
+  }
+  //If less than 30 days, report days, if less than 12 months report months, then years
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) {
+    return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+  }
+
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 30) {
+    return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+  }
+  const diffMonths = Math.floor(diffDays / 30);
+  if (diffMonths < 12) {
+    return `${diffMonths} month${diffMonths === 1 ? '' : 's'} ago`;
+  }
+  const diffYears = Math.floor(diffDays / 365);
+  return `${diffYears} year${diffYears === 1 ? '' : 's'} ago`;
 };

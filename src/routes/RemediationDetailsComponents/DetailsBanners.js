@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Alert, AlertActionLink, Flex } from '@patternfly/react-core';
+import { Alert } from '@patternfly/react-core';
 
 const DetailsBanner = ({ status, remediationPlanName, canceledAt }) => {
   let variant = 'info';
@@ -20,7 +20,7 @@ const DetailsBanner = ({ status, remediationPlanName, canceledAt }) => {
       description =
         'Review the issue resolution status in the respective service (for example Advisor recommendations).';
       break;
-    case 'failed':
+    case 'failure':
       variant = 'danger';
       title = 'The execution of the remediation plan failed.';
       description =
@@ -41,17 +41,17 @@ const DetailsBanner = ({ status, remediationPlanName, canceledAt }) => {
       variant={variant}
       title={title}
       className="pf-v5-u-mb-md"
-      //TODO: Maybe this is only for warning
-      actionLinks={
-        <Flex>
-          <AlertActionLink component="a" href="#">
-            View details
-          </AlertActionLink>
-          <AlertActionLink onClick={() => console.log('Clicked on Ignore')}>
-            Ignore
-          </AlertActionLink>
-        </Flex>
-      }
+      //TODO: UX has removed actions until after summit
+      // actionLinks={
+      //   <Flex>
+      //     <AlertActionLink component="a" href="#">
+      //       View details
+      //     </AlertActionLink>
+      //     <AlertActionLink onClick={() => console.log('Clicked on Ignore')}>
+      //       Ignore
+      //     </AlertActionLink>
+      //   </Flex>
+      // }
     >
       <p>{description}</p>
     </Alert>
