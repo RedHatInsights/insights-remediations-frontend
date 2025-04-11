@@ -120,17 +120,13 @@ const DetailsCard = ({
                     onClick={() => onSubmit(value)}
                     isDisabled={isDisabled || value.trim() === ''}
                   >
-                    {isVerifyingName ? (
-                      <Spinner size="md" />
-                    ) : (
-                      <CheckIcon
-                        color={
-                          isDisabled || value.trim() === ''
-                            ? `var(--pf-v5-global--disabled-color--200)`
-                            : `var(--pf-v5-global--link--Color)`
-                        }
-                      />
-                    )}
+                    <CheckIcon
+                      color={
+                        isDisabled || value.trim() === ''
+                          ? `var(--pf-v5-global--disabled-color--200)`
+                          : `var(--pf-v5-global--link--Color)`
+                      }
+                    />
                   </Button>
                   <Button variant="link" onClick={() => setEditing(false)}>
                     <TimesIcon color="var(--pf-v5-global--icon--Color--light--dark)" />
@@ -191,13 +187,13 @@ const DetailsCard = ({
               >
                 {`${remediationStatus?.totalSystems} system${
                   remediationStatus?.totalSystems > 1 ? 's' : ''
-                } total`}
+                }`}
               </Button>
             </DescriptionListDescription>
           </DescriptionListGroup>
           {/* Autoreboot toggle */}
           <DescriptionListGroup>
-            <DescriptionListTerm>Autoreboot</DescriptionListTerm>
+            <DescriptionListTerm>Auto-reboot</DescriptionListTerm>
             <DescriptionListDescription>
               <Switch
                 id="autoreboot-switch"
@@ -281,3 +277,7 @@ DetailsCard.propTypes = {
 };
 
 export default DetailsCard;
+
+//remove padding in details links;
+// imporoved language for links at bottom
+//Maybe add verticle design to the inputs;

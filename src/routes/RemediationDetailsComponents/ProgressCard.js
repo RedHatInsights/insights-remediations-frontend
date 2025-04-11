@@ -14,11 +14,7 @@ import PropTypes from 'prop-types';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 
-const ProgressCard = ({ remediationStatus, permissions }) => {
-  const readyOrNot =
-    !permissions?.exectute &&
-    remediationStatus?.detailsError !== 403 &&
-    remediationStatus?.connectedSystems !== 0;
+const ProgressCard = ({ remediationStatus, permissions, readyOrNot }) => {
   return permissions === undefined ? (
     <Spinner />
   ) : (
@@ -42,8 +38,10 @@ const ProgressCard = ({ remediationStatus, permissions }) => {
           aria-label="Remediation Readiness card"
         >
           <ProgressStep
-            variant={permissions?.exectute ? 'success' : 'danger'}
-            description={permissions?.exectute ? 'Granted' : 'Denied'}
+            variant={permissions?.execute ? 'success' : 'danger'}
+            description={`Remediations administrator role ${
+              permissions?.execute ? '' : 'not '
+            }granted.`}
             id="permissionsStep"
             titleId="PermissionsStep"
             aria-label="PermissionsStep1"
@@ -55,7 +53,9 @@ const ProgressCard = ({ remediationStatus, permissions }) => {
               remediationStatus?.detailsError !== 403 ? 'success' : 'danger'
             }
             description={
-              remediationStatus?.detailsError !== 403 ? 'Granted' : 'Denied'
+              remediationStatus?.detailsError !== 403
+                ? 'Enabled'
+                : 'Not enabled'
             }
             id="RHCStep"
             titleId="RHCStep-title"
@@ -87,7 +87,7 @@ const ProgressCard = ({ remediationStatus, permissions }) => {
             titleId="readyStep-title"
             aria-label="Ready step"
           >
-            {readyOrNot ? `Ready` : 'Not ready'}
+            {readyOrNot ? `Ready for execution` : 'Not ready for execution'}
           </ProgressStep>
         </ProgressStepper>
       </CardBody>
@@ -111,6 +111,7 @@ const ProgressCard = ({ remediationStatus, permissions }) => {
 ProgressCard.propTypes = {
   remediationStatus: PropTypes.any,
   permissions: PropTypes.object,
+  readyOrNot: PropTypes.bool,
 };
 
 export default ProgressCard;

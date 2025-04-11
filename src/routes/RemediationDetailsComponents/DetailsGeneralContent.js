@@ -1,9 +1,8 @@
 import React from 'react';
-import { Flex, FlexItem } from '@patternfly/react-core';
+import { Alert, Flex, FlexItem } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 import DetailsCard from './DetailsCard';
 import ProgressCard from './ProgressCard';
-import DetailsBanner from './DetailsBanners';
 
 const DetailsGeneralContent = ({
   details,
@@ -16,15 +15,31 @@ const DetailsGeneralContent = ({
   permissions,
   remediationPlaybookRuns,
 }) => {
+  const readyOrNot =
+    !permissions?.exectute &&
+    remediationStatus?.detailsError !== 403 &&
+    remediationStatus?.connectedSystems !== 0;
+
   return (
     <section
       className={'pf-v5-l-page__main-section pf-v5-c-page__main-section'}
     >
-      <DetailsBanner
-        status={remediationPlaybookRuns?.status}
-        remediationPlanName={details?.name}
-        canceledAt={remediationPlaybookRuns?.updated_at}
-      />
+      {!readyOrNot && (
+        <Alert
+          isInline
+          variant={'danger'}
+          title={'Remediation cannot be executed.'}
+          className="pf-v5-u-mb-md"
+        >
+          <p>
+            {
+              'This remediation plan cannot currently be executed due to execution readiness errors. For more details, refer to the '
+            }
+            <strong>Execution readiness</strong>
+            {' section.'}
+          </p>
+        </Alert>
+      )}
       <Flex
         justifyContent={{ default: 'justifyContentSpaceEvenly' }}
         direction={{ default: 'row' }}
@@ -46,6 +61,7 @@ const DetailsGeneralContent = ({
           <ProgressCard
             remediationStatus={remediationStatus}
             permissions={permissions}
+            readyOrNot={readyOrNot}
           />
         </FlexItem>
       </Flex>

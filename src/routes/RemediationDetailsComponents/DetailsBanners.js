@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Alert } from '@patternfly/react-core';
 
+//This will be for Execution History Tab
 const DetailsBanner = ({ status, remediationPlanName, canceledAt }) => {
   let variant = 'info';
   let title = '';
