@@ -21,16 +21,12 @@ const RemediationDetailsPageHeader = ({
   remediationStatus,
   isFedramp,
   allRemediations,
+  updateRemPlan,
+  refetch,
+  permissions,
 }) => {
   return (
     <PageHeader>
-      {/* <Breadcrumb>
-        <BreadcrumbItem>
-          <Link to="/"> Remediations </Link>
-        </BreadcrumbItem>
-        <BreadcrumbItem isActive> {remediation.name} </BreadcrumbItem>
-      </Breadcrumb> */}
-
       <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
         <FlexItem style={{ width: '50%' }}>
           <PageHeaderTitle title={remediation.name} className="pf-v5-u-mb-md" />
@@ -43,7 +39,7 @@ const RemediationDetailsPageHeader = ({
               <ExecutePlaybookButton
                 isDisabled={
                   remediationStatus.connectedSystems === 0 ||
-                  // !context.permissions.execute ||
+                  !permissions?.execute ||
                   // !executable ||
                   isFedramp
                 }
@@ -51,8 +47,8 @@ const RemediationDetailsPageHeader = ({
                 totalSystems={remediationStatus.totalSystems}
                 areDetailsLoading={remediationStatus.areDetailsLoading}
                 detailsError={remediationStatus.detailsError}
-                // permissions={context.permissions.execute}
-                // issueCount={remediation?.issues}
+                permissions={permissions.execute}
+                issueCount={remediation?.issues}
                 remediation={remediation}
               ></ExecutePlaybookButton>
             </SplitItem>
@@ -79,17 +75,13 @@ const RemediationDetailsPageHeader = ({
               <RemediationDetailsDropdown
                 remediation={remediation}
                 remediationsList={allRemediations}
+                updateRemPlan={updateRemPlan}
+                refetch={refetch}
               />
             </SplitItem>
           </Split>
         </FlexItem>
       </Flex>
-      {/* <RemediationSummary
-        remediation={remediation}
-        playbookRuns={playbookRuns}
-        switchAutoReboot={switchAutoReboot}
-        context={context}
-      /> */}
     </PageHeader>
   );
 };
@@ -97,19 +89,21 @@ RemediationDetailsPageHeader.propTypes = {
   remediation: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    // issues may be empty, so we'll allow an array (if missing, you might consider defaulting to an empty array)
     issues: PropTypes.array,
   }).isRequired,
   remediationStatus: PropTypes.shape({
     connectedSystems: PropTypes.number.isRequired,
     totalSystems: PropTypes.number.isRequired,
     areDetailsLoading: PropTypes.bool.isRequired,
-    detailsError: PropTypes.any, // could be string or number
+    detailsError: PropTypes.any,
   }).isRequired,
   isFedramp: PropTypes.bool,
   allRemediations: PropTypes.shape({
     data: PropTypes.array.isRequired,
   }).isRequired,
+  updateRemPlan: PropTypes.func,
+  refetch: PropTypes.func,
+  permissions: PropTypes.obj,
 };
 
 export default RemediationDetailsPageHeader;

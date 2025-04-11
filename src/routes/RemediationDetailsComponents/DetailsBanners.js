@@ -33,6 +33,8 @@ const DetailsBanner = ({ status, remediationPlanName, canceledAt }) => {
         remediationPlanName || '[RemediationPlanName]'
       } was canceled on ${canceledAt}.`;
       break;
+    default:
+      return null;
   }
 
   return (

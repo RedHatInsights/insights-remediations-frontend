@@ -42,10 +42,9 @@ const RemediationDetailsV2 = () => {
   const { result: allRemediations } = useRemediationsQuery(
     getRemediationsList(axios)
   );
-  const { result: remediationDetails, refetch: fetchRemediations } =
+  const { result: remediationDetails, refetch: fetchRemediation } =
     useRemediationsQuery(getRemediations(axios), {
       params: { remId: id },
-      // params: { hide_archived: showArchived, 'fields[data]': 'playbook_runs' },
     });
 
   const { result: remediationPlaybookRuns } = useRemediationsQuery(
@@ -99,6 +98,9 @@ const RemediationDetailsV2 = () => {
           remediationStatus={remediationStatus}
           isFedramp={isFedramp}
           allRemediations={allRemediations}
+          updateRemPlan={updateRemPlan}
+          refetch={fetchRemediation}
+          permissions={context.permissions}
         />
         <Tabs
           activeKey={searchParams.get('activeTab') || 'general'}
@@ -112,7 +114,7 @@ const RemediationDetailsV2 = () => {
               isRenameModalOpen={isRenameModalOpen}
               setIsRenameModalOpen={setIsRenameModalOpen}
               remediationsList={allRemediations.data}
-              fetch={fetchRemediations}
+              fetch={fetchRemediation}
             />
           )}
 
@@ -124,7 +126,7 @@ const RemediationDetailsV2 = () => {
             <DetailsGeneralContent
               details={remediationDetails}
               onRename={setIsRenameModalOpen}
-              refetch={fetchRemediations}
+              refetch={fetchRemediation}
               remediationStatus={remediationStatus}
               updateRemPlan={updateRemPlan}
               onNavigateToTab={handleTabClick}
