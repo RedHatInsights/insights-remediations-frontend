@@ -15,6 +15,11 @@ import { PermissionContext } from '../App';
 const getRemediations = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations/${params.remId}`, { params });
 };
+const getRemediationPlaybook = (axios) => (params) => {
+  return axios.get(`${API_BASE}/remediations/${params.remId}/playbook_runs`, {
+    params,
+  });
+};
 
 const getRemediationsList = (axios) => () => {
   return axios.get(`${API_BASE}/remediations/?fields[data]=name`);
@@ -43,6 +48,12 @@ const RemediationDetailsV2 = () => {
       // params: { hide_archived: showArchived, 'fields[data]': 'playbook_runs' },
     });
 
+  const { result: remediationPlaybookRuns } = useRemediationsQuery(
+    getRemediationPlaybook(axios),
+    {
+      params: { remId: id },
+    }
+  );
   const { fetch: updateRemPlan } = useRemediationsQuery(
     updateRemediationPlans(axios),
     {
@@ -79,6 +90,7 @@ const RemediationDetailsV2 = () => {
       ...Object.fromEntries(searchParams),
       activeTab: tabName,
     });
+
   return (
     remediationDetails && (
       <>
@@ -118,6 +130,7 @@ const RemediationDetailsV2 = () => {
               onNavigateToTab={handleTabClick}
               allRemediations={allRemediations}
               permissions={context.permissions}
+              remediationPlaybookRuns={remediationPlaybookRuns?.data[0]}
             />
           </Tab>
           <Tab
