@@ -6,9 +6,10 @@ import {
   EmptyStateVariant,
   EmptyStateHeader,
   Button,
+  EmptyStateIcon,
 } from '@patternfly/react-core';
 import { useNavigate } from 'react-router-dom';
-import { ExternalLinkAltIcon } from '@patternfly/react-icons';
+import { CubesIcon, ExternalLinkAltIcon } from '@patternfly/react-icons';
 
 export const NoResultsTable = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export const NoResultsTable = () => {
       <EmptyStateHeader
         titleText={<>No remediation plans</>}
         headingLevel="h5"
+        icon={<EmptyStateIcon icon={CubesIcon} />}
       />
       <EmptyStateBody>
         Create remediation plans to address Advisor recommendations, Security

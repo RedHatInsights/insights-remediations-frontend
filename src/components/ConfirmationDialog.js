@@ -10,6 +10,7 @@ export default function ConfirmationDialog({
   text = 'This action cannot be undone',
   confirmText = 'Remove system',
   onClose = (f) => f,
+  selectedItems,
 }) {
   return (
     <Modal
@@ -26,6 +27,7 @@ export default function ConfirmationDialog({
           variant="danger"
           ouiaId="confirm"
           onClick={() => onClose(true)}
+          isDisabled={selectedItems && selectedItems?.length === 0}
         >
           {confirmText}
         </Button>,
@@ -50,4 +52,5 @@ ConfirmationDialog.propTypes = {
   text: PropTypes.string,
   confirmText: PropTypes.string,
   onClose: PropTypes.func,
+  selectedItems: PropTypes.array,
 };
