@@ -21,6 +21,7 @@ import './commands';
 
 import { mount } from 'cypress/react';
 import '@cypress/code-coverage/support';
+import '@patternfly/patternfly/patternfly.scss';
 
 Cypress.Commands.add('mount', mount);
 
