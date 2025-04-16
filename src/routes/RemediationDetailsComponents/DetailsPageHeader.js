@@ -9,7 +9,7 @@ import {
   PageHeader,
   PageHeaderTitle,
 } from '@redhat-cloud-services/frontend-components/PageHeader';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ExecutePlaybookButton } from '../../containers/ExecuteButtons';
 import { downloadPlaybook } from '../../api';
 import { dispatchNotification } from '../../Utilities/dispatcher';
@@ -25,6 +25,35 @@ const RemediationDetailsPageHeader = ({
   refetch,
   permissions,
 }) => {
+  const handleDownload = useCallback(async () => {
+    dispatchNotification({
+      title: 'Preparing playbook for download…',
+      variant: 'info',
+      dismissable: true,
+      autoDismiss: true,
+    });
+
+    try {
+      await downloadPlaybook(remediation.id);
+      dispatchNotification({
+        title: 'Download ready',
+        description: 'Your playbook is downloading now.',
+        variant: 'success',
+        dismissable: true,
+        autoDismiss: true,
+      });
+    } catch (err) {
+      dispatchNotification({
+        title: 'Download failed',
+        description:
+          err?.message || 'There was an error preparing your download.',
+        variant: 'danger',
+        dismissable: true,
+        autoDismiss: true,
+      });
+    }
+  }, [remediation.id]);
+
   return (
     <PageHeader>
       <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
@@ -56,17 +85,7 @@ const RemediationDetailsPageHeader = ({
               <Button
                 isDisabled={!remediation?.issues.length}
                 variant="secondary"
-                onClick={() => {
-                  downloadPlaybook(remediation.id);
-                  dispatchNotification({
-                    title: 'Preparing playbook for download.',
-                    description:
-                      'Once complete, your download will start automatically.',
-                    variant: 'info',
-                    dismissable: true,
-                    autoDismiss: true,
-                  });
-                }}
+                onClick={handleDownload}
               >
                 Download
               </Button>

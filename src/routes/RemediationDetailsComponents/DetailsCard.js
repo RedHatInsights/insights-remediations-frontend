@@ -279,5 +279,3 @@ DetailsCard.propTypes = {
 };
 
 export default DetailsCard;
-
-//remove padding in details links;
