@@ -27,7 +27,7 @@ export default function ConfirmationDialog({
           variant="danger"
           ouiaId="confirm"
           onClick={() => onClose(true)}
-          isDisabled={selectedItems && selectedItems?.length === 0}
+          isDisabled={selectedItems?.length === 0}
         >
           {confirmText}
         </Button>,

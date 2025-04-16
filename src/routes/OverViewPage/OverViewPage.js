@@ -211,7 +211,7 @@ export const OverViewPage = () => {
       });
     }
   };
-
+  console.log(context.permissions.write, 'context.permissions.write ');
   const actions = useMemo(() => {
     return [
       {
@@ -237,7 +237,7 @@ export const OverViewPage = () => {
         props: {
           className:
             !context.permissions.write || !currentlySelected?.length
-              ? 'var(--pf-v5-global--disabled-color--200)'
+              ? 'pf-v5-u-color-200'
               : 'pf-v5-u-danger-color-100',
           isDisabled: !context.permissions.write || !currentlySelected?.length,
         },
