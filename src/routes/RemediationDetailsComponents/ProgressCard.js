@@ -27,11 +27,11 @@ const ProgressCard = ({ remediationStatus, permissions, readyOrNot }) => {
 
       <CardBody>
         <p className="pf-v5-u-font-size-sm pf-v5-u-mb-md">
-          To be able to execute a remediation you need to have the Remediations
-          administrator role granted to your account; the Remote Host
-          Configuration Manager must be enabled; and the Remote Host
-          Configuration (RHC) client must be active on the systems in your
-          infrastructure.
+          To pass the execution readiness check, ensure you have the required
+          permissions and that the Remote Host Configuration Manager is enabled
+          for the affected systems in Insights. The Remote Host Configuration
+          (RHC) client must also be active on every system. If the readiness
+          check fails, the Execute button is inactive.
         </p>
         <ProgressStepper
           isVertical={true}
@@ -39,9 +39,9 @@ const ProgressCard = ({ remediationStatus, permissions, readyOrNot }) => {
         >
           <ProgressStep
             variant={permissions?.execute ? 'success' : 'danger'}
-            description={`Remediations administrator role ${
-              permissions?.execute ? '' : 'not '
-            }granted.`}
+            description={`You ${
+              permissions?.execute ? '' : 'do not'
+            } have the required permissions.`}
             id="permissionsStep"
             titleId="PermissionsStep"
             aria-label="PermissionsStep1"
@@ -81,26 +81,27 @@ const ProgressCard = ({ remediationStatus, permissions, readyOrNot }) => {
           <ProgressStep
             variant={readyOrNot ? `success` : 'danger'}
             description={
-              readyOrNot ? `Ready for execution` : 'Cannot be executed'
+              readyOrNot
+                ? `Ready for execution.`
+                : 'Execution readiness check failed.'
             }
             id="readyStep"
             titleId="readyStep-title"
             aria-label="Ready step"
           >
-            {readyOrNot ? `Ready for execution` : 'Not ready for execution'}
+            {readyOrNot ? `Ready for execution.` : 'Not ready for execution'}
           </ProgressStep>
         </ProgressStepper>
       </CardBody>
       <CardFooter className="pf-v5-u-font-size-sm">
-        Need help?{' '}
+        Get ready to execute your remediation plan{' '}
         <InsightsLink
           to={
-            'https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index#remediations-overview_red-hat-insights-remediation-guide'
+            'https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index#executing-playbooks-from-insights_remediations-from-insights'
           }
         >
           <Button variant="link" className="pf-v5-u-font-size-sm">
-            Learn more about enabling host communication with Insights.{' '}
-            <ExternalLinkAltIcon />
+            Learn more. <ExternalLinkAltIcon />
           </Button>{' '}
         </InsightsLink>
       </CardFooter>

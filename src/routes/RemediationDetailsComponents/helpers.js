@@ -9,6 +9,15 @@ import React from 'react';
 export const execStatus = (status, date) => {
   let icon;
   let displayValue = 'N/A';
+
+  if (!date || !status) {
+    return (
+      <Flex spaceItems={{ default: 'spaceItemsSm' }}>
+        <TextContent>{displayValue}</TextContent>
+      </Flex>
+    );
+  }
+
   if (status === 'success') {
     (icon = (
       <Icon status="success">

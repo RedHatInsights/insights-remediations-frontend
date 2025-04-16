@@ -170,6 +170,7 @@ const DetailsCard = ({
               <Button
                 variant="link"
                 onClick={() => onNavigateToTab(null, 'actions')}
+                style={{ padding: '0' }}
               >
                 {`${details?.issues.length} action${
                   details?.issues.length > 1 ? 's' : ''
@@ -184,6 +185,7 @@ const DetailsCard = ({
               <Button
                 variant="link"
                 onClick={() => onNavigateToTab(null, 'systems')}
+                style={{ padding: '0' }}
               >
                 {`${remediationStatus?.totalSystems} system${
                   remediationStatus?.totalSystems > 1 ? 's' : ''
@@ -210,7 +212,7 @@ const DetailsCard = ({
         New to remediating through Insights?{' '}
         <InsightsLink
           to={
-            'https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide/index'
+            'https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index#creating-managing-playbooks_red-hat-insights-remediation-guide'
           }
         >
           <Button variant="link" className="pf-v5-u-font-size-sm">
@@ -279,5 +281,3 @@ DetailsCard.propTypes = {
 export default DetailsCard;
 
 //remove padding in details links;
-// imporoved language for links at bottom
-//Maybe add verticle design to the inputs;
