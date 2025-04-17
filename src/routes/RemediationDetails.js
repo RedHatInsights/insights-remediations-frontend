@@ -39,6 +39,8 @@ import {
   Tab,
   Flex,
   FlexItem,
+  Bullseye,
+  Spinner,
 } from '@patternfly/react-core';
 
 import RemediationDetailsSkeleton from '../skeletons/RemediationDetailsSkeleton';
@@ -54,6 +56,8 @@ import { useConnectionStatus } from '../Utilities/useConnectionStatus';
 import { useRemediationsList } from '../Utilities/useRemediationsList';
 import { SkeletonTable } from '@patternfly/react-component-groups';
 import { Th } from '@patternfly/react-table';
+import { useFeatureFlag } from '../Utilities/Hooks/useFeatureFlag';
+import RemediationDetailsV2 from './RemediationDetailsV2';
 
 const RemediationDetails = ({
   selectedRemediation,
@@ -316,6 +320,19 @@ RemediationDetails.propTypes = {
   executable: PropTypes.object,
 };
 
+const RemediationDetailsComponent = () => {
+  const remediationsV2 = useFeatureFlag('remediationsV2');
+  return remediationsV2 === undefined ? (
+    <Bullseye>
+      <Spinner />
+    </Bullseye>
+  ) : remediationsV2 ? (
+    <RemediationDetailsV2 />
+  ) : (
+    <RemediationDetails />
+  );
+};
+
 export default connect(
   ({
     selectedRemediation,
@@ -342,4 +359,4 @@ export default connect(
     getPlaybookRuns: (id) => dispatch(actions.getPlaybookRuns(id)),
     checkExecutable: (id) => dispatch(actions.checkExecutable(id)),
   })
-)(RemediationDetails);
+)(RemediationDetailsComponent);

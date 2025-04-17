@@ -23,6 +23,8 @@ function RemediationDetailsDropdown({
   onRename,
   onDelete,
   remediationsList,
+  updateRemPlan,
+  refetch,
 }) {
   const [open, setOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
@@ -40,7 +42,12 @@ function RemediationDetailsDropdown({
           onCancel={() => setRenameDialogOpen(false)}
           onSubmit={(name) => {
             setRenameDialogOpen(false);
-            onRename(remediation.id, name);
+            updateRemPlan
+              ? updateRemPlan({ id: remediation.id, name: name }).then(() =>
+                  refetch()
+                )
+              : onRename(remediation.id, name);
+
             dispatchNotification({
               title: `Updated playbook name to ${name}`,
               description: '',
@@ -103,6 +110,8 @@ RemediationDetailsDropdown.propTypes = {
   onRename: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   remediationsList: PropTypes.array,
+  updateRemPlan: PropTypes.func,
+  refetch: PropTypes.func,
 };
 
 const connected = connect(null, (dispatch) => ({
