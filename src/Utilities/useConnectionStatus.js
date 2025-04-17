@@ -42,7 +42,7 @@ export const useConnectionStatus = (remediation) => {
     return () => {
       mounted.current = false;
     };
-  }, []);
+  }, [remediation?.id]);
 
   return [
     connectedSystems,
