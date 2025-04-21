@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import RemediationsTable from '../../components/RemediationsTable/RemediationsTable';
 import PropTypes from 'prop-types';
 import columns from './Columns';
@@ -16,6 +16,7 @@ import { dispatchNotification } from '../../Utilities/dispatcher';
 import { chunkArray } from './helpers';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import useStateCallbacks from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
+import { actionNameFilter } from './Filters';
 
 const deleteIssues = (axios) => (params) => {
   return axios({
@@ -37,9 +38,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
   const [isBulkDelete, setIsBulkDelete] = useState(false);
   const [action, setAction] = useState();
   const callbacks = useStateCallbacks();
-
   // console.log(actions, 'actions here');
-  //search filter
   //systems cell modal
 
   const { fetchBatched: deleteActions } = useRemediationsQuery(
@@ -61,6 +60,19 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
     }));
     return await fetchQueue(queue);
   };
+
+  //Back end is currently working on filtering - This filter acts as a placegholder
+  const nameFilter = tableState?.filters?.name?.[0] || '';
+  const allIssues = remediationDetails?.issues || [];
+  const filteredIssues = useMemo(() => {
+    if (!nameFilter) {
+      return allIssues;
+    }
+    return allIssues.filter((issue) => issue.description.includes(nameFilter));
+  }, [allIssues, nameFilter]);
+  const start = params?.offset || 0;
+  const end = (params?.limit || 10) + start;
+  const pageOfIssues = filteredIssues.slice(start, end);
 
   return (
     <section
@@ -106,19 +118,16 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
       <RemediationsTable
         aria-label="ActionsTable"
         ouiaId="ActionsTable"
-        items={remediationDetails?.issues?.slice(
-          params?.offset || 0,
-          params?.limit + params?.offset || 10
-        )}
-        total={remediationDetails?.issues?.length}
+        items={pageOfIssues}
+        total={filteredIssues.length}
         columns={[...columns]}
+        filters={{
+          filterConfig: [...actionNameFilter],
+        }}
         options={{
           onSelect: () => '',
-          itemIdsInTable: remediationDetails?.issues?.map(({ id }) => id),
-          itemIdsOnPage: remediationDetails?.issues?.slice(
-            params?.offset || 0,
-            params?.limit + params?.offset || 10
-          ),
+          itemIdsInTable: filteredIssues.map((i) => i.id),
+          itemIdsOnPage: pageOfIssues.map((i) => i.id),
           total: remediationDetails?.issues?.length,
           actionResolver: () => {
             return [
