@@ -28,6 +28,7 @@ import { emptyRows } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hook
 import useRemediationFetchExtras from '../../api/useRemediationFetchExtras';
 import { OverViewPageHeader } from './OverViewPageHeader';
 import { PermissionContext } from '../../App';
+import { chunkArray } from '../RemediationDetailsComponents/helpers';
 
 const getRemediations = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations/`, { params });
@@ -169,14 +170,6 @@ export const OverViewPage = () => {
         autoDismiss: true,
       });
     }
-  };
-
-  const chunkArray = (array, size) => {
-    const chunks = [];
-    for (let i = 0; i < array.length; i += size) {
-      chunks.push(array.slice(i, i + size));
-    }
-    return chunks;
   };
 
   const handleBulkDeleteClick = async (selected) => {

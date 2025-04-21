@@ -76,5 +76,14 @@ export const getTimeAgo = (date) => {
   return `${diffYears} year${diffYears === 1 ? '' : 's'} ago`;
 };
 
+// eslint-disable-next-line react/display-name
 export const renderComponent = (Component, props) => (_data, _id, entity) =>
-    <Component {...entity} {...props} />;
+  <Component {...entity} {...props} />;
+
+export const chunkArray = (array, size) => {
+  const chunks = [];
+  for (let i = 0; i < array.length; i += size) {
+    chunks.push(array.slice(i, i + size));
+  }
+  return chunks;
+};
