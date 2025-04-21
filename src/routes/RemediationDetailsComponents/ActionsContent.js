@@ -17,6 +17,7 @@ import { chunkArray } from './helpers';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import useStateCallbacks from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
 import { actionNameFilter } from './Filters';
+import SystemsModal from './SystemsModal/SystemsModal';
 
 const deleteIssues = (axios) => (params) => {
   return axios({
@@ -37,9 +38,11 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isBulkDelete, setIsBulkDelete] = useState(false);
   const [action, setAction] = useState();
+  const [isSystemsModalOpen, setIsSystemsModalOpen] = useState(false);
+  const [systemsToShow, setSystemsToShow] = useState([]);
+  const [actionToShow, setActionToShow] = useState('');
+
   const callbacks = useStateCallbacks();
-  // console.log(actions, 'actions here');
-  //systems cell modal
 
   const { fetchBatched: deleteActions } = useRemediationsQuery(
     deleteIssues(axios),
@@ -74,10 +77,40 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
   const end = (params?.limit || 10) + start;
   const pageOfIssues = filteredIssues.slice(start, end);
 
+  const columnsWithSystemsButton = useMemo(() => {
+    return columns.map((col) => {
+      if (col.exportKey === 'system_count') {
+        return {
+          ...col,
+          renderFunc: (_data, _id, { systems, description }) => (
+            <Button
+              variant="link"
+              onClick={() => {
+                setActionToShow(description);
+                setSystemsToShow(systems);
+                setIsSystemsModalOpen(true);
+              }}
+            >
+              {`${systems.length} system${systems.length !== 1 ? 's' : ''}`}
+            </Button>
+          ),
+        };
+      }
+      return col;
+    });
+  }, []);
   return (
     <section
       className={'pf-v5-l-page__main-section pf-v5-c-page__main-section'}
     >
+      {isSystemsModalOpen && (
+        <SystemsModal
+          isOpen={isSystemsModalOpen}
+          onClose={() => setIsSystemsModalOpen(false)}
+          systems={systemsToShow}
+          actionName={actionToShow}
+        />
+      )}
       {isDeleteModalOpen && (
         <ConfirmationDialog
           isOpen={isDeleteModalOpen}
@@ -120,7 +153,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
         ouiaId="ActionsTable"
         items={pageOfIssues}
         total={filteredIssues.length}
-        columns={[...columns]}
+        columns={[...columnsWithSystemsButton]}
         filters={{
           filterConfig: [...actionNameFilter],
         }}
@@ -128,7 +161,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
           onSelect: () => '',
           itemIdsInTable: filteredIssues.map((i) => i.id),
           itemIdsOnPage: pageOfIssues.map((i) => i.id),
-          total: remediationDetails?.issues?.length,
+          total: filteredIssues.length,
           actionResolver: () => {
             return [
               {
