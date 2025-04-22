@@ -4,7 +4,7 @@ export const actionNameFilter = [
   {
     type: conditionalFilterType.text,
     label: 'Name',
-    placeholder: 'Search',
+    placeholder: 'Filter by actions',
     filterAttribute: 'description',
   },
 ];

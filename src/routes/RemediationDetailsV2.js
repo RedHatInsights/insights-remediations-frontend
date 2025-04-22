@@ -165,8 +165,4 @@ const RemediationDetailsV2 = () => {
   );
 };
 
-const RemediationDetailsProvider = () => {
-  return <RemediationDetailsV2 />;
-};
-
-export default RemediationDetailsProvider;
+export default RemediationDetailsV2;
