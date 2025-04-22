@@ -14,6 +14,7 @@ const RenameModal = ({
   remediationsList,
   fetch,
   onRename,
+  refetch,
 }) => {
   return (
     <TextInputDialog
@@ -26,8 +27,10 @@ const RenameModal = ({
         await onRename(remediation.id, name);
 
         fetch && fetch();
+        refetch && refetch();
       }}
       remediationsList={remediationsList ?? []}
+      refetch={refetch}
     />
   );
 };
@@ -38,6 +41,7 @@ RenameModal.propTypes = {
   remediationsList: PropTypes.array,
   setIsRenameModalOpen: PropTypes.func,
   fetch: PropTypes.func,
+  refetch: PropTypes.func,
 };
 
 const connected = connect(null, () => ({

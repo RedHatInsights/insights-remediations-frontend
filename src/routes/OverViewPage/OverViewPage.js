@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import columns from '../Columns';
 import useRemediationsQuery from '../../api/useRemediationsQuery';
 import { API_BASE } from '../../config';
@@ -27,6 +27,7 @@ import { TextContent } from '@patternfly/react-core';
 import { emptyRows } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
 import useRemediationFetchExtras from '../../api/useRemediationFetchExtras';
 import { OverViewPageHeader } from './OverViewPageHeader';
+import { PermissionContext } from '../../App';
 
 const getRemediations = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations/`, { params });
@@ -70,6 +71,8 @@ export const OverViewPage = () => {
   const [remediation, setRemediation] = useState('');
   const [showArchived, setShowArchived] = useState(true);
   const [isBulkDelete, setIsBulkDelete] = useState(false);
+  const context = useContext(PermissionContext);
+
   // const remediationsList = useRemediationsList();
   const callbacks = useStateCallbacks();
   const tableState = useRawTableState();
@@ -84,9 +87,8 @@ export const OverViewPage = () => {
     params: { hide_archived: showArchived, 'fields[data]': 'playbook_runs' },
   });
 
-  const { result: allRemediations } = useRemediationsQuery(
-    getRemediationsList(axios)
-  );
+  const { result: allRemediations, refetch: refetchAllRemediations } =
+    useRemediationsQuery(getRemediationsList(axios));
 
   const { fetch: archiveRemediation } = useRemediationsQuery(
     archiveRemediationPlans(axios),
@@ -209,25 +211,37 @@ export const OverViewPage = () => {
       });
     }
   };
-
+  console.log(context.permissions.write, 'context.permissions.write ');
   const actions = useMemo(() => {
     return [
       {
         label: 'Archive',
+        props: {
+          isDisabled: !context.permissions.write || !currentlySelected?.length,
+        },
         onClick: () => {
           handleBulkArchiveClick(currentlySelected);
         },
       },
       {
         label: 'Unarchive',
+        props: {
+          isDisabled: !context.permissions.write || !currentlySelected?.length,
+        },
         onClick: () => {
           handleBulkUnArchiveClick(currentlySelected);
         },
       },
       {
-        label: (
-          <TextContent className="pf-v5-u-danger-color-100">Delete</TextContent>
-        ),
+        label: 'Delete',
+        props: {
+          className:
+            !context.permissions.write || !currentlySelected?.length
+              ? 'pf-v5-u-color-200'
+              : 'pf-v5-u-danger-color-100',
+          isDisabled: !context.permissions.write || !currentlySelected?.length,
+        },
+
         onClick: () => {
           setIsBulkDelete(true);
           setIsDeleteModalOpen(true);
@@ -259,6 +273,7 @@ export const OverViewPage = () => {
           setIsRenameModalOpen={setIsRenameModalOpen}
           remediationsList={allRemediations.data}
           fetch={fetchRemediations}
+          refetch={refetchAllRemediations}
         />
       )}
       {isDeleteModalOpen && (
@@ -267,6 +282,7 @@ export const OverViewPage = () => {
           title={`Remove playbook(s)`}
           text="You will not be able to recover this Playbook"
           confirmText="Remove playbook"
+          selectedItems={currentlySelected}
           onClose={(confirm) => {
             setIsDeleteModalOpen(false);
             if (confirm) {

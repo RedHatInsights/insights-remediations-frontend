@@ -6,17 +6,18 @@ import {
   EmptyStateVariant,
   EmptyStateHeader,
   Button,
+  EmptyStateIcon,
 } from '@patternfly/react-core';
-import { useNavigate } from 'react-router-dom';
-import { ExternalLinkAltIcon } from '@patternfly/react-icons';
+import { Link } from 'react-router-dom';
+import { CubesIcon, ExternalLinkAltIcon } from '@patternfly/react-icons';
 
 export const NoResultsTable = () => {
-  const navigate = useNavigate();
   return (
     <EmptyState variant={EmptyStateVariant.full}>
       <EmptyStateHeader
         titleText={<>No remediation plans</>}
         headingLevel="h5"
+        icon={<EmptyStateIcon icon={CubesIcon} />}
       />
       <EmptyStateBody>
         Create remediation plans to address Advisor recommendations, Security
@@ -25,10 +26,15 @@ export const NoResultsTable = () => {
         Content advisories on your Red Hat Enterprise Linux (RHEL)
         infrastructure.
       </EmptyStateBody>
-      {/*TODO:  Need to link this somewhere */}
-      <Button onClick={() => navigate('/')}>
-        Learn More <ExternalLinkAltIcon />
-      </Button>
+      <Link
+        to={
+          'https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide/creating-managing-playbooks_red-hat-insights-remediation-guide'
+        }
+      >
+        <Button>
+          Learn More <ExternalLinkAltIcon />
+        </Button>
+      </Link>
     </EmptyState>
   );
 };
