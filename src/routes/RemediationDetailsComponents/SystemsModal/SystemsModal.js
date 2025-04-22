@@ -13,8 +13,8 @@ const SystemsModal = ({ systems, isOpen, onClose, actionName }) => {
   const tableState = useRawTableState();
   const { params } = useRemediationTableState(true);
 
-  const nameFilter = tableState?.filters?.name?.[0] || '';
-  const allIssues = systems || [];
+  const nameFilter = tableState?.filters?.name?.[0] ?? '';
+  const allIssues = systems ?? [];
   const filteredSystems = useMemo(() => {
     if (!nameFilter) {
       return allIssues;
@@ -23,8 +23,8 @@ const SystemsModal = ({ systems, isOpen, onClose, actionName }) => {
       system?.display_name.includes(nameFilter)
     );
   }, [allIssues, nameFilter]);
-  const start = params?.offset || 0;
-  const end = (params?.limit || 10) + start;
+  const start = params?.offset ?? 0;
+  const end = (params?.limit ?? 10) + start;
   const pageOfSystems = filteredSystems.slice(start, end);
 
   return (

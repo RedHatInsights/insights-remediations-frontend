@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import RemediationsTable from '../../components/RemediationsTable/RemediationsTable';
 import PropTypes from 'prop-types';
 import columns from './Columns';
@@ -13,7 +13,7 @@ import useRemediationFetchExtras from '../../api/useRemediationFetchExtras';
 import { useRawTableState } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
 import { useParams } from 'react-router-dom';
 import { dispatchNotification } from '../../Utilities/dispatcher';
-import { chunkArray } from './helpers';
+import chunk from 'lodash/chunk';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import useStateCallbacks from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
 import { actionNameFilter } from './Filters';
@@ -56,7 +56,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
   });
 
   const handleDelete = async (selected) => {
-    const chunks = chunkArray(selected, 100);
+    const chunks = chunk(selected, 100);
     const queue = chunks.map((chunk) => ({
       id,
       issue_ids: chunk,
@@ -65,16 +65,16 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
   };
 
   //Back end is currently working on filtering - This filter acts as a placegholder
-  const nameFilter = tableState?.filters?.name?.[0] || '';
-  const allIssues = remediationDetails?.issues || [];
+  const nameFilter = tableState?.filters?.name?.[0] ?? '';
+  const allIssues = remediationDetails?.issues ?? [];
   const filteredIssues = useMemo(() => {
     if (!nameFilter) {
       return allIssues;
     }
     return allIssues.filter((issue) => issue.description.includes(nameFilter));
   }, [allIssues, nameFilter]);
-  const start = params?.offset || 0;
-  const end = (params?.limit || 10) + start;
+  const start = params?.offset ?? 0;
+  const end = (params?.limit ?? 10) + start;
   const pageOfIssues = filteredIssues.slice(start, end);
 
   const columnsWithSystemsButton = useMemo(() => {
@@ -100,6 +100,10 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
       return col;
     });
   }, []);
+  const getAllIssueIds = useCallback(
+    () => filteredIssues.map((i) => i.id),
+    [filteredIssues]
+  );
   return (
     <section
       className={'pf-v5-l-page__main-section pf-v5-c-page__main-section'}
@@ -126,7 +130,6 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
                 .then(() => {
                   dispatchNotification({
                     title: `Succesfully deleted actions`,
-                    description: '',
                     variant: 'success',
                     dismissable: true,
                     autoDismiss: true,
@@ -139,7 +142,6 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
                 .catch(() => {
                   dispatchNotification({
                     title: `Failed to delete actions`,
-                    description: '',
                     variant: 'danger',
                     dismissable: true,
                     autoDismiss: true,
@@ -160,8 +162,9 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
           filterConfig: [...actionNameFilter],
         }}
         options={{
+          //Known bug in asyncTableTools - needed for bulkSelect
           onSelect: () => '',
-          itemIdsInTable: filteredIssues.map((i) => i.id),
+          itemIdsInTable: getAllIssueIds,
           itemIdsOnPage: pageOfIssues.map((i) => i.id),
           total: filteredIssues.length,
           actionResolver: () => {
@@ -170,7 +173,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
                 title: 'Remove',
                 onClick: (_event, _index, { item }) => {
                   setIsBulkDelete(false);
-                  setAction(item.id);
+                  setAction([item.id]);
                   setIsDeleteModalOpen(true);
                 },
               },

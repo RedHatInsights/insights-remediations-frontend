@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
-import { Button, Flex, Spinner, Title, Tooltip } from '@patternfly/react-core';
+import { Button, Flex, Spinner, Tooltip } from '@patternfly/react-core';
 import { ExecuteModal } from './Modals/ExecuteModal';
 import './ExecuteButton.scss';
 import './Status.scss';
@@ -19,11 +19,7 @@ const ExecuteButton = ({
   remediationStatus,
   setEtag,
   areDetailsLoading,
-  detailsError,
-  permissions,
   remediation,
-  connectedSystems,
-  totalSystems,
 }) => {
   const [open, setOpen] = useState(false);
   const [showRefreshMessage, setShowRefreshMessage] = useState(false);

@@ -55,7 +55,6 @@ const connected = connect(null, () => ({
       .then(() => {
         dispatchNotification({
           title: `Updated playbook name to ${name}`,
-          description: '',
           variant: 'success',
           dismissable: true,
           autoDismiss: true,
@@ -65,7 +64,6 @@ const connected = connect(null, () => ({
         console.error(error);
         dispatchNotification({
           title: `Failed to update playbook name`,
-          description: '',
           variant: 'danger',
           dismissable: true,
           autoDismiss: true,

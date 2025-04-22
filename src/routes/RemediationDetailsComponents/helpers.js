@@ -79,11 +79,3 @@ export const getTimeAgo = (date) => {
 // eslint-disable-next-line react/display-name
 export const renderComponent = (Component, props) => (_data, _id, entity) =>
   <Component {...entity} {...props} />;
-
-export const chunkArray = (array, size) => {
-  const chunks = [];
-  for (let i = 0; i < array.length; i += size) {
-    chunks.push(array.slice(i, i + size));
-  }
-  return chunks;
-};
