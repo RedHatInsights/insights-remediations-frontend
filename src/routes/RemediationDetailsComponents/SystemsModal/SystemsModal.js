@@ -30,7 +30,7 @@ const SystemsModal = ({ systems, isOpen, onClose, actionName }) => {
   return (
     <Modal
       variant={ModalVariant.large}
-      title={`System${systems?.length > 1 ? 's' : ''} for action`}
+      title={`Affected system${systems?.length > 1 ? 's' : ''}`}
       isOpen={isOpen}
       onClose={onClose}
       isFooterLeftAligned

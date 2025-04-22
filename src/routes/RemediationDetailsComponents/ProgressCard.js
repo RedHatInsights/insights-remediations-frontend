@@ -21,7 +21,7 @@ const ProgressCard = ({ remediationStatus, permissions, readyOrNot }) => {
     <Card isFullHeight>
       <CardTitle>
         <Title headingLevel="h4" size="xl">
-          Remediation readiness
+          Execution readiness
         </Title>
       </CardTitle>
 

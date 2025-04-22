@@ -149,9 +149,7 @@ const RemediationDetailsV2 = () => {
             eventKey={'systems'}
             aria-label="SystemTab"
             title={<TabTitleText>Systems</TabTitleText>}
-          >
-            Content here for Systems
-          </Tab>
+          ></Tab>
           <Tab
             eventKey={'executionHistory'}
             aria-label="ExecutionHistoryTab"

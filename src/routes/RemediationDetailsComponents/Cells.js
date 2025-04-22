@@ -65,14 +65,11 @@ export const ActionsCell = ({ id, description, resolution }) => {
   );
 };
 export const RebootRequiredCell = ({ resolution }) => (
-  <TextContent>
-    {resolution?.needs_reboot ? 'Required' : 'Not required'}
-  </TextContent>
+  <TextContent>{resolution?.needs_reboot ? 'Yes' : 'No'}</TextContent>
 );
 
-//This has to open a modal
 export const SystemsCell = ({ systems }) => (
-  <TextContent style={{ justifySelf: 'center' }}>{`${systems?.length} system${
+  <TextContent>{`${systems?.length} system${
     systems?.length > 1 ? 's' : ''
   }`}</TextContent>
 );

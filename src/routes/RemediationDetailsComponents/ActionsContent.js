@@ -84,6 +84,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
           ...col,
           renderFunc: (_data, _id, { systems, description }) => (
             <Button
+              style={{ padding: '0' }}
               variant="link"
               onClick={() => {
                 setActionToShow(description);
@@ -114,9 +115,9 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
       {isDeleteModalOpen && (
         <ConfirmationDialog
           isOpen={isDeleteModalOpen}
-          title={`Remove action(s)`}
-          text="You will not be able to recover this/these action(s)"
-          confirmText="Remove action(s)"
+          title={`Remove`}
+          text="The selected actions will no longer be executed in this plan."
+          confirmText="Remove"
           onClose={(confirm) => {
             setIsDeleteModalOpen(false);
             if (confirm) {
@@ -124,7 +125,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
               handleDelete(chopped)
                 .then(() => {
                   dispatchNotification({
-                    title: `Succesfully deleted action(s)`,
+                    title: `Succesfully deleted actions`,
                     description: '',
                     variant: 'success',
                     dismissable: true,
@@ -137,7 +138,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
                 })
                 .catch(() => {
                   dispatchNotification({
-                    title: `Failed to delete action(s)`,
+                    title: `Failed to delete actions`,
                     description: '',
                     variant: 'danger',
                     dismissable: true,
@@ -151,6 +152,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
       <RemediationsTable
         aria-label="ActionsTable"
         ouiaId="ActionsTable"
+        isCompact
         items={pageOfIssues}
         total={filteredIssues.length}
         columns={[...columnsWithSystemsButton]}
@@ -165,7 +167,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
           actionResolver: () => {
             return [
               {
-                title: 'Remove action',
+                title: 'Remove',
                 onClick: (_event, _index, { item }) => {
                   setIsBulkDelete(false);
                   setAction(item.id);
@@ -183,7 +185,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
                 setIsDeleteModalOpen(true);
               }}
             >
-              Remove Action
+              Remove
             </Button>
           ),
           emptyRows: emptyRows(columns.length),
