@@ -320,43 +320,50 @@ RemediationDetails.propTypes = {
   executable: PropTypes.object,
 };
 
-const RemediationDetailsComponent = () => {
+const RemediationDetailsConnector = (props) => {
   const remediationsV2 = useFeatureFlag('remediationsV2');
-  return remediationsV2 === undefined ? (
-    <Bullseye>
-      <Spinner />
-    </Bullseye>
-  ) : remediationsV2 ? (
-    <RemediationDetailsV2 />
+
+  if (remediationsV2 === undefined) {
+    return (
+      <Bullseye>
+        <Spinner size="lg" />
+      </Bullseye>
+    );
+  }
+
+  return remediationsV2 ? (
+    <RemediationDetailsV2 {...props} />
   ) : (
-    <RemediationDetails />
+    <RemediationDetails {...props} />
   );
 };
 
+const mapStateToProps = ({
+  selectedRemediation,
+  selectedRemediationStatus,
+  executePlaybookBanner,
+  playbookRuns,
+  executable,
+}) => ({
+  selectedRemediation,
+  selectedRemediationStatus,
+  executePlaybookBanner,
+  playbookRuns: playbookRuns.data,
+  executable,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  loadRemediation: (id) => dispatch(actions.loadRemediation(id)),
+  loadRemediationStatus: (id) => dispatch(actions.loadRemediationStatus(id)),
+  switchAutoReboot: (id, auto_reboot) =>
+    dispatch(actions.patchRemediation(id, { auto_reboot })),
+  deleteRemediation: (id) => dispatch(actions.deleteRemediation(id)),
+  addNotification: (content) => dispatch(addNotification(content)),
+  getPlaybookRuns: (id) => dispatch(actions.getPlaybookRuns(id)),
+  checkExecutable: (id) => dispatch(actions.checkExecutable(id)),
+});
+
 export default connect(
-  ({
-    selectedRemediation,
-    selectedRemediationStatus,
-    executePlaybookBanner,
-    playbookRuns,
-    executable,
-  }) => ({
-    selectedRemediation,
-    selectedRemediationStatus,
-    executePlaybookBanner,
-    playbookRuns: playbookRuns.data,
-    remediation: selectedRemediation.remediation,
-    executable,
-  }),
-  (dispatch) => ({
-    loadRemediation: (id) => dispatch(actions.loadRemediation(id)),
-    loadRemediationStatus: (id) => dispatch(actions.loadRemediationStatus(id)),
-    // eslint-disable-next-line camelcase
-    switchAutoReboot: (id, auto_reboot) =>
-      dispatch(actions.patchRemediation(id, { auto_reboot })),
-    deleteRemediation: (id) => dispatch(actions.deleteRemediation(id)),
-    addNotification: (content) => dispatch(addNotification(content)),
-    getPlaybookRuns: (id) => dispatch(actions.getPlaybookRuns(id)),
-    checkExecutable: (id) => dispatch(actions.checkExecutable(id)),
-  })
-)(RemediationDetailsComponent);
+  mapStateToProps,
+  mapDispatchToProps
+)(RemediationDetailsConnector);
