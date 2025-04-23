@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import RemediationsTable from '../../components/RemediationsTable/RemediationsTable';
+import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
 import PropTypes from 'prop-types';
 import columns from './Columns';
 import { emptyRows } from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
@@ -84,6 +84,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
           ...col,
           renderFunc: (_data, _id, { systems, description }) => (
             <Button
+              size="sm"
               style={{ padding: '0' }}
               variant="link"
               onClick={() => {
@@ -154,7 +155,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
       <RemediationsTable
         aria-label="ActionsTable"
         ouiaId="ActionsTable"
-        isCompact
+        variant="compact"
         items={pageOfIssues}
         total={filteredIssues.length}
         columns={[...columnsWithSystemsButton]}

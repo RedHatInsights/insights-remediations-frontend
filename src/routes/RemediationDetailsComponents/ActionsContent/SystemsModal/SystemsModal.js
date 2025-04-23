@@ -38,6 +38,7 @@ const SystemsModal = ({ systems, isOpen, onClose, actionName }) => {
       <b>Action:</b> {actionName}
       <RemediationsTable
         aria-label="SystemsModalTable"
+        variant="compact"
         ouiaId="SystemsModalTable"
         items={pageOfSystems}
         total={filteredSystems?.length}

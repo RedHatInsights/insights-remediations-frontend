@@ -11,7 +11,8 @@ import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import RemediationDetailsPageHeader from './RemediationDetailsComponents/DetailsPageHeader';
 import { PermissionContext } from '../App';
 import ActionsContent from './RemediationDetailsComponents/ActionsContent/ActionsContent';
-import SystemsContent from './RemediationDetailsComponents/SystemsContent/SystemsContent';
+// import SystemsContent from './RemediationDetailsComponents/SystemsContent/SystemsContent';
+import SystemsTable from '../components/SystemsTable/SystemsTable';
 
 const getRemediations = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations/${params.remId}`, { params });
@@ -151,11 +152,23 @@ const RemediationDetailsV2 = () => {
             aria-label="SystemTab"
             title={<TabTitleText>Systems</TabTitleText>}
           >
-            <SystemsContent
+            {/* We will eventually migrate away from systemsTable, and use SystemsContent */}
+            {/* <SystemsContent
               remediationDetails={remediationDetails}
               remediationStatus={remediationStatus}
               refetch={fetchRemediation}
-            />
+            /> */}
+            <section
+              className={
+                'pf-v5-l-page__main-section pf-v5-c-page__main-section'
+              }
+            >
+              <SystemsTable
+                remediation={remediationDetails}
+                connectedData={remediationStatus?.connectedData}
+                areDetailsLoading={remediationStatus?.areDetailsLoading}
+              />
+            </section>
           </Tab>
           <Tab
             eventKey={'executionHistory'}
