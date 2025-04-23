@@ -22,7 +22,7 @@ import ConfirmationDialog from '../../components/ConfirmationDialog';
 import { useRawTableState } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
 import TableStateProvider from '../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
 import useStateCallbacks from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
-import NoResultsTable from '../../components/NoResultsTable';
+import NoRemediationsTable from '../../components/NoRemediationsTable';
 import { TextContent } from '@patternfly/react-core';
 import { emptyRows } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
 import useRemediationFetchExtras from '../../api/useRemediationFetchExtras';
@@ -308,7 +308,7 @@ export const OverViewPage = () => {
         />
       )}
       {allRemediations?.data.length === 0 ? (
-        <NoResultsTable />
+        <NoRemediationsTable />
       ) : (
         <RemediationsTable
           aria-label="OverViewTable"
