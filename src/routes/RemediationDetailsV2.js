@@ -10,7 +10,8 @@ import { useConnectionStatus } from '../Utilities/useConnectionStatus';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import RemediationDetailsPageHeader from './RemediationDetailsComponents/DetailsPageHeader';
 import { PermissionContext } from '../App';
-import ActionsContent from './RemediationDetailsComponents/ActionsContent';
+import ActionsContent from './RemediationDetailsComponents/ActionsContent/ActionsContent';
+import SystemsContent from './RemediationDetailsComponents/SystemsContent/SystemsContent';
 
 const getRemediations = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations/${params.remId}`, { params });
@@ -149,7 +150,13 @@ const RemediationDetailsV2 = () => {
             eventKey={'systems'}
             aria-label="SystemTab"
             title={<TabTitleText>Systems</TabTitleText>}
-          ></Tab>
+          >
+            <SystemsContent
+              remediationDetails={remediationDetails}
+              remediationStatus={remediationStatus}
+              refetch={fetchRemediation}
+            />
+          </Tab>
           <Tab
             eventKey={'executionHistory'}
             aria-label="ExecutionHistoryTab"

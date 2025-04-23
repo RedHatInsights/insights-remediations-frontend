@@ -2,12 +2,12 @@ import React, { useMemo } from 'react';
 import { Modal, ModalVariant } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 
-import TableStateProvider from '../../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
-import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
+import TableStateProvider from '../../../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
+import RemediationsTable from '../../../../components/RemediationsTable/RemediationsTable';
 import columns from './Columns';
-import { useRawTableState } from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
-import useRemediationTableState from '../../../api/useRemediationTableState';
-import { actionNameFilter } from '../Filters';
+import { useRawTableState } from '../../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
+import useRemediationTableState from '../../../../api/useRemediationTableState';
+import { actionNameFilter } from '../../Filters';
 
 const SystemsModal = ({ systems, isOpen, onClose, actionName }) => {
   const tableState = useRawTableState();
@@ -56,11 +56,11 @@ SystemsModal.propTypes = {
   actionName: PropTypes.string,
 };
 
-const SystemsContentProvider = (props) => {
+const SystemsModalContentProvider = (props) => {
   return (
     <TableStateProvider>
       <SystemsModal {...props} />
     </TableStateProvider>
   );
 };
-export default SystemsContentProvider;
+export default SystemsModalContentProvider;

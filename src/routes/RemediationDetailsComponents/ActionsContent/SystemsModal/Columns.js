@@ -1,6 +1,6 @@
 import { wrappable } from '@patternfly/react-table';
 import { SystemNameCell } from './Cells';
-import { renderComponent } from '../helpers';
+import { renderComponent } from '../../helpers';
 
 export default [
   {

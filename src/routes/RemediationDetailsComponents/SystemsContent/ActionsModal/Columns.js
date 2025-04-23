@@ -1,39 +1,30 @@
 import { wrappable } from '@patternfly/react-table';
-import { renderComponent } from './helpers';
+import { renderComponent } from '../../helpers';
 import {
   ActionsCell,
   IssueTypeCell,
-  SystemsCell,
   RebootRequiredCell,
-} from './Cells';
+} from '../../ActionsContent/Cells';
 
 export default [
   {
     title: 'Action',
     transforms: [wrappable],
-    // sortable: 'action',
-    exportKey: 'action',
+    exportKey: 'actions',
     renderFunc: renderComponent(ActionsCell),
   },
   {
     title: 'Reboot required',
     transforms: [wrappable],
-    // sortable: 'reboot',
-    exportKey: 'reboot',
+    // sortable: 'type',
+    exportKey: 'rebootrequired',
     renderFunc: renderComponent(RebootRequiredCell),
   },
   {
-    title: 'Affected systems',
-    transforms: [wrappable],
-    // sortable: 'system_count',
-    exportKey: 'system_count',
-    renderFunc: renderComponent(SystemsCell),
-  },
-  {
-    title: 'Issue type',
+    title: 'Type',
     transforms: [wrappable],
     // sortable: 'type',
-    exportKey: 'type',
+    exportKey: 'actionCount',
     renderFunc: renderComponent(IssueTypeCell),
   },
 ];
