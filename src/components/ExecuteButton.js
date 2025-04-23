@@ -2,17 +2,11 @@
 import React, { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
-import { Button, Flex, Spinner, Title, Tooltip } from '@patternfly/react-core';
+import { Button, Flex, Spinner, Tooltip } from '@patternfly/react-core';
 import { ExecuteModal } from './Modals/ExecuteModal';
 import './ExecuteButton.scss';
 import './Status.scss';
-import {
-  CheckIcon,
-  TimesIcon,
-  WarningTriangleIcon,
-} from '@patternfly/react-icons';
-import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
-import { Link } from 'react-router-dom';
+import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 
 const ExecuteButton = ({
   isLoading,
@@ -25,11 +19,7 @@ const ExecuteButton = ({
   remediationStatus,
   setEtag,
   areDetailsLoading,
-  detailsError,
-  permissions,
   remediation,
-  connectedSystems,
-  totalSystems,
 }) => {
   const [open, setOpen] = useState(false);
   const [showRefreshMessage, setShowRefreshMessage] = useState(false);
@@ -58,52 +48,11 @@ const ExecuteButton = ({
               spaceItems={{ default: 'spaceItemsNone' }}
               alignItems={{ default: 'alignItemsFlexStart' }}
             >
-              <Title headingLevel="h6" className="pf-v5-u-mb-md">
-                Remediations Readiness Check
-              </Title>
-
-              <span className="pf-v5-u-font-size-sm">
-                {connectedSystems === 0 ? (
-                  <TimesIcon className="pf-v5-u-mr-sm" />
-                ) : (
-                  <CheckIcon className="pf-v5-u-mr-sm" />
-                )}
-                Connected Systems ({`${connectedSystems + '/' + totalSystems}`}
-                ). See systems tab.
-              </span>
-
-              <span className="pf-v5-u-font-size-sm">
-                {detailsError === 403 ? (
-                  <TimesIcon className="pf-v5-u-mr-sm" />
-                ) : (
-                  <CheckIcon className="pf-v5-u-mr-sm" />
-                )}
-                <InsightsLink
-                  app="connector"
-                  to="/"
-                  style={{ textDecoration: 'underline', color: 'white' }}
-                  className="pf-v5-u-mr-xs"
-                >
-                  RHC manager
-                </InsightsLink>
-                is {detailsError === 403 ? 'disabled' : 'enabled'}.
-              </span>
-
-              <span className="pf-v5-u-font-size-sm pf-v5-u-mb-sm">
-                {permissions ? (
-                  <CheckIcon className="pf-v5-u-mr-sm" />
-                ) : (
-                  <TimesIcon className="pf-v5-u-mr-sm" />
-                )}
-                <Link
-                  to="/iam/user-access/overview"
-                  style={{ textDecoration: 'underline', color: 'white' }}
-                  className="pf-v5-u-mr-xs"
-                >
-                  User access permissions
-                </Link>
-                are {permissions ? '' : 'not'} granted.
-              </span>
+              <p>
+                The remediation plan cannot be executed. Review the plan details
+                and
+                <strong> Execution readiness </strong>information.
+              </p>
             </Flex>
           </>
         }
@@ -116,7 +65,7 @@ const ExecuteButton = ({
             getConnectionStatus(remediation.id);
           }}
         >
-          {isDisabled && <WarningTriangleIcon />} Execute
+          {isDisabled && <ExclamationTriangleIcon />} Execute
         </Button>
       </Tooltip>
     );
