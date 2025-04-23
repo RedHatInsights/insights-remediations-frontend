@@ -28,6 +28,7 @@ import { emptyRows } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hook
 import useRemediationFetchExtras from '../../api/useRemediationFetchExtras';
 import { OverViewPageHeader } from './OverViewPageHeader';
 import { PermissionContext } from '../../App';
+import chunk from 'lodash/chunk';
 
 const getRemediations = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations/`, { params });
@@ -171,16 +172,8 @@ export const OverViewPage = () => {
     }
   };
 
-  const chunkArray = (array, size) => {
-    const chunks = [];
-    for (let i = 0; i < array.length; i += size) {
-      chunks.push(array.slice(i, i + size));
-    }
-    return chunks;
-  };
-
   const handleBulkDeleteClick = async (selected) => {
-    const chunks = chunkArray(selected, 100);
+    const chunks = chunk(selected, 100);
     const queue = chunks.map((chunk) => ({
       remediation_ids: chunk,
     }));
@@ -211,7 +204,6 @@ export const OverViewPage = () => {
       });
     }
   };
-  console.log(context.permissions.write, 'context.permissions.write ');
   const actions = useMemo(() => {
     return [
       {
@@ -293,7 +285,6 @@ export const OverViewPage = () => {
               executeDeleteFunction.then(() => {
                 dispatchNotification({
                   title: `Succesfully deleted remediation plan(s)`,
-                  description: '',
                   variant: 'success',
                   dismissable: true,
                   autoDismiss: true,

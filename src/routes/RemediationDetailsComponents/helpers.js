@@ -75,3 +75,7 @@ export const getTimeAgo = (date) => {
   const diffYears = Math.floor(diffDays / 365);
   return `${diffYears} year${diffYears === 1 ? '' : 's'} ago`;
 };
+
+// eslint-disable-next-line react/display-name
+export const renderComponent = (Component, props) => (_data, _id, entity) =>
+  <Component {...entity} {...props} />;

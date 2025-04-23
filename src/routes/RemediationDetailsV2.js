@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import TableStateProvider from '../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
 import { useParams, useSearchParams } from 'react-router-dom';
 import useRemediationsQuery from '../api/useRemediationsQuery';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
@@ -11,6 +10,7 @@ import { useConnectionStatus } from '../Utilities/useConnectionStatus';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import RemediationDetailsPageHeader from './RemediationDetailsComponents/DetailsPageHeader';
 import { PermissionContext } from '../App';
+import ActionsContent from './RemediationDetailsComponents/ActionsContent';
 
 const getRemediations = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations/${params.remId}`, { params });
@@ -140,15 +140,16 @@ const RemediationDetailsV2 = () => {
             aria-label="ActionTab"
             title={<TabTitleText>Actions</TabTitleText>}
           >
-            Content here for Actions
+            <ActionsContent
+              remediationDetails={remediationDetails}
+              refetch={fetchRemediation}
+            />
           </Tab>
           <Tab
             eventKey={'systems'}
             aria-label="SystemTab"
             title={<TabTitleText>Systems</TabTitleText>}
-          >
-            Content here for Systems
-          </Tab>
+          ></Tab>
           <Tab
             eventKey={'executionHistory'}
             aria-label="ExecutionHistoryTab"
@@ -162,12 +163,4 @@ const RemediationDetailsV2 = () => {
   );
 };
 
-const RemediationDetailsProvider = () => {
-  return (
-    <TableStateProvider>
-      <RemediationDetailsV2 />
-    </TableStateProvider>
-  );
-};
-
-export default RemediationDetailsProvider;
+export default RemediationDetailsV2;
