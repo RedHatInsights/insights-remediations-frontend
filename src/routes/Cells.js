@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Flex,
-  Icon,
-  Label,
-  TextContent,
-  Tooltip,
-} from '@patternfly/react-core';
+import { Flex, Icon, Label, Text, Tooltip } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import {
@@ -32,16 +26,16 @@ export const Name = ({ name, id, archived }) => (
 );
 
 export const LastExecutedCell = ({ playbook_runs }) => (
-  <TextContent>
+  <Text>
     {playbook_runs.length > 0
       ? formatDate(playbook_runs[0]?.created_at)
       : 'Never'}{' '}
-  </TextContent>
+  </Text>
 );
 
 export const ExecutionStatusCell = ({ playbook_runs }) => {
   if (!playbook_runs?.length) {
-    return <TextContent>N/A</TextContent>;
+    return <Text>N/A</Text>;
   }
   const status = playbook_runs[0].status;
   let icon;
@@ -71,26 +65,26 @@ export const ExecutionStatusCell = ({ playbook_runs }) => {
   return (
     <Flex spaceItems={{ default: 'spaceItemsXs' }}>
       {icon}
-      <TextContent>{displayValue}</TextContent>
+      <Text>{displayValue}</Text>
     </Flex>
   );
 };
 
 export const ActionsCell = ({ issue_count }) => (
-  <TextContent style={{ justifySelf: 'center' }}>{issue_count} </TextContent>
+  <Text style={{ justifySelf: 'center' }}>{issue_count} </Text>
 );
 
 export const SystemsCell = ({ system_count }) => (
-  <TextContent style={{ justifySelf: 'center' }}>{system_count} </TextContent>
+  <Text style={{ justifySelf: 'center' }}>{system_count} </Text>
 );
 
 export const CreatedCell = ({ created_at }) => (
-  <TextContent>{formatDate(created_at)} </TextContent>
+  <Text>{formatDate(created_at)} </Text>
 );
 
 export const LastModifiedCell = ({ updated_at }) => {
   if (!updated_at) {
-    return <TextContent>0</TextContent>;
+    return <Text>0</Text>;
   }
 
   const date = new Date(updated_at);
@@ -117,7 +111,7 @@ export const LastModifiedCell = ({ updated_at }) => {
 
   return (
     <Tooltip content={tooltipText}>
-      <TextContent>{timeAgo}</TextContent>
+      <Text>{timeAgo}</Text>
     </Tooltip>
   );
 };

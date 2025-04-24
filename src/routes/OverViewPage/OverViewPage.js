@@ -304,6 +304,7 @@ export const OverViewPage = () => {
         <RemediationsTable
           aria-label="OverViewTable"
           ouiaId="OverViewTable"
+          variant="compact"
           items={result?.data}
           total={result?.meta?.total}
           columns={[...columns]}
