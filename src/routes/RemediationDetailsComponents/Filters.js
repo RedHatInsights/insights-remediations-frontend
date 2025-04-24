@@ -8,3 +8,12 @@ export const actionNameFilter = [
     filterAttribute: 'description',
   },
 ];
+
+export const systemNameFilter = [
+  {
+    type: conditionalFilterType.text,
+    label: 'Name',
+    placeholder: 'Filter by systems',
+    filterAttribute: 'description',
+  },
+];

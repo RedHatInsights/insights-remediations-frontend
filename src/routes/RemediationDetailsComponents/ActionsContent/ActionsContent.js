@@ -1,22 +1,22 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import RemediationsTable from '../../components/RemediationsTable/RemediationsTable';
+import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
 import PropTypes from 'prop-types';
 import columns from './Columns';
-import { emptyRows } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
+import { emptyRows } from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
 import { Button } from '@patternfly/react-core';
-import TableStateProvider from '../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
-import useRemediationTableState from '../../api/useRemediationTableState';
-import { API_BASE } from '../../config';
+import TableStateProvider from '../../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
+import useRemediationTableState from '../../../api/useRemediationTableState';
+import { API_BASE } from '../../../config';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
-import useRemediationsQuery from '../../api/useRemediationsQuery';
-import useRemediationFetchExtras from '../../api/useRemediationFetchExtras';
-import { useRawTableState } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
+import useRemediationsQuery from '../../../api/useRemediationsQuery';
+import useRemediationFetchExtras from '../../../api/useRemediationFetchExtras';
+import { useRawTableState } from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
 import { useParams } from 'react-router-dom';
-import { dispatchNotification } from '../../Utilities/dispatcher';
+import { dispatchNotification } from '../../../Utilities/dispatcher';
 import chunk from 'lodash/chunk';
-import ConfirmationDialog from '../../components/ConfirmationDialog';
-import useStateCallbacks from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
-import { actionNameFilter } from './Filters';
+import ConfirmationDialog from '../../../components/ConfirmationDialog';
+import useStateCallbacks from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
+import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
 
 const deleteIssues = (axios) => (params) => {
@@ -84,6 +84,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
           ...col,
           renderFunc: (_data, _id, { systems, description }) => (
             <Button
+              size="sm"
               style={{ padding: '0' }}
               variant="link"
               onClick={() => {
@@ -154,7 +155,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
       <RemediationsTable
         aria-label="ActionsTable"
         ouiaId="ActionsTable"
-        isCompact
+        variant="compact"
         items={pageOfIssues}
         total={filteredIssues.length}
         columns={[...columnsWithSystemsButton]}
