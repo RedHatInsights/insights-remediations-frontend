@@ -13,6 +13,7 @@ import { PermissionContext } from '../App';
 import ActionsContent from './RemediationDetailsComponents/ActionsContent/ActionsContent';
 // import SystemsContent from './RemediationDetailsComponents/SystemsContent/SystemsContent';
 import SystemsTable from '../components/SystemsTable/SystemsTable';
+import ExecutionHistoryTab from './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent';
 
 const getRemediations = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations/${params.remId}`, { params });
@@ -21,6 +22,24 @@ const getRemediationPlaybook = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations/${params.remId}/playbook_runs`, {
     params,
   });
+};
+
+const getRemediationPlaybookSystemsList = (axios) => (params) => {
+  return axios.get(
+    `${API_BASE}/remediations/${params.remId}/playbook_runs/${params.playbook_run_id}/systems`,
+    {
+      params,
+    }
+  );
+};
+
+const getPlaybookLogs = (axios) => (params) => {
+  return axios.get(
+    `${API_BASE}/remediations/${params.remId}/playbook_runs/${params.playbook_run_id}/systems/${params.system_id}`,
+    {
+      params,
+    }
+  );
 };
 
 const getRemediationsList = (axios) => () => {
@@ -55,6 +74,18 @@ const RemediationDetailsV2 = () => {
       params: { remId: id },
     }
   );
+
+  const { fetch: getRemediationPlaybookSystems } = useRemediationsQuery(
+    getRemediationPlaybookSystemsList(axios),
+    {
+      skip: true,
+    }
+  );
+  const { fetch: getRemediationPlaybookLogs, refetch: refetchLogs } =
+    useRemediationsQuery(getPlaybookLogs(axios), {
+      skip: true,
+    });
+
   const { fetch: updateRemPlan } = useRemediationsQuery(
     updateRemediationPlans(axios),
     {
@@ -175,7 +206,20 @@ const RemediationDetailsV2 = () => {
             aria-label="ExecutionHistoryTab"
             title={<TabTitleText>Execution History</TabTitleText>}
           >
-            Content here for Exec History
+            <ExecutionHistoryTab
+              remediationPlaybookRuns={remediationPlaybookRuns}
+              getRemediationPlaybookSystems={({ playbook_run_id }) =>
+                getRemediationPlaybookSystems({ remId: id, playbook_run_id })
+              }
+              getRemediationPlaybookLogs={({ playbook_run_id, system_id }) =>
+                getRemediationPlaybookLogs({
+                  remId: id,
+                  playbook_run_id,
+                  system_id,
+                })
+              }
+              refetchLogs={refetchLogs}
+            />
           </Tab>
         </Tabs>
       </>
