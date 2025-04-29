@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import useRemediationsQuery from '../api/useRemediationsQuery';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
-import { API_BASE } from '../config';
 import { Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import DetailsGeneralContent from './RemediationDetailsComponents/DetailsGeneralContent';
 import RenameModal from '../components/RenameModal';
@@ -14,42 +13,15 @@ import ActionsContent from './RemediationDetailsComponents/ActionsContent/Action
 // import SystemsContent from './RemediationDetailsComponents/SystemsContent/SystemsContent';
 import SystemsTable from '../components/SystemsTable/SystemsTable';
 import ExecutionHistoryTab from './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent';
-
-const getRemediations = (axios) => (params) => {
-  return axios.get(`${API_BASE}/remediations/${params.remId}`, { params });
-};
-const getRemediationPlaybook = (axios) => (params) => {
-  return axios.get(`${API_BASE}/remediations/${params.remId}/playbook_runs`, {
-    params,
-  });
-};
-
-const getRemediationPlaybookSystemsList = (axios) => (params) => {
-  return axios.get(
-    `${API_BASE}/remediations/${params.remId}/playbook_runs/${params.playbook_run_id}/systems`,
-    {
-      params,
-    }
-  );
-};
-
-const getPlaybookLogs = (axios) => (params) => {
-  return axios.get(
-    `${API_BASE}/remediations/${params.remId}/playbook_runs/${params.playbook_run_id}/systems/${params.system_id}`,
-    {
-      params,
-    }
-  );
-};
-
-const getRemediationsList = (axios) => () => {
-  return axios.get(`${API_BASE}/remediations/?fields[data]=name`);
-};
-
-const updateRemediationPlans = (axios) => (params) => {
-  const { id, ...updateData } = params;
-  return axios.patch(`${API_BASE}/remediations/${id}`, updateData);
-};
+import {
+  checkExecutableStatus,
+  getPlaybookLogs,
+  getRemediationPlaybook,
+  getRemediationPlaybookSystemsList,
+  getRemediationsList,
+  updateRemediationPlans,
+} from './api';
+import { getRemediations } from '../api';
 
 const RemediationDetailsV2 = () => {
   const chrome = useChrome();
@@ -63,6 +35,14 @@ const RemediationDetailsV2 = () => {
   const { result: allRemediations } = useRemediationsQuery(
     getRemediationsList(axios)
   );
+
+  const { result: isExecutable } = useRemediationsQuery(
+    checkExecutableStatus(axios),
+    {
+      params: { remId: id },
+    }
+  );
+
   const { result: remediationDetails, refetch: fetchRemediation } =
     useRemediationsQuery(getRemediations(axios), {
       params: { remId: id },
@@ -100,7 +80,6 @@ const RemediationDetailsV2 = () => {
       chrome.updateDocumentTitle(
         `${remediationDetails.name} - Remediations - Automation`
       );
-    // checkExecutable(remediationDetails?.id);
   }, [chrome, remediationDetails]);
 
   const [
@@ -125,6 +104,8 @@ const RemediationDetailsV2 = () => {
       activeTab: tabName,
     });
 
+  const getIsExecutable = (item) => String(item).trim().toUpperCase() === 'OK';
+
   return (
     remediationDetails && (
       <>
@@ -136,6 +117,7 @@ const RemediationDetailsV2 = () => {
           updateRemPlan={updateRemPlan}
           refetch={fetchRemediation}
           permissions={context.permissions}
+          isExecutable={getIsExecutable(isExecutable)}
         />
         <Tabs
           activeKey={searchParams.get('activeTab') || 'general'}

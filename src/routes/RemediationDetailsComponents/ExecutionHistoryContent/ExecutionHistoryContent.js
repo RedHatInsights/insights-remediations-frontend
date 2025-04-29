@@ -23,63 +23,14 @@ import {
 } from '@patternfly/react-core';
 import { LogViewer, LogViewerSearch } from '@patternfly/react-log-viewer';
 
-import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
 import TableStateProvider from '../../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
-import { emptyRows } from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
-import { useRawTableState } from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
 
-import columns from './Columns';
 import DetailsBanner from '../DetailsBanners';
-import { systemFilter } from './Filter';
 import StatusLabel from './StatusLabel';
 import StatusIcon from './StatusIcon';
 import LogCards from './LogCards';
-
-const formatUtc = (iso) => {
-  const d = new Date(iso);
-  const dd = String(d.getUTCDate()).padStart(2, '0');
-  const MMM = d.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
-  const YYYY = d.getUTCFullYear();
-  const HH = String(d.getUTCHours()).padStart(2, '0');
-  const mm = String(d.getUTCMinutes()).padStart(2, '0');
-  return `${dd} ${MMM} ${YYYY} ${HH}:${mm}`;
-};
-
-const RunSystemsTable = ({ run, loading, viewLogColumn }) => {
-  const tableState = useRawTableState();
-  const nameFilter = tableState?.filters?.system?.[0]?.toLowerCase() ?? '';
-
-  const filtered = nameFilter
-    ? run.systems.filter((s) =>
-        s.system_name.toLowerCase().includes(nameFilter)
-      )
-    : run.systems;
-
-  return loading ? (
-    <Spinner size="xl" />
-  ) : (
-    <RemediationsTable
-      aria-label="ExecutionHistoryTable"
-      ouiaId={`ExecutionHistory-${run.id}`}
-      variant="compact"
-      items={filtered}
-      total={filtered.length}
-      columns={[...columns, viewLogColumn]}
-      filters={{ filterConfig: [...systemFilter] }}
-      options={{
-        itemIdsOnPage: filtered.map((s) => s.system_id),
-        total: filtered.length,
-        emptyRows: emptyRows(columns.length + 1),
-      }}
-    />
-  );
-};
-
-RunSystemsTable.propTypes = {
-  run: PropTypes.object.isRequired,
-  loading: PropTypes.bool.isRequired,
-  viewLogColumn: PropTypes.object.isRequired,
-};
+import RunSystemsTable from './RunSystemsTable';
+import { formatUtc } from './helpers';
 
 const ExecutionHistoryTab = ({
   remediationPlaybookRuns,
@@ -124,7 +75,7 @@ const ExecutionHistoryTab = ({
     )
       .then(setRuns)
       .finally(() => setLoadingRuns(false));
-  }, [remediationPlaybookRuns, getRemediationPlaybookSystems, remId]);
+  }, [remediationPlaybookRuns]);
 
   const openLogModal = (run, system) => {
     setMeta({
@@ -211,13 +162,6 @@ const ExecutionHistoryTab = ({
           {runs.map((run, idx) => {
             const isHidden = activeKey !== idx;
 
-            const tableFilter = (name) =>
-              name
-                ? run.systems.filter((s) =>
-                    s.system_name.toLowerCase().includes(name.toLowerCase())
-                  )
-                : run.systems;
-
             const viewLogColumn = {
               title: '',
               exportKey: 'viewLog',
@@ -268,10 +212,6 @@ const ExecutionHistoryTab = ({
                     run={run}
                     loading={loadingRuns}
                     viewLogColumn={viewLogColumn}
-                    filterConfig={systemFilter}
-                    nameFilter={tableFilter(
-                      useRawTableState()?.filters?.system?.[0] ?? ''
-                    )}
                   />
                 </TableStateProvider>
               </TabContent>
@@ -332,7 +272,6 @@ ExecutionHistoryTab.propTypes = {
     .isRequired,
   getRemediationPlaybookSystems: PropTypes.func.isRequired,
   getRemediationPlaybookLogs: PropTypes.func.isRequired,
-  refetchLogs: PropTypes.func.isRequired,
 };
 
 export default ExecutionHistoryTab;
