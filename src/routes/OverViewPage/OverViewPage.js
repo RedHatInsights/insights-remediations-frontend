@@ -74,14 +74,13 @@ export const OverViewPage = () => {
   const [isBulkDelete, setIsBulkDelete] = useState(false);
   const context = useContext(PermissionContext);
 
-  // const remediationsList = useRemediationsList();
   const callbacks = useStateCallbacks();
   const tableState = useRawTableState();
 
   const currentlySelected = tableState?.selected;
   const {
     result,
-    /*loading, error,*/ fetchAllIds,
+    fetchAllIds,
     refetch: fetchRemediations,
   } = useRemediationsQuery(getRemediations(axios), {
     useTableState: true,
