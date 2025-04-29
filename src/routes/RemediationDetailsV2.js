@@ -81,10 +81,12 @@ const RemediationDetailsV2 = () => {
       skip: true,
     }
   );
-  const { fetch: getRemediationPlaybookLogs, refetch: refetchLogs } =
-    useRemediationsQuery(getPlaybookLogs(axios), {
+  const { fetch: getRemediationPlaybookLogs } = useRemediationsQuery(
+    getPlaybookLogs(axios),
+    {
       skip: true,
-    });
+    }
+  );
 
   const { fetch: updateRemPlan } = useRemediationsQuery(
     updateRemediationPlans(axios),
@@ -218,7 +220,6 @@ const RemediationDetailsV2 = () => {
                   system_id,
                 })
               }
-              refetchLogs={refetchLogs}
             />
           </Tab>
         </Tabs>
