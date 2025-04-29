@@ -27,7 +27,7 @@ export const download = (selectedIds, data, dispatch) => {
     dispatch(
       addNotification({
         variant: 'danger',
-        title: 'No playbooks downloaded.',
+        title: 'No remediation plans downloaded.',
         description:
           selectedIds.length > 1
             ? 'Selected remediations do not contain any issues to remediate.'
@@ -39,8 +39,7 @@ export const download = (selectedIds, data, dispatch) => {
     dispatch(
       addNotification({
         variant: 'success',
-        title:
-          valid.length > 1 ? 'Downloading playbooks' : 'Downloading playbook',
+        title: `Downloading remediation plan${valid.length > 1 && 's'}`,
         description: `${
           selectedIds.length - valid.length
         } empty remediaton plan was not downloaded`,
@@ -51,8 +50,7 @@ export const download = (selectedIds, data, dispatch) => {
     dispatch(
       addNotification({
         variant: 'success',
-        title:
-          valid.length > 1 ? 'Downloading playbooks' : 'Downloading playbook',
+        title: `Downloading remediation plan${valid.length > 1 && 's'}`,
       })
     );
   }
@@ -70,7 +68,9 @@ export const DownloadPlaybookButton = ({
       onClick={() => {
         download(selectedItems, data, dispatch);
         dispatchNotification({
-          title: 'Preparing playbook for download.',
+          title: `Your remediation plan${
+            selectedItems?.length > 1 && 's'
+          } will be downloaded shortly`,
           description: 'Once complete, your download will start automatically.',
           variant: 'info',
           dismissable: true,

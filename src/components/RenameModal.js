@@ -54,7 +54,7 @@ const connected = connect(null, () => ({
     return patchRemediation(id, { name: trimmedName })
       .then(() => {
         dispatchNotification({
-          title: `Updated playbook name to ${name}`,
+          title: `Remediation plan renamed`,
           variant: 'success',
           dismissable: true,
           autoDismiss: true,

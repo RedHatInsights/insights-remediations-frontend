@@ -140,7 +140,9 @@ export const OverViewPage = () => {
 
               executeDeleteFunction.then(() => {
                 dispatchNotification({
-                  title: `Succesfully deleted remediation plan(s)`,
+                  title: `Remediation plan${
+                    currentlySelected.length > 0 && 's'
+                  } deleted`,
                   variant: 'success',
                   dismissable: true,
                   autoDismiss: true,
