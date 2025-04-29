@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
@@ -31,6 +31,7 @@ import LogCards from './LogCards';
 import RunSystemsTable from './RunSystemsTable';
 import { formatUtc } from './helpers';
 import useLogs from './hooks/useLogs';
+import useEnrichedRuns from './hooks/useEnrichedRuns';
 
 const ExecutionHistoryTab = ({
   remediationPlaybookRuns,
@@ -41,11 +42,14 @@ const ExecutionHistoryTab = ({
 
   const [activeKey, setActiveKey] = useState(0);
 
-  const [runs, setRuns] = useState([]);
-  const [loadingRuns, setLoadingRuns] = useState(false);
-
   const [isLogOpen, setIsLogOpen] = useState(false);
   const [meta, setMeta] = useState(null);
+
+  const [runs, loadingRuns] = useEnrichedRuns(
+    remediationPlaybookRuns?.data,
+    remId,
+    getRemediationPlaybookSystems
+  );
   const { logLines } = useLogs({
     isOpen: isLogOpen,
     meta,
@@ -53,33 +57,6 @@ const ExecutionHistoryTab = ({
     remId,
   });
   const [wrapText, setWrapText] = useState(false);
-
-  useEffect(() => {
-    const base = remediationPlaybookRuns?.data ?? [];
-    if (!base.length) {
-      setRuns([]);
-      return;
-    }
-
-    setLoadingRuns(true);
-    Promise.all(
-      base.map((run) =>
-        getRemediationPlaybookSystems({ remId, playbook_run_id: run.id }).then(
-          ({ data }) => {
-            const exec = run.executors.find((e) => e.executor_id === run.id);
-            return {
-              ...run,
-              systems: data
-                .filter((s) => s.playbook_run_executor_id === run.id)
-                .map((s) => ({ ...s, executor_name: exec?.executor_name })),
-            };
-          }
-        )
-      )
-    )
-      .then(setRuns)
-      .finally(() => setLoadingRuns(false));
-  }, [remediationPlaybookRuns]);
 
   const openLogModal = (run, system) => {
     setMeta({
@@ -91,8 +68,9 @@ const ExecutionHistoryTab = ({
     });
     setIsLogOpen(true);
   };
-
-  return (
+  return loadingRuns ? (
+    <Spinner size="xl" />
+  ) : (
     <>
       <Sidebar hasGutter>
         <SidebarPanel variant="sticky">
