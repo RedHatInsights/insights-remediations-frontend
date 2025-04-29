@@ -18,10 +18,10 @@ import {
   getPlaybookLogs,
   getRemediationPlaybook,
   getRemediationPlaybookSystemsList,
+  getRemediations,
   getRemediationsList,
   updateRemediationPlans,
 } from './api';
-import { getRemediations } from '../api';
 
 const RemediationDetailsV2 = () => {
   const chrome = useChrome();
