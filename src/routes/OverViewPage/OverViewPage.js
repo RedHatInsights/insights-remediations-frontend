@@ -142,10 +142,12 @@ export const OverViewPage = () => {
       {isDeleteModalOpen && (
         <ConfirmationDialog
           isOpen={isDeleteModalOpen}
-          title={`Remove playbook(s)`}
-          text="You will not be able to recover this Playbook"
-          confirmText="Remove playbook"
-          selectedItems={currentlySelected}
+          title={`Delete remediation plan?`}
+          text="You will not be able to recover this remediation plan."
+          confirmText="Delete"
+          selectedItems={
+            currentlySelected.length > 0 ? currentlySelected : remediation
+          }
           onClose={(confirm) => {
             setIsDeleteModalOpen(false);
             if (confirm) {
