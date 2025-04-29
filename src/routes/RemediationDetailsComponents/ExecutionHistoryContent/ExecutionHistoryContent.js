@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
   Checkbox,
+  Flex,
   Modal,
   Sidebar,
   SidebarContent,
@@ -11,6 +12,9 @@ import {
   Tab,
   Tabs,
   TabTitleText,
+  Text,
+  TextVariants,
+  Title,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
