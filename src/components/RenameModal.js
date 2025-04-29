@@ -18,8 +18,8 @@ const RenameModal = ({
 }) => {
   return (
     <TextInputDialog
-      title="Edit playbook name"
-      ariaLabel="Playbook name"
+      title="Rename remediation plan"
+      ariaLabel="RenameModal"
       value={remediation.name}
       onCancel={() => setIsRenameModalOpen(false)}
       onSubmit={async (name) => {

@@ -9,6 +9,7 @@ import {
   ModalVariant,
   Spinner,
   ValidatedOptions,
+  TextVariants,
 } from '@patternfly/react-core';
 import { useVerifyName } from '../../Utilities/useVerifyName';
 
@@ -57,6 +58,10 @@ export default function TextInputDialog(props) {
         helperTextInvalid="Playbook name has to contain alphanumeric characters"
         isValid={isDisabled}
       >
+        <TextVariants.p className="pf-v5-u-font-weight-bold">
+          Name
+        </TextVariants.p>
+
         <TextInput
           value={value}
           type="text"
