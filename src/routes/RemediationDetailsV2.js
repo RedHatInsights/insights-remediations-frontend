@@ -15,22 +15,11 @@ import SystemsTable from '../components/SystemsTable/SystemsTable';
 import ExecutionHistoryTab from './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent';
 import {
   checkExecutableStatus,
-<<<<<<< HEAD
-  getRemediationPlaybook,
   getRemediations,
-  getRemediationsList,
-  updateRemediationPlans,
-} from './api';
-=======
-  getPlaybookLogs,
   getRemediationPlaybook,
-  getRemediationPlaybookSystemsList,
   getRemediationsList,
   updateRemediationPlans,
 } from './api';
-import { getRemediations } from '../api';
->>>>>>> 112bd74 (fix execution button and clean up)
-
 const RemediationDetailsV2 = () => {
   const chrome = useChrome();
   const { id } = useParams();
