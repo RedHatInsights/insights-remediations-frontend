@@ -55,7 +55,7 @@ SystemNameCell.propTypes = {
   system_name: PropTypes.string.isRequired,
 };
 InsightsConnectCell.propTypes = {
-  executor_name: PropTypes.array.isRequired,
+  executor_name: PropTypes.string.isRequired,
 };
 ExecutionStatusCell.propTypes = {
   status: PropTypes.string.isRequired,
