@@ -1,7 +1,11 @@
 import { API_BASE } from '../config';
 
-export const getRemediations = (axios) => (params) => {
+export const getRemediationDetails = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations/${params.remId}`, { params });
+};
+
+export const getRemediations = (axios) => (params) => {
+  return axios.get(`${API_BASE}/remediations`, { params });
 };
 export const getRemediationPlaybook = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations/${params.remId}/playbook_runs`, {
@@ -40,4 +44,18 @@ export const getRemediationsList = (axios) => () => {
 export const updateRemediationPlans = (axios) => (params) => {
   const { id, ...updateData } = params;
   return axios.patch(`${API_BASE}/remediations/${id}`, updateData);
+};
+
+export const deleteRemediation = (axios) => (params) => {
+  return axios.delete(`${API_BASE}/remediations/${params.id}`);
+};
+
+export const deleteRemediationList = (axios) => (params) => {
+  return axios({
+    method: 'delete',
+    url: `${API_BASE}/remediations`,
+    data: {
+      remediation_ids: params.remediation_ids,
+    },
+  });
 };

@@ -1,7 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
 import columns from '../Columns';
 import useRemediationsQuery from '../../api/useRemediationsQuery';
-import { API_BASE } from '../../config';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import RemediationsTable from '../../components/RemediationsTable/RemediationsTable';
 import {
@@ -22,35 +21,19 @@ import ConfirmationDialog from '../../components/ConfirmationDialog';
 import { useRawTableState } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
 import TableStateProvider from '../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
 import useStateCallbacks from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
-import NoResultsTable from '../../components/NoResultsTable';
+import NoRemediationsPage from '../../components/NoRemediationsPage';
 import { TextContent } from '@patternfly/react-core';
 import { emptyRows } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
 import useRemediationFetchExtras from '../../api/useRemediationFetchExtras';
 import { OverViewPageHeader } from './OverViewPageHeader';
 import { PermissionContext } from '../../App';
 import chunk from 'lodash/chunk';
-
-const getRemediations = (axios) => (params) => {
-  return axios.get(`${API_BASE}/remediations/`, { params });
-};
-
-const getRemediationsList = (axios) => () => {
-  return axios.get(`${API_BASE}/remediations/?fields[data]=name`);
-};
-
-const deleteRemediation = (axios) => (params) => {
-  return axios.delete(`${API_BASE}/remediations/${params.id}`);
-};
-
-const deleteRemediationList = (axios) => (params) => {
-  return axios({
-    method: 'delete',
-    url: `${API_BASE}/remediations`,
-    data: {
-      remediation_ids: params.remediation_ids,
-    },
-  });
-};
+import {
+  deleteRemediation,
+  deleteRemediationList,
+  getRemediations,
+  getRemediationsList,
+} from '../api';
 
 export const OverViewPage = () => {
   const dispatch = useDispatch();
@@ -172,7 +155,7 @@ export const OverViewPage = () => {
         />
       )}
       {allRemediations?.data.length === 0 ? (
-        <NoResultsTable />
+        <NoRemediationsPage />
       ) : (
         <RemediationsTable
           aria-label="OverViewTable"
