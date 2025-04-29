@@ -38,18 +38,6 @@ const getRemediationsList = (axios) => () => {
   return axios.get(`${API_BASE}/remediations/?fields[data]=name`);
 };
 
-const archiveRemediationPlans = (axios) => (params) => {
-  return axios.patch(`${API_BASE}/remediations/${params.id}`, {
-    archived: true,
-  });
-};
-
-const unarchiveRemediationPlans = (axios) => (params) => {
-  return axios.patch(`${API_BASE}/remediations/${params.id}`, {
-    archived: false,
-  });
-};
-
 const deleteRemediation = (axios) => (params) => {
   return axios.delete(`${API_BASE}/remediations/${params.id}`);
 };
@@ -70,7 +58,6 @@ export const OverViewPage = () => {
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [remediation, setRemediation] = useState('');
-  const [showArchived, setShowArchived] = useState(true);
   const [isBulkDelete, setIsBulkDelete] = useState(false);
   const context = useContext(PermissionContext);
 
@@ -84,47 +71,11 @@ export const OverViewPage = () => {
     refetch: fetchRemediations,
   } = useRemediationsQuery(getRemediations(axios), {
     useTableState: true,
-    params: { hide_archived: showArchived, 'fields[data]': 'playbook_runs' },
+    params: { hide_archived: false, 'fields[data]': 'playbook_runs' },
   });
 
   const { result: allRemediations, refetch: refetchAllRemediations } =
     useRemediationsQuery(getRemediationsList(axios));
-
-  const { fetch: archiveRemediation } = useRemediationsQuery(
-    archiveRemediationPlans(axios),
-    {
-      skip: true,
-    }
-  );
-  const { fetch: unarchiveRemediation } = useRemediationsQuery(
-    unarchiveRemediationPlans(axios),
-    {
-      skip: true,
-    }
-  );
-  const handleArchiveClick = async (itemId, name) => {
-    await archiveRemediation({ id: itemId }).then(() => {
-      dispatchNotification({
-        variant: 'info',
-        title: `Archived playbook ${name}`,
-        dismissable: true,
-        autoDismiss: true,
-      });
-      fetchRemediations();
-    });
-  };
-
-  const handleUnarchiveClick = async (itemId, name) => {
-    await unarchiveRemediation({ id: itemId }).then(() => {
-      dispatchNotification({
-        variant: 'info',
-        title: `Unarchived playbook ${name}`,
-        dismissable: true,
-        autoDismiss: true,
-      });
-      fetchRemediations();
-    });
-  };
 
   const { fetch: deleteRem } = useRemediationsQuery(deleteRemediation(axios), {
     skip: true,
@@ -146,31 +97,6 @@ export const OverViewPage = () => {
     await download([itemId], result.data, dispatch);
   };
 
-  const handleBulkUnArchiveClick = async (selected) => {
-    try {
-      const archivePromises = selected.map((remId) =>
-        unarchiveRemediation({ id: remId })
-      );
-      await Promise.all(archivePromises);
-      dispatchNotification({
-        variant: 'info',
-        title: `Unarchived playbooks`,
-        dismissable: true,
-        autoDismiss: true,
-      });
-      callbacks?.current?.resetSelection();
-    } catch (error) {
-      console.error('Error during bulk archive:', error);
-      dispatchNotification({
-        variant: 'danger',
-        title: 'Error archiving playbooks',
-        description: error.message,
-        dismissable: true,
-        autoDismiss: true,
-      });
-    }
-  };
-
   const handleBulkDeleteClick = async (selected) => {
     const chunks = chunk(selected, 100);
     const queue = chunks.map((chunk) => ({
@@ -178,51 +104,9 @@ export const OverViewPage = () => {
     }));
     return await fetchQueue(queue);
   };
-  const handleBulkArchiveClick = async (selected) => {
-    try {
-      const archivePromises = selected.map((remId) =>
-        archiveRemediation({ id: remId })
-      );
-      await Promise.all(archivePromises);
-      dispatchNotification({
-        variant: 'info',
-        title: `Archived playbooks`,
-        dismissable: true,
-        autoDismiss: true,
-      });
-      await fetchRemediations();
-      callbacks?.current?.resetSelection();
-    } catch (error) {
-      console.error('Error during bulk archive:', error);
-      dispatchNotification({
-        variant: 'danger',
-        title: 'Error archiving playbooks',
-        description: error.message,
-        dismissable: true,
-        autoDismiss: true,
-      });
-    }
-  };
+
   const actions = useMemo(() => {
     return [
-      {
-        label: 'Archive',
-        props: {
-          isDisabled: !context.permissions.write || !currentlySelected?.length,
-        },
-        onClick: () => {
-          handleBulkArchiveClick(currentlySelected);
-        },
-      },
-      {
-        label: 'Unarchive',
-        props: {
-          isDisabled: !context.permissions.write || !currentlySelected?.length,
-        },
-        onClick: () => {
-          handleBulkUnArchiveClick(currentlySelected);
-        },
-      },
       {
         label: 'Delete',
         props: {
@@ -238,20 +122,8 @@ export const OverViewPage = () => {
           setIsDeleteModalOpen(true);
         },
       },
-      {
-        label: `${!showArchived ? 'Hide' : 'Show'} archived`,
-        onClick: () => {
-          setShowArchived(!showArchived);
-        },
-      },
     ];
-  }, [
-    handleBulkArchiveClick,
-    handleBulkUnArchiveClick,
-    currentlySelected,
-    showArchived,
-    handleBulkDeleteClick,
-  ]);
+  }, [currentlySelected, handleBulkDeleteClick]);
   const handleSingleDeleteClick = async (id) => {
     return deleteRem({ id });
   };
@@ -329,16 +201,8 @@ export const OverViewPage = () => {
             customFilterTypes: {
               calendar: calendarFilterType,
             },
-            actionResolver: ({ item }) => {
+            actionResolver: () => {
               return [
-                {
-                  title: item?.archived ? 'Unarchived' : 'Archive',
-                  onClick: (_event, _index, { item }) => {
-                    item?.archived === true
-                      ? handleUnarchiveClick(item.id, item.name)
-                      : handleArchiveClick(item.id, item.name);
-                  },
-                },
                 {
                   title: 'Download',
                   onClick: (_event, _index, { item }) => {
