@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Button, Modal, ModalVariant } from '@patternfly/react-core';
-import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import './ConfirmationDialog.scss';
 
 export default function ConfirmationDialog({
@@ -11,26 +10,24 @@ export default function ConfirmationDialog({
   text = 'This action cannot be undone',
   confirmText = 'Remove system',
   onClose = (f) => f,
+  selectedItems,
 }) {
   return (
     <Modal
-      title={
-        <div>
-          <ExclamationTriangleIcon className="rem-m-alert rem-c-delete-icon pf-u-mr-xs" />
-          {title}
-        </div>
-      }
+      title={title}
       className="remediations rem-c-dialog"
       variant={ModalVariant.small}
       isOpen={isOpen}
       onClose={() => onClose(false)}
       isFooterLeftAligned
+      titleIconVariant={'warning'}
       actions={[
         <Button
           key="confirm"
-          variant="danger"
+          variant="primary"
           ouiaId="confirm"
           onClick={() => onClose(true)}
+          isDisabled={selectedItems?.length === 0}
         >
           {confirmText}
         </Button>,
@@ -55,4 +52,5 @@ ConfirmationDialog.propTypes = {
   text: PropTypes.string,
   confirmText: PropTypes.string,
   onClose: PropTypes.func,
+  selectedItems: PropTypes.array,
 };

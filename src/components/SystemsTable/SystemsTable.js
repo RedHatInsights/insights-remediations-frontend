@@ -171,7 +171,7 @@ const SystemsTableWrapper = ({
         }}
         actions={[
           {
-            title: 'Remove system',
+            title: 'Remove',
             onClick: (_event, _index, { id, display_name }) => {
               activeSystem.current = {
                 id,
@@ -191,7 +191,7 @@ const SystemsTableWrapper = ({
             onClick={() => setIsOpen(true)}
             isDisabled={selected.size === 0}
           >
-            Remove system
+            Remove
           </Button>
         )}
         <RemoveSystemModal

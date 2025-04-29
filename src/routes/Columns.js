@@ -8,7 +8,9 @@ import {
   CreatedCell,
   LastModifiedCell,
 } from './Cells.js';
-import { fitContent } from '@patternfly/react-table';
+import { wrappable } from '@patternfly/react-table';
+import { Button, Flex, Tooltip } from '@patternfly/react-core';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 
 // eslint-disable-next-line react/display-name
 export const renderComponent = (Component, props) => (_data, _id, entity) =>
@@ -16,77 +18,72 @@ export const renderComponent = (Component, props) => (_data, _id, entity) =>
 
 export const Name = {
   title: 'Name',
-  transforms: [fitContent],
+  transforms: [wrappable],
   sortable: 'name',
-  props: {
-    width: 10,
-  },
   exportKey: 'name',
   renderFunc: renderComponent(NameCell),
 };
 
 export const LastExecuted = {
   title: 'Last executed',
-  transforms: [fitContent],
+  transforms: [wrappable],
   sortable: 'last_run_at',
-  props: {
-    width: 30,
-  },
   exportKey: 'last_run_at',
   renderFunc: renderComponent(LastExecutedCell),
 };
 
 export const ExecutionStatus = {
   title: 'Execution status',
-  transforms: [fitContent],
+  transforms: [wrappable],
   sortable: 'status',
-  props: {
-    width: 30,
-  },
   exportKey: 'status',
   renderFunc: renderComponent(ExecutionStatusCell),
 };
 
 export const Actions = {
-  title: 'Actions',
-  transforms: [fitContent],
-  // sortable: 'Actions',
-  props: {
-    width: 30,
-  },
+  title: (
+    <Flex direction={{ default: 'row' }} flexWrap={{ default: 'nowrap' }}>
+      <p className="pf-v5-u-mr-xs"> Actions </p>
+      <Tooltip
+        aria-label={'Actions Popover'}
+        content="Actions taken to remediate issues on selected systems when the remediation plan is executed"
+      >
+        <Button
+          className="pf-v5-u-ml-xs"
+          variant="plain"
+          style={{ padding: 0 }}
+        >
+          <OutlinedQuestionCircleIcon />
+        </Button>
+      </Tooltip>
+    </Flex>
+  ),
+  transforms: [wrappable],
+  sortable: 'issue_count_min',
   exportKey: 'Actions',
   renderFunc: renderComponent(ActionsCell),
 };
 
 export const Systems = {
   title: 'Systems',
-  transforms: [fitContent],
+  transforms: [wrappable],
   sortable: 'system_count',
-  props: {
-    width: 30,
-  },
   exportKey: 'system_count',
   renderFunc: renderComponent(SystemsCell),
 };
 
 export const Created = {
   title: 'Created',
-  transforms: [fitContent],
+  transforms: [wrappable],
   sortable: 'created_at',
-  props: {
-    width: 30,
-  },
   exportKey: 'created_at',
   renderFunc: renderComponent(CreatedCell),
 };
 
 export const LastModified = {
   title: 'Last modified',
-  transforms: [fitContent],
+  transforms: [wrappable],
   sortable: 'updated_at',
-  props: {
-    width: 30,
-  },
   exportKey: 'updated_at',
   renderFunc: renderComponent(LastModifiedCell),
 };

@@ -24,9 +24,9 @@ const RemediationsTable = (props) => {
       {...props}
       options={{
         serialisers: {
-          pagination: paginationSerialiser,
           filters: filtersSerialiser,
           sort: sortSerialiser,
+          pagination: paginationSerialiser,
         },
         ...props.options,
       }}

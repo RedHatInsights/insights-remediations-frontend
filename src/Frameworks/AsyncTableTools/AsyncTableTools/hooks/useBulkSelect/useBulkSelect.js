@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import useSelectionManager from '../useSelectionManager';
 import {
   checkCurrentPageSelected,
@@ -6,6 +6,8 @@ import {
   compileTitle,
   selectOrUnselect,
 } from './helpers';
+import useCallbacksCallback from '../useTableState/hooks/useCallbacksCallback';
+import useTableState from '../useTableState';
 
 /**
  *  @typedef {object} useBulkSelectReturn
@@ -49,6 +51,7 @@ const useBulkSelect = ({
     select,
     deselect,
     clear,
+    reset,
   } = useSelectionManager(preselected, {}, onSelect);
   const selectedIdsTotal = (selectedIds || []).length;
   const paginatedTotal = itemIdsOnPage?.length || total;
@@ -66,16 +69,30 @@ const useBulkSelect = ({
 
   const title = compileTitle(selectedIdsTotal, loading);
 
+  const isItemSelected = useCallback(
+    (itemId) => selectedIds.includes(itemId),
+    [selectedIds]
+  );
+
   const selectOne = useCallback(
-    (_, _selected, _key, row) =>
-      row.selected ? deselect(row[identifier]) : select(row[identifier]),
-    [select, deselect, identifier]
+    (_, _selected, _key, { item }) => {
+      return isItemSelected(item.itemId)
+        ? deselect(item[identifier])
+        : select(item[identifier]);
+    },
+    [isItemSelected, select, deselect, identifier]
   );
   const selectPage = useCallback(
     () =>
       !currentPageSelected ? select(itemIdsOnPage) : deselect(itemIdsOnPage),
     [select, deselect, itemIdsOnPage, currentPageSelected]
   );
+
+  const resetSelection = useCallback(() => {
+    reset();
+  }, [reset]);
+
+  useCallbacksCallback('resetSelection', resetSelection);
 
   const selectAll = async () => {
     setLoading(true);
@@ -87,57 +104,90 @@ const useBulkSelect = ({
     setLoading(false);
   };
 
-  const markRowSelected = (row) => ({
-    ...row,
-    selected: selectedIds.includes(row.itemId),
-  });
+  const markRowSelected = useCallback(
+    (item, rowsForItem, _runningIndex, isTreeTable) => {
+      const firstRow = rowsForItem[0];
+      const remainingRows = rowsForItem.slice(1);
 
-  return enableBulkSelect
-    ? {
-        tableView: { markRowSelected, selectOne, set, select, deselect, clear },
-        tableProps: {
-          onSelect: total > 0 ? selectOne : undefined,
-          canSelectAll: false,
-        },
-        toolbarProps: {
-          bulkSelect: {
-            toggleProps: { children: [title] },
-            isDisabled,
-            items: [
-              {
-                title: 'Select none',
-                onClick: clear,
-                props: {
-                  isDisabled: noneSelected,
-                },
-              },
-              ...(itemIdsOnPage
-                ? [
-                    {
-                      title: `${selectOrUnselect(
-                        currentPageSelected
-                      )} page (${paginatedTotal} items)`,
-                      onClick: selectPage,
-                    },
-                  ]
-                : []),
-              ...(itemIdsInTable
-                ? [
-                    {
-                      title: `${selectOrUnselect(
-                        allSelected
-                      )} all (${total} items)`,
-                      onClick: selectAll,
-                    },
-                  ]
-                : []),
-            ],
-            checked,
-            onSelect: !isDisabled ? selectPage : undefined,
+      return [
+        {
+          ...firstRow,
+          ...(!isTreeTable
+            ? { selected: selectedIds.includes(item.itemId) }
+            : {}),
+          props: {
+            ...firstRow.props,
+            ...(isTreeTable && !item.isTreeBranch
+              ? { isChecked: selectedIds.includes(item.itemId) }
+              : {}),
           },
         },
-      }
-    : {};
+        ...remainingRows,
+      ];
+    },
+    [selectedIds]
+  );
+
+  const [, setTableState] = useTableState('selected');
+
+  useEffect(() => {
+    setTableState(selectedIds);
+  }, [selectedIds, setTableState]);
+
+  return {
+    tableView: {
+      enableBulkSelect,
+      markRowSelected,
+      isItemSelected,
+      select,
+      deselect,
+    },
+    ...(enableBulkSelect
+      ? {
+          tableProps: {
+            onSelect: total > 0 ? selectOne : undefined,
+            canSelectAll: false,
+          },
+          toolbarProps: {
+            bulkSelect: {
+              toggleProps: { children: [title] },
+              isDisabled,
+              items: [
+                {
+                  title: 'Select none',
+                  onClick: clear,
+                  props: {
+                    isDisabled: noneSelected,
+                  },
+                },
+                ...(itemIdsOnPage
+                  ? [
+                      {
+                        title: `${selectOrUnselect(
+                          currentPageSelected
+                        )} page (${paginatedTotal} items)`,
+                        onClick: selectPage,
+                      },
+                    ]
+                  : []),
+                ...(itemIdsInTable
+                  ? [
+                      {
+                        title: `${selectOrUnselect(
+                          allSelected
+                        )} all (${total} items)`,
+                        onClick: selectAll,
+                      },
+                    ]
+                  : []),
+              ],
+              checked,
+              onSelect: !isDisabled ? selectPage : undefined,
+            },
+          },
+        }
+      : {}),
+  };
 };
 
 export default useBulkSelect;
