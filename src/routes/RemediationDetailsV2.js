@@ -15,9 +15,7 @@ import SystemsTable from '../components/SystemsTable/SystemsTable';
 import ExecutionHistoryTab from './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent';
 import {
   checkExecutableStatus,
-  getPlaybookLogs,
   getRemediationPlaybook,
-  getRemediationPlaybookSystemsList,
   getRemediations,
   getRemediationsList,
   updateRemediationPlans,
@@ -52,19 +50,6 @@ const RemediationDetailsV2 = () => {
     getRemediationPlaybook(axios),
     {
       params: { remId: id },
-    }
-  );
-
-  const { fetch: getRemediationPlaybookSystems } = useRemediationsQuery(
-    getRemediationPlaybookSystemsList(axios),
-    {
-      skip: true,
-    }
-  );
-  const { fetch: getRemediationPlaybookLogs } = useRemediationsQuery(
-    getPlaybookLogs(axios),
-    {
-      skip: true,
     }
   );
 
@@ -192,16 +177,6 @@ const RemediationDetailsV2 = () => {
           >
             <ExecutionHistoryTab
               remediationPlaybookRuns={remediationPlaybookRuns}
-              getRemediationPlaybookSystems={({ playbook_run_id }) =>
-                getRemediationPlaybookSystems({ remId: id, playbook_run_id })
-              }
-              getRemediationPlaybookLogs={({ playbook_run_id, system_id }) =>
-                getRemediationPlaybookLogs({
-                  remId: id,
-                  playbook_run_id,
-                  system_id,
-                })
-              }
             />
           </Tab>
         </Tabs>

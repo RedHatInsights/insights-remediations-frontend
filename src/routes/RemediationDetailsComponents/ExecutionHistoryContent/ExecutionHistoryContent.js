@@ -1,76 +1,96 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
-  Button,
   Checkbox,
-  Flex,
   Modal,
   Sidebar,
   SidebarContent,
   SidebarPanel,
   Spinner,
   Tab,
-  TabContent,
   Tabs,
   TabTitleText,
-  Text,
-  TextVariants,
-  Title,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core';
 import { LogViewer, LogViewerSearch } from '@patternfly/react-log-viewer';
 
-import TableStateProvider from '../../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
-import DetailsBanner from '../DetailsBanners';
-import StatusLabel from './StatusLabel';
 import StatusIcon from './StatusIcon';
 import LogCards from './LogCards';
-import RunSystemsTable from './RunSystemsTable';
-import { formatUtc } from './helpers';
 import useLogs from './hooks/useLogs';
-import useEnrichedRuns from './hooks/useEnrichedRuns';
+import RunTabContent from './RunTabContent';
+import { formatUtc } from './helpers';
 
-const ExecutionHistoryTab = ({
-  remediationPlaybookRuns,
-  getRemediationPlaybookSystems,
-  getRemediationPlaybookLogs,
-}) => {
+import { getPlaybookLogs, getRemediationPlaybookSystemsList } from '../../api';
+import useRemediationsQuery from '../../../api/useRemediationsQuery';
+import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
+
+const ExecutionHistoryTab = ({ remediationPlaybookRuns }) => {
+  const runs = remediationPlaybookRuns?.data ?? [];
+  const [runsState, setRunsState] = useState(runs);
+
+  useEffect(() => {
+    setRunsState(remediationPlaybookRuns?.data ?? []);
+  }, [remediationPlaybookRuns]);
   const { id: remId } = useParams();
+  const axios = useAxiosWithPlatformInterceptors();
+
+  const updateRunStatus = useCallback((runId, systemId, newStatus) => {
+    setRunsState((prev) =>
+      prev.map((run) => {
+        if (run.id !== runId) return run;
+        const nextRun = { ...run, status: newStatus };
+        if (Array.isArray(run.systems)) {
+          nextRun.systems = run.systems.map((s) =>
+            s.system_id === systemId ? { ...s, status: newStatus } : s
+          );
+        }
+        return nextRun;
+      })
+    );
+  }, []);
+
+  const { fetch: fetchSystems } = useRemediationsQuery(
+    getRemediationPlaybookSystemsList(axios),
+    { skip: true }
+  );
+  const { fetch: fetchLogs, loading: logsLoading } = useRemediationsQuery(
+    getPlaybookLogs(axios),
+    {
+      skip: true,
+    }
+  );
 
   const [activeKey, setActiveKey] = useState(0);
 
   const [isLogOpen, setIsLogOpen] = useState(false);
   const [meta, setMeta] = useState(null);
-
-  const [runs, loadingRuns] = useEnrichedRuns(
-    remediationPlaybookRuns?.data,
-    remId,
-    getRemediationPlaybookSystems
-  );
-  const { logLines } = useLogs({
-    isOpen: isLogOpen,
+  const { logLines } = useLogs(
+    isLogOpen,
     meta,
-    getLogs: getRemediationPlaybookLogs,
+    fetchLogs,
     remId,
-  });
+    updateRunStatus,
+    setMeta
+  );
   const [wrapText, setWrapText] = useState(false);
 
   const openLogModal = (run, system) => {
     setMeta({
       runId: run.id,
-      status: run.status,
       systemId: system.system_id,
       systemName: system.system_name,
+      status: run.status,
       executor_name: system.executor_name,
     });
     setIsLogOpen(true);
   };
-  return loadingRuns ? (
-    <Spinner size="xl" />
-  ) : (
+
+  if (!runsState.length) return <Spinner />;
+
+  return (
     <>
       <Sidebar hasGutter>
         <SidebarPanel variant="sticky">
@@ -81,7 +101,7 @@ const ExecutionHistoryTab = ({
             isBox
             aria-label="Execution history runs"
           >
-            {runs.map((run, idx) => (
+            {runsState.map((run, idx) => (
               <Tab
                 key={run.id}
                 eventKey={idx}
@@ -98,57 +118,16 @@ const ExecutionHistoryTab = ({
         </SidebarPanel>
 
         <SidebarContent>
-          {runs.map((run, idx) => (
-            <TabContent
+          {runsState.map((run, idx) => (
+            <RunTabContent
               key={run.id}
-              eventKey={idx}
-              id={`run-${idx}`}
-              activeKey={activeKey}
-              hidden={activeKey !== idx}
-            >
-              <Flex
-                direction={{ default: 'column' }}
-                className="pf-v5-u-mb-lg pf-v5-u-mt-lg"
-              >
-                <Flex>
-                  <Title headingLevel="h1">{formatUtc(run.updated_at)}</Title>
-                  <StatusLabel status={run.status} />
-                </Flex>
-                <Text>
-                  <TextVariants.small>
-                    {`Initiated by: ${
-                      run?.created_by?.first_name ?? 'unknown'
-                    }`}
-                  </TextVariants.small>
-                </Text>
-              </Flex>
-
-              <DetailsBanner
-                status={run.status}
-                remediationPlanName={run.system_name}
-                canceledAt={run.updated_at}
-              />
-
-              <TableStateProvider>
-                <RunSystemsTable
-                  run={run}
-                  loading={loadingRuns}
-                  viewLogColumn={{
-                    title: '',
-                    exportKey: 'viewLog',
-                    renderFunc: (_d, _i, system) => (
-                      <Button
-                        variant="link"
-                        style={{ padding: 0 }}
-                        onClick={() => openLogModal(run, system)}
-                      >
-                        View log
-                      </Button>
-                    ),
-                  }}
-                />
-              </TableStateProvider>
-            </TabContent>
+              run={run}
+              idx={idx}
+              isActive={activeKey === idx}
+              remId={remId}
+              fetchSystems={fetchSystems}
+              openLogModal={openLogModal}
+            />
           ))}
         </SidebarContent>
       </Sidebar>
@@ -159,49 +138,52 @@ const ExecutionHistoryTab = ({
         title="Playbook run log"
         onClose={() => setIsLogOpen(false)}
       >
-        <>
-          <LogCards
-            systemName={meta?.systemName}
-            status={meta?.status}
-            connectionType={meta?.executor_name}
-            executedBy={
-              runs.find((r) => r.id === meta?.runId)?.created_by?.username ??
-              '-'
-            }
-          />
-
-          <LogViewer
-            data={logLines}
-            isTextWrapped={wrapText}
-            toolbar={
-              <Toolbar>
-                <ToolbarContent>
-                  <ToolbarItem>
-                    <LogViewerSearch placeholder="Search logs…" />
-                  </ToolbarItem>
-                  <ToolbarItem alignSelf="center">
-                    <Checkbox
-                      label="Wrap text"
-                      id="wrap"
-                      isChecked={wrapText}
-                      onChange={(_, v) => setWrapText(v)}
-                    />
-                  </ToolbarItem>
-                </ToolbarContent>
-              </Toolbar>
-            }
-          />
-        </>
+        {logsLoading ? (
+          /* Spinner only shown for finished runs that are still loading */
+          meta?.status !== 'running' && <Spinner />
+        ) : (
+          <>
+            <LogCards
+              systemName={meta?.systemName}
+              status={meta?.status}
+              connectionType={meta?.executor_name}
+              executedBy={
+                runsState.find((r) => r.id === meta?.runId)?.created_by
+                  ?.username ?? '-'
+              }
+            />
+            <LogViewer
+              data={logLines}
+              isTextWrapped={wrapText}
+              toolbar={
+                <Toolbar>
+                  <ToolbarContent>
+                    <ToolbarItem>
+                      <LogViewerSearch placeholder="Search logs…" />
+                    </ToolbarItem>
+                    <ToolbarItem alignSelf="center">
+                      <Checkbox
+                        label="Wrap text"
+                        id="wrap"
+                        isChecked={wrapText}
+                        onChange={(_, v) => setWrapText(v)}
+                      />
+                    </ToolbarItem>
+                  </ToolbarContent>
+                </Toolbar>
+              }
+            />
+          </>
+        )}
       </Modal>
     </>
   );
 };
 
 ExecutionHistoryTab.propTypes = {
-  remediationPlaybookRuns: PropTypes.shape({ data: PropTypes.array.isRequired })
-    .isRequired,
-  getRemediationPlaybookSystems: PropTypes.func.isRequired,
-  getRemediationPlaybookLogs: PropTypes.func.isRequired,
+  remediationPlaybookRuns: PropTypes.shape({
+    data: PropTypes.array.isRequired,
+  }).isRequired,
 };
 
 export default ExecutionHistoryTab;
