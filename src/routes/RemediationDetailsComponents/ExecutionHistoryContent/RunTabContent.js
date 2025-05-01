@@ -11,10 +11,10 @@ import {
 import TableStateProvider from '../../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
 
 import DetailsBanner from '../DetailsBanners';
-import StatusLabel from './StatusLabel';
 import RunSystemsTable from './RunSystemsTable';
 import { formatUtc } from './helpers';
 import useRunSystems from './hooks/useRunSystems';
+import { StatusLabel } from '../../helpers';
 
 const RunTabContent = ({
   run,
@@ -65,6 +65,7 @@ const RunTabContent = ({
           loading={loading}
           viewLogColumn={{
             title: '',
+            screenReaderText: 'View log',
             exportKey: 'viewLog',
             renderFunc: (_d, _i, system) => (
               <Button

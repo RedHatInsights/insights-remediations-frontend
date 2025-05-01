@@ -17,7 +17,6 @@ import {
 } from '@patternfly/react-core';
 import { LogViewer, LogViewerSearch } from '@patternfly/react-log-viewer';
 
-import StatusIcon from './StatusIcon';
 import LogCards from './LogCards';
 import useLogs from './hooks/useLogs';
 import RunTabContent from './RunTabContent';
@@ -26,6 +25,7 @@ import { formatUtc } from './helpers';
 import { getPlaybookLogs, getRemediationPlaybookSystemsList } from '../../api';
 import useRemediationsQuery from '../../../api/useRemediationsQuery';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
+import { StatusIcon } from '../../helpers';
 
 const ExecutionHistoryTab = ({ remediationPlaybookRuns }) => {
   const runs = remediationPlaybookRuns?.data ?? [];
