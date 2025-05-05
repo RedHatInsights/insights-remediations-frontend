@@ -13,30 +13,31 @@ const DetailsBanner = ({ status, remediationPlanName, canceledAt }) => {
 
   switch (status) {
     case 'running':
-      title = 'The execution of the remediation plan is in progress.';
+      title = 'The execution of the remediation plan is in progress';
       body =
-        'You can review the log file for each individual system while it runs.';
+        'To view the progress, check the execution log file for each system included in this remediation plan.';
       break;
 
     case 'success':
       variant = 'success';
-      title = 'The execution of the remediation plan succeeded.';
+      title = 'The execution of the remediation plan was successful';
       body =
-        'Review the issue-resolution status in the respective service (for example Advisor recommendations).';
+        'To check the resolution status for each issue in the remediation plan, go to the respective service view, for example, Advisor recommendations.';
       break;
 
     case 'failure':
       variant = 'danger';
-      title = 'The execution of the remediation plan failed.';
-      body = 'Review the individual system logs for more information.';
+      title = 'The execution of the remediation plan failed';
+      body =
+        'To learn why, check the log files for the affected systems where the remediation plan failed to execute.';
       break;
 
     case 'canceled':
       variant = 'danger';
-      title = 'The execution of the remediation plan was canceled.';
-      body = `The plan “${remediationPlanName ?? '-'}” was canceled on ${
-        canceledAt ?? '-'
-      }.`;
+      title = 'The execution of the remediation plan was canceled';
+      body = `The execution of the “${
+        remediationPlanName ?? '-'
+      }” was canceled on ${canceledAt ?? '-'}.`;
       break;
 
     default:
