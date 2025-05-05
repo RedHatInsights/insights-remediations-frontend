@@ -126,7 +126,7 @@ export const OverViewPage = () => {
         <ConfirmationDialog
           isOpen={isDeleteModalOpen}
           title={`Delete remediation plan?`}
-          text="You will not be able to recover this remediation plan."
+          text="Deleting a remediation plan is permanent and cannot be undone."
           confirmText="Delete"
           selectedItems={
             currentlySelected.length > 0 ? currentlySelected : remediation
