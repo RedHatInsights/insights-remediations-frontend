@@ -27,6 +27,7 @@ export default function TextInputDialog(props) {
       title={title}
       isOpen={true}
       onClose={(event) => onCancel(event)}
+      titleIconVariant={'warning'}
       actions={[
         isVerifyingName ? (
           <Spinner size="lg" className="pf-u-mr-sm" />
@@ -38,7 +39,7 @@ export default function TextInputDialog(props) {
             isDisabled={isDisabled || value.trim() === ''}
             ouiaId="save"
           >
-            Save
+            Rename
           </Button>
         ),
         <Button
