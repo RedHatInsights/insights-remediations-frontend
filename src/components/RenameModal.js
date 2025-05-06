@@ -18,7 +18,7 @@ const RenameModal = ({
 }) => {
   return (
     <TextInputDialog
-      title="Rename remediation plan"
+      title="Rename remediation plan?"
       ariaLabel="RenameModal"
       value={remediation.name}
       onCancel={() => setIsRenameModalOpen(false)}

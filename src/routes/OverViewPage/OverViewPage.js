@@ -51,6 +51,7 @@ export const OverViewPage = () => {
   const {
     result,
     fetchAllIds,
+    loading,
     refetch: fetchRemediations,
   } = useRemediationsQuery(getRemediations(axios), {
     useTableState: true,
@@ -163,6 +164,7 @@ export const OverViewPage = () => {
           aria-label="OverViewTable"
           ouiaId="OverViewTable"
           variant="compact"
+          loading={loading}
           items={result?.data}
           total={result?.meta?.total}
           columns={[...columns]}

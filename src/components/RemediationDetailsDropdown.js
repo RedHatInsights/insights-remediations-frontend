@@ -62,15 +62,15 @@ function RemediationDetailsDropdown({
 
       <ConfirmationDialog
         isOpen={deleteDialogOpen}
-        title="Remove playbook?"
-        text="You will not be able to recover this Playbook"
-        confirmText="Remove playbook"
+        title="Delete remediation plan?"
+        text="Deleting a remediation plan is permanent and cannot be undone."
+        confirmText="Delete"
         onClose={(confirm) => {
           setDeleteDialogOpen(false);
           if (confirm) {
             onDelete(remediation.id);
             dispatchNotification({
-              title: `Deleted playbook ${remediation.name}`,
+              title: `Deleted remediation plan ${remediation.name}`,
               variant: 'success',
               dismissable: true,
               autoDismiss: true,

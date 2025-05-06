@@ -27,7 +27,6 @@ export default function TextInputDialog(props) {
       title={title}
       isOpen={true}
       onClose={(event) => onCancel(event)}
-      titleIconVariant={'warning'}
       actions={[
         isVerifyingName ? (
           <Spinner size="lg" className="pf-u-mr-sm" />
@@ -80,8 +79,8 @@ export default function TextInputDialog(props) {
         />
         {isDisabled && value !== props.value && (
           <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
-            A playbook with the same name already exists within your
-            organization. Try a different name.
+            A remediation plan with the same name already exists in your
+            organization. Enter a unique name and try again.
           </p>
         )}
         {value.trim() === '' && (

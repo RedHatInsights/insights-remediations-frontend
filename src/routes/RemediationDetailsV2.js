@@ -15,7 +15,7 @@ import SystemsTable from '../components/SystemsTable/SystemsTable';
 import ExecutionHistoryTab from './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent';
 import {
   checkExecutableStatus,
-  getRemediations,
+  getRemediationDetails,
   getRemediationPlaybook,
   getRemediationsList,
   updateRemediationPlans,
@@ -41,7 +41,7 @@ const RemediationDetailsV2 = () => {
   );
 
   const { result: remediationDetails, refetch: fetchRemediation } =
-    useRemediationsQuery(getRemediations(axios), {
+    useRemediationsQuery(getRemediationDetails(axios), {
       params: { remId: id },
     });
 
