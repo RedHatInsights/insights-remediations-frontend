@@ -3,6 +3,7 @@ import { Alert, Flex, FlexItem } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 import DetailsCard from './DetailsCard';
 import ProgressCard from './ProgressCard';
+import './DetailsGeneralContent.scss';
 
 const DetailsGeneralContent = ({
   details,
@@ -28,24 +29,23 @@ const DetailsGeneralContent = ({
         <Alert
           isInline
           variant={'danger'}
-          title={'Remediation cannot be executed.'}
+          title={'Remediation plan cannot be executed'}
           className="pf-v5-u-mb-md"
         >
           <p>
-            {
-              'This remediation plan cannot currently be executed due to execution readiness errors. For more details, refer to the '
-            }
-            <strong>Execution readiness</strong>
-            {' section.'}
+            One or more prerequisites for executing this remediation plan were
+            not met. See the <strong>Execution readiness</strong> section for
+            more information.
           </p>
         </Alert>
       )}
       <Flex
         justifyContent={{ default: 'justifyContentSpaceEvenly' }}
-        direction={{ default: 'row' }}
+        direction={{ default: 'column', md: 'row' }}
         alignItems={{ default: 'alignItemsStretch' }}
+        flexWrap={{ default: 'wrap' }}
       >
-        <FlexItem style={{ flex: '0 0 48%', maxWidth: '48%' }}>
+        <FlexItem className="rem-details-cards">
           <DetailsCard
             details={details}
             onRename={onRename}
@@ -57,11 +57,12 @@ const DetailsGeneralContent = ({
             remediationPlaybookRuns={remediationPlaybookRuns}
           />
         </FlexItem>
-        <FlexItem style={{ flex: '0 0 48%', maxWidth: '48%' }}>
+        <FlexItem className="rem-details-cards">
           <ProgressCard
             remediationStatus={remediationStatus}
             permissions={permissions}
             readyOrNot={readyOrNot}
+            onNavigateToTab={onNavigateToTab}
           />
         </FlexItem>
       </Flex>
