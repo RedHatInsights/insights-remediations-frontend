@@ -46,12 +46,10 @@ const RemediationDetailsV2 = () => {
       params: { remId: id },
     });
 
-  const { result: remediationPlaybookRuns } = useRemediationsQuery(
-    getRemediationPlaybook(axios),
-    {
+  const { result: remediationPlaybookRuns, loading: isPlaybookRunsLoading } =
+    useRemediationsQuery(getRemediationPlaybook(axios), {
       params: { remId: id },
-    }
-  );
+    });
 
   const { fetch: updateRemPlan } = useRemediationsQuery(
     updateRemediationPlans(axios),
@@ -177,6 +175,7 @@ const RemediationDetailsV2 = () => {
           >
             <ExecutionHistoryTab
               remediationPlaybookRuns={remediationPlaybookRuns}
+              isPlaybookRunsLoading={isPlaybookRunsLoading}
             />
           </Tab>
         </Tabs>

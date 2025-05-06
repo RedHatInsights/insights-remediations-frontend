@@ -6,5 +6,5 @@ export const formatUtc = (iso) => {
   const YYYY = d.getUTCFullYear();
   const HH = String(d.getUTCHours()).padStart(2, '0');
   const mm = String(d.getUTCMinutes()).padStart(2, '0');
-  return `${dd} ${MMM} ${YYYY} ${HH}:${mm}`;
+  return `${dd} ${MMM} ${YYYY} ${HH}:${mm} UTC`;
 };

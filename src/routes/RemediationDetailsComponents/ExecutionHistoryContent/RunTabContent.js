@@ -48,7 +48,7 @@ const RunTabContent = ({
         </Flex>
         <Text>
           <TextVariants.small>
-            {`Initiated by: ${run?.created_by?.first_name ?? 'unknown'}`}
+            {`Initiated by: ${run?.created_by?.username ?? 'unknown'}`}
           </TextVariants.small>
         </Text>
       </Flex>

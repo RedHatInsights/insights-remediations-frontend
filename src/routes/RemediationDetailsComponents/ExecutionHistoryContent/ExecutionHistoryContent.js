@@ -26,8 +26,12 @@ import { getPlaybookLogs, getRemediationPlaybookSystemsList } from '../../api';
 import useRemediationsQuery from '../../../api/useRemediationsQuery';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import { StatusIcon } from '../../helpers';
+import NoExecutions from './NoExections';
 
-const ExecutionHistoryTab = ({ remediationPlaybookRuns }) => {
+const ExecutionHistoryTab = ({
+  remediationPlaybookRuns,
+  isPlaybookRunsLoading,
+}) => {
   const runs = remediationPlaybookRuns?.data ?? [];
   const [runsState, setRunsState] = useState(runs);
 
@@ -75,7 +79,7 @@ const ExecutionHistoryTab = ({ remediationPlaybookRuns }) => {
     updateRunStatus,
     setMeta
   );
-  const [wrapText, setWrapText] = useState(false);
+  const [wrapText, setWrapText] = useState(true);
 
   const openLogModal = (run, system) => {
     setMeta({
@@ -88,7 +92,13 @@ const ExecutionHistoryTab = ({ remediationPlaybookRuns }) => {
     setIsLogOpen(true);
   };
 
-  if (!runsState.length) return <Spinner />;
+  if (isPlaybookRunsLoading) {
+    return <Spinner />;
+  }
+
+  if (runsState.length === 0) {
+    return <NoExecutions />;
+  }
 
   return (
     <>
@@ -165,8 +175,8 @@ const ExecutionHistoryTab = ({ remediationPlaybookRuns }) => {
                       <Checkbox
                         label="Wrap text"
                         id="wrap"
-                        isChecked={wrapText}
-                        onChange={(_, v) => setWrapText(v)}
+                        isChecked={!wrapText}
+                        onChange={() => setWrapText(!wrapText)}
                       />
                     </ToolbarItem>
                   </ToolbarContent>
@@ -184,6 +194,7 @@ ExecutionHistoryTab.propTypes = {
   remediationPlaybookRuns: PropTypes.shape({
     data: PropTypes.array.isRequired,
   }).isRequired,
+  isPlaybookRunsLoading: PropTypes.bool,
 };
 
 export default ExecutionHistoryTab;

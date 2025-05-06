@@ -15,6 +15,7 @@ import {
   ExclamationCircleIcon,
   BanIcon,
   QuestionCircleIcon,
+  OutlinedQuestionCircleIcon,
 } from '@patternfly/react-icons';
 
 const statusIcon = (status) => {
@@ -81,8 +82,8 @@ const LogCards = ({ systemName, status, connectionType, executedBy }) => (
                 variant="plain"
                 aria-label="More info"
                 style={{ padding: '0' }}
-              >
-                <QuestionCircleIcon color="var(--pf-v5-global--info-color--100)" />
+              > 
+                <OutlinedQuestionCircleIcon/>
               </Button>
             </Tooltip>
           </Flex>

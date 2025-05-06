@@ -5,9 +5,9 @@ const useLogs = (isOpen, meta, fetchLogs, remId, updateRunStatus, setMeta) => {
 
   const timerIdRef = useRef(null);
   const prevStatusRef = useRef(meta?.status);
-  const fetchLogsRef = useRef(fetchLogs);
+  // const fetchLogsRef = useRef(fetchLogs);
 
-  fetchLogsRef.current = fetchLogs;
+  // fetchLogsRef.current = fetchLogs;
 
   useEffect(() => {
     clearInterval(timerIdRef.current);
@@ -25,9 +25,7 @@ const useLogs = (isOpen, meta, fetchLogs, remId, updateRunStatus, setMeta) => {
 
     const grabLogs = async () => {
       try {
-        const { console: text = '', status } = await fetchLogsRef.current(
-          params
-        );
+        const { console: text = '', status } = await fetchLogs(params);
 
         if (status && status !== prevStatusRef.current) {
           prevStatusRef.current = status;
