@@ -82,8 +82,8 @@ const LogCards = ({ systemName, status, connectionType, executedBy }) => (
                 variant="plain"
                 aria-label="More info"
                 style={{ padding: '0' }}
-              > 
-                <OutlinedQuestionCircleIcon/>
+              >
+                <OutlinedQuestionCircleIcon />
               </Button>
             </Tooltip>
           </Flex>

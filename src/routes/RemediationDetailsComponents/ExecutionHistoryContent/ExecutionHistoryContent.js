@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
@@ -20,8 +20,8 @@ import { LogViewer, LogViewerSearch } from '@patternfly/react-log-viewer';
 import LogCards from './LogCards';
 import RunTabContent from './RunTabContent';
 import { formatUtc } from './helpers';
-
 import { getPlaybookLogs, getRemediationPlaybookSystemsList } from '../../api';
+
 import useRemediationsQuery from '../../../api/useRemediationsQuery';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import { StatusIcon } from '../../helpers';
@@ -32,60 +32,84 @@ const ExecutionHistoryTab = ({
   isPlaybookRunsLoading,
 }) => {
   const runs = remediationPlaybookRuns?.data ?? [];
+  const [runsState, setRunsState] = useState(runs);
+  const [activeKey, setActiveKey] = useState(0);
+  const [wrapText, setWrapText] = useState(true);
+  const [isLogOpen, setIsLogOpen] = useState(false);
+  const [meta, setMeta] = useState(null);
 
   const { id: remId } = useParams();
   const axios = useAxiosWithPlatformInterceptors();
+
+  //Whenever runs is altered, copy that array to local state -> Execute button wont require a refresh down the line
+  useEffect(() => setRunsState(runs), [runs]);
+
+  const updateRunStatus = useCallback((runId, systemId, newStatus) => {
+    setRunsState((prev) =>
+      prev.map((run) => {
+        if (run.id !== runId) return run;
+        //update the run-level status
+        const next = { ...run, status: newStatus };
+        //if we already fetched systems for this run, patch the ONE system that just finished
+        if (Array.isArray(run.systems)) {
+          next.systems = run.systems.map((s) =>
+            s.system_id === systemId ? { ...s, status: newStatus } : s
+          );
+        }
+        return next;
+      })
+    );
+  }, []);
 
   const { fetch: fetchSystems } = useRemediationsQuery(
     getRemediationPlaybookSystemsList(axios),
     { skip: true }
   );
 
-  const [activeKey, setActiveKey] = useState(0);
+  const logParams =
+    isLogOpen && meta
+      ? {
+          remId,
+          playbook_run_id: meta.runId,
+          system_id: meta.systemId,
+        }
+      : undefined;
 
-  const [isLogOpen, setIsLogOpen] = useState(false);
-  const [meta, setMeta] = useState(null);
-
-  const [wrapText, setWrapText] = useState(true);
-  const params = meta && {
-    remId,
-    playbook_run_id: meta?.runId,
-    system_id: meta?.systemId,
-  };
   const {
     result: logData,
-    error: logsError,
     loading: logsLoading,
     refetch: refetchLogs,
   } = useRemediationsQuery(getPlaybookLogs(axios), {
-    params,
-    skip: !params || !isLogOpen,
+    params: logParams,
+    skip: !logParams,
   });
 
-  const { logLines, runsState } = useMemo(() => {
-    console.log('Aaaa', logData, logsError);
-    const runsState = runs;
-    runs.map((run) => {
-      const runData = logData?.data.find(({ id }) => id === run.runId);
-      const nextRun = {
-        ...run,
-        ...(runData ? { status: runData.status } : {}),
-      };
+  /* keep previous status so we detect changes */
+  const prevStatusRef = useRef();
+  const [logLines, setLogLines] = useState([]);
 
-      if (Array.isArray(run.systems)) {
-        nextRun.systems = run.systems.map((s) =>
-          s.system_id === meta?.systemId ? { ...s, status: runData.status } : s
-        );
-      }
-      return nextRun;
-    });
+  useEffect(() => {
+    if (!isLogOpen || !meta) return;
 
-    const logLines = logData?.console.split('\n');
-    return {
-      logLines,
-      runsState,
-    };
-  }, [logData, logsError, logsLoading, runs, meta]);
+    /* Has status changed since our last reference? */
+    const planStatus = logData?.status;
+    if (planStatus && planStatus !== prevStatusRef.current) {
+      prevStatusRef.current = planStatus;
+      updateRunStatus(meta.runId, meta.systemId, planStatus);
+      setMeta((p) => ({ ...p, status: planStatus }));
+    }
+
+    const base = (logData?.console ?? '').split('\n').filter(Boolean);
+    if (planStatus === 'running') base.push('Running…');
+    if (!base.length) base.push('No logs');
+    setLogLines(base);
+  }, [isLogOpen, meta, logData, updateRunStatus]);
+
+  useEffect(() => {
+    if (!isLogOpen || !meta || logData?.status !== 'running') return;
+    const id = setInterval(refetchLogs, 5_000);
+    return () => clearInterval(id);
+  }, [isLogOpen, meta, logData, refetchLogs]);
 
   const openLogModal = (run, system) => {
     setMeta({
@@ -98,39 +122,9 @@ const ExecutionHistoryTab = ({
     setIsLogOpen(true);
   };
 
-  useEffect(() => {
-    let interval;
-    if (logData?.status === 'running') {
-      interval = setInterval(refetchLogs, 5_000);
-    }
-    //       runs.map((run) => {
-    //         const runData = logData?.data.find(({ id }) => id === run.runId);
-    //         const nextRun = {
-    //           ...run,
-    //           ...(runData ? { status: runData.status } : {}),
-    //         };
-    //
-    //         if (Array.isArray(run.systems)) {
-    //           nextRun.systems = run.systems.map((s) =>
-    //             s.system_id === meta?.systemId
-    //               ? { ...s, status: runData.status }
-    //               : s
-    //           );
-    //         }
-    //         return nextRun;
-    //       });
-    return () => {
-      interval && clearInterval(interval);
-    };
-  }, [refetchLogs, isLogOpen, logData]);
+  if (isPlaybookRunsLoading) return <Spinner />;
+  if (runsState.length === 0) return <NoExecutions />;
 
-  if (isPlaybookRunsLoading) {
-    return <Spinner />;
-  }
-
-  if (runsState.length === 0) {
-    return <NoExecutions />;
-  }
   return (
     <>
       <Sidebar hasGutter>
@@ -179,9 +173,8 @@ const ExecutionHistoryTab = ({
         title="Playbook run log"
         onClose={() => setIsLogOpen(false)}
       >
-        {logsLoading ? (
-          /* Spinner only shown for finished runs that are still loading */
-          logData?.status !== 'running' && <Spinner />
+        {logsLoading && meta?.status !== 'running' ? (
+          <Spinner />
         ) : (
           <>
             <LogCards
