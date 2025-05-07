@@ -58,7 +58,7 @@ const RemediationDetailsPageHeader = ({
   return (
     <PageHeader>
       <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
-        <FlexItem style={{ width: '50%' }}>
+        <FlexItem style={{ width: '70%' }}>
           <PageHeaderTitle title={remediation.name} className="pf-v5-u-mb-md" />
           <p>{`ID: ${remediation.id}`}</p>
         </FlexItem>
@@ -94,7 +94,7 @@ const RemediationDetailsPageHeader = ({
             <SplitItem>
               <RemediationDetailsDropdown
                 remediation={remediation}
-                remediationsList={allRemediations}
+                remediationsList={allRemediations.data}
                 updateRemPlan={updateRemPlan}
                 refetch={refetch}
               />

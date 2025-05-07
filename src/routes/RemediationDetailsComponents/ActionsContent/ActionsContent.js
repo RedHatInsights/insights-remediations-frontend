@@ -124,7 +124,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
           text={`${
             isBulkDelete ? 'The selected actions' : `The action ${action?.[0]}`
           } will not be run when the remediation plan is executed.
-              You can add it again later if needed.
+              You can add ${isBulkDelete ? 'them' : 'it'} again later if needed.
             `}
           confirmText="Remove"
           onClose={(confirm) => {

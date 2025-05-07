@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Button,
   Card,
   CardBody,
   CardTitle,
@@ -73,19 +72,15 @@ const LogCards = ({ systemName, status, connectionType, executedBy }) => (
             spaceItems={{ default: 'spaceItemsXs' }}
             alignItems={{ default: 'alignItemsCenter' }}
           >
-            <span>Insights connection type</span>
-            <Tooltip
-              content="Red Hat Enterprise Linux systems are connected to Insights directly via RHC, or through Satellite via Cloud Connector."
-              aria-label="Insights connection type info"
-            >
-              <Button
-                variant="plain"
-                aria-label="More info"
-                style={{ padding: '0' }}
+            <span>
+              Insights connection type{' '}
+              <Tooltip
+                content="Red Hat Enterprise Linux systems are connected to Insights directly via RHC, or through Satellite via Cloud Connector."
+                aria-label="Insights connection type info"
               >
                 <OutlinedQuestionCircleIcon />
-              </Button>
-            </Tooltip>
+              </Tooltip>
+            </span>
           </Flex>
         </CardTitle>
         <CardBody>{connectionType ?? '-'}</CardBody>
