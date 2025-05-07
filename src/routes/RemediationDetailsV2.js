@@ -15,12 +15,11 @@ import SystemsTable from '../components/SystemsTable/SystemsTable';
 import ExecutionHistoryTab from './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent';
 import {
   checkExecutableStatus,
+  getRemediationDetails,
   getRemediationPlaybook,
-  getRemediations,
   getRemediationsList,
   updateRemediationPlans,
 } from './api';
-
 const RemediationDetailsV2 = () => {
   const chrome = useChrome();
   const { id } = useParams();
@@ -42,7 +41,7 @@ const RemediationDetailsV2 = () => {
   );
 
   const { result: remediationDetails, refetch: fetchRemediation } =
-    useRemediationsQuery(getRemediations(axios), {
+    useRemediationsQuery(getRemediationDetails(axios), {
       params: { remId: id },
     });
 
