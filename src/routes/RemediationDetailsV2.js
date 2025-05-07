@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import useRemediationsQuery from '../api/useRemediationsQuery';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
-import { API_BASE } from '../config';
 import { Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import DetailsGeneralContent from './RemediationDetailsComponents/DetailsGeneralContent';
 import RenameModal from '../components/RenameModal';
@@ -13,24 +12,14 @@ import { PermissionContext } from '../App';
 import ActionsContent from './RemediationDetailsComponents/ActionsContent/ActionsContent';
 // import SystemsContent from './RemediationDetailsComponents/SystemsContent/SystemsContent';
 import SystemsTable from '../components/SystemsTable/SystemsTable';
-
-const getRemediations = (axios) => (params) => {
-  return axios.get(`${API_BASE}/remediations/${params.remId}`, { params });
-};
-const getRemediationPlaybook = (axios) => (params) => {
-  return axios.get(`${API_BASE}/remediations/${params.remId}/playbook_runs`, {
-    params,
-  });
-};
-
-const getRemediationsList = (axios) => () => {
-  return axios.get(`${API_BASE}/remediations/?fields[data]=name`);
-};
-
-const updateRemediationPlans = (axios) => (params) => {
-  const { id, ...updateData } = params;
-  return axios.patch(`${API_BASE}/remediations/${id}`, updateData);
-};
+import ExecutionHistoryTab from './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent';
+import {
+  checkExecutableStatus,
+  getRemediationPlaybook,
+  getRemediations,
+  getRemediationsList,
+  updateRemediationPlans,
+} from './api';
 
 const RemediationDetailsV2 = () => {
   const chrome = useChrome();
@@ -44,17 +33,24 @@ const RemediationDetailsV2 = () => {
   const { result: allRemediations } = useRemediationsQuery(
     getRemediationsList(axios)
   );
+
+  const { result: isExecutable } = useRemediationsQuery(
+    checkExecutableStatus(axios),
+    {
+      params: { remId: id },
+    }
+  );
+
   const { result: remediationDetails, refetch: fetchRemediation } =
     useRemediationsQuery(getRemediations(axios), {
       params: { remId: id },
     });
 
-  const { result: remediationPlaybookRuns } = useRemediationsQuery(
-    getRemediationPlaybook(axios),
-    {
+  const { result: remediationPlaybookRuns, loading: isPlaybookRunsLoading } =
+    useRemediationsQuery(getRemediationPlaybook(axios), {
       params: { remId: id },
-    }
-  );
+    });
+
   const { fetch: updateRemPlan } = useRemediationsQuery(
     updateRemediationPlans(axios),
     {
@@ -67,7 +63,6 @@ const RemediationDetailsV2 = () => {
       chrome.updateDocumentTitle(
         `${remediationDetails.name} - Remediations - Automation`
       );
-    // checkExecutable(remediationDetails?.id);
   }, [chrome, remediationDetails]);
 
   const [
@@ -92,6 +87,8 @@ const RemediationDetailsV2 = () => {
       activeTab: tabName,
     });
 
+  const getIsExecutable = (item) => String(item).trim().toUpperCase() === 'OK';
+
   return (
     remediationDetails && (
       <>
@@ -103,6 +100,7 @@ const RemediationDetailsV2 = () => {
           updateRemPlan={updateRemPlan}
           refetch={fetchRemediation}
           permissions={context.permissions}
+          isExecutable={getIsExecutable(isExecutable)}
         />
         <Tabs
           activeKey={searchParams.get('activeTab') || 'general'}
@@ -175,7 +173,10 @@ const RemediationDetailsV2 = () => {
             aria-label="ExecutionHistoryTab"
             title={<TabTitleText>Execution History</TabTitleText>}
           >
-            Content here for Exec History
+            <ExecutionHistoryTab
+              remediationPlaybookRuns={remediationPlaybookRuns}
+              isPlaybookRunsLoading={isPlaybookRunsLoading}
+            />
           </Tab>
         </Tabs>
       </>
