@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/RedHatInsights/insights-remediations-frontend.svg?branch=master)](https://travis-ci.org/RedHatInsights/insights-remediations-frontend)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/RedhatInsights/insights-remediations-frontend/test.yml?branch=master)](https://github.com/RedHatInsights/insights-remediations-frontend/actions/workflows/test.yml)
 
 # insights-remediations-frontend
 
