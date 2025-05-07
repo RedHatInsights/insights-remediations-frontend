@@ -79,6 +79,7 @@ const useFilterConfig = (options = {}) => {
           activeFiltersConfig: {
             filters: toFilterChips(filterConfig, activeFilters),
             onDelete: onFilterDelete,
+            deleteTitle: 'Reset filters',
           },
         },
       }

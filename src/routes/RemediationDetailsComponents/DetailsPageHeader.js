@@ -24,6 +24,7 @@ const RemediationDetailsPageHeader = ({
   updateRemPlan,
   refetch,
   permissions,
+  isExecutable,
 }) => {
   const handleDownload = useCallback(async () => {
     dispatchNotification({
@@ -69,7 +70,7 @@ const RemediationDetailsPageHeader = ({
                 isDisabled={
                   remediationStatus.connectedSystems === 0 ||
                   !permissions?.execute ||
-                  // !executable ||
+                  !isExecutable ||
                   isFedramp
                 }
                 connectedSystems={remediationStatus.connectedSystems}
@@ -123,6 +124,7 @@ RemediationDetailsPageHeader.propTypes = {
   updateRemPlan: PropTypes.func,
   refetch: PropTypes.func,
   permissions: PropTypes.obj,
+  isExecutable: PropTypes.any,
 };
 
 export default RemediationDetailsPageHeader;

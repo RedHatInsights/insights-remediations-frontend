@@ -5,10 +5,8 @@ import { loadRemediations, deleteRemediationIssue } from '../actions';
 import DeleteButton from '../components/DeleteButton';
 
 export const DeleteRemediationsButton = connect(
-  (state, { remediations }) => ({
-    dialogMessage: `You will not be able to recover ${
-      remediations.length > 1 ? 'these remediations' : 'this remediation'
-    }`,
+  () => ({
+    dialogMessage: `Deleting a remediation plan is permanent and cannot be undone.`,
   }),
   (dispatch, { remediations }) => ({
     onDelete: async () => {
