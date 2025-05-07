@@ -36,7 +36,7 @@ function RemediationDetailsDropdown({
     <React.Fragment>
       {renameDialogOpen && (
         <TextInputDialog
-          title="Rename remediation plan"
+          title="Rename remediation plan?"
           ariaLabel="RenameModal"
           value={remediation.name}
           onCancel={() => setRenameDialogOpen(false)}

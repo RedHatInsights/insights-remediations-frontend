@@ -120,7 +120,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
       {isDeleteModalOpen && (
         <ConfirmationDialog
           isOpen={isDeleteModalOpen}
-          title={`Remove action${isBulkDelete ? 's' : ''}`}
+          title={`Remove action${isBulkDelete ? 's' : ''}?`}
           text={`${
             isBulkDelete ? 'The selected actions' : `The action ${action?.[0]}`
           } will not be run when the remediation plan is executed.
