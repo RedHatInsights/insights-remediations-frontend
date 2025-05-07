@@ -120,8 +120,12 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
       {isDeleteModalOpen && (
         <ConfirmationDialog
           isOpen={isDeleteModalOpen}
-          title={`Remove`}
-          text="The selected actions will no longer be executed in this plan."
+          title={`Remove action${isBulkDelete ? 's' : ''}`}
+          text={`${
+            isBulkDelete ? 'The selected actions' : `The action ${action?.[0]}`
+          } will not be run when the remediation plan is executed.
+              You can add it again later if needed.
+            `}
           confirmText="Remove"
           onClose={(confirm) => {
             setIsDeleteModalOpen(false);
