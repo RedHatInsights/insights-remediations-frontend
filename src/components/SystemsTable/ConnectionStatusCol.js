@@ -53,7 +53,7 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
         <Tooltip
           position="left"
           content={
-            'Remote Host Configuration (RHC) client communication is disconnected.'
+            'The Remote Host Configuration (RHC) client is not configured for one or more systems in this plan.'
           }
         >
           <Flex>

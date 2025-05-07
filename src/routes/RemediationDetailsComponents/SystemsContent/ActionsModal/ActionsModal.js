@@ -5,11 +5,11 @@ import TableStateProvider from '../../../../Frameworks/AsyncTableTools/AsyncTabl
 
 import RemediationsTable from '../../../../components/RemediationsTable/RemediationsTable';
 import columns from './Columns';
-const ActionsModal = ({ actions, isOpen, onClose, systemName }) => {
+const ActionsModal = ({ actions, isOpen, onClose }) => {
   return (
     <Modal
       variant={ModalVariant.large}
-      title={`Actions for system ${systemName}`}
+      title="Planned remediation actions"
       isOpen={isOpen}
       onClose={onClose}
       isFooterLeftAligned
