@@ -2,8 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
+  Button,
   Checkbox,
   Modal,
+  ModalBoxFooter,
   Sidebar,
   SidebarContent,
   SidebarPanel,
@@ -207,6 +209,16 @@ const ExecutionHistoryTab = ({
                 </Toolbar>
               }
             />
+            <ModalBoxFooter>
+              <Button
+                className="pf-u-mt-md"
+                key="cancelModal"
+                variant="primary"
+                onClick={() => setIsLogOpen(false)}
+              >
+                Cancel
+              </Button>
+            </ModalBoxFooter>
           </>
         )}
       </Modal>

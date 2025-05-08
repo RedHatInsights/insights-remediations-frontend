@@ -73,11 +73,9 @@ export const ConnectionStatusCell = ({ connection_status, executor_type }) => {
           </Flex>
         }
       >
-        <Flex>
+        <Flex spaceItems={{ default: 'spaceItemsXs' }}>
           <DisconnectedIcon className="pf-u-mr-xs" />
-          <p style={{ borderBottomStyle: 'dotted', maxWidth: 'fit-content' }}>
-            Not configured
-          </p>
+          <p style={{ maxWidth: 'fit-content' }}>Not configured</p>
         </Flex>
       </Tooltip>
     );
@@ -90,11 +88,9 @@ export const ConnectionStatusCell = ({ connection_status, executor_type }) => {
             'Remote Host Configuration (RHC) client communication is disconnected.'
           }
         >
-          <Flex>
+          <Flex spaceItems={{ default: 'spaceItemsXs' }}>
             <DisconnectedIcon className="pf-u-mr-xs" />
-            <p style={{ borderBottomStyle: 'dotted', maxWidth: 'fit-content' }}>
-              Disconnected
-            </p>
+            <p style={{ maxWidth: 'fit-content' }}>Disconnected</p>
           </Flex>
         </Tooltip>
       );
@@ -106,11 +102,9 @@ export const ConnectionStatusCell = ({ connection_status, executor_type }) => {
             'The Red Hat Satellite instance that this system is registered to is disconnected from Red Hat Insights.'
           }
         >
-          <Flex>
+          <Flex spaceItems={{ default: 'spaceItemsXs' }}>
             <DisconnectedIcon className="pf-u-mr-xs" />
-            <p style={{ borderBottomStyle: 'dotted', maxWidth: 'fit-content' }}>
-              Disconnected
-            </p>
+            <p style={{ maxWidth: 'fit-content' }}>Disconnected</p>
           </Flex>
         </Tooltip>
       );
@@ -118,11 +112,9 @@ export const ConnectionStatusCell = ({ connection_status, executor_type }) => {
   } else {
     return (
       <Tooltip content={'Connection Status Unkown'}>
-        <Flex>
+        <Flex spaceItems={{ default: 'spaceItemsXs' }}>
           <UnknownIcon className="pf-u-mr-xs" />
-          <p style={{ borderBottomStyle: 'dotted', maxWidth: 'fit-content' }}>
-            Unknown
-          </p>
+          <p style={{ maxWidth: 'fit-content' }}>Unknown</p>
         </Flex>
       </Tooltip>
     );
