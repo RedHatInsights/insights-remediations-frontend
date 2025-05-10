@@ -18,10 +18,13 @@ import {
   ValidatedOptions,
   FormGroup,
   CardFooter,
+  Popover,
+  FlexItem,
 } from '@patternfly/react-core';
 import {
   CheckIcon,
   ExternalLinkAltIcon,
+  OutlinedQuestionCircleIcon,
   PencilAltIcon,
   TimesIcon,
 } from '@patternfly/react-icons';
@@ -29,6 +32,8 @@ import { formatDate } from '../Cells';
 import { useVerifyName } from '../../Utilities/useVerifyName';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import { execStatus } from './helpers';
+import './DetailsCard.scss';
+import { useMediaQuery } from '../../Utilities/Hooks/useMediaQuery';
 
 const DetailsCard = ({
   details,
@@ -42,11 +47,11 @@ const DetailsCard = ({
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(details?.name);
   const [rebootToggle, setRebootToggle] = useState(details?.auto_reboot);
-
   const [isVerifyingName, isDisabled] = useVerifyName(
     value,
     allRemediations?.data
   );
+  const isMdUp = useMediaQuery('(min-width: 768px)');
 
   const onSubmit = () => {
     updateRemPlan({
@@ -68,78 +73,95 @@ const DetailsCard = ({
     <Card isFullHeight>
       <CardTitle>
         <Title headingLevel="h4" size="xl">
-          Details
+          Remediation plan details and status
         </Title>
       </CardTitle>
       <CardBody>
-        <p className="pf-v5-u-font-size-sm pf-v5-u-mb-md">
-          Overview of the set up and status details for this remediation plan.
-        </p>
-        <DescriptionList isHorizontal termWidth="20ch">
+        <DescriptionList
+          isHorizontal={isMdUp}
+          className="rem-det-description-list"
+        >
           {/* Editable Name */}
           <DescriptionListGroup>
-            <DescriptionListTerm>Name</DescriptionListTerm>
+            <DescriptionListTerm>
+              <span>Name</span>
+              {!editing && (
+                <Button
+                  variant="link"
+                  onClick={() => setEditing(true)}
+                  className="pf-v5-u-ml-sm"
+                >
+                  <PencilAltIcon />
+                </Button>
+              )}
+            </DescriptionListTerm>
             <DescriptionListDescription>
               {editing ? (
-                <Flex spaceItems={{ default: 'spaceItemsXs' }}>
-                  <FormGroup
-                    fieldId="remediation-name"
-                    helperTextInvalid="Playbook name has to contain alphanumeric characters"
-                    isValid={isDisabled}
-                  >
-                    <TextInput
-                      type="text"
-                      value={value}
-                      onChange={(_event, value) => setValue(value)}
-                      aria-label={'Rename Input'}
-                      autoFocus
-                      isValid={!isDisabled}
-                      validated={
-                        value === details?.name && isDisabled
-                          ? ValidatedOptions.default
-                          : (value.trim() === '' || isDisabled) &&
-                            ValidatedOptions.error
-                      }
-                    />
-                    {isDisabled &&
-                      value !== details.name &&
-                      !isVerifyingName && (
+                <Flex
+                  direction={{ default: 'column', md: 'row' }}
+                  spaceItems={{ default: 'spaceItemsXs' }}
+                >
+                  <FlexItem>
+                    <FormGroup
+                      fieldId="remediation-name"
+                      helperTextInvalid="Playbook name has to contain alphanumeric characters"
+                      isValid={isDisabled}
+                    >
+                      <TextInput
+                        type="text"
+                        value={value}
+                        onChange={(_event, value) => setValue(value)}
+                        aria-label="Rename Input"
+                        autoFocus
+                        isValid={!isDisabled}
+                        validated={
+                          value === details?.name && isDisabled
+                            ? ValidatedOptions.default
+                            : (value.trim() === '' || isDisabled) &&
+                              ValidatedOptions.error
+                        }
+                      />
+                      {isDisabled &&
+                        value !== details.name &&
+                        !isVerifyingName && (
+                          <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
+                            A remediation plan with the same name already exists
+                            in your organization. Enter a unique name and try
+                            again.
+                          </p>
+                        )}
+                      {value.trim() === '' && !isVerifyingName && (
                         <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
-                          A remediation plan with the same name already exists
-                          in your organization. Enter a unique name and try
-                          again.
+                          Playbook name cannot be empty.
                         </p>
                       )}
-                    {value.trim() === '' && !isVerifyingName && (
-                      <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
-                        Playbook name cannot be empty.
-                      </p>
-                    )}
-                  </FormGroup>
-                  <Button
-                    variant="link"
-                    onClick={() => onSubmit(value)}
-                    isDisabled={isDisabled || value.trim() === ''}
-                  >
-                    <CheckIcon
-                      color={
-                        isDisabled || value.trim() === ''
-                          ? `var(--pf-v5-global--disabled-color--200)`
-                          : `var(--pf-v5-global--link--Color)`
-                      }
-                    />
-                  </Button>
-                  <Button variant="link" onClick={() => setEditing(false)}>
-                    <TimesIcon color="var(--pf-v5-global--icon--Color--light--dark)" />
-                  </Button>
+                    </FormGroup>
+                  </FlexItem>
+                  <FlexItem>
+                    <Flex spaceItems={{ default: 'spaceItemsXs' }}>
+                      <Button
+                        variant="link"
+                        onClick={() => onSubmit(value)}
+                        isDisabled={isDisabled || value.trim() === ''}
+                      >
+                        <CheckIcon
+                          color={
+                            isDisabled || value.trim() === ''
+                              ? `var(--pf-v5-global--disabled-color--200)`
+                              : `var(--pf-v5-global--link--Color)`
+                          }
+                        />
+                      </Button>
+                      <Button variant="link" onClick={() => setEditing(false)}>
+                        <TimesIcon color="var(--pf-v5-global--icon--Color--light--dark)" />
+                      </Button>
+                    </Flex>
+                  </FlexItem>
                 </Flex>
               ) : (
-                <Flex>
-                  <Text component="p">{details.name}</Text>
-                  <Button variant="link" onClick={() => setEditing(true)}>
-                    <PencilAltIcon />
-                  </Button>
-                </Flex>
+                <Text component="p" style={{ wordBreak: 'break-word' }}>
+                  {details.name}
+                </Text>
               )}
             </DescriptionListDescription>
           </DescriptionListGroup>
@@ -152,21 +174,33 @@ const DetailsCard = ({
           </DescriptionListGroup>
           {/* Last Modified */}
           <DescriptionListGroup>
-            <DescriptionListTerm>Last modified date</DescriptionListTerm>
+            <DescriptionListTerm>Last modified</DescriptionListTerm>
             <DescriptionListDescription>
               {formatDate(details?.updated_at)}
             </DescriptionListDescription>
           </DescriptionListGroup>
           {/* Last Execution Status */}
           <DescriptionListGroup>
-            <DescriptionListTerm>Last execution status</DescriptionListTerm>
+            <DescriptionListTerm>Latest execution status</DescriptionListTerm>
             <DescriptionListDescription>
               {execStatus(remediationPlaybookRuns?.status, formatedDate)}
             </DescriptionListDescription>
           </DescriptionListGroup>
           {/* Actions */}
           <DescriptionListGroup>
-            <DescriptionListTerm>Actions</DescriptionListTerm>
+            <DescriptionListTerm>
+              Actions
+              <Popover
+                bodyContent={() => (
+                  <>
+                    Actions taken to remediate issues on selected systems when
+                    the remediation plan is executed.
+                  </>
+                )}
+              >
+                <OutlinedQuestionCircleIcon style={{ marginLeft: '5px' }} />
+              </Popover>
+            </DescriptionListTerm>
             <DescriptionListDescription>
               <Button
                 variant="link"
