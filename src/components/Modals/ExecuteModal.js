@@ -15,7 +15,6 @@ import {
   ListItem,
 } from '@patternfly/react-core';
 import { downloadPlaybook } from '../../api';
-import { styledConnectionStatus } from '../statusHelper';
 import { TableVariant } from '@patternfly/react-table';
 import {
   TableHeader,
@@ -27,7 +26,7 @@ import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
 import EmptyExecutePlaybookState from '../EmptyExecutePlaybookState';
 import { dispatchNotification } from '../../Utilities/dispatcher';
-import { useChrome } from '@redhat-cloud-services/frontend-components/useChrome';
+import { renderConnectionStatus } from '../../routes/helpers';
 
 export const ExecuteModal = ({
   isOpen,
@@ -45,7 +44,6 @@ export const ExecuteModal = ({
   const [connected, setConnected] = useState([]);
   const [disconnected, setDisconnected] = useState([]);
   const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
-  const chrome = useChrome();
 
   useEffect(() => {
     const [con, dis] = data.reduce(
@@ -79,10 +77,6 @@ export const ExecuteModal = ({
     );
   };
 
-  const generateRowsStatus = (con) => {
-    return styledConnectionStatus(con.connection_status, chrome?.isBeta?.());
-  };
-
   const rows = [...connected, ...disconnected].map((con) => ({
     cells: [
       {
@@ -90,7 +84,7 @@ export const ExecuteModal = ({
       },
       con.system_count,
       {
-        title: generateRowsStatus(con),
+        title: renderConnectionStatus(con.connection_status),
       },
     ],
   }));
@@ -128,7 +122,7 @@ export const ExecuteModal = ({
                     title: `Executing playbook ${remediationName}`,
                     description: (
                       <span>
-                        View results in the <b>Activity tab</b>
+                        View results in the <b>Execution History tab</b>
                       </span>
                     ),
                     variant: 'success',

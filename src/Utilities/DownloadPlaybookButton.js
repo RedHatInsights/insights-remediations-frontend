@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@patternfly/react-core';
+import { Button, pluralize } from '@patternfly/react-core';
 import { downloadPlaybook } from '../api';
 import { dispatchNotification } from './dispatcher';
 import keyBy from 'lodash/keyBy';
@@ -27,11 +27,12 @@ export const download = (selectedIds, data, dispatch) => {
     dispatch(
       addNotification({
         variant: 'danger',
-        title: 'No playbooks downloaded.',
-        description:
-          selectedIds.length > 1
-            ? 'Selected remediations do not contain any issues to remediate.'
-            : 'Selected remediation does not contain any issues to remediate.',
+        title: 'No remediation plans downloaded.',
+        description: ` ${pluralize(
+          selectedIds.length,
+          'Selected remediation does not',
+          'Selected remediations do not'
+        )}`,
       })
     );
   } else if (valid.length < selectedIds.length) {
@@ -39,8 +40,11 @@ export const download = (selectedIds, data, dispatch) => {
     dispatch(
       addNotification({
         variant: 'success',
-        title:
-          valid.length > 1 ? 'Downloading playbooks' : 'Downloading playbook',
+        title: `Downloading remediation ${pluralize(
+          valid.length,
+          'plan',
+          'plans'
+        )}`,
         description: `${
           selectedIds.length - valid.length
         } empty remediaton plan was not downloaded`,
@@ -51,8 +55,11 @@ export const download = (selectedIds, data, dispatch) => {
     dispatch(
       addNotification({
         variant: 'success',
-        title:
-          valid.length > 1 ? 'Downloading playbooks' : 'Downloading playbook',
+        title: `Downloading remediation ${pluralize(
+          valid.length,
+          'plan',
+          'plans'
+        )}`,
       })
     );
   }
@@ -70,7 +77,11 @@ export const DownloadPlaybookButton = ({
       onClick={() => {
         download(selectedItems, data, dispatch);
         dispatchNotification({
-          title: 'Preparing playbook for download.',
+          title: `Your remediation ${pluralize(
+            selectedItems.length,
+            'plan',
+            'plans'
+          )} will be downloaded shortly`,
           description: 'Once complete, your download will start automatically.',
           variant: 'info',
           dismissable: true,

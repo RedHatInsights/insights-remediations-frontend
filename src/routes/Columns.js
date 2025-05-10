@@ -9,8 +9,6 @@ import {
   LastModifiedCell,
 } from './Cells.js';
 import { wrappable } from '@patternfly/react-table';
-import { Button, Flex, Tooltip } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 
 // eslint-disable-next-line react/display-name
 export const renderComponent = (Component, props) => (_data, _id, entity) =>
@@ -41,23 +39,7 @@ export const ExecutionStatus = {
 };
 
 export const Actions = {
-  title: (
-    <Flex direction={{ default: 'row' }} flexWrap={{ default: 'nowrap' }}>
-      <p className="pf-v5-u-mr-xs"> Actions </p>
-      <Tooltip
-        aria-label={'Actions Popover'}
-        content="Actions taken to remediate issues on selected systems when the remediation plan is executed"
-      >
-        <Button
-          className="pf-v5-u-ml-xs"
-          variant="plain"
-          style={{ padding: 0 }}
-        >
-          <OutlinedQuestionCircleIcon />
-        </Button>
-      </Tooltip>
-    </Flex>
-  ),
+  title: 'Actions',
   transforms: [wrappable],
   sortable: 'issue_count_min',
   exportKey: 'Actions',

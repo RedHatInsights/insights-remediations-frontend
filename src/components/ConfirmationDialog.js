@@ -24,7 +24,7 @@ export default function ConfirmationDialog({
       actions={[
         <Button
           key="confirm"
-          variant="primary"
+          variant="danger"
           ouiaId="confirm"
           onClick={() => onClose(true)}
           isDisabled={selectedItems?.length === 0}

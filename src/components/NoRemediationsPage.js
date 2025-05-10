@@ -11,7 +11,7 @@ import {
 import { Link } from 'react-router-dom';
 import { CubesIcon, ExternalLinkAltIcon } from '@patternfly/react-icons';
 
-export const NoResultsTable = () => {
+export const NoRemediationsPage = () => {
   return (
     <EmptyState variant={EmptyStateVariant.full}>
       <EmptyStateHeader
@@ -39,8 +39,8 @@ export const NoResultsTable = () => {
   );
 };
 
-NoResultsTable.propTypes = {
+NoRemediationsPage.propTypes = {
   kind: propTypes.string,
 };
 
-export default NoResultsTable;
+export default NoRemediationsPage;
