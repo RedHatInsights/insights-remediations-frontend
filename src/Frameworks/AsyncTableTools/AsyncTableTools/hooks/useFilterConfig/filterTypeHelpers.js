@@ -1,3 +1,4 @@
+import React from 'react';
 import { conditionalFilterType } from '@redhat-cloud-services/frontend-components/ConditionalFilter';
 import {
   configItemItemByLabel,
@@ -6,6 +7,7 @@ import {
   itemForValueInGroups,
   stringToId,
 } from './helpers';
+import { CalendarFilter } from '../../../../../routes/CalendarFilter';
 
 const textType = {
   // Creates the filterValues prop for the filterConfig passed to the toolbar/table provided the current value/state
@@ -119,10 +121,64 @@ const groupType = {
   },
 };
 
+const singleSelectType = {
+  filterValues: ({ items, label }, handler, value) => ({
+    items,
+    value: value?.[0],
+    ...defaultOnChange(handler, stringToId(label)),
+  }),
+
+  filterChips: (configItem, value) => ({
+    category: configItem.label,
+    chips: [
+      { name: configItem.items.find((item) => item.value === value[0]).label },
+    ],
+  }),
+
+  toSelectValue: (configItem, selectedValue) => [
+    [selectedValue],
+    stringToId(configItem.label),
+    true,
+  ],
+
+  /* how to deselect from a chip click */
+  toDeselectValue: (configItem, chip) => [
+    configItemItemByLabel(configItem, chip.chips[0].name).value,
+    stringToId(configItem.label),
+  ],
+};
+
+export const calendarFilterType = {
+  type: 'custom',
+  filterValues: ({ label }, handler, value = []) => ({
+    children: (
+      <CalendarFilter
+        value={value?.[0]}
+        onChange={(_e, str) =>
+          handler(stringToId(label), str, str ? [str] : [])
+        }
+      />
+    ),
+  }),
+
+  filterChips: (configItem, value = []) => ({
+    category: configItem.label,
+    chips: value.length ? [{ name: value[0].slice(0, 10) }] : [],
+  }),
+  toSelectValue: (configItem, selectedValue) => [
+    [selectedValue],
+    stringToId(configItem.label),
+    true,
+  ],
+  toDeselectValue: (configItem) => [[], stringToId(configItem.label), true],
+};
+
 export default (type) =>
   ({
     [conditionalFilterType.text]: textType,
     [conditionalFilterType.checkbox]: checkboxType,
     [conditionalFilterType.radio]: radioType,
     [conditionalFilterType.group]: groupType,
+    [conditionalFilterType.singleSelect]: singleSelectType,
+    calendar: calendarFilterType,
   }[type]);

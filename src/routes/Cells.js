@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, Icon, Label, Text, Tooltip } from '@patternfly/react-core';
+import { Flex, Icon, Text, Tooltip } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import {
@@ -14,15 +14,8 @@ export const formatDate = (dateStr) => {
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
   return date.toLocaleDateString('en-US', options);
 };
-export const Name = ({ name, id, archived }) => (
-  <InsightsLink to={id}>
-    {name}
-    {archived && (
-      <Label color={'grey'} isCompact className="pf-v5-u-ml-md">
-        Archived
-      </Label>
-    )}
-  </InsightsLink>
+export const Name = ({ name, id }) => (
+  <InsightsLink to={id}>{name}</InsightsLink>
 );
 
 export const LastExecutedCell = ({ playbook_runs }) => (
@@ -106,7 +99,6 @@ export const LastModifiedCell = ({ updated_at }) => {
     timeZone: 'UTC',
   });
 
-  // Combine them with "at" and "UTC"
   const tooltipText = `${datePart} at ${timePart} UTC`;
 
   return (

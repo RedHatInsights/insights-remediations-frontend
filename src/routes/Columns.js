@@ -41,7 +41,7 @@ export const ExecutionStatus = {
 export const Actions = {
   title: 'Actions',
   transforms: [wrappable],
-  sortable: 'issue_count_min',
+  sortable: 'issue_count',
   exportKey: 'Actions',
   renderFunc: renderComponent(ActionsCell),
 };

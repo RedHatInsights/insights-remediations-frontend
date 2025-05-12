@@ -35,7 +35,7 @@ export function formatUser(user) {
 }
 
 export function includesIgnoreCase(text, included) {
-  return text.toLowerCase().includes(included.toLowerCase());
+  return text?.toLowerCase().includes(included.toLowerCase());
 }
 
 export const DATE_FORMAT = 'DD MMM YYYY, hh:mm UTC';

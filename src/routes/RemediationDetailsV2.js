@@ -112,7 +112,7 @@ const RemediationDetailsV2 = () => {
               remediation={remediationDetails}
               isRenameModalOpen={isRenameModalOpen}
               setIsRenameModalOpen={setIsRenameModalOpen}
-              remediationsList={allRemediations.data}
+              remediationsList={allRemediations?.data}
               fetch={fetchRemediation}
             />
           )}
