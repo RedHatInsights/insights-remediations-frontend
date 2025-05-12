@@ -50,7 +50,6 @@ const DetailsGeneralContent = ({
             remediationPlaybookRuns={remediationPlaybookRuns}
           />
         </GridItem>
-
         <GridItem span={12} md={6}>
           <ProgressCard
             remediationStatus={remediationStatus}

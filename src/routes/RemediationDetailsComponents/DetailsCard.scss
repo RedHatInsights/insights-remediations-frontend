@@ -1,9 +1,7 @@
-/* Target only our custom responsive description list */
 .rem-det-description-list.pf-v5-c-description-list {
     --pf-v5-c-description-list--grid-template-columns: auto 1fr;
   }
 
-  /* On small screens (below 768px), stack terms and descriptions vertically */
   @media (max-width: 768px) {
     .rem-det-description-list.pf-v5-c-description-list {
       --pf-v5-c-description-list--grid-template-columns: 1fr !important;
