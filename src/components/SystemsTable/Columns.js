@@ -2,10 +2,19 @@ import React from 'react';
 import IssuesColumn from './IssuesColumn';
 import RebootColumn from './RebootColumn';
 import ConnectionStatusColumn from './ConnectionStatusCol';
+import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 
 export default [
   {
     key: 'display_name',
+    title: 'Name',
+    renderFunc: (_value, _colIdx, entity) => {
+      return (
+        <InsightsLink app="inventory" to={`/${entity.id}`}>
+          {entity.display_name}
+        </InsightsLink>
+      );
+    },
   },
   {
     key: 'tags',
