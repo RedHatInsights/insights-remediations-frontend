@@ -111,7 +111,7 @@ export const ConnectionStatusCell = ({ connection_status, executor_type }) => {
     }
   } else {
     return (
-      <Tooltip position="top" content={'Connection Status Unkown'}>
+      <Tooltip position="top" content={'Connection Status Unknown'}>
         <Flex spaceItems={{ default: 'spaceItemsXs' }}>
           <UnknownIcon className="pf-u-mr-xs" />
           <p style={{ maxWidth: 'fit-content' }}>Unknown</p>

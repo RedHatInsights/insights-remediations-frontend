@@ -7,7 +7,7 @@ export const CalendarFilter = ({ value, onChange }) => {
 };
 
 CalendarFilter.propTypes = {
-  value: PropTypes.string,
+  value: PropTypes.array,
   onChange: PropTypes.func.isRequired,
 };
 

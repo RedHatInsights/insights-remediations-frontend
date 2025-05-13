@@ -141,7 +141,6 @@ const singleSelectType = {
     true,
   ],
 
-  /* how to deselect from a chip click */
   toDeselectValue: (configItem, chip) => [
     configItemItemByLabel(configItem, chip.chips[0].name).value,
     stringToId(configItem.label),

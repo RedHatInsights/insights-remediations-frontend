@@ -77,7 +77,7 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
     }
   } else {
     return (
-      <Tooltip content={'Connection Status Unkown'}>
+      <Tooltip content={'Connection Status Unknown'}>
         <Flex spaceItems={{ default: 'spaceItemsXs' }}>
           <UnknownIcon className="pf-u-mr-xs" />
           <p style={{ maxWidth: 'fit-content' }}>Unknown</p>

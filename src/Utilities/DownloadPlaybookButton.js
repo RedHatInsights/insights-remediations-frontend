@@ -35,9 +35,7 @@ export const download = (selectedIds, data, dispatch) => {
     dispatch(
       addNotification({
         variant: 'success',
-        title: `Downloading remediation plan${
-          selectedIds.length > 1 ? 's' : ''
-        }`,
+        title: `Downloading remediation plan${valid.length > 1 ? 's' : ''}`,
         description: `${
           selectedIds.length - valid.length
         } empty remediaton plan was not downloaded`,
