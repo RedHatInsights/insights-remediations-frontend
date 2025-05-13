@@ -48,7 +48,6 @@ export const LastModifiedFilter = [
       { label: 'Last 30 days', value: subtractDays(30) },
       { label: 'Last 90 days', value: subtractDays(90) },
       { label: 'Last year', value: subtractDays(365) },
-      { label: 'Never', value: 'never' },
     ],
   },
 ];
