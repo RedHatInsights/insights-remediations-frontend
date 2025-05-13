@@ -21,6 +21,7 @@ const RemediationDetailsPageHeader = ({
   remediationStatus,
   isFedramp,
   allRemediations,
+  refetchAllRemediations,
   updateRemPlan,
   refetch,
   permissions,
@@ -58,7 +59,7 @@ const RemediationDetailsPageHeader = ({
   return (
     <PageHeader>
       <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
-        <FlexItem style={{ width: '70%' }}>
+        <FlexItem style={{ width: '60%' }}>
           <PageHeaderTitle title={remediation.name} className="pf-v5-u-mb-md" />
           <p>{`ID: ${remediation.id}`}</p>
         </FlexItem>
@@ -94,7 +95,8 @@ const RemediationDetailsPageHeader = ({
             <SplitItem>
               <RemediationDetailsDropdown
                 remediation={remediation}
-                remediationsList={allRemediations.data}
+                remediationsList={allRemediations}
+                refetchAllRemediations={refetchAllRemediations}
                 updateRemPlan={updateRemPlan}
                 refetch={refetch}
               />
@@ -125,6 +127,7 @@ RemediationDetailsPageHeader.propTypes = {
   refetch: PropTypes.func,
   permissions: PropTypes.obj,
   isExecutable: PropTypes.any,
+  refetchAllRemediations: PropTypes.func,
 };
 
 export default RemediationDetailsPageHeader;

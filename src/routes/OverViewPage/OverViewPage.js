@@ -4,10 +4,10 @@ import useRemediationsQuery from '../../api/useRemediationsQuery';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import RemediationsTable from '../../components/RemediationsTable/RemediationsTable';
 import {
-  calendarFilterType,
+  CreatedByFilter,
   ExecutionStatusFilter,
   LastExecutedFilter,
-  LastModified,
+  LastModifiedFilter,
   remediationNameFilter,
 } from '../Filters';
 import {
@@ -126,8 +126,14 @@ export const OverViewPage = () => {
       {isDeleteModalOpen && (
         <ConfirmationDialog
           isOpen={isDeleteModalOpen}
-          title={`Delete remediation plan?`}
-          text="Deleting a remediation plan is permanent and cannot be undone."
+          title={`Delete remediation plan${
+            currentlySelected.length > 1 ? 's' : ''
+          }?`}
+          text={`${
+            currentlySelected.length > 1
+              ? 'Deleting remediation plans are '
+              : 'Deleting a remediation plan is '
+          } permanent and cannot be undone.`}
           confirmText="Delete"
           selectedItems={
             currentlySelected.length > 0 ? currentlySelected : remediation
@@ -142,7 +148,7 @@ export const OverViewPage = () => {
               executeDeleteFunction.then(() => {
                 dispatchNotification({
                   title: `Remediation plan${
-                    currentlySelected.length > 0 && 's'
+                    currentlySelected.length > 1 ? 's' : ''
                   } deleted`,
                   variant: 'success',
                   dismissable: true,
@@ -173,7 +179,8 @@ export const OverViewPage = () => {
               ...remediationNameFilter,
               ...LastExecutedFilter,
               ...ExecutionStatusFilter,
-              ...LastModified,
+              ...LastModifiedFilter,
+              ...CreatedByFilter,
             ],
           }}
           options={{
@@ -186,10 +193,6 @@ export const OverViewPage = () => {
             manageColumns: true,
             itemIdsOnPage: result?.data.map(({ id }) => id),
             total: result?.meta?.total,
-            //Connect filter to tableState and send params
-            customFilterTypes: {
-              calendar: calendarFilterType,
-            },
             actionResolver: () => {
               return [
                 {

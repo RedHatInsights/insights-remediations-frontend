@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
@@ -38,21 +38,38 @@ const DetailsCard = ({
   allRemediations,
   refetch,
   remediationPlaybookRuns,
+  refetchAllRemediations,
 }) => {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(details?.name);
   const [rebootToggle, setRebootToggle] = useState(details?.auto_reboot);
 
-  const [isVerifyingName, isDisabled] = useVerifyName(
+  useEffect(() => {
+    setValue(details?.name);
+  }, [details?.name]);
+
+  const [isVerifyingName, isDuplicate] = useVerifyName(
     value,
     allRemediations?.data
   );
 
-  const onSubmit = () => {
-    updateRemPlan({
+  const nameStatus = (() => {
+    if (isVerifyingName) return 'checking';
+    if (value.trim() === '') return 'empty';
+    if (value === details?.name) return 'unchanged';
+    if (isDuplicate) return 'duplicate';
+    return 'valid';
+  })();
+
+  const validationState = ['empty', 'duplicate'].includes(nameStatus)
+    ? ValidatedOptions.error
+    : ValidatedOptions.default;
+
+  const onSubmit = async () => {
+    await updateRemPlan({
       id: details.id,
       name: value,
-    }).then(() => refetch());
+    }).then(async () => await refetch(), await refetchAllRemediations());
     setEditing(false);
   };
   if (!details) {
@@ -76,59 +93,49 @@ const DetailsCard = ({
           Overview of the set up and status details for this remediation plan.
         </p>
         <DescriptionList isHorizontal termWidth="20ch">
-          {/* Editable Name */}
           <DescriptionListGroup>
             <DescriptionListTerm>Name</DescriptionListTerm>
             <DescriptionListDescription>
               {editing ? (
                 <Flex spaceItems={{ default: 'spaceItemsXs' }}>
-                  <FormGroup
-                    fieldId="remediation-name"
-                    helperTextInvalid="Playbook name has to contain alphanumeric characters"
-                    isValid={isDisabled}
-                  >
+                  <FormGroup fieldId="remediation-name">
                     <TextInput
-                      type="text"
                       value={value}
-                      onChange={(_event, value) => setValue(value)}
-                      aria-label={'Rename Input'}
+                      type="text"
+                      onChange={(_, v) => setValue(v)}
+                      aria-label="Rename Input"
                       autoFocus
-                      isValid={!isDisabled}
-                      validated={
-                        value === details?.name && isDisabled
-                          ? ValidatedOptions.default
-                          : (value.trim() === '' || isDisabled) &&
-                            ValidatedOptions.error
-                      }
+                      validated={validationState} /* drives the red border */
                     />
-                    {isDisabled &&
-                      value !== details.name &&
-                      !isVerifyingName && (
-                        <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
-                          A remediation plan with the same name already exists
-                          in your organization. Enter a unique name and try
-                          again.
-                        </p>
-                      )}
-                    {value.trim() === '' && !isVerifyingName && (
+
+                    {/* manual helper text because we’re not using helperTextInvalid */}
+                    {nameStatus === 'duplicate' && (
+                      <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
+                        A remediation plan with the same name already exists in
+                        your organization. Enter a unique name and try again.
+                      </p>
+                    )}
+                    {nameStatus === 'empty' && (
                       <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
                         Playbook name cannot be empty.
                       </p>
                     )}
                   </FormGroup>
+
                   <Button
                     variant="link"
                     onClick={() => onSubmit(value)}
-                    isDisabled={isDisabled || value.trim() === ''}
+                    isDisabled={nameStatus !== 'valid'}
                   >
                     <CheckIcon
                       color={
-                        isDisabled || value.trim() === ''
-                          ? `var(--pf-v5-global--disabled-color--200)`
-                          : `var(--pf-v5-global--link--Color)`
+                        nameStatus !== 'valid'
+                          ? 'var(--pf-v5-global--disabled-color--200)'
+                          : 'var(--pf-v5-global--link--Color)'
                       }
                     />
                   </Button>
+
                   <Button variant="link" onClick={() => setEditing(false)}>
                     <TimesIcon color="var(--pf-v5-global--icon--Color--light--dark)" />
                   </Button>
@@ -277,6 +284,7 @@ DetailsCard.propTypes = {
   updateRemPlan: PropTypes.func,
   refetch: PropTypes.func,
   remediationPlaybookRuns: PropTypes.object,
+  refetchAllRemediations: PropTypes.func,
 };
 
 export default DetailsCard;

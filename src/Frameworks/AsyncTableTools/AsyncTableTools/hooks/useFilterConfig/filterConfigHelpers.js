@@ -16,7 +16,7 @@ const toFilterConfigItem = (configItem, handler, activeFilters) => {
   );
   return filterValues
     ? {
-        type: configItem.type,
+        type: filterTypeHelpers(configItem.type).type || configItem.type,
         label: configItem.label,
         className: configItem.className, // TODO questionable... maybe add a props prop
         placeholder:

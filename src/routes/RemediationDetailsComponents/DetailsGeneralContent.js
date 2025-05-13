@@ -14,6 +14,7 @@ const DetailsGeneralContent = ({
   allRemediations,
   permissions,
   remediationPlaybookRuns,
+  refetchAllRemediations,
 }) => {
   const readyOrNot =
     !permissions?.exectute &&
@@ -55,6 +56,7 @@ const DetailsGeneralContent = ({
             onNavigateToTab={onNavigateToTab}
             allRemediations={allRemediations}
             remediationPlaybookRuns={remediationPlaybookRuns}
+            refetchAllRemediations={refetchAllRemediations}
           />
         </FlexItem>
         <FlexItem style={{ flex: '0 0 48%', maxWidth: '48%' }}>
@@ -79,6 +81,7 @@ DetailsGeneralContent.propTypes = {
   allRemediations: PropTypes.array,
   permissions: PropTypes.object,
   remediationPlaybookRuns: PropTypes.any,
+  refetchAllRemediations: PropTypes.func,
 };
 
 export default DetailsGeneralContent;

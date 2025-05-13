@@ -6,13 +6,15 @@ export const paginationSerialiser = (state) => {
     return { offset, limit };
   }
 };
+const toUtcIso = (yyyyMmDd) =>
+  yyyyMmDd ? new Date(`${yyyyMmDd}T00:00:00Z`).toISOString() : undefined;
 
-//make sure the singleSelect is in the right time
 const filterSerialisers = {
   text: (_config, [value]) => value,
   radio: (_config, [value]) => value,
   checkbox: (_config, values) => values.join(','),
   singleSelect: (_config, [value]) => value,
+  calendar: (_config, [value]) => toUtcIso(value),
 };
 
 const findFilterSerialiser = (filterConfigItem) => {

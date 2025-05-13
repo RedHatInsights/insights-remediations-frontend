@@ -29,9 +29,8 @@ const RemediationDetailsV2 = () => {
   const { isFedramp } = chrome;
   const context = useContext(PermissionContext);
 
-  const { result: allRemediations } = useRemediationsQuery(
-    getRemediationsList(axios)
-  );
+  const { result: allRemediations, refetch: refetchAllRemediations } =
+    useRemediationsQuery(getRemediationsList(axios));
 
   const { result: isExecutable } = useRemediationsQuery(
     checkExecutableStatus(axios),
@@ -95,7 +94,8 @@ const RemediationDetailsV2 = () => {
           remediation={remediationDetails}
           remediationStatus={remediationStatus}
           isFedramp={isFedramp}
-          allRemediations={allRemediations}
+          allRemediations={allRemediations?.data}
+          refetchAllRemediations={refetchAllRemediations}
           updateRemPlan={updateRemPlan}
           refetch={fetchRemediation}
           permissions={context.permissions}
@@ -112,7 +112,7 @@ const RemediationDetailsV2 = () => {
               remediation={remediationDetails}
               isRenameModalOpen={isRenameModalOpen}
               setIsRenameModalOpen={setIsRenameModalOpen}
-              remediationsList={allRemediations.data}
+              remediationsList={allRemediations?.data}
               fetch={fetchRemediation}
             />
           )}
@@ -124,6 +124,7 @@ const RemediationDetailsV2 = () => {
           >
             <DetailsGeneralContent
               details={remediationDetails}
+              refetchAllRemediations={refetchAllRemediations}
               onRename={setIsRenameModalOpen}
               refetch={fetchRemediation}
               remediationStatus={remediationStatus}
