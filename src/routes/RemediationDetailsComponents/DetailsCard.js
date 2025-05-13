@@ -102,6 +102,7 @@ const DetailsCard = ({
                       }
                     />
                     {isDisabled &&
+                      !isVerifyingName &&
                       value !== details.name &&
                       !isVerifyingName && (
                         <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">

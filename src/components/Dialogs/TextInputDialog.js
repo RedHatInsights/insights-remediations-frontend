@@ -77,7 +77,7 @@ export default function TextInputDialog(props) {
               : (value.trim() === '' || isDisabled) && ValidatedOptions.error
           }
         />
-        {isDisabled && value !== props.value && (
+        {isDisabled && !isVerifyingName && value !== props.value && (
           <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
             A remediation plan with the same name already exists in your
             organization. Enter a unique name and try again.
