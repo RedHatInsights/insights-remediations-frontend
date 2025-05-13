@@ -32,7 +32,6 @@ import { formatDate } from '../Cells';
 import { useVerifyName } from '../../Utilities/useVerifyName';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import { execStatus } from './helpers';
-import './DetailsCard.scss';
 
 const DetailsCard = ({
   details,

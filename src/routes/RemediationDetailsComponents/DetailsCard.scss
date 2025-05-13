@@ -1,9 +1,0 @@
-.rem-det-description-list.pf-v5-c-description-list {
-    --pf-v5-c-description-list--grid-template-columns: auto 1fr;
-  }
-
-  @media (max-width: 768px) {
-    .rem-det-description-list.pf-v5-c-description-list {
-      --pf-v5-c-description-list--grid-template-columns: 1fr !important;
-    }
-  }
