@@ -112,11 +112,7 @@ const DetailsCard = ({
                 className="pf-v5-u-ml-sm"
               >
                 <PencilAltIcon
-                  color={
-                    editing
-                      ? 'var(--pf-v5-global--palette--black-300)'
-                      : undefined
-                  }
+                  color={editing && 'var(--pf-v5-global--palette--black-300)'}
                 />
               </Button>
             </DescriptionListTerm>
