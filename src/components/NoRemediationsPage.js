@@ -38,7 +38,7 @@ export const NoRemediationsPage = () => {
             <EmptyStateActions>
               <Button
                 onClick={() =>
-                  quickStarts.activateQuickstart(
+                  quickStarts?.activateQuickstart(
                     'insights-remediate-plan-create'
                   )
                 }

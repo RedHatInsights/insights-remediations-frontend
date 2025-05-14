@@ -17,8 +17,9 @@ import {
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import { RemediationsPopover } from '../RemediationsPopover';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
+import PropTypes from 'prop-types';
 
-export const OverViewPageHeader = () => {
+export const OverViewPageHeader = ({ hasRemediations }) => {
   const { quickStarts } = useChrome();
 
   return (
@@ -61,17 +62,26 @@ export const OverViewPageHeader = () => {
           </Stack>
         </FlexItem>
 
-        <FlexItem>
-          <Button
-            variant="secondary"
-            onClick={() =>
-              quickStarts.activateQuickstart('insights-remediate-plan-create')
-            }
-          >
-            Launch Quick Start <OpenDrawerRightIcon className="pf-v5-u-ml-sm" />
-          </Button>
-        </FlexItem>
+        {hasRemediations && (
+          <FlexItem>
+            <Button
+              variant="secondary"
+              onClick={() =>
+                quickStarts?.activateQuickstart(
+                  'insights-remediate-plan-create'
+                )
+              }
+            >
+              Launch Quick Start
+              <OpenDrawerRightIcon className="pf-v5-u-ml-sm" />
+            </Button>
+          </FlexItem>
+        )}
       </Flex>
     </PageHeader>
   );
+};
+
+OverViewPageHeader.propTypes = {
+  hasRemediations: PropTypes.bool,
 };

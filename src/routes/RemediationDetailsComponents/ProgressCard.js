@@ -124,7 +124,7 @@ const ProgressCard = ({
         Need help to pass the remediations execution readiness check?
         <Button
           onClick={() =>
-            quickStarts.activateQuickstart('insights-remediate-plan-create')
+            quickStarts?.activateQuickstart('insights-remediate-plan-create')
           }
           variant="link"
           className="pf-v5-u-font-size-sm"
