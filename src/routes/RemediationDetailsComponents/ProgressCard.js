@@ -11,8 +11,8 @@ import {
 } from '@patternfly/react-core';
 import React from 'react';
 import PropTypes from 'prop-types';
-import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
-import { ExternalLinkAltIcon } from '@patternfly/react-icons';
+import { OpenDrawerRightIcon } from '@patternfly/react-icons';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 
 const ProgressCard = ({
   remediationStatus,
@@ -20,6 +20,8 @@ const ProgressCard = ({
   readyOrNot,
   onNavigateToTab,
 }) => {
+  const { quickStarts } = useChrome();
+
   return permissions === undefined ? (
     <Spinner />
   ) : (
@@ -119,18 +121,16 @@ const ProgressCard = ({
         </ProgressStepper>
       </CardBody>
       <CardFooter className="pf-v5-u-font-size-sm">
-        Need help to pass the remediations execution readiness check? Learn
-        more.
-        <InsightsLink
-          to={
-            'https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index#executing-playbooks-from-insights_remediations-from-insights'
+        Need help to pass the remediations execution readiness check?
+        <Button
+          onClick={() =>
+            quickStarts.activateQuickstart('insights-remediate-plan-create')
           }
-          target="_blank"
+          variant="link"
+          className="pf-v5-u-font-size-sm"
         >
-          <Button variant="link" className="pf-v5-u-font-size-sm">
-            Learn more. <ExternalLinkAltIcon />
-          </Button>{' '}
-        </InsightsLink>
+          Learn more <OpenDrawerRightIcon className="pf-v5-u-ml-sm" />
+        </Button>
       </CardFooter>
     </Card>
   );
