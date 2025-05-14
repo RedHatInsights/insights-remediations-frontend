@@ -1,10 +1,4 @@
-import {
-  Button,
-  Flex,
-  FlexItem,
-  Split,
-  SplitItem,
-} from '@patternfly/react-core';
+import { Button, Flex, FlexItem } from '@patternfly/react-core';
 import {
   PageHeader,
   PageHeaderTitle,
@@ -25,7 +19,6 @@ const RemediationDetailsPageHeader = ({
   updateRemPlan,
   refetch,
   permissions,
-  isExecutable,
 }) => {
   const handleDownload = useCallback(async () => {
     dispatchNotification({
@@ -58,20 +51,38 @@ const RemediationDetailsPageHeader = ({
 
   return (
     <PageHeader>
-      <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
-        <FlexItem style={{ width: '60%' }}>
-          <PageHeaderTitle title={remediation.name} className="pf-v5-u-mb-md" />
-          <p>{`ID: ${remediation.id}`}</p>
+      <Flex
+        justifyContent={{ default: 'justifyContentSpaceBetween' }}
+        alignItems={{ default: 'alignItemsFlexStart' }}
+        flexWrap={{ default: 'wrap' }}
+      >
+        <FlexItem grow={{ default: 'grow' }} style={{ minWidth: 0 }}>
+          <PageHeaderTitle
+            className="pf-v5-u-mb-sm"
+            title={
+              <div
+                style={{
+                  display: 'block',
+                  overflow: 'hidden',
+                  maxWidth: '100%',
+                }}
+              >
+                {remediation.name}
+              </div>
+            }
+          />
+          <p style={{ wordBreak: 'break-word' }}>{`ID: ${remediation.id}`}</p>
         </FlexItem>
-
-        <FlexItem>
-          <Split hasGutter>
-            <SplitItem>
+        <FlexItem style={{ marginTop: 'var(--pf-v5-global--spacer--sm)' }}>
+          <Flex
+            spaceItems={{ default: 'spaceItemsXs' }}
+            flexWrap={{ default: 'wrap' }}
+          >
+            <FlexItem>
               <ExecutePlaybookButton
                 isDisabled={
                   remediationStatus.connectedSystems === 0 ||
                   !permissions?.execute ||
-                  !isExecutable ||
                   isFedramp
                 }
                 connectedSystems={remediationStatus.connectedSystems}
@@ -81,9 +92,9 @@ const RemediationDetailsPageHeader = ({
                 permissions={permissions.execute}
                 issueCount={remediation?.issues}
                 remediation={remediation}
-              ></ExecutePlaybookButton>
-            </SplitItem>
-            <SplitItem>
+              />
+            </FlexItem>
+            <FlexItem>
               <Button
                 isDisabled={!remediation?.issues.length}
                 variant="secondary"
@@ -91,8 +102,8 @@ const RemediationDetailsPageHeader = ({
               >
                 Download
               </Button>
-            </SplitItem>
-            <SplitItem>
+            </FlexItem>
+            <FlexItem>
               <RemediationDetailsDropdown
                 remediation={remediation}
                 remediationsList={allRemediations}
@@ -100,8 +111,8 @@ const RemediationDetailsPageHeader = ({
                 updateRemPlan={updateRemPlan}
                 refetch={refetch}
               />
-            </SplitItem>
-          </Split>
+            </FlexItem>
+          </Flex>
         </FlexItem>
       </Flex>
     </PageHeader>
