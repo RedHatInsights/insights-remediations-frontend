@@ -1,5 +1,5 @@
 import React from 'react';
-import RemediationsTable from './RemediationsTable';
+//import RemediationsTable from './RemediationsTable';
 import { OverViewPage } from '../../routes/OverViewPage/OverViewPage';
 import { Home } from '../../routes/Home';
 import { DEFAULT_RENDER_OPTIONS } from '../../Frameworks/AsyncTableTools/AsyncTableTools/utils/testHelpers';
@@ -16,9 +16,9 @@ const MountHome = () => {
   return <Home />;
 };
 
-describe('RemediationsTable tests', () => {
+describe('OverviewPage tests', () => {
   beforeEach(() => {
-    cy.mountWithContext(MountOverviewPage, DEFAULT_RENDER_OPTIONS);
+    cy.mountWithContext(MountOverviewPage);
   });
   it('renders the table correctly', () => {
     cy.get('body');
