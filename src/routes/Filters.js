@@ -26,7 +26,7 @@ export const LastExecutedFilter = [
 
     items: [
       { label: 'Last hour', value: subtractHours(1) },
-      { label: 'Last 24 hrs', value: subtractHours(24) },
+      { label: 'Last 24 hours', value: subtractHours(24) },
       { label: 'Last week', value: subtractDays(7) },
       { label: 'Last 30 days', value: subtractDays(30) },
       { label: 'Last 90 days', value: subtractDays(90) },

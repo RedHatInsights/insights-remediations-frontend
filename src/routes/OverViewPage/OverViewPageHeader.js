@@ -6,15 +6,11 @@ import {
   Stack,
   StackItem,
 } from '@patternfly/react-core';
-import {
-  ExternalLinkAltIcon,
-  OpenDrawerRightIcon,
-} from '@patternfly/react-icons';
+import { OpenDrawerRightIcon } from '@patternfly/react-icons';
 import {
   PageHeader,
   PageHeaderTitle,
 } from '@redhat-cloud-services/frontend-components/PageHeader';
-import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import { RemediationsPopover } from '../RemediationsPopover';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import PropTypes from 'prop-types';
@@ -50,13 +46,6 @@ export const OverViewPageHeader = ({ hasRemediations }) => {
               <p>
                 Remediation plans use Ansible playbooks to resolve issues
                 identified by Red Hat Insights.
-                <InsightsLink
-                  className="pf-v5-u-ml-md"
-                  to="https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide/index"
-                  style={{ textDecoration: 'none' }}
-                >
-                  Learn more <ExternalLinkAltIcon />
-                </InsightsLink>
               </p>
             </StackItem>
           </Stack>
