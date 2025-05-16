@@ -65,7 +65,7 @@ const RunTabContent = ({
           loading={loading}
           viewLogColumn={{
             title: '',
-            screenReaderText: 'View log',
+            props: { screenReaderText: 'View log' },
             exportKey: 'viewLog',
             renderFunc: (_d, _i, system) => (
               <Button

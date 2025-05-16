@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
@@ -18,10 +18,13 @@ import {
   ValidatedOptions,
   FormGroup,
   CardFooter,
+  Popover,
+  FlexItem,
 } from '@patternfly/react-core';
 import {
   CheckIcon,
   ExternalLinkAltIcon,
+  OutlinedQuestionCircleIcon,
   PencilAltIcon,
   TimesIcon,
 } from '@patternfly/react-icons';
@@ -38,21 +41,38 @@ const DetailsCard = ({
   allRemediations,
   refetch,
   remediationPlaybookRuns,
+  refetchAllRemediations,
 }) => {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(details?.name);
   const [rebootToggle, setRebootToggle] = useState(details?.auto_reboot);
 
-  const [isVerifyingName, isDisabled] = useVerifyName(
+  useEffect(() => {
+    setValue(details?.name);
+  }, [details?.name]);
+
+  const [isVerifyingName, isDuplicate] = useVerifyName(
     value,
     allRemediations?.data
   );
 
-  const onSubmit = () => {
-    updateRemPlan({
+  const nameStatus = (() => {
+    if (isVerifyingName) return 'checking';
+    if (value.trim() === '') return 'empty';
+    if (value === details?.name) return 'unchanged';
+    if (isDuplicate) return 'duplicate';
+    return 'valid';
+  })();
+
+  const validationState = ['empty', 'duplicate'].includes(nameStatus)
+    ? ValidatedOptions.error
+    : ValidatedOptions.default;
+
+  const onSubmit = async () => {
+    await updateRemPlan({
       id: details.id,
       name: value,
-    }).then(() => refetch());
+    }).then(async () => await refetch(), await refetchAllRemediations());
     setEditing(false);
   };
   if (!details) {
@@ -68,78 +88,90 @@ const DetailsCard = ({
     <Card isFullHeight>
       <CardTitle>
         <Title headingLevel="h4" size="xl">
-          Details
+          Remediation plan details and status
         </Title>
       </CardTitle>
       <CardBody>
-        <p className="pf-v5-u-font-size-sm pf-v5-u-mb-md">
-          Overview of the set up and status details for this remediation plan.
-        </p>
-        <DescriptionList isHorizontal termWidth="20ch">
+        <DescriptionList
+          isHorizontal
+          orientation={{
+            sm: 'vertical',
+            md: 'horizontal',
+            lg: 'horizontal',
+            xl: 'horizontal',
+            '2xl': 'horizontal',
+          }}
+        >
           {/* Editable Name */}
           <DescriptionListGroup>
-            <DescriptionListTerm>Name</DescriptionListTerm>
+            <DescriptionListTerm>
+              <span>Name</span>
+              <Button
+                variant="link"
+                onClick={() => setEditing(!editing)}
+                className="pf-v5-u-ml-sm"
+              >
+                <PencilAltIcon
+                  color={editing && 'var(--pf-v5-global--palette--black-300)'}
+                />
+              </Button>
+            </DescriptionListTerm>
             <DescriptionListDescription>
               {editing ? (
-                <Flex spaceItems={{ default: 'spaceItemsXs' }}>
-                  <FormGroup
-                    fieldId="remediation-name"
-                    helperTextInvalid="Playbook name has to contain alphanumeric characters"
-                    isValid={isDisabled}
-                  >
-                    <TextInput
-                      type="text"
-                      value={value}
-                      onChange={(_event, value) => setValue(value)}
-                      aria-label={'Rename Input'}
-                      autoFocus
-                      isValid={!isDisabled}
-                      validated={
-                        value === details?.name && isDisabled
-                          ? ValidatedOptions.default
-                          : (value.trim() === '' || isDisabled) &&
-                            ValidatedOptions.error
-                      }
-                    />
-                    {isDisabled &&
-                      value !== details.name &&
-                      !isVerifyingName && (
+                <Flex
+                  direction={{ default: 'column', md: 'row' }}
+                  spaceItems={{ default: 'spaceItemsXs' }}
+                  alignItems={{ default: 'alignItemsStretch' }}
+                >
+                  <FlexItem>
+                    <FormGroup fieldId="remediation-name">
+                      <TextInput
+                        value={value}
+                        type="text"
+                        onChange={(_, v) => setValue(v)}
+                        aria-label="Rename Input"
+                        autoFocus
+                        validated={validationState} /* drives the red border */
+                      />
+                      {nameStatus === 'duplicate' && (
                         <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
                           A remediation plan with the same name already exists
                           in your organization. Enter a unique name and try
                           again.
                         </p>
                       )}
-                    {value.trim() === '' && !isVerifyingName && (
-                      <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
-                        Playbook name cannot be empty.
-                      </p>
-                    )}
-                  </FormGroup>
-                  <Button
-                    variant="link"
-                    onClick={() => onSubmit(value)}
-                    isDisabled={isDisabled || value.trim() === ''}
-                  >
-                    <CheckIcon
-                      color={
-                        isDisabled || value.trim() === ''
-                          ? `var(--pf-v5-global--disabled-color--200)`
-                          : `var(--pf-v5-global--link--Color)`
-                      }
-                    />
-                  </Button>
-                  <Button variant="link" onClick={() => setEditing(false)}>
-                    <TimesIcon color="var(--pf-v5-global--icon--Color--light--dark)" />
-                  </Button>
+                      {nameStatus === 'empty' && (
+                        <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
+                          Playbook name cannot be empty.
+                        </p>
+                      )}
+                    </FormGroup>
+                  </FlexItem>
+                  <FlexItem>
+                    <Flex spaceItems={{ default: 'spaceItemsXs' }}>
+                      <Button
+                        variant="link"
+                        onClick={() => onSubmit(value)}
+                        isDisabled={nameStatus !== 'valid'}
+                      >
+                        <CheckIcon
+                          color={
+                            nameStatus !== 'valid'
+                              ? 'var(--pf-v5-global--disabled-color--200)'
+                              : 'var(--pf-v5-global--link--Color)'
+                          }
+                        />
+                      </Button>
+                      <Button variant="link" onClick={() => setEditing(false)}>
+                        <TimesIcon color="var(--pf-v5-global--icon--Color--light--dark)" />
+                      </Button>
+                    </Flex>
+                  </FlexItem>
                 </Flex>
               ) : (
-                <Flex>
-                  <Text component="p">{details.name}</Text>
-                  <Button variant="link" onClick={() => setEditing(true)}>
-                    <PencilAltIcon />
-                  </Button>
-                </Flex>
+                <Text component="p" style={{ wordBreak: 'break-word' }}>
+                  {details.name}
+                </Text>
               )}
             </DescriptionListDescription>
           </DescriptionListGroup>
@@ -152,21 +184,33 @@ const DetailsCard = ({
           </DescriptionListGroup>
           {/* Last Modified */}
           <DescriptionListGroup>
-            <DescriptionListTerm>Last modified date</DescriptionListTerm>
+            <DescriptionListTerm>Last modified</DescriptionListTerm>
             <DescriptionListDescription>
               {formatDate(details?.updated_at)}
             </DescriptionListDescription>
           </DescriptionListGroup>
           {/* Last Execution Status */}
           <DescriptionListGroup>
-            <DescriptionListTerm>Last execution status</DescriptionListTerm>
+            <DescriptionListTerm>Latest execution status</DescriptionListTerm>
             <DescriptionListDescription>
               {execStatus(remediationPlaybookRuns?.status, formatedDate)}
             </DescriptionListDescription>
           </DescriptionListGroup>
           {/* Actions */}
           <DescriptionListGroup>
-            <DescriptionListTerm>Actions</DescriptionListTerm>
+            <DescriptionListTerm>
+              Actions
+              <Popover
+                bodyContent={() => (
+                  <>
+                    Actions taken to remediate issues on selected systems when
+                    the remediation plan is executed.
+                  </>
+                )}
+              >
+                <OutlinedQuestionCircleIcon style={{ marginLeft: '5px' }} />
+              </Popover>
+            </DescriptionListTerm>
             <DescriptionListDescription>
               <Button
                 variant="link"
@@ -215,6 +259,7 @@ const DetailsCard = ({
           to={
             'https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index#creating-managing-playbooks_red-hat-insights-remediation-guide'
           }
+          target="_blank"
         >
           <Button variant="link" className="pf-v5-u-font-size-sm">
             Learn More <ExternalLinkAltIcon />
@@ -277,6 +322,7 @@ DetailsCard.propTypes = {
   updateRemPlan: PropTypes.func,
   refetch: PropTypes.func,
   remediationPlaybookRuns: PropTypes.object,
+  refetchAllRemediations: PropTypes.func,
 };
 
 export default DetailsCard;

@@ -190,6 +190,7 @@ const ExecutionHistoryTab = ({
             />
             <LogViewer
               data={logLines}
+              style={{ ['--pf-v5-c-log-viewer__index--Width']: '10ch' }}
               isTextWrapped={wrapText}
               toolbar={
                 <Toolbar>

@@ -11,10 +11,17 @@ import {
 } from '@patternfly/react-core';
 import React from 'react';
 import PropTypes from 'prop-types';
-import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
-import { ExternalLinkAltIcon } from '@patternfly/react-icons';
+import { OpenDrawerRightIcon } from '@patternfly/react-icons';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 
-const ProgressCard = ({ remediationStatus, permissions, readyOrNot }) => {
+const ProgressCard = ({
+  remediationStatus,
+  permissions,
+  readyOrNot,
+  onNavigateToTab,
+}) => {
+  const { quickStarts } = useChrome();
+
   return permissions === undefined ? (
     <Spinner />
   ) : (
@@ -31,7 +38,7 @@ const ProgressCard = ({ remediationStatus, permissions, readyOrNot }) => {
           permissions and that the Remote Host Configuration Manager is enabled
           for the affected systems in Insights. The Remote Host Configuration
           (RHC) client must also be active on every system. If the readiness
-          check fails, the Execute button is inactive.
+          check fails, the <b>Execute</b> button is inactive.
         </p>
         <ProgressStepper
           isVertical={true}
@@ -39,9 +46,11 @@ const ProgressCard = ({ remediationStatus, permissions, readyOrNot }) => {
         >
           <ProgressStep
             variant={permissions?.execute ? 'success' : 'danger'}
-            description={`You ${
-              permissions?.execute ? '' : 'do not'
-            } have the required permissions.`}
+            description={
+              <span className="pf-v5-u-color-100">
+                {permissions?.execute ? 'Authorized' : 'Not authorized'}
+              </span>
+            }
             id="permissionsStep"
             titleId="PermissionsStep"
             aria-label="PermissionsStep1"
@@ -53,57 +62,75 @@ const ProgressCard = ({ remediationStatus, permissions, readyOrNot }) => {
               remediationStatus?.detailsError !== 403 ? 'success' : 'danger'
             }
             description={
-              remediationStatus?.detailsError !== 403
-                ? 'Enabled'
-                : 'Not enabled'
+              <span className="pf-v5-u-color-100">
+                {remediationStatus?.detailsError !== 403
+                  ? 'Enabled'
+                  : 'Not enabled'}
+              </span>
             }
             id="RHCStep"
             titleId="RHCStep-title"
             aria-label="RHCStep2"
           >
-            Remote Host Configuration Manager (RHC)
+            <span className="pf-v5-u-color-100">
+              Remote Host Configuration Manager (RHC)
+            </span>
           </ProgressStep>
           <ProgressStep
             variant={
               remediationStatus?.connectedSystems !== 0 ? 'success' : 'danger'
             }
-            description={`Connected Systems (${
-              remediationStatus?.connectedSystems +
-              '/' +
-              remediationStatus?.totalSystems
-            })`}
+            description={
+              <div className="pf-v5-u-color-100">
+                {`${
+                  remediationStatus?.connectedSystems +
+                  '(of ' +
+                  remediationStatus?.totalSystems
+                }) connected systems`}
+                <Button
+                  variant="link"
+                  onClick={() => onNavigateToTab(null, 'systems')}
+                >
+                  View systems
+                </Button>
+              </div>
+            }
             id="connectedSystemsStep"
             titleId="connectedSystemsStep-title"
             aria-label="connectedSystemsStep"
           >
-            Connected systems
+            <span className="pf-v5-u-color-100">Connected systems</span>
           </ProgressStep>
           <ProgressStep
             variant={readyOrNot ? `success` : 'danger'}
             description={
-              readyOrNot
-                ? `Ready for execution.`
-                : 'Execution readiness check failed.'
+              <span className="pf-v5-u-color-100">
+                {readyOrNot
+                  ? 'Ready for execution.'
+                  : 'Execution readiness check failed'}
+              </span>
             }
             id="readyStep"
             titleId="readyStep-title"
             aria-label="Ready step"
           >
-            {readyOrNot ? `Ready for execution.` : 'Not ready for execution'}
+            <span className="pf-v5-u-font-weight-bold pf-v5-u-color-100">
+              {readyOrNot ? 'Ready for execution.' : 'Not ready for execution'}
+            </span>
           </ProgressStep>
         </ProgressStepper>
       </CardBody>
       <CardFooter className="pf-v5-u-font-size-sm">
-        Get ready to execute your remediation plan{' '}
-        <InsightsLink
-          to={
-            'https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index#executing-playbooks-from-insights_remediations-from-insights'
+        Need help to pass the remediations execution readiness check?
+        <Button
+          onClick={() =>
+            quickStarts?.activateQuickstart('insights-remediate-plan-create')
           }
+          variant="link"
+          className="pf-v5-u-font-size-sm"
         >
-          <Button variant="link" className="pf-v5-u-font-size-sm">
-            Learn more. <ExternalLinkAltIcon />
-          </Button>{' '}
-        </InsightsLink>
+          Learn more <OpenDrawerRightIcon className="pf-v5-u-ml-sm" />
+        </Button>
       </CardFooter>
     </Card>
   );
@@ -113,6 +140,7 @@ ProgressCard.propTypes = {
   remediationStatus: PropTypes.any,
   permissions: PropTypes.object,
   readyOrNot: PropTypes.bool,
+  onNavigateToTab: PropTypes.func,
 };
 
 export default ProgressCard;

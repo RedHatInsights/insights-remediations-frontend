@@ -84,6 +84,6 @@ export const mergedColumns = (defaultColumns = [], customColumns = []) => {
       (invColumn) => invColumn.key === column.key
     );
 
-    return inventoryColumn || column;
+    return inventoryColumn ? { ...inventoryColumn, ...column } : column;
   });
 };

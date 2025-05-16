@@ -7,35 +7,50 @@ import {
   EmptyStateHeader,
   Button,
   EmptyStateIcon,
+  PageSection,
+  Page,
+  EmptyStateActions,
+  EmptyStateFooter,
 } from '@patternfly/react-core';
-import { Link } from 'react-router-dom';
-import { CubesIcon, ExternalLinkAltIcon } from '@patternfly/react-icons';
+import { CubesIcon, OpenDrawerRightIcon } from '@patternfly/react-icons';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 
 export const NoRemediationsPage = () => {
+  const { quickStarts } = useChrome();
+
   return (
-    <EmptyState variant={EmptyStateVariant.full}>
-      <EmptyStateHeader
-        titleText={<>No remediation plans</>}
-        headingLevel="h5"
-        icon={<EmptyStateIcon icon={CubesIcon} />}
-      />
-      <EmptyStateBody>
-        Create remediation plans to address Advisor recommendations, Security
-        CVEs, and
-        <br />
-        Content advisories on your Red Hat Enterprise Linux (RHEL)
-        infrastructure.
-      </EmptyStateBody>
-      <Link
-        to={
-          'https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide/creating-managing-playbooks_red-hat-insights-remediation-guide'
-        }
-      >
-        <Button>
-          Learn More <ExternalLinkAltIcon />
-        </Button>
-      </Link>
-    </EmptyState>
+    <Page>
+      <PageSection isFilled>
+        <EmptyState variant={EmptyStateVariant.full}>
+          <EmptyStateHeader
+            titleText={<>No remediation plans</>}
+            headingLevel="h5"
+            icon={<EmptyStateIcon icon={CubesIcon} />}
+          />
+          <EmptyStateBody>
+            Create remediation plans to address Advisor recommendations,
+            Security CVEs, and
+            <br />
+            Content advisories on your Red Hat Enterprise Linux (RHEL)
+            infrastructure.
+          </EmptyStateBody>
+          <EmptyStateFooter>
+            <EmptyStateActions>
+              <Button
+                onClick={() =>
+                  quickStarts?.activateQuickstart(
+                    'insights-remediate-plan-create'
+                  )
+                }
+              >
+                Launch Quick Start{' '}
+                <OpenDrawerRightIcon className="pf-v5-u-ml-sm" />
+              </Button>
+            </EmptyStateActions>
+          </EmptyStateFooter>
+        </EmptyState>
+      </PageSection>
+    </Page>
   );
 };
 
