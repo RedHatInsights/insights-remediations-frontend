@@ -43,7 +43,7 @@ export const execStatus = (status, date) => {
   return (
     <Flex spaceItems={{ default: 'spaceItemsSm' }}>
       {icon}
-      <TextContent>{`${displayValue} ${getTimeAgo(date)}`}</TextContent>
+      <span>{`${displayValue} ${getTimeAgo(date)}`}</span>
     </Flex>
   );
 };
