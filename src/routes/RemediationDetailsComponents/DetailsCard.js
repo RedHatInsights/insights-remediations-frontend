@@ -195,7 +195,7 @@ const DetailsCard = ({
             <DescriptionListDescription>
               <Button
                 variant="link"
-                style={{ padding: 0 }}
+                isInline
                 onClick={() => onNavigateToTab(null, 'executionHistory')}
               >
                 {execStatus(remediationPlaybookRuns?.status, formatedDate)}
@@ -221,7 +221,7 @@ const DetailsCard = ({
               <Button
                 variant="link"
                 onClick={() => onNavigateToTab(null, 'actions')}
-                style={{ padding: '0' }}
+                isInline
               >
                 {`${details?.issues.length} action${
                   details?.issues.length > 1 ? 's' : ''
@@ -236,7 +236,7 @@ const DetailsCard = ({
               <Button
                 variant="link"
                 onClick={() => onNavigateToTab(null, 'systems')}
-                style={{ padding: '0' }}
+                isInline
               >
                 {`${remediationStatus?.totalSystems} system${
                   remediationStatus?.totalSystems > 1 ? 's' : ''

@@ -6,11 +6,12 @@ export const paginationSerialiser = (state) => {
     return { offset, limit };
   }
 };
+const YYYY_MM_DD_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
 const toUtcIso = (yyyyMmDd) => {
   if (!yyyyMmDd) return undefined;
 
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(yyyyMmDd)) return undefined;
-
+  if (!YYYY_MM_DD_REGEX.test(yyyyMmDd)) return undefined;
   const date = new Date(`${yyyyMmDd}T00:00:00Z`);
   if (isNaN(date.getTime())) return undefined;
 
