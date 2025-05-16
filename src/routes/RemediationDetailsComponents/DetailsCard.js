@@ -193,7 +193,13 @@ const DetailsCard = ({
           <DescriptionListGroup>
             <DescriptionListTerm>Latest execution status</DescriptionListTerm>
             <DescriptionListDescription>
-              {execStatus(remediationPlaybookRuns?.status, formatedDate)}
+              <Button
+                variant="link"
+                style={{ padding: 0 }}
+                onClick={() => onNavigateToTab(null, 'executionHistory')}
+              >
+                {execStatus(remediationPlaybookRuns?.status, formatedDate)}
+              </Button>
             </DescriptionListDescription>
           </DescriptionListGroup>
           {/* Actions */}
