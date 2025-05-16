@@ -12,9 +12,18 @@ const testStatus = {
   },
 };
 
+const MountActionsResolvedCard = () => {
+  return <ActionsResolvedCard status="fulfilled" />;
+};
+
 describe('ActionResolvedCard tests', () => {
+  beforeEach(() => {
+    //cy.mountWithContext(MoundActionsResolvedCard);
+    cy.mountWithContext(MountActionsResolvedCard);
+    cy.get('div[class*="skeleton"]').should('not.exist');
+  });
   it('renders correctly fulfilled component', () => {
-    mount(<ActionsResolvedCard status={testStatus} />);
+    //mount(<ActionsResolvedCard status={testStatus} />);
     cy.get('.pf-v5-c-card__header-main').contains('Actions Resolved');
     cy.get('.pf-v5-c-progress__status > .pf-v5-c-progress__measure').contains(
       '50 of 100'
