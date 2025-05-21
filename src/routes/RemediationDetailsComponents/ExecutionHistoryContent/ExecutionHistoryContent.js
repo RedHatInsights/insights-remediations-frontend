@@ -217,7 +217,7 @@ const ExecutionHistoryTab = ({
                 variant="primary"
                 onClick={() => setIsLogOpen(false)}
               >
-                Cancel
+                Close
               </Button>
             </ModalBoxFooter>
           </>
