@@ -33,7 +33,8 @@ export const LastExecuted = {
 export const ExecutionStatus = {
   title: 'Execution status',
   transforms: [wrappable],
-  sortable: 'status',
+  //TODO: Enable once Backend is ready
+  // sortable: 'status',
   exportKey: 'status',
   renderFunc: renderComponent(ExecutionStatusCell),
 };
