@@ -54,8 +54,7 @@ const ProgressCard = ({
                   <>
                     You do not have the required&nbsp;
                     <strong>Remediations administrator</strong>&nbsp;RBAC role.
-                    Contact your IAM Organization Administrator to request
-                    access.
+                    Contact your organization administrator to request access.
                   </>
                 )}
               </span>
@@ -76,7 +75,7 @@ const ProgressCard = ({
                   'Enabled'
                 ) : (
                   <>
-                    You have not enabled RHC Manager. Enable it in&nbsp;
+                    RHC Manager is not enabled. Enable it in&nbsp;
                     <a
                       href="https://console.redhat.com/insights/connector"
                       target="_blank"
@@ -124,19 +123,12 @@ const ProgressCard = ({
           </ProgressStep>
           <ProgressStep
             variant={readyOrNot ? `success` : 'danger'}
-            description={
-              <span className="pf-v5-u-color-100">
-                {readyOrNot
-                  ? 'Ready for execution.'
-                  : 'Execution readiness check failed'}
-              </span>
-            }
             id="readyStep"
             titleId="readyStep-title"
             aria-label="Ready step"
           >
             <span className="pf-v5-u-font-weight-bold pf-v5-u-color-100">
-              {readyOrNot ? 'Ready for execution.' : 'Not ready for execution'}
+              {readyOrNot ? 'Ready for execution' : 'Not ready for execution'}
             </span>
           </ProgressStep>
         </ProgressStepper>

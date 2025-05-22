@@ -33,7 +33,7 @@ export const OverViewPageHeader = ({ hasRemediations }) => {
                     spaceItems={{ default: 'spaceItemsSm' }}
                     alignItems={{ default: 'alignItemsCenter' }}
                   >
-                    <FlexItem>Remediation plans</FlexItem>
+                    <FlexItem>Remediation Plans</FlexItem>
                     <FlexItem>
                       <RemediationsPopover />
                     </FlexItem>
