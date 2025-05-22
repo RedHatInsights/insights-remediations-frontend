@@ -5,7 +5,7 @@ import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/fronten
 import RemediationsTable from '../../components/RemediationsTable/RemediationsTable';
 import {
   CreatedByFilter,
-  ExecutionStatusFilter,
+  // ExecutionStatusFilter,
   LastExecutedFilter,
   LastModifiedFilter,
   remediationNameFilter,
@@ -188,7 +188,8 @@ export const OverViewPage = () => {
                 filterConfig: [
                   ...remediationNameFilter,
                   ...LastExecutedFilter,
-                  ...ExecutionStatusFilter,
+                  //TODO: Enable filter once backend is ready
+                  // ...ExecutionStatusFilter,
                   ...LastModifiedFilter,
                   ...CreatedByFilter,
                 ],

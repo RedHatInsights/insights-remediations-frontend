@@ -48,7 +48,15 @@ const ProgressCard = ({
             variant={permissions?.execute ? 'success' : 'danger'}
             description={
               <span className="pf-v5-u-color-100">
-                {permissions?.execute ? 'Authorized' : 'Not authorized'}
+                {permissions?.execute ? (
+                  'Authorized'
+                ) : (
+                  <>
+                    You do not have the required&nbsp;
+                    <strong>Remediations administrator</strong>&nbsp;RBAC role.
+                    Contact your organization administrator to request access.
+                  </>
+                )}
               </span>
             }
             id="permissionsStep"
@@ -63,9 +71,25 @@ const ProgressCard = ({
             }
             description={
               <span className="pf-v5-u-color-100">
-                {remediationStatus?.detailsError !== 403
-                  ? 'Enabled'
-                  : 'Not enabled'}
+                {remediationStatus?.detailsError !== 403 ? (
+                  'Enabled'
+                ) : (
+                  <>
+                    RHC Manager is not enabled. Enable it in&nbsp;
+                    <a
+                      href="https://console.redhat.com/insights/connector"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        textDecoration: 'none',
+                        color: 'var(--pf-v5-global--link--Color)',
+                      }}
+                    >
+                      Remote Host Configuration&nbsp;(RHC)
+                    </a>
+                    .
+                  </>
+                )}
               </span>
             }
             id="RHCStep"
@@ -82,11 +106,7 @@ const ProgressCard = ({
             }
             description={
               <div className="pf-v5-u-color-100">
-                {`${
-                  remediationStatus?.connectedSystems +
-                  '(of ' +
-                  remediationStatus?.totalSystems
-                }) connected systems`}
+                {`${remediationStatus?.connectedSystems} (of ${remediationStatus?.totalSystems}) connected systems`}{' '}
                 <Button
                   variant="link"
                   onClick={() => onNavigateToTab(null, 'systems')}
@@ -103,19 +123,12 @@ const ProgressCard = ({
           </ProgressStep>
           <ProgressStep
             variant={readyOrNot ? `success` : 'danger'}
-            description={
-              <span className="pf-v5-u-color-100">
-                {readyOrNot
-                  ? 'Ready for execution.'
-                  : 'Execution readiness check failed'}
-              </span>
-            }
             id="readyStep"
             titleId="readyStep-title"
             aria-label="Ready step"
           >
             <span className="pf-v5-u-font-weight-bold pf-v5-u-color-100">
-              {readyOrNot ? 'Ready for execution.' : 'Not ready for execution'}
+              {readyOrNot ? 'Ready for execution' : 'Not ready for execution'}
             </span>
           </ProgressStep>
         </ProgressStepper>
