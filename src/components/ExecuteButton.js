@@ -14,12 +14,12 @@ const ExecuteButton = ({
   data,
   getConnectionStatus,
   issueCount,
-  runRemediation,
   etag,
   remediationStatus,
   setEtag,
   areDetailsLoading,
   remediation,
+  refetchRemediationPlaybookRuns,
 }) => {
   const [open, setOpen] = useState(false);
   const [showRefreshMessage, setShowRefreshMessage] = useState(false);
@@ -92,8 +92,8 @@ const ExecuteButton = ({
           etag={etag}
           isLoading={isLoading}
           issueCount={issueCount}
-          runRemediation={runRemediation}
           setEtag={setEtag}
+          refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
         />
       )}
     </React.Fragment>
@@ -106,7 +106,6 @@ ExecuteButton.propTypes = {
   isLoading: PropTypes.bool,
   data: PropTypes.array,
   getConnectionStatus: PropTypes.func,
-  runRemediation: PropTypes.func,
   remediation: PropTypes.string,
   remediationStatus: PropTypes.string,
   issueCount: PropTypes.number,
@@ -119,6 +118,7 @@ ExecuteButton.propTypes = {
   detailsError: PropTypes.any,
   permissions: PropTypes.bool,
   totalSystems: PropTypes.number,
+  refetchRemediationPlaybookRuns: PropTypes.func,
 };
 
 ExecuteButton.defaultProps = {
