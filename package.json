@@ -79,7 +79,7 @@
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
     "@cypress/code-coverage": "^3.13.10",
-    "@cypress/webpack-dev-server": "^3.11.0",
+    "@cypress/webpack-dev-server": "^4.0.0",
     "@patternfly/patternfly": "^4.221.2",
     "@redhat-cloud-services/eslint-config-redhat-cloud-services": "^1.2.1",
     "@redhat-cloud-services/frontend-components-config": "^6.3.1",
