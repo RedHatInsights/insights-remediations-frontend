@@ -19,6 +19,7 @@ const RemediationDetailsPageHeader = ({
   updateRemPlan,
   refetch,
   permissions,
+  refetchRemediationPlaybookRuns,
 }) => {
   const handleDownload = useCallback(async () => {
     dispatchNotification({
@@ -75,7 +76,7 @@ const RemediationDetailsPageHeader = ({
         </FlexItem>
         <FlexItem style={{ marginTop: 'var(--pf-v5-global--spacer--sm)' }}>
           <Flex
-            spaceItems={{ default: 'spaceItemsXs' }}
+            spaceItems={{ default: 'spaceItemsSm' }}
             flexWrap={{ default: 'wrap' }}
           >
             <FlexItem>
@@ -92,6 +93,7 @@ const RemediationDetailsPageHeader = ({
                 permissions={permissions.execute}
                 issueCount={remediation?.issues}
                 remediation={remediation}
+                refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
               />
             </FlexItem>
             <FlexItem>
@@ -139,6 +141,7 @@ RemediationDetailsPageHeader.propTypes = {
   permissions: PropTypes.obj,
   isExecutable: PropTypes.any,
   refetchAllRemediations: PropTypes.func,
+  refetchRemediationPlaybookRuns: PropTypes.func,
 };
 
 export default RemediationDetailsPageHeader;
