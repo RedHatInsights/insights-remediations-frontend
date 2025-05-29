@@ -224,7 +224,7 @@ const DetailsCard = ({
                 isInline
               >
                 {`${details?.issues.length} action${
-                  details?.issues.length > 1 ? 's' : ''
+                  details?.issues.length !== 1 ? 's' : ''
                 }`}
               </Button>
             </DescriptionListDescription>
@@ -239,7 +239,7 @@ const DetailsCard = ({
                 isInline
               >
                 {`${remediationStatus?.totalSystems} system${
-                  remediationStatus?.totalSystems > 1 ? 's' : ''
+                  remediationStatus?.totalSystems !== 1 ? 's' : ''
                 }`}
               </Button>
             </DescriptionListDescription>

@@ -44,10 +44,13 @@ const RemediationDetailsV2 = () => {
       params: { remId: id },
     });
 
-  const { result: remediationPlaybookRuns, loading: isPlaybookRunsLoading } =
-    useRemediationsQuery(getRemediationPlaybook(axios), {
-      params: { remId: id },
-    });
+  const {
+    result: remediationPlaybookRuns,
+    loading: isPlaybookRunsLoading,
+    refetch: refetchRemediationPlaybookRuns,
+  } = useRemediationsQuery(getRemediationPlaybook(axios), {
+    params: { remId: id },
+  });
 
   const { fetch: updateRemPlan } = useRemediationsQuery(
     updateRemediationPlans(axios),
@@ -100,6 +103,7 @@ const RemediationDetailsV2 = () => {
           refetch={fetchRemediation}
           permissions={context.permissions}
           isExecutable={getIsExecutable(isExecutable)}
+          refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
         />
         <Tabs
           activeKey={searchParams.get('activeTab') || 'general'}

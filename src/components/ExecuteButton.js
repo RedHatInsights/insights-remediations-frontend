@@ -14,12 +14,12 @@ const ExecuteButton = ({
   data,
   getConnectionStatus,
   issueCount,
-  runRemediation,
   etag,
   remediationStatus,
   setEtag,
   areDetailsLoading,
   remediation,
+  refetchRemediationPlaybookRuns,
 }) => {
   const [open, setOpen] = useState(false);
   const [showRefreshMessage, setShowRefreshMessage] = useState(false);
@@ -36,38 +36,42 @@ const ExecuteButton = ({
   }, [remediationStatus]);
 
   const buttonWithTooltip = () => {
-    return (
+    const button = (
+      <Button
+        isAriaDisabled={isDisabled}
+        data-testid="execute-button-enabled"
+        onClick={() => {
+          setOpen(true);
+          getConnectionStatus(remediation.id);
+        }}
+      >
+        {isDisabled && <ExclamationTriangleIcon />} Execute
+      </Button>
+    );
+
+    return isDisabled ? (
       <Tooltip
         minWidth="400px"
         aria-label="details Tooltip"
         content={
-          <>
-            <Flex
-              className="pf-v5-u-ml-md"
-              direction={{ default: 'column' }}
-              spaceItems={{ default: 'spaceItemsNone' }}
-              alignItems={{ default: 'alignItemsFlexStart' }}
-            >
-              <p>
-                The remediation plan cannot be executed. Review the plan details
-                and
-                <strong> Execution readiness </strong>information.
-              </p>
-            </Flex>
-          </>
+          <Flex
+            className="pf-v5-u-ml-md"
+            direction={{ default: 'column' }}
+            spaceItems={{ default: 'spaceItemsNone' }}
+            alignItems={{ default: 'alignItemsFlexStart' }}
+          >
+            <p>
+              The remediation plan cannot be executed. Review the plan details
+              and
+              <strong> Execution readiness </strong>information.
+            </p>
+          </Flex>
         }
       >
-        <Button
-          isAriaDisabled={isDisabled}
-          data-testid="execute-button-enabled"
-          onClick={() => {
-            setOpen(true);
-            getConnectionStatus(remediation.id);
-          }}
-        >
-          {isDisabled && <ExclamationTriangleIcon />} Execute
-        </Button>
+        {button}
       </Tooltip>
+    ) : (
+      button
     );
   };
 
@@ -88,8 +92,8 @@ const ExecuteButton = ({
           etag={etag}
           isLoading={isLoading}
           issueCount={issueCount}
-          runRemediation={runRemediation}
           setEtag={setEtag}
+          refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
         />
       )}
     </React.Fragment>
@@ -102,7 +106,6 @@ ExecuteButton.propTypes = {
   isLoading: PropTypes.bool,
   data: PropTypes.array,
   getConnectionStatus: PropTypes.func,
-  runRemediation: PropTypes.func,
   remediation: PropTypes.string,
   remediationStatus: PropTypes.string,
   issueCount: PropTypes.number,
@@ -115,6 +118,7 @@ ExecuteButton.propTypes = {
   detailsError: PropTypes.any,
   permissions: PropTypes.bool,
   totalSystems: PropTypes.number,
+  refetchRemediationPlaybookRuns: PropTypes.func,
 };
 
 ExecuteButton.defaultProps = {

@@ -59,3 +59,12 @@ export const deleteRemediationList = (axios) => (params) => {
     },
   });
 };
+
+export const executeRemediation = (axios) => (params) => {
+  const { id, etag, exclude } = params;
+  return axios.post(
+    `${API_BASE}/remediations/${id}/playbook_runs`,
+    { exclude },
+    { headers: { 'If-Match': etag } }
+  );
+};

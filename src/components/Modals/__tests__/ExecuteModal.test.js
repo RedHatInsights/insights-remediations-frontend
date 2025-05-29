@@ -80,7 +80,6 @@ describe('Execute modal', () => {
         isLoading={false}
         issueCount={1}
         remediationStatus={'initial'}
-        runRemediation={() => null}
         setEtag={() => null}
       />
     );
