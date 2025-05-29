@@ -1,6 +1,6 @@
 import React from 'react';
 import ActionsResolvedCard from './ActionsResolvedCard';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 
 const testStatus = {
   status: 'fulfilled',
