@@ -180,6 +180,7 @@ const RemediationDetailsV2 = () => {
             <ExecutionHistoryTab
               remediationPlaybookRuns={remediationPlaybookRuns}
               isPlaybookRunsLoading={isPlaybookRunsLoading}
+              refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
             />
           </Tab>
         </Tabs>
