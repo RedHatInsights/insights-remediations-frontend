@@ -32,6 +32,7 @@ import NoExecutions from './NoExections';
 const ExecutionHistoryTab = ({
   remediationPlaybookRuns,
   isPlaybookRunsLoading,
+  refetchRemediationPlaybookRuns,
 }) => {
   const runs = remediationPlaybookRuns?.data ?? [];
   const [runsState, setRunsState] = useState(runs);
@@ -46,20 +47,18 @@ const ExecutionHistoryTab = ({
   //Whenever runs is altered, copy that array to local state -> Execute button wont require a refresh down the line
   useEffect(() => setRunsState(runs), [runs]);
 
-  const updateRunStatus = useCallback((runId, systemId, newStatus) => {
+  const updateSystemStatus = useCallback((runId, systemId, newStatus) => {
     setRunsState((prev) =>
-      prev.map((run) => {
-        if (run.id !== runId) return run;
-        //update the run-level status
-        const next = { ...run, status: newStatus };
-        //if we already fetched systems for this run, patch the ONE system that just finished
-        if (Array.isArray(run.systems)) {
-          next.systems = run.systems.map((s) =>
-            s.system_id === systemId ? { ...s, status: newStatus } : s
-          );
-        }
-        return next;
-      })
+      prev.map((run) =>
+        run.id === runId && Array.isArray(run.systems)
+          ? {
+              ...run,
+              systems: run.systems.map((s) =>
+                s.system_id === systemId ? { ...s, status: newStatus } : s
+              ),
+            }
+          : run
+      )
     );
   }, []);
 
@@ -97,15 +96,29 @@ const ExecutionHistoryTab = ({
     const planStatus = logData?.status;
     if (planStatus && planStatus !== prevStatusRef.current) {
       prevStatusRef.current = planStatus;
-      updateRunStatus(meta.runId, meta.systemId, planStatus);
+
+      /* update only the system row we’re watching */
+      updateSystemStatus(meta.runId, meta.systemId, planStatus);
       setMeta((p) => ({ ...p, status: planStatus }));
+
+      /* once that system leaves “running”, fetch a fresh run list so the
+               run-level status  timestamps come from the backend, not our patch */
+      if (planStatus !== 'running') {
+        refetchRemediationPlaybookRuns?.();
+      }
     }
 
     const base = (logData?.console ?? '').split('\n').filter(Boolean);
     if (planStatus === 'running') base.push('Running…');
     if (!base.length) base.push('No logs');
     setLogLines(base);
-  }, [isLogOpen, meta, logData, updateRunStatus]);
+  }, [
+    isLogOpen,
+    meta,
+    logData,
+    updateSystemStatus,
+    refetchRemediationPlaybookRuns,
+  ]);
 
   useEffect(() => {
     if (!isLogOpen || !meta || logData?.status !== 'running') return;
@@ -124,7 +137,9 @@ const ExecutionHistoryTab = ({
     setIsLogOpen(true);
   };
 
-  if (isPlaybookRunsLoading) return <Spinner />;
+  if (isPlaybookRunsLoading && runs.length === 0) {
+    return <Spinner />;
+  }
   if (runsState.length === 0) return <NoExecutions />;
 
   return (
@@ -232,6 +247,7 @@ ExecutionHistoryTab.propTypes = {
     data: PropTypes.array.isRequired,
   }).isRequired,
   isPlaybookRunsLoading: PropTypes.bool,
+  refetchRemediationPlaybookRuns: PropTypes.func.isRequired,
 };
 
 export default ExecutionHistoryTab;

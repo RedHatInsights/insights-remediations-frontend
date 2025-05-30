@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Alert, AlertActionCloseButton } from '@patternfly/react-core';
 
-//Execution History Tab
 const DetailsBanner = ({ status, remediationPlanName, canceledAt }) => {
   const [open, setOpen] = useState(true);
   if (!open) return null;
