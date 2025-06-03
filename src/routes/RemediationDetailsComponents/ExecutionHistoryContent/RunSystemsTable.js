@@ -1,6 +1,5 @@
 import React from 'react';
 import { useRawTableState } from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
-import { Spinner } from '@patternfly/react-core';
 import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
 import columns from './Columns';
 import { systemFilter } from './Filter';
@@ -16,14 +15,12 @@ const RunSystemsTable = ({ run, loading, viewLogColumn }) => {
         s.system_name.toLowerCase().includes(nameFilter)
       )
     : run.systems;
-
-  return loading ? (
-    <Spinner size="xl" />
-  ) : (
+  return (
     <RemediationsTable
       aria-label="ExecutionHistoryTable"
       ouiaId={`ExecutionHistory-${run.id}`}
       variant="compact"
+      loading={loading}
       items={filtered}
       total={filtered.length}
       columns={[...columns, viewLogColumn]}

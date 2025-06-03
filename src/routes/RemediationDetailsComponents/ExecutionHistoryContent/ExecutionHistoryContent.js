@@ -40,6 +40,7 @@ const ExecutionHistoryTab = ({
   const [wrapText, setWrapText] = useState(true);
   const [isLogOpen, setIsLogOpen] = useState(false);
   const [meta, setMeta] = useState(null);
+  const [manualRefreshClicked, setManualRefreshClicked] = useState(false);
 
   const { id: remId } = useParams();
   const axios = useAxiosWithPlatformInterceptors();
@@ -179,6 +180,9 @@ const ExecutionHistoryTab = ({
               remId={remId}
               fetchSystems={fetchSystems}
               openLogModal={openLogModal}
+              refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
+              setManualRefreshClicked={setManualRefreshClicked}
+              manualRefreshClicked={manualRefreshClicked}
             />
           ))}
         </SidebarContent>
