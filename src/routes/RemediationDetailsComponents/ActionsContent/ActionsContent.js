@@ -6,7 +6,6 @@ import { emptyRows } from '../../../Frameworks/AsyncTableTools/AsyncTableTools/h
 import { Button } from '@patternfly/react-core';
 import TableStateProvider from '../../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
 import useRemediationTableState from '../../../api/useRemediationTableState';
-import { API_BASE } from '../../../config';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import useRemediationsQuery from '../../../api/useRemediationsQuery';
 import useRemediationFetchExtras from '../../../api/useRemediationFetchExtras';
@@ -18,6 +17,7 @@ import ConfirmationDialog from '../../../components/ConfirmationDialog';
 import useStateCallbacks from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
 import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
+import { API_BASE } from '../../api';
 
 const deleteIssues = (axios) => (params) => {
   return axios({

@@ -1,98 +1,85 @@
-import React, { useEffect, useState, useContext } from 'react';
-import Link from '@redhat-cloud-services/frontend-components/InsightsLink';
-import useNavigate from '@redhat-cloud-services/frontend-components-utilities/useInsightsNavigate';
-import { useSearchParams, useParams } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import * as actions from '../actions';
-import { downloadPlaybook } from '../api';
-import RemediationDetailsTable from '../components/RemediationDetailsTable';
-import SystemsTable from '../components/SystemsTable/SystemsTable';
-import RemediationActivityTable, {
-  ACTIVITY_LIST_COLUMNS,
-} from '../components/RemediationActivityTable';
-import RemediationDetailsDropdown from '../components/RemediationDetailsDropdown';
-import { normalizeStatus } from '../components/statusHelper';
-import { ExecutePlaybookButton } from '../containers/ExecuteButtons';
-import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
-import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
-import UpsellBanner from '../components/Alerts/UpsellBanner';
-import ActivityTabUpsell from '../components/EmptyStates/ActivityTabUpsell';
-import DeniedState from '../components/DeniedState';
-import '../components/Status.scss';
-import {
-  PageHeader,
-  PageHeaderTitle,
-} from '@redhat-cloud-services/frontend-components/PageHeader';
-import { Main } from '@redhat-cloud-services/frontend-components/Main';
-import { InvalidObject } from '@redhat-cloud-services/frontend-components/InvalidObject';
-
-import {
-  Stack,
-  StackItem,
-  Breadcrumb,
-  BreadcrumbItem,
-  Button,
-  Split,
-  SplitItem,
-  Tabs,
-  Tab,
-  Flex,
-  FlexItem,
-  Bullseye,
-  Spinner,
-} from '@patternfly/react-core';
-
-import RemediationDetailsSkeleton from '../skeletons/RemediationDetailsSkeleton';
-import EmptyActivityTable from '../components/EmptyStates/EmptyActivityTable';
-
-import { PermissionContext } from '../App';
-
-import './RemediationDetails.scss';
-import NoReceptorBanner from '../components/Alerts/NoReceptorBanner';
-import { RemediationSummary } from '../components/RemediationSummary';
-import { dispatchNotification } from '../Utilities/dispatcher';
+import React, { useContext, useEffect, useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
+import useRemediationsQuery from '../api/useRemediationsQuery';
+import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
+import { Tab, Tabs, TabTitleText } from '@patternfly/react-core';
+import DetailsGeneralContent from './RemediationDetailsComponents/DetailsGeneralContent';
+import RenameModal from '../components/RenameModal';
 import { useConnectionStatus } from '../Utilities/useConnectionStatus';
-import { useRemediationsList } from '../Utilities/useRemediationsList';
-import { SkeletonTable } from '@patternfly/react-component-groups';
-import { Th } from '@patternfly/react-table';
-import { useFeatureFlag } from '../Utilities/Hooks/useFeatureFlag';
-import RemediationDetailsV2 from './RemediationDetailsV2';
-
-const RemediationDetails = ({
-  selectedRemediation,
-  selectedRemediationStatus,
-  loadRemediation,
-  loadRemediationStatus,
-  switchAutoReboot,
-  playbookRuns,
-  getPlaybookRuns,
-  checkExecutable,
-  executable,
-}) => {
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
+import RemediationDetailsPageHeader from './RemediationDetailsComponents/DetailsPageHeader';
+import { PermissionContext } from '../App';
+import ActionsContent from './RemediationDetailsComponents/ActionsContent/ActionsContent';
+// import SystemsContent from './RemediationDetailsComponents/SystemsContent/SystemsContent';
+import SystemsTable from '../components/SystemsTable/SystemsTable';
+import ExecutionHistoryTab from './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent';
+import {
+  checkExecutableStatus,
+  getRemediationDetails,
+  getRemediationPlaybook,
+  getRemediationsList,
+  updateRemediationPlans,
+} from './api';
+const RemediationDetails = () => {
   const chrome = useChrome();
-  const navigate = useNavigate();
   const { id } = useParams();
+  const axios = useAxiosWithPlatformInterceptors();
+  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const { isFedramp, isBeta } = chrome;
+  const { isFedramp } = chrome;
   const context = useContext(PermissionContext);
 
-  const [upsellBannerVisible, setUpsellBannerVisible] = useState(
-    localStorage.getItem('remediations:bannerStatus') !== 'dismissed'
-  );
-  const [noReceptorBannerVisible, setNoReceptorBannerVisible] = useState(
-    localStorage.getItem('remediations:receptorBannerStatus') !== 'dismissed'
+  const { result: allRemediations, refetch: refetchAllRemediations } =
+    useRemediationsQuery(getRemediationsList(axios));
+
+  const { result: isExecutable } = useRemediationsQuery(
+    checkExecutableStatus(axios),
+    {
+      params: { remId: id },
+    }
   );
 
-  const handleUpsellToggle = () => {
-    setUpsellBannerVisible(false);
-    localStorage.setItem('remediations:bannerStatus', 'dismissed');
-  };
+  const { result: remediationDetails, refetch: fetchRemediation } =
+    useRemediationsQuery(getRemediationDetails(axios), {
+      params: { remId: id },
+    });
 
-  const handleNoReceptorToggle = () => {
-    setNoReceptorBannerVisible(false);
-    localStorage.setItem('remediations:receptorBannerStatus', 'dismissed');
+  const {
+    result: remediationPlaybookRuns,
+    loading: isPlaybookRunsLoading,
+    refetch: refetchRemediationPlaybookRuns,
+  } = useRemediationsQuery(getRemediationPlaybook(axios), {
+    params: { remId: id },
+  });
+
+  const { fetch: updateRemPlan } = useRemediationsQuery(
+    updateRemediationPlans(axios),
+    {
+      skip: true,
+    }
+  );
+
+  useEffect(() => {
+    remediationDetails &&
+      chrome.updateDocumentTitle(
+        `${remediationDetails.name} - Remediations - Automation`
+      );
+  }, [chrome, remediationDetails]);
+
+  const [
+    connectedSystems,
+    totalSystems,
+    areDetailsLoading,
+    detailsError,
+    connectedData,
+  ] = useConnectionStatus({ id });
+
+  const remediationStatus = {
+    connectedSystems,
+    totalSystems,
+    areDetailsLoading,
+    detailsError,
+    connectedData,
   };
 
   const handleTabClick = (event, tabName) =>
@@ -101,269 +88,105 @@ const RemediationDetails = ({
       activeTab: tabName,
     });
 
-  useEffect(() => {
-    loadRemediation(id).catch((e) => {
-      if (e && e.response && e.response.status === 404) {
-        navigate('/');
-        return;
-      }
+  const getIsExecutable = (item) => String(item).trim().toUpperCase() === 'OK';
 
-      throw e;
-    });
-
-    if (isBeta?.()) {
-      loadRemediationStatus(id);
-    }
-    checkExecutable(id);
-  }, []);
-
-  useEffect(() => {
-    getPlaybookRuns(id);
-  }, [getPlaybookRuns]);
-
-  useEffect(() => {
-    playbookRuns;
-    if (
-      playbookRuns &&
-      playbookRuns.length &&
-      normalizeStatus(playbookRuns[0].status) === 'running'
-    ) {
-      const interval = setInterval(() => getPlaybookRuns(id), 10000);
-      return () => {
-        clearInterval(interval);
-      };
-    }
-  }, [playbookRuns]);
-
-  const renderActivityState = (isEntitled, playbookRuns, remediation) => {
-    if (!isEntitled) {
-      return <ActivityTabUpsell />;
-    }
-
-    if (Array.isArray(playbookRuns) && playbookRuns.length) {
-      return (
-        <RemediationActivityTable
-          remediation={remediation}
-          playbookRuns={playbookRuns}
+  return (
+    remediationDetails && (
+      <>
+        <RemediationDetailsPageHeader
+          remediation={remediationDetails}
+          remediationStatus={remediationStatus}
+          isFedramp={isFedramp}
+          allRemediations={allRemediations?.data}
+          refetchAllRemediations={refetchAllRemediations}
+          updateRemPlan={updateRemPlan}
+          refetch={fetchRemediation}
+          permissions={context.permissions}
+          isExecutable={getIsExecutable(isExecutable)}
+          refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
         />
-      );
-    }
+        <Tabs
+          activeKey={searchParams.get('activeTab') || 'general'}
+          onSelect={handleTabClick}
+          aria-label="Tabs in the default example"
+          role="region"
+        >
+          {isRenameModalOpen && (
+            <RenameModal
+              remediation={remediationDetails}
+              isRenameModalOpen={isRenameModalOpen}
+              setIsRenameModalOpen={setIsRenameModalOpen}
+              remediationsList={allRemediations?.data}
+              fetch={fetchRemediation}
+            />
+          )}
 
-    if (Array.isArray(playbookRuns) && !playbookRuns.length) {
-      return <EmptyActivityTable />;
-    }
-
-    return (
-      <SkeletonTable
-        columns={ACTIVITY_LIST_COLUMNS.map((column) => (
-          <Th key={column}>{column}</Th>
-        ))}
-        rows={10}
-      />
-    );
-  };
-
-  const { status, remediation } = selectedRemediation;
-
-  const [
-    connectedSystems,
-    totalSystems,
-    areDetailsLoading,
-    detailsError,
-    connectedData,
-  ] = useConnectionStatus(remediation);
-
-  const remediationsList = useRemediationsList(remediation);
-
-  useEffect(() => {
-    remediation &&
-      chrome.updateDocumentTitle(
-        `${remediation.name} - Remediations - Automation`
-      );
-  }, [chrome, remediation]);
-
-  if (status !== 'fulfilled' && status !== 'rejected') {
-    return <RemediationDetailsSkeleton />;
-  }
-
-  if (status === 'rejected') {
-    return <InvalidObject />;
-  }
-
-  if (status === 'fulfilled') {
-    return context.permissions.read === false ? (
-      <DeniedState />
-    ) : (
-      <div className="page__remediation-details">
-        <PageHeader>
-          <Breadcrumb>
-            <BreadcrumbItem>
-              <Link to="/"> Remediations </Link>
-            </BreadcrumbItem>
-            <BreadcrumbItem isActive> {remediation.name} </BreadcrumbItem>
-          </Breadcrumb>
-
-          <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
-            <FlexItem style={{ width: '50%' }}>
-              <PageHeaderTitle title={remediation.name} />
-            </FlexItem>
-
-            <FlexItem>
-              <Split hasGutter>
-                <SplitItem>
-                  <ExecutePlaybookButton
-                    isDisabled={
-                      connectedSystems === 0 ||
-                      !context.permissions.execute ||
-                      !executable ||
-                      isFedramp
-                    }
-                    connectedSystems={connectedSystems}
-                    totalSystems={totalSystems}
-                    areDetailsLoading={areDetailsLoading}
-                    detailsError={detailsError}
-                    permissions={context.permissions.execute}
-                    remediation={remediation}
-                  ></ExecutePlaybookButton>
-                </SplitItem>
-                <SplitItem>
-                  <Button
-                    isDisabled={!remediation.issues.length}
-                    variant="secondary"
-                    onClick={() => {
-                      downloadPlaybook(remediation.id);
-                      dispatchNotification({
-                        title: 'Preparing playbook for download.',
-                        description:
-                          'Once complete, your download will start automatically.',
-                        variant: 'info',
-                        dismissable: true,
-                        autoDismiss: true,
-                      });
-                    }}
-                  >
-                    Download playbook
-                  </Button>
-                </SplitItem>
-                <SplitItem>
-                  <RemediationDetailsDropdown
-                    remediation={remediation}
-                    remediationsList={remediationsList}
-                  />
-                </SplitItem>
-              </Split>
-            </FlexItem>
-          </Flex>
-          <RemediationSummary
-            remediation={remediation}
-            playbookRuns={playbookRuns}
-            switchAutoReboot={switchAutoReboot}
-            context={context}
-          />
-        </PageHeader>
-        <Main>
-          <Stack hasGutter>
-            {!executable && upsellBannerVisible && (
-              <StackItem>
-                <UpsellBanner onClose={() => handleUpsellToggle()} />
-              </StackItem>
-            )}
-            {executable && noReceptorBannerVisible && (
-              <StackItem>
-                <NoReceptorBanner onClose={() => handleNoReceptorToggle()} />
-              </StackItem>
-            )}
-            <StackItem className="ins-c-playbookSummary__tabs">
-              <Tabs
-                activeKey={searchParams.get('activeTab') || 'issues'}
-                onSelect={handleTabClick}
-              >
-                <Tab eventKey={'issues'} title="Actions">
-                  <RemediationDetailsTable
-                    remediation={remediation}
-                    status={selectedRemediationStatus}
-                  />
-                </Tab>
-                <Tab eventKey={'systems'} title="Systems">
-                  <SystemsTable
-                    remediation={remediation}
-                    connectedData={connectedData}
-                    areDetailsLoading={areDetailsLoading}
-                  />
-                </Tab>
-                <Tab eventKey={'activity'} title="Activity">
-                  {renderActivityState(executable, playbookRuns, remediation)}
-                </Tab>
-              </Tabs>
-            </StackItem>
-          </Stack>
-        </Main>
-      </div>
-    );
-  }
-};
-
-RemediationDetails.propTypes = {
-  selectedRemediation: PropTypes.object,
-  selectedRemediationStatus: PropTypes.object,
-  loadRemediation: PropTypes.func.isRequired,
-  loadRemediationStatus: PropTypes.func.isRequired,
-  switchAutoReboot: PropTypes.func.isRequired,
-  deleteRemediation: PropTypes.func.isRequired,
-  executePlaybookBanner: PropTypes.shape({
-    isVisible: PropTypes.bool,
-  }),
-  addNotification: PropTypes.func.isRequired,
-  playbookRuns: PropTypes.array,
-  getPlaybookRuns: PropTypes.func,
-  checkExecutable: PropTypes.func,
-  executable: PropTypes.object,
-};
-
-const RemediationDetailsConnector = (props) => {
-  const remediationsV2 = useFeatureFlag('remediationsV2');
-
-  if (remediationsV2 === undefined) {
-    return (
-      <Bullseye>
-        <Spinner size="lg" />
-      </Bullseye>
-    );
-  }
-
-  return remediationsV2 ? (
-    <RemediationDetailsV2 {...props} />
-  ) : (
-    <RemediationDetails {...props} />
+          <Tab
+            eventKey={'general'}
+            title={<TabTitleText>General</TabTitleText>}
+            aria-label="GeneralTab"
+          >
+            <DetailsGeneralContent
+              details={remediationDetails}
+              refetchAllRemediations={refetchAllRemediations}
+              onRename={setIsRenameModalOpen}
+              refetch={fetchRemediation}
+              remediationStatus={remediationStatus}
+              updateRemPlan={updateRemPlan}
+              onNavigateToTab={handleTabClick}
+              allRemediations={allRemediations}
+              permissions={context.permissions}
+              remediationPlaybookRuns={remediationPlaybookRuns?.data[0]}
+            />
+          </Tab>
+          <Tab
+            eventKey={'actions'}
+            aria-label="ActionTab"
+            title={<TabTitleText>Actions</TabTitleText>}
+          >
+            <ActionsContent
+              remediationDetails={remediationDetails}
+              refetch={fetchRemediation}
+            />
+          </Tab>
+          <Tab
+            eventKey={'systems'}
+            aria-label="SystemTab"
+            title={<TabTitleText>Systems</TabTitleText>}
+          >
+            {/* We will eventually migrate away from systemsTable, and use SystemsContent */}
+            {/* <SystemsContent
+              remediationDetails={remediationDetails}
+              remediationStatus={remediationStatus}
+              refetch={fetchRemediation}
+            /> */}
+            <section
+              className={
+                'pf-v5-l-page__main-section pf-v5-c-page__main-section'
+              }
+            >
+              <SystemsTable
+                remediation={remediationDetails}
+                connectedData={remediationStatus?.connectedData}
+                areDetailsLoading={remediationStatus?.areDetailsLoading}
+              />
+            </section>
+          </Tab>
+          <Tab
+            eventKey={'executionHistory'}
+            aria-label="ExecutionHistoryTab"
+            title={<TabTitleText>Execution History</TabTitleText>}
+          >
+            <ExecutionHistoryTab
+              remediationPlaybookRuns={remediationPlaybookRuns}
+              isPlaybookRunsLoading={isPlaybookRunsLoading}
+              refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
+            />
+          </Tab>
+        </Tabs>
+      </>
+    )
   );
 };
 
-const mapStateToProps = ({
-  selectedRemediation,
-  selectedRemediationStatus,
-  executePlaybookBanner,
-  playbookRuns,
-  executable,
-}) => ({
-  selectedRemediation,
-  selectedRemediationStatus,
-  executePlaybookBanner,
-  playbookRuns: playbookRuns.data,
-  executable,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  loadRemediation: (id) => dispatch(actions.loadRemediation(id)),
-  loadRemediationStatus: (id) => dispatch(actions.loadRemediationStatus(id)),
-  switchAutoReboot: (id, auto_reboot) =>
-    dispatch(actions.patchRemediation(id, { auto_reboot })),
-  deleteRemediation: (id) => dispatch(actions.deleteRemediation(id)),
-  addNotification: (content) => dispatch(addNotification(content)),
-  getPlaybookRuns: (id) => dispatch(actions.getPlaybookRuns(id)),
-  checkExecutable: (id) => dispatch(actions.checkExecutable(id)),
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(RemediationDetailsConnector);
+export default RemediationDetails;
