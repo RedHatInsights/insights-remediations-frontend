@@ -39,10 +39,13 @@ const RemediationDetails = () => {
     }
   );
 
-  const { result: remediationDetails, refetch: fetchRemediation } =
-    useRemediationsQuery(getRemediationDetails(axios), {
-      params: { remId: id },
-    });
+  const {
+    result: remediationDetails,
+    refetch: fetchRemediation,
+    loading: detailsLoading,
+  } = useRemediationsQuery(getRemediationDetails(axios), {
+    params: { remId: id },
+  });
 
   const {
     result: remediationPlaybookRuns,
@@ -62,7 +65,7 @@ const RemediationDetails = () => {
   useEffect(() => {
     remediationDetails &&
       chrome.updateDocumentTitle(
-        `${remediationDetails.name} - Remediations - Automation`
+        `${remediationDetails.name} - Remediation Plans - Automation`
       );
   }, [chrome, remediationDetails]);
 
@@ -108,7 +111,7 @@ const RemediationDetails = () => {
         <Tabs
           activeKey={searchParams.get('activeTab') || 'general'}
           onSelect={handleTabClick}
-          aria-label="Tabs in the default example"
+          aria-label="Details Page Tabs"
           role="region"
         >
           {isRenameModalOpen && (
@@ -147,6 +150,7 @@ const RemediationDetails = () => {
             <ActionsContent
               remediationDetails={remediationDetails}
               refetch={fetchRemediation}
+              loading={detailsLoading}
             />
           </Tab>
           <Tab

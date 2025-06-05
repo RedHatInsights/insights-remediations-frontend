@@ -22,7 +22,7 @@ const ProgressCard = ({
 }) => {
   const { quickStarts } = useChrome();
 
-  return permissions === undefined ? (
+  return permissions === undefined || remediationStatus.areDetailsLoading ? (
     <Spinner />
   ) : (
     <Card isFullHeight>

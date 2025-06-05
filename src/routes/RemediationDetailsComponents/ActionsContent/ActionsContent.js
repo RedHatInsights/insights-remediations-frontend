@@ -29,7 +29,7 @@ const deleteIssues = (axios) => (params) => {
   });
 };
 
-const ActionsContent = ({ remediationDetails, refetch }) => {
+const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   const axios = useAxiosWithPlatformInterceptors();
   const { id } = useParams();
   const { params } = useRemediationTableState(true);
@@ -167,6 +167,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
         aria-label="ActionsTable"
         ouiaId="ActionsTable"
         variant="compact"
+        loading={loading}
         items={pageOfIssues}
         total={filteredIssues.length}
         columns={[...columnsWithSystemsButton]}
@@ -213,6 +214,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
 ActionsContent.propTypes = {
   remediationDetails: PropTypes.object,
   refetch: PropTypes.func,
+  loading: PropTypes.bool,
 };
 
 const ActionsContentProvider = (props) => {
