@@ -230,6 +230,7 @@ export const OverViewPage = () => {
                         setRemediation(item);
                         setIsDeleteModalOpen(true);
                       },
+                      props: { screenReaderText: 'Delete button' },
                     },
                   ];
                 },

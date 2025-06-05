@@ -10,7 +10,6 @@ import React from 'react';
 
 const NoExecutions = () => {
   return (
-    //There is currently no mock for emptyState. This will be replaced once UX has created one
     <EmptyState variant="lg">
       <EmptyStateHeader
         icon={<EmptyStateIcon icon={CubesIcon} />}
