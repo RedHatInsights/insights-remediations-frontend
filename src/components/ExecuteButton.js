@@ -4,8 +4,6 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Flex, Tooltip } from '@patternfly/react-core';
 import { ExecuteModal } from './Modals/ExecuteModal';
-import './ExecuteButton.scss';
-import './Status.scss';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 
 const ExecuteButton = ({
