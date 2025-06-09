@@ -2,10 +2,19 @@ import React from 'react';
 import IssuesColumn from './IssuesColumn';
 import RebootColumn from './RebootColumn';
 import ConnectionStatusColumn from './ConnectionStatusCol';
+import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 
 export default [
   {
     key: 'display_name',
+    title: 'Name',
+    renderFunc: (_value, _colIdx, entity) => {
+      return (
+        <InsightsLink app="inventory" to={`/${entity.id}`}>
+          {entity.display_name}
+        </InsightsLink>
+      );
+    },
   },
   {
     key: 'tags',
@@ -15,7 +24,7 @@ export default [
   },
   {
     key: 'issues',
-    title: 'Issues',
+    title: 'Actions',
     // eslint-disable-next-line react/display-name
     renderFunc: (issues, _, { display_name }) => (
       <IssuesColumn issues={issues} display_name={display_name} />
@@ -39,7 +48,7 @@ export default [
   },
   {
     key: 'connection_status',
-    title: 'Connection Status',
+    title: 'Connection status',
     // eslint-disable-next-line react/display-name
     renderFunc: (connection_status, _, { executor_type }) => (
       <ConnectionStatusColumn

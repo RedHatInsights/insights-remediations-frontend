@@ -23,6 +23,9 @@ function RemediationDetailsDropdown({
   onRename,
   onDelete,
   remediationsList,
+  updateRemPlan,
+  refetch,
+  refetchAllRemediations,
 }) {
   const [open, setOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
@@ -34,13 +37,18 @@ function RemediationDetailsDropdown({
     <React.Fragment>
       {renameDialogOpen && (
         <TextInputDialog
-          title="Edit playbook name"
-          ariaLabel="Playbook name"
+          title="Rename remediation plan?"
+          ariaLabel="RenameModal"
           value={remediation.name}
           onCancel={() => setRenameDialogOpen(false)}
           onSubmit={(name) => {
             setRenameDialogOpen(false);
-            onRename(remediation.id, name);
+            updateRemPlan
+              ? updateRemPlan({ id: remediation.id, name: name }).then(() => {
+                  refetch(), refetchAllRemediations();
+                })
+              : onRename(remediation.id, name);
+
             dispatchNotification({
               title: `Updated playbook name to ${name}`,
               description: '',
@@ -55,15 +63,15 @@ function RemediationDetailsDropdown({
 
       <ConfirmationDialog
         isOpen={deleteDialogOpen}
-        title="Remove playbook?"
-        text="You will not be able to recover this Playbook"
-        confirmText="Remove playbook"
+        title="Delete remediation plan?"
+        text="Deleting a remediation plan is permanent and cannot be undone."
+        confirmText="Delete"
         onClose={(confirm) => {
           setDeleteDialogOpen(false);
           if (confirm) {
             onDelete(remediation.id);
             dispatchNotification({
-              title: `Deleted playbook ${remediation.name}`,
+              title: `Deleted remediation plan ${remediation.name}`,
               variant: 'success',
               dismissable: true,
               autoDismiss: true,
@@ -103,6 +111,9 @@ RemediationDetailsDropdown.propTypes = {
   onRename: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   remediationsList: PropTypes.array,
+  updateRemPlan: PropTypes.func,
+  refetch: PropTypes.func,
+  refetchAllRemediations: PropTypes.func,
 };
 
 const connected = connect(null, (dispatch) => ({

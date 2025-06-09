@@ -13,7 +13,9 @@ export const routes = {
   home: {
     path: '/*',
     component: lazy(() =>
-      import(/* webpackChunkName: "Home" */ './routes/Home')
+      import(
+        /* webpackChunkName: "Home" */ './routes/OverViewPage/OverViewPage'
+      )
     ),
   },
   details: {
@@ -21,22 +23,6 @@ export const routes = {
     component: lazy(() =>
       import(
         /* webpackChunkName: "RemediationDetails" */ './routes/RemediationDetails'
-      )
-    ),
-  },
-  runDetails: {
-    path: ':id/:run_id',
-    component: lazy(() =>
-      import(
-        /* webpackChunkName: "ActivityDetails" */ './components/ActivityDetails'
-      )
-    ),
-  },
-  executorDetails: {
-    path: ':id/:run_id/:executor_id',
-    component: lazy(() =>
-      import(
-        /* webpackChunkName: "ExecutorDetails" */ './components/ExecutorDetails/ExecutorDetails'
       )
     ),
   },

@@ -15,7 +15,6 @@ import {
   ListItem,
 } from '@patternfly/react-core';
 import { downloadPlaybook } from '../../api';
-import { styledConnectionStatus } from '../statusHelper';
 import { TableVariant } from '@patternfly/react-table';
 import {
   TableHeader,
@@ -27,7 +26,10 @@ import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import './ExecuteModal.scss';
 import EmptyExecutePlaybookState from '../EmptyExecutePlaybookState';
 import { dispatchNotification } from '../../Utilities/dispatcher';
-import { useChrome } from '@redhat-cloud-services/frontend-components/useChrome';
+import { renderConnectionStatus } from '../../routes/helpers';
+import useRemediationsQuery from '../../api/useRemediationsQuery';
+import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
+import { executeRemediation } from '../../routes/api';
 
 export const ExecuteModal = ({
   isOpen,
@@ -38,14 +40,14 @@ export const ExecuteModal = ({
   remediationId,
   remediationName,
   issueCount,
-  runRemediation,
   etag,
   setEtag,
+  refetchRemediationPlaybookRuns,
 }) => {
+  const axios = useAxiosWithPlatformInterceptors();
   const [connected, setConnected] = useState([]);
   const [disconnected, setDisconnected] = useState([]);
   const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
-  const chrome = useChrome();
 
   useEffect(() => {
     const [con, dis] = data.reduce(
@@ -79,10 +81,6 @@ export const ExecuteModal = ({
     );
   };
 
-  const generateRowsStatus = (con) => {
-    return styledConnectionStatus(con.connection_status, chrome?.isBeta?.());
-  };
-
   const rows = [...connected, ...disconnected].map((con) => ({
     cells: [
       {
@@ -90,7 +88,7 @@ export const ExecuteModal = ({
       },
       con.system_count,
       {
-        title: generateRowsStatus(con),
+        title: renderConnectionStatus(con.connection_status),
       },
     ],
   }));
@@ -100,6 +98,43 @@ export const ExecuteModal = ({
 
   const pluralize = (number, str) =>
     number > 1 ? `${number} ${str}s` : `${number} ${str}`;
+
+  const { fetch: executeRun } = useRemediationsQuery(
+    executeRemediation(axios),
+    {
+      skip: true,
+    }
+  );
+
+  const handleClick = () => {
+    const exclude = disconnected.map((e) => e.executor_id).filter(Boolean);
+
+    executeRun({ id: remediationId, etag, exclude })
+      .then(() => {
+        refetchRemediationPlaybookRuns();
+        dispatchNotification({
+          title: `Executing playbook ${remediationName}`,
+          description: (
+            <span>
+              View results in the <b>Execution History tab</b>
+            </span>
+          ),
+          variant: 'success',
+          dismissable: true,
+          autoDismiss: true,
+        });
+        onClose();
+      })
+      .catch((err) => {
+        dispatchNotification({
+          title: `Failed to execute playbook`,
+          description: err.message || 'Unknown error',
+          variant: 'danger',
+          dismissable: true,
+          autoDismiss: true,
+        });
+      });
+  };
 
   return (
     <Modal
@@ -118,24 +153,7 @@ export const ExecuteModal = ({
                 variant="primary"
                 ouiaId="etag"
                 isDisabled={connected.length === 0}
-                onClick={() => {
-                  runRemediation(
-                    remediationId,
-                    etag,
-                    disconnected.map((e) => e.executor_id).filter((e) => e)
-                  );
-                  dispatchNotification({
-                    title: `Executing playbook ${remediationName}`,
-                    description: (
-                      <span>
-                        View results in the <b>Activity tab</b>
-                      </span>
-                    ),
-                    variant: 'success',
-                    dismissable: true,
-                    autoDismiss: true,
-                  });
-                }}
+                onClick={handleClick}
               >
                 {isLoading
                   ? 'Execute playbook'
@@ -311,7 +329,7 @@ ExecuteModal.propTypes = {
   remediationId: PropTypes.string,
   remediationName: PropTypes.string,
   issueCount: PropTypes.number,
-  runRemediation: PropTypes.func,
   etag: PropTypes.string,
   setEtag: PropTypes.func,
+  refetchRemediationPlaybookRuns: PropTypes.func,
 };

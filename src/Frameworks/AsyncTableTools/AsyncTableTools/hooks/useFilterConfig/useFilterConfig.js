@@ -34,7 +34,6 @@ const useFilterConfig = (options = {}) => {
   const enableFilters = !!filters;
   const { filterConfig = [], activeFilters: initialActiveFilters } =
     filters || {};
-
   const { selection: activeFilters, ...selectionActions } = useSelectionManager(
     initialActiveFilters,
     { withGroups: true }
@@ -79,6 +78,7 @@ const useFilterConfig = (options = {}) => {
           activeFiltersConfig: {
             filters: toFilterChips(filterConfig, activeFilters),
             onDelete: onFilterDelete,
+            deleteTitle: 'Reset filters',
           },
         },
       }

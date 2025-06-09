@@ -5,7 +5,7 @@ import { Fragment } from 'react';
 const RebootColumn = ({ rebootRequired }) => {
   return (
     <Fragment>
-      <span>{rebootRequired ? 'Required' : 'Not required'}</span>
+      <span>{rebootRequired ? 'Yes' : 'No'}</span>
     </Fragment>
   );
 };

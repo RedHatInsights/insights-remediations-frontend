@@ -8,7 +8,6 @@ import {
   TableHeader,
 } from '@patternfly/react-table/deprecated';
 import RebootColumn from './RebootColumn';
-import { CheckIcon, TimesIcon } from '@patternfly/react-icons';
 import { buildIssueUrl } from '../../Utilities/urls';
 import sortBy from 'lodash/sortBy';
 
@@ -38,11 +37,11 @@ const IssuesColumn = ({ issues, display_name }) => {
   return (
     <Fragment>
       <Button variant="link" isInline onClick={() => setIsOpen(true)}>
-        {issues.length}
+        {`${issues.length} action${issues.length > 1 ? 's' : ''}`}
       </Button>
       <Modal
         variant={ModalVariant.medium}
-        title={`Actions for system ${display_name}`}
+        title={`Planned remediation actions`}
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
       >
@@ -73,14 +72,6 @@ const IssuesColumn = ({ issues, display_name }) => {
               ),
             },
             issueType?.[issue.id.split(':')[0]] || 'Unknown',
-            {
-              title: (
-                <Fragment>
-                  {issue.resolved ? <CheckIcon /> : <TimesIcon />}{' '}
-                  {issue.resolved ? 'Remediated' : 'Not remediated'}
-                </Fragment>
-              ),
-            },
           ])}
           cells={[
             {
@@ -94,10 +85,6 @@ const IssuesColumn = ({ issues, display_name }) => {
             {
               title: 'Type',
               transforms: [sortable, cellWidth(15)],
-            },
-            {
-              title: 'Status',
-              transforms: [sortable, cellWidth(20)],
             },
           ]}
           sortBy={sortByConfig}

@@ -1,18 +1,20 @@
-import { API_BASE, SOURCES_BASE } from '../config';
-
 import axios from 'axios';
 import {
   RemediationsApi,
   ResolutionsApi,
   RemediationsApiAxiosParamCreator,
 } from '@redhat-cloud-services/remediations-client';
+
 import { DefaultApi } from '@redhat-cloud-services/sources-client';
+
+const SOURCES_BASE = '/api/sources/v2.0';
 
 /*
 //  * TODO: replace these with generated clients
 //  */
 import { doGet } from '../Utilities/http';
 import urijs from 'urijs';
+import { API_BASE } from '../routes/api';
 
 function url(...args) {
   const url = urijs(API_BASE).segment('remediations');

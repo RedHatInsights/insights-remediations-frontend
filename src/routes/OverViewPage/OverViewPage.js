@@ -1,14 +1,13 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import columns from '../Columns';
 import useRemediationsQuery from '../../api/useRemediationsQuery';
-import { API_BASE } from '../../config';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import RemediationsTable from '../../components/RemediationsTable/RemediationsTable';
 import {
-  calendarFilterType,
-  ExecutionStatusFilter,
+  CreatedByFilter,
+  // ExecutionStatusFilter,
   LastExecutedFilter,
-  LastModified,
+  LastModifiedFilter,
   remediationNameFilter,
 } from '../Filters';
 import {
@@ -22,46 +21,19 @@ import ConfirmationDialog from '../../components/ConfirmationDialog';
 import { useRawTableState } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
 import TableStateProvider from '../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
 import useStateCallbacks from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
-import Main from '@redhat-cloud-services/frontend-components/Main';
-import NoResultsTable from '../../components/NoResultsTable';
+import NoRemediationsPage from '../../components/NoRemediationsPage';
 import { TextContent } from '@patternfly/react-core';
 import { emptyRows } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
 import useRemediationFetchExtras from '../../api/useRemediationFetchExtras';
 import { OverViewPageHeader } from './OverViewPageHeader';
-
-const getRemediations = (axios) => (params) => {
-  return axios.get(`${API_BASE}/remediations/`, { params });
-};
-
-const getRemediationsList = (axios) => () => {
-  return axios.get(`${API_BASE}/remediations/?fields[data]=name`);
-};
-
-const archiveRemediationPlans = (axios) => (params) => {
-  return axios.patch(`${API_BASE}/remediations/${params.id}`, {
-    archived: true,
-  });
-};
-
-const unarchiveRemediationPlans = (axios) => (params) => {
-  return axios.patch(`${API_BASE}/remediations/${params.id}`, {
-    archived: false,
-  });
-};
-
-const deleteRemediation = (axios) => (params) => {
-  return axios.delete(`${API_BASE}/remediations/${params.id}`);
-};
-
-const deleteRemediationList = (axios) => (params) => {
-  return axios({
-    method: 'delete',
-    url: `${API_BASE}/remediations`,
-    data: {
-      remediation_ids: params.remediation_ids,
-    },
-  });
-};
+import { PermissionContext } from '../../App';
+import chunk from 'lodash/chunk';
+import {
+  deleteRemediation,
+  deleteRemediationList,
+  getRemediations,
+  getRemediationsList,
+} from '../api';
 
 export const OverViewPage = () => {
   const dispatch = useDispatch();
@@ -69,61 +41,25 @@ export const OverViewPage = () => {
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [remediation, setRemediation] = useState('');
-  const [showArchived, setShowArchived] = useState(true);
   const [isBulkDelete, setIsBulkDelete] = useState(false);
-  // const remediationsList = useRemediationsList();
+  const context = useContext(PermissionContext);
+
   const callbacks = useStateCallbacks();
   const tableState = useRawTableState();
 
   const currentlySelected = tableState?.selected;
   const {
     result,
-    /*loading, error,*/ fetchAllIds,
+    fetchAllIds,
+    loading,
     refetch: fetchRemediations,
   } = useRemediationsQuery(getRemediations(axios), {
     useTableState: true,
-    params: { hide_archived: showArchived, 'fields[data]': 'playbook_runs' },
+    params: { hide_archived: false, 'fields[data]': 'playbook_runs' },
   });
 
-  const { result: allRemediations } = useRemediationsQuery(
-    getRemediationsList(axios)
-  );
-
-  const { fetch: archiveRemediation } = useRemediationsQuery(
-    archiveRemediationPlans(axios),
-    {
-      skip: true,
-    }
-  );
-  const { fetch: unarchiveRemediation } = useRemediationsQuery(
-    unarchiveRemediationPlans(axios),
-    {
-      skip: true,
-    }
-  );
-  const handleArchiveClick = async (itemId, name) => {
-    await archiveRemediation({ id: itemId }).then(() => {
-      dispatchNotification({
-        variant: 'info',
-        title: `Archived playbook ${name}`,
-        dismissable: true,
-        autoDismiss: true,
-      });
-      fetchRemediations();
-    });
-  };
-
-  const handleUnarchiveClick = async (itemId, name) => {
-    await unarchiveRemediation({ id: itemId }).then(() => {
-      dispatchNotification({
-        variant: 'info',
-        title: `Unarchived playbook ${name}`,
-        dismissable: true,
-        autoDismiss: true,
-      });
-      fetchRemediations();
-    });
-  };
+  const { result: allRemediations, refetch: refetchAllRemediations } =
+    useRemediationsQuery(getRemediationsList(axios));
 
   const { fetch: deleteRem } = useRemediationsQuery(deleteRemediation(axios), {
     skip: true,
@@ -145,109 +81,33 @@ export const OverViewPage = () => {
     await download([itemId], result.data, dispatch);
   };
 
-  const handleBulkUnArchiveClick = async (selected) => {
-    try {
-      const archivePromises = selected.map((remId) =>
-        unarchiveRemediation({ id: remId })
-      );
-      await Promise.all(archivePromises);
-      dispatchNotification({
-        variant: 'info',
-        title: `Unarchived playbooks`,
-        dismissable: true,
-        autoDismiss: true,
-      });
-      callbacks?.current?.resetSelection();
-    } catch (error) {
-      console.error('Error during bulk archive:', error);
-      dispatchNotification({
-        variant: 'danger',
-        title: 'Error archiving playbooks',
-        description: error.message,
-        dismissable: true,
-        autoDismiss: true,
-      });
-    }
-  };
-
-  const chunkArray = (array, size) => {
-    const chunks = [];
-    for (let i = 0; i < array.length; i += size) {
-      chunks.push(array.slice(i, i + size));
-    }
-    return chunks;
-  };
-
   const handleBulkDeleteClick = async (selected) => {
-    const chunks = chunkArray(selected, 100);
+    const chunks = chunk(selected, 100);
     const queue = chunks.map((chunk) => ({
       remediation_ids: chunk,
     }));
     return await fetchQueue(queue);
   };
-  const handleBulkArchiveClick = async (selected) => {
-    try {
-      const archivePromises = selected.map((remId) =>
-        archiveRemediation({ id: remId })
-      );
-      await Promise.all(archivePromises);
-      dispatchNotification({
-        variant: 'info',
-        title: `Archived playbooks`,
-        dismissable: true,
-        autoDismiss: true,
-      });
-      await fetchRemediations();
-      callbacks?.current?.resetSelection();
-    } catch (error) {
-      console.error('Error during bulk archive:', error);
-      dispatchNotification({
-        variant: 'danger',
-        title: 'Error archiving playbooks',
-        description: error.message,
-        dismissable: true,
-        autoDismiss: true,
-      });
-    }
-  };
 
   const actions = useMemo(() => {
     return [
       {
-        label: 'Archive',
-        onClick: () => {
-          handleBulkArchiveClick(currentlySelected);
+        label: 'Delete',
+        props: {
+          className:
+            !context.permissions.write || !currentlySelected?.length
+              ? 'pf-v5-u-color-200'
+              : 'pf-v5-u-danger-color-100',
+          isDisabled: !context.permissions.write || !currentlySelected?.length,
         },
-      },
-      {
-        label: 'Unarchive',
-        onClick: () => {
-          handleBulkUnArchiveClick(currentlySelected);
-        },
-      },
-      {
-        label: (
-          <TextContent className="pf-v5-u-danger-color-100">Delete</TextContent>
-        ),
+
         onClick: () => {
           setIsBulkDelete(true);
           setIsDeleteModalOpen(true);
         },
       },
-      {
-        label: `${!showArchived ? 'Hide' : 'Show'} archived`,
-        onClick: () => {
-          setShowArchived(!showArchived);
-        },
-      },
     ];
-  }, [
-    handleBulkArchiveClick,
-    handleBulkUnArchiveClick,
-    currentlySelected,
-    showArchived,
-    handleBulkDeleteClick,
-  ]);
+  }, [currentlySelected, handleBulkDeleteClick]);
   const handleSingleDeleteClick = async (id) => {
     return deleteRem({ id });
   };
@@ -260,14 +120,24 @@ export const OverViewPage = () => {
           setIsRenameModalOpen={setIsRenameModalOpen}
           remediationsList={allRemediations.data}
           fetch={fetchRemediations}
+          refetch={refetchAllRemediations}
         />
       )}
       {isDeleteModalOpen && (
         <ConfirmationDialog
           isOpen={isDeleteModalOpen}
-          title={`Remove playbook(s)`}
-          text="You will not be able to recover this Playbook"
-          confirmText="Remove playbook"
+          title={`Delete remediation plan${
+            currentlySelected.length > 1 ? 's' : ''
+          }?`}
+          text={`${
+            currentlySelected.length > 1
+              ? 'Deleting remediation plans are '
+              : 'Deleting a remediation plan is '
+          } permanent and cannot be undone.`}
+          confirmText="Delete"
+          selectedItems={
+            currentlySelected.length > 0 ? currentlySelected : remediation
+          }
           onClose={(confirm) => {
             setIsDeleteModalOpen(false);
             if (confirm) {
@@ -277,8 +147,9 @@ export const OverViewPage = () => {
 
               executeDeleteFunction.then(() => {
                 dispatchNotification({
-                  title: `Succesfully deleted remediation plan(s)`,
-                  description: '',
+                  title: `Remediation plan${
+                    currentlySelected.length > 1 ? 's' : ''
+                  } deleted`,
                   variant: 'success',
                   dismissable: true,
                   autoDismiss: true,
@@ -293,97 +164,97 @@ export const OverViewPage = () => {
         />
       )}
       {allRemediations?.data.length === 0 ? (
-        <NoResultsTable />
+        <>
+          <OverViewPageHeader
+            hasRemediations={Boolean(allRemediations?.data?.length)}
+          />
+          <NoRemediationsPage />
+        </>
       ) : (
-        <RemediationsTable
-          aria-label="OverViewTable"
-          ouiaId="OverViewTable"
-          items={result?.data}
-          total={result?.meta?.total}
-          columns={[...columns]}
-          filters={{
-            filterConfig: [
-              ...remediationNameFilter,
-              ...LastExecutedFilter,
-              ...ExecutionStatusFilter,
-              ...LastModified,
-            ],
-          }}
-          options={{
-            sortBy: {
-              index: 6,
-              direction: 'desc',
-            },
-            onSelect: () => '',
-            itemIdsInTable: fetchAllIds,
-            manageColumns: true,
-            itemIdsOnPage: result?.data.map(({ id }) => id),
-            total: result?.meta?.total,
-            //Connect filter to tableState and send params
-            customFilterTypes: {
-              calendar: calendarFilterType,
-            },
-            actionResolver: ({ item }) => {
-              return [
-                {
-                  title: item?.archived ? 'Unarchived' : 'Archive',
-                  onClick: (_event, _index, { item }) => {
-                    item?.archived === true
-                      ? handleUnarchiveClick(item.id, item.name)
-                      : handleArchiveClick(item.id, item.name);
-                  },
+        <>
+          <OverViewPageHeader
+            hasRemediations={Boolean(allRemediations?.data?.length)}
+          />
+          <section className="pf-v5-l-page__main-section pf-v5-c-page__main-section">
+            <RemediationsTable
+              aria-label="OverViewTable"
+              ouiaId="OverViewTable"
+              variant="compact"
+              loading={loading}
+              items={result?.data}
+              total={result?.meta?.total}
+              columns={[...columns]}
+              filters={{
+                filterConfig: [
+                  ...remediationNameFilter,
+                  ...LastExecutedFilter,
+                  //TODO: Enable filter once backend is ready
+                  // ...ExecutionStatusFilter,
+                  ...LastModifiedFilter,
+                  ...CreatedByFilter,
+                ],
+              }}
+              options={{
+                sortBy: {
+                  index: 6,
+                  direction: 'desc',
                 },
-                {
-                  title: 'Download',
-                  onClick: (_event, _index, { item }) => {
-                    handleDownloadClick(item.id);
-                  },
+                onSelect: () => '',
+                itemIdsInTable: fetchAllIds,
+                manageColumns: true,
+                itemIdsOnPage: result?.data.map(({ id }) => id),
+                total: result?.meta?.total,
+                actionResolver: () => {
+                  return [
+                    {
+                      title: 'Download',
+                      onClick: (_event, _index, { item }) => {
+                        handleDownloadClick(item.id);
+                      },
+                    },
+                    {
+                      title: 'Rename',
+                      onClick: (_event, _index, { item }) => {
+                        setRemediation(item);
+                        setIsRenameModalOpen(true);
+                      },
+                    },
+                    {
+                      title: (
+                        <TextContent className="pf-v5-u-danger-color-100">
+                          Delete
+                        </TextContent>
+                      ),
+                      onClick: (_event, _index, { item }) => {
+                        setIsBulkDelete(false);
+                        setRemediation(item);
+                        setIsDeleteModalOpen(true);
+                      },
+                      props: { screenReaderText: 'Delete button' },
+                    },
+                  ];
                 },
-                {
-                  title: 'Rename',
-                  onClick: (_event, _index, { item }) => {
-                    setRemediation(item);
-                    setIsRenameModalOpen(true);
-                  },
-                },
-                {
-                  title: (
-                    <TextContent className="pf-v5-u-danger-color-100">
-                      Delete
-                    </TextContent>
-                  ),
-                  onClick: (_event, _index, { item }) => {
-                    setIsBulkDelete(false);
-                    setRemediation(item);
-                    setIsDeleteModalOpen(true);
-                  },
-                },
-              ];
-            },
-            actions: actions,
-            dedicatedAction: () => (
-              <DownloadPlaybookButton
-                selectedItems={currentlySelected}
-                data={result?.data}
-                dispatch={dispatch}
-              />
-            ),
-            emptyRows: emptyRows(columns.length),
-          }}
-        />
+                actions: actions,
+                dedicatedAction: () => (
+                  <DownloadPlaybookButton
+                    selectedItems={currentlySelected}
+                    data={result?.data}
+                    dispatch={dispatch}
+                  />
+                ),
+                emptyRows: emptyRows(columns.length),
+              }}
+            />
+          </section>
+        </>
       )}
     </div>
   );
 };
 
-const OverViewPageProvider = () => {
-  return (
-    <TableStateProvider>
-      <OverViewPageHeader />
-      <Main>
-        <OverViewPage />
-      </Main>
-    </TableStateProvider>
-  );
-};
+const OverViewPageProvider = () => (
+  <TableStateProvider>
+    <OverViewPage />
+  </TableStateProvider>
+);
 export default OverViewPageProvider;

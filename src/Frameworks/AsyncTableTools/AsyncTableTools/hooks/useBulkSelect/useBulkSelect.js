@@ -150,7 +150,9 @@ const useBulkSelect = ({
           },
           toolbarProps: {
             bulkSelect: {
-              toggleProps: { children: [title] },
+              ...(loading
+                ? { toggleProps: { children: [title] } }
+                : { count: selectedIdsTotal }),
               isDisabled,
               items: [
                 {

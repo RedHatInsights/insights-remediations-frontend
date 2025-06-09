@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Flex,
-  Icon,
-  Label,
-  TextContent,
-  Tooltip,
-} from '@patternfly/react-core';
+import { Flex, Icon, Text, Tooltip } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import {
@@ -13,34 +7,28 @@ import {
   ExclamationCircleIcon,
   InProgressIcon,
 } from '@patternfly/react-icons';
+import { getTimeAgo } from './RemediationDetailsComponents/helpers';
 
-const formatDate = (dateStr) => {
+export const formatDate = (dateStr) => {
   const date = new Date(dateStr);
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
   return date.toLocaleDateString('en-US', options);
 };
-export const Name = ({ name, id, archived }) => (
-  <InsightsLink to={id}>
-    {name}
-    {archived && (
-      <Label color={'grey'} isCompact className="pf-v5-u-ml-md">
-        Archived
-      </Label>
-    )}
-  </InsightsLink>
+export const Name = ({ name, id }) => (
+  <InsightsLink to={id}>{name}</InsightsLink>
 );
 
 export const LastExecutedCell = ({ playbook_runs }) => (
-  <TextContent>
+  <Text>
     {playbook_runs.length > 0
       ? formatDate(playbook_runs[0]?.created_at)
       : 'Never'}{' '}
-  </TextContent>
+  </Text>
 );
 
 export const ExecutionStatusCell = ({ playbook_runs }) => {
   if (!playbook_runs?.length) {
-    return <TextContent>N/A</TextContent>;
+    return <Text>N/A</Text>;
   }
   const status = playbook_runs[0].status;
   let icon;
@@ -70,54 +58,26 @@ export const ExecutionStatusCell = ({ playbook_runs }) => {
   return (
     <Flex spaceItems={{ default: 'spaceItemsXs' }}>
       {icon}
-      <TextContent>{displayValue}</TextContent>
+      <Text>{displayValue}</Text>
     </Flex>
   );
 };
 
 export const ActionsCell = ({ issue_count }) => (
-  <TextContent style={{ justifySelf: 'center' }}>{issue_count} </TextContent>
+  <Text style={{ justifySelf: 'center' }}>{issue_count} </Text>
 );
 
 export const SystemsCell = ({ system_count }) => (
-  <TextContent style={{ justifySelf: 'center' }}>{system_count} </TextContent>
+  <Text style={{ justifySelf: 'center' }}>{system_count} </Text>
 );
 
 export const CreatedCell = ({ created_at }) => (
-  <TextContent>{formatDate(created_at)} </TextContent>
+  <Text>{formatDate(created_at)} </Text>
 );
-
-const getTimeAgo = (date) => {
-  const now = new Date();
-  const diffMs = now - date;
-  const diffMinutes = Math.floor(diffMs / 60000);
-
-  if (diffMinutes < 1) {
-    return 'Just now';
-  } else if (diffMinutes < 60) {
-    return `${diffMinutes} minute${diffMinutes === 1 ? '' : 's'} ago`;
-  }
-  //If less than 30 days, report days, if less than 12 months report months, then years
-  const diffHours = Math.floor(diffMinutes / 60);
-  if (diffHours < 24) {
-    return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
-  }
-
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 30) {
-    return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
-  }
-  const diffMonths = Math.floor(diffDays / 30);
-  if (diffMonths < 12) {
-    return `${diffMonths} month${diffMonths === 1 ? '' : 's'} ago`;
-  }
-  const diffYears = Math.floor(diffDays / 365);
-  return `${diffYears} year${diffYears === 1 ? '' : 's'} ago`;
-};
 
 export const LastModifiedCell = ({ updated_at }) => {
   if (!updated_at) {
-    return <TextContent>0</TextContent>;
+    return <Text>0</Text>;
   }
 
   const date = new Date(updated_at);
@@ -139,12 +99,11 @@ export const LastModifiedCell = ({ updated_at }) => {
     timeZone: 'UTC',
   });
 
-  // Combine them with "at" and "UTC"
   const tooltipText = `${datePart} at ${timePart} UTC`;
 
   return (
     <Tooltip content={tooltipText}>
-      <TextContent>{timeAgo}</TextContent>
+      <Text>{timeAgo}</Text>
     </Tooltip>
   );
 };

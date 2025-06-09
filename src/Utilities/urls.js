@@ -12,10 +12,6 @@ export function getGroup() {
   return pathName[1];
 }
 
-export function buildInventoryUrl(systemId, tab) {
-  return appUrl('inventory').segment(systemId).segment(tab).toString();
-}
-
 export function getInventoryTabForIssue({ id }) {
   switch (getIssuePrefix(id)) {
     case 'advisor':

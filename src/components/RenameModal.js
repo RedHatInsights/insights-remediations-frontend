@@ -14,11 +14,12 @@ const RenameModal = ({
   remediationsList,
   fetch,
   onRename,
+  refetch,
 }) => {
   return (
     <TextInputDialog
-      title="Edit playbook name"
-      ariaLabel="Playbook name"
+      title="Rename remediation plan?"
+      ariaLabel="RenameModal"
       value={remediation.name}
       onCancel={() => setIsRenameModalOpen(false)}
       onSubmit={async (name) => {
@@ -26,8 +27,10 @@ const RenameModal = ({
         await onRename(remediation.id, name);
 
         fetch && fetch();
+        refetch && refetch();
       }}
       remediationsList={remediationsList ?? []}
+      refetch={refetch}
     />
   );
 };
@@ -38,6 +41,7 @@ RenameModal.propTypes = {
   remediationsList: PropTypes.array,
   setIsRenameModalOpen: PropTypes.func,
   fetch: PropTypes.func,
+  refetch: PropTypes.func,
 };
 
 const connected = connect(null, () => ({
@@ -50,8 +54,7 @@ const connected = connect(null, () => ({
     return patchRemediation(id, { name: trimmedName })
       .then(() => {
         dispatchNotification({
-          title: `Updated playbook name to ${name}`,
-          description: '',
+          title: `Remediation plan renamed`,
           variant: 'success',
           dismissable: true,
           autoDismiss: true,
@@ -61,7 +64,6 @@ const connected = connect(null, () => ({
         console.error(error);
         dispatchNotification({
           title: `Failed to update playbook name`,
-          description: '',
           variant: 'danger',
           dismissable: true,
           autoDismiss: true,

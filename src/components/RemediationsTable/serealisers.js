@@ -6,13 +6,24 @@ export const paginationSerialiser = (state) => {
     return { offset, limit };
   }
 };
+const YYYY_MM_DD_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
-//make sure the singleSelect is in the right time
+const toUtcIso = (yyyyMmDd) => {
+  if (!yyyyMmDd) return undefined;
+
+  if (!YYYY_MM_DD_REGEX.test(yyyyMmDd)) return undefined;
+  const date = new Date(`${yyyyMmDd}T00:00:00Z`);
+  if (isNaN(date.getTime())) return undefined;
+
+  return date.toISOString();
+};
+
 const filterSerialisers = {
   text: (_config, [value]) => value,
   radio: (_config, [value]) => value,
   checkbox: (_config, values) => values.join(','),
   singleSelect: (_config, [value]) => value,
+  calendar: (_config, [value]) => toUtcIso(value),
 };
 
 const findFilterSerialiser = (filterConfigItem) => {

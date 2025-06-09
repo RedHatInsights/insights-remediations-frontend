@@ -19,7 +19,7 @@ export const ExecutePlaybookButton = connect(
   }) => ({
     data,
     isLoading: status !== 'fulfilled',
-    issueCount: selectedRemediation.remediation.issues.length,
+    issueCount: selectedRemediation.remediation?.issues.length || 0,
     etag,
     remediationStatus: runRemediation.status,
     sources,
