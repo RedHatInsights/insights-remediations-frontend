@@ -5,24 +5,23 @@ import PropTypes from 'prop-types';
 import { Button, Flex, Tooltip } from '@patternfly/react-core';
 import { ExecuteModal } from './Modals/ExecuteModal';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
-
+//  runRemediation: (id, etag, exclude) => {
+//       dispatch(runRemediation(id, etag, exclude)).then(() =>
+//         dispatch(getPlaybookRuns(id))
+//       );
+//     },
 const ExecuteButton = ({
-  isLoading,
   isDisabled,
-  data,
   getConnectionStatus,
   issueCount,
-  etag,
   remediationStatus,
-  setEtag,
   remediation,
   refetchRemediationPlaybookRuns,
 }) => {
   const [open, setOpen] = useState(false);
   const [showRefreshMessage, setShowRefreshMessage] = useState(false);
-  const isEnabled = () =>
-    true || localStorage.getItem('remediations:fifi:debug') === 'true';
 
+  console.log(remediationStatus, 'remStatus here');
   useEffect(() => {
     if (remediationStatus === 'changed') {
       getConnectionStatus(remediation.id);
@@ -73,29 +72,23 @@ const ExecuteButton = ({
   };
 
   return (
-    isEnabled() && (
-      <React.Fragment>
-        {buttonWithTooltip()}
-        {open && (
-          <ExecuteModal
-            isOpen={open}
-            onClose={() => {
-              setShowRefreshMessage(false);
-              setOpen(false);
-            }}
-            showRefresh={showRefreshMessage}
-            remediationId={remediation.id}
-            remediationName={remediation.name}
-            data={data}
-            etag={etag}
-            isLoading={isLoading}
-            issueCount={issueCount}
-            setEtag={setEtag}
-            refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
-          />
-        )}
-      </React.Fragment>
-    )
+    <React.Fragment>
+      {buttonWithTooltip()}
+      {open && (
+        <ExecuteModal
+          isOpen={open}
+          onClose={() => {
+            setShowRefreshMessage(false);
+            setOpen(false);
+          }}
+          showRefresh={showRefreshMessage}
+          remediation={remediation}
+          remediationStatus={remediationStatus}
+          issueCount={issueCount}
+          refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
+        />
+      )}
+    </React.Fragment>
   );
 };
 
