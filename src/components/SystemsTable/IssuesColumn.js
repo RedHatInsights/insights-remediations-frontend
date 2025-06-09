@@ -41,7 +41,7 @@ const IssuesColumn = ({ issues, display_name }) => {
       </Button>
       <Modal
         variant={ModalVariant.medium}
-        title={`Actions for system ${display_name}`}
+        title={`Planned remediation actions`}
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
       >

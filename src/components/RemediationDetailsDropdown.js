@@ -25,6 +25,7 @@ function RemediationDetailsDropdown({
   remediationsList,
   updateRemPlan,
   refetch,
+  refetchAllRemediations,
 }) {
   const [open, setOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
@@ -36,16 +37,16 @@ function RemediationDetailsDropdown({
     <React.Fragment>
       {renameDialogOpen && (
         <TextInputDialog
-          title="Rename remediation plan"
+          title="Rename remediation plan?"
           ariaLabel="RenameModal"
           value={remediation.name}
           onCancel={() => setRenameDialogOpen(false)}
           onSubmit={(name) => {
             setRenameDialogOpen(false);
             updateRemPlan
-              ? updateRemPlan({ id: remediation.id, name: name }).then(() =>
-                  refetch()
-                )
+              ? updateRemPlan({ id: remediation.id, name: name }).then(() => {
+                  refetch(), refetchAllRemediations();
+                })
               : onRename(remediation.id, name);
 
             dispatchNotification({
@@ -112,6 +113,7 @@ RemediationDetailsDropdown.propTypes = {
   remediationsList: PropTypes.array,
   updateRemPlan: PropTypes.func,
   refetch: PropTypes.func,
+  refetchAllRemediations: PropTypes.func,
 };
 
 const connected = connect(null, (dispatch) => ({

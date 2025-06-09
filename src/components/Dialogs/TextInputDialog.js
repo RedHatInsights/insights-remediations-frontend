@@ -22,20 +22,32 @@ export default function TextInputDialog(props) {
     props.remediationsList
   );
 
+  const nameStatus = (() => {
+    if (isVerifyingName) return 'checking';
+    if (value.trim() === '') return 'empty';
+    if (value === props.value) return 'unchanged';
+    if (isDisabled) return 'duplicate';
+    return 'valid';
+  })();
+
+  const validationState = ['empty', 'duplicate'].includes(nameStatus)
+    ? ValidatedOptions.error
+    : ValidatedOptions.default;
+
   return (
     <Modal
       title={title}
       isOpen={true}
       onClose={(event) => onCancel(event)}
       actions={[
-        isVerifyingName ? (
+        nameStatus === 'checking' ? (
           <Spinner size="lg" className="pf-u-mr-sm" />
         ) : (
           <Button
             key="confirm"
             variant="primary"
             onClick={() => onSubmit(value)}
-            isDisabled={isDisabled || value.trim() === ''}
+            isDisabled={nameStatus !== 'valid'}
             ouiaId="save"
           >
             Rename
@@ -56,7 +68,7 @@ export default function TextInputDialog(props) {
       <FormGroup
         fieldId="remediation-name"
         helperTextInvalid="Playbook name has to contain alphanumeric characters"
-        isValid={isDisabled}
+        isValid={nameStatus !== 'empty' && nameStatus !== 'duplicate'}
       >
         <TextVariants.p className="pf-v5-u-font-weight-bold">
           Name
@@ -68,22 +80,16 @@ export default function TextInputDialog(props) {
           onChange={(_event, value) => setValue(value)}
           aria-label={ariaLabel || 'input text'}
           autoFocus
-          isValid={!isDisabled}
-          validated={
-            //isDisabled check if item exist in current remList,
-            //if exist and is current rem, dont show error message
-            value === props.value && isDisabled
-              ? ValidatedOptions.default
-              : (value.trim() === '' || isDisabled) && ValidatedOptions.error
-          }
+          isValid={nameStatus !== 'empty' && nameStatus !== 'duplicate'}
+          validated={validationState}
         />
-        {isDisabled && value !== props.value && (
+        {nameStatus === 'duplicate' && (
           <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
             A remediation plan with the same name already exists in your
             organization. Enter a unique name and try again.
           </p>
         )}
-        {value.trim() === '' && (
+        {nameStatus === 'empty' && (
           <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
             Playbook name cannot be empty.
           </p>

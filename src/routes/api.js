@@ -1,4 +1,4 @@
-import { API_BASE } from '../config';
+export const API_BASE = '/api/remediations/v1';
 
 export const getRemediationDetails = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations/${params.remId}`, { params });
@@ -58,4 +58,13 @@ export const deleteRemediationList = (axios) => (params) => {
       remediation_ids: params.remediation_ids,
     },
   });
+};
+
+export const executeRemediation = (axios) => (params) => {
+  const { id, etag, exclude } = params;
+  return axios.post(
+    `${API_BASE}/remediations/${id}/playbook_runs`,
+    { exclude },
+    { headers: { 'If-Match': etag } }
+  );
 };

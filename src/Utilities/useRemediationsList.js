@@ -1,6 +1,6 @@
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
-const { API_BASE } = require('../config');
 import { useState, useEffect, useRef } from 'react';
+import { API_BASE } from '../routes/api';
 
 export const useRemediationsList = (remediation) => {
   const axios = useAxiosWithPlatformInterceptors();

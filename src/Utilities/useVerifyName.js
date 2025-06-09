@@ -1,50 +1,43 @@
 import { useState, useEffect, useRef } from 'react';
 
-export const useVerifyName = (name, remediationsList) => {
-  const [isVerifyingName, setIsVerifyingName] = useState(false);
-  const [isDisabled, setIsDisabled] = useState(false);
-  const mounted = useRef(false);
+export const useVerifyName = (name, remediationsList = []) => {
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [dupInfo, setDupInfo] = useState({ checked: '', dup: false }); // {name we checked, isDuplicate}
+
+  const firstRun = useRef(true);
   const timerRef = useRef(null);
   const playbookNamePattern = /^(?!\s).+(?<!\s)$/;
 
   useEffect(() => {
-    mounted.current = true;
-    setIsVerifyingName(true);
-
-    //Run a timer 1/2 second after an input, if the user inputs again within
-    //that timer, clear and reset timer
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
+    // skip the initial mount
+    if (firstRun.current) {
+      firstRun.current = false;
+      return;
     }
 
-    const compareData = async () => {
-      const trimmedVal = name.trim();
+    setIsVerifying(true);
 
-      const dataHashmap = {};
-      remediationsList &&
-        remediationsList.forEach((item) => {
-          dataHashmap[item.name] = true;
-        });
-
-      if (dataHashmap[trimmedVal] && playbookNamePattern.test(trimmedVal)) {
-        setIsDisabled(true);
-      } else {
-        setIsDisabled(false);
-      }
-    };
+    // clear previous timer and reset duplicate flag
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setDupInfo({ checked: '', dup: false });
 
     timerRef.current = setTimeout(() => {
-      mounted.current && compareData();
-      setIsVerifyingName(false);
+      const trimmed = name.trim();
+
+      const duplicate =
+        playbookNamePattern.test(trimmed) &&
+        remediationsList.some((r) => r.name === trimmed);
+
+      setDupInfo({ checked: trimmed, dup: duplicate });
+      setIsVerifying(false);
     }, 500);
 
-    return () => {
-      mounted.current = false;
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
+    return () => timerRef.current && clearTimeout(timerRef.current);
   }, [name, remediationsList]);
 
-  return [isVerifyingName, isDisabled];
+  // expose duplicate status **only** if it belongs to the current value
+  const isDuplicateForCurrentName =
+    dupInfo.checked === name.trim() && dupInfo.dup;
+
+  return [isVerifying, isDuplicateForCurrentName];
 };

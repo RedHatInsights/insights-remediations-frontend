@@ -15,6 +15,7 @@ import RunSystemsTable from './RunSystemsTable';
 import { formatUtc } from './helpers';
 import useRunSystems from './hooks/useRunSystems';
 import { StatusLabel } from '../../helpers';
+import { RedoIcon } from '@patternfly/react-icons';
 
 const RunTabContent = ({
   run,
@@ -23,6 +24,9 @@ const RunTabContent = ({
   remId,
   fetchSystems,
   openLogModal,
+  refetchRemediationPlaybookRuns,
+  setManualRefreshClicked,
+  manualRefreshClicked,
 }) => {
   const { systems = [], loading } = useRunSystems(
     run,
@@ -30,6 +34,13 @@ const RunTabContent = ({
     remId,
     fetchSystems
   );
+
+  const handleClick = async () => {
+    setManualRefreshClicked(true);
+    await refetchRemediationPlaybookRuns();
+    setManualRefreshClicked(false);
+  };
+  const isLoading = loading || manualRefreshClicked;
 
   return (
     <TabContent
@@ -39,18 +50,29 @@ const RunTabContent = ({
       hidden={!isActive}
     >
       <Flex
-        direction={{ default: 'column' }}
         className="pf-v5-u-mb-lg pf-v5-u-mt-lg"
+        justifyContent={{ default: 'justifyContentSpaceBetween' }}
       >
-        <Flex>
-          <Title headingLevel="h1">{formatUtc(run.updated_at)}</Title>
-          <StatusLabel status={run.status} />
+        <Flex direction={{ default: 'column' }}>
+          <Flex>
+            <Title headingLevel="h1">{formatUtc(run.updated_at)}</Title>
+            <StatusLabel status={run.status} />
+          </Flex>
+          <Text>
+            <TextVariants.small>
+              {`Initiated by: ${run?.created_by?.username ?? 'unknown'}`}
+            </TextVariants.small>
+          </Text>
         </Flex>
-        <Text>
-          <TextVariants.small>
-            {`Initiated by: ${run?.created_by?.username ?? 'unknown'}`}
-          </TextVariants.small>
-        </Text>
+
+        <Button
+          isDisabled={isLoading}
+          isInline
+          variant="link"
+          onClick={handleClick}
+        >
+          <RedoIcon className="pf-v5-u-mr-xs" /> Refresh
+        </Button>
       </Flex>
 
       <DetailsBanner
@@ -62,10 +84,10 @@ const RunTabContent = ({
       <TableStateProvider>
         <RunSystemsTable
           run={{ ...run, systems }}
-          loading={loading}
+          loading={isLoading}
           viewLogColumn={{
             title: '',
-            screenReaderText: 'View log',
+            props: { screenReaderText: 'View log' },
             exportKey: 'viewLog',
             renderFunc: (_d, _i, system) => (
               <Button
@@ -90,6 +112,9 @@ RunTabContent.propTypes = {
   remId: PropTypes.string.isRequired,
   fetchSystems: PropTypes.func.isRequired,
   openLogModal: PropTypes.func.isRequired,
+  refetchRemediationPlaybookRuns: PropTypes.func.isRequired,
+  setManualRefreshClicked: PropTypes.func.isRequired,
+  manualRefreshClicked: PropTypes.bool.isRequired,
 };
 
 export default RunTabContent;

@@ -31,7 +31,7 @@ export const RemediationsPopover = () => {
               execution without the need for any additional subscriptions or
               tools. After creating a remediation plan, you can download or
               execute remediation plans on connected RHEL systems or utilize
-              integrations with Anisble Automation Platform and Satellite to
+              integrations with Ansible Automation Platform and Satellite to
               enable issue resolution across your Red Hat portfolio.
             </Text>
             <span>

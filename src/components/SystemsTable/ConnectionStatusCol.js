@@ -39,11 +39,9 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
           </Flex>
         }
       >
-        <Flex>
+        <Flex spaceItems={{ default: 'spaceItemsXs' }}>
           <DisconnectedIcon className="pf-u-mr-xs" />
-          <p style={{ borderBottomStyle: 'dotted', maxWidth: 'fit-content' }}>
-            Not configured
-          </p>
+          <p style={{ maxWidth: 'fit-content' }}>Not configured</p>
         </Flex>
       </Tooltip>
     );
@@ -53,14 +51,12 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
         <Tooltip
           position="left"
           content={
-            'Remote Host Configuration (RHC) client communication is disconnected.'
+            'The Remote Host Configuration (RHC) client is not configured for one or more systems in this plan.'
           }
         >
-          <Flex>
+          <Flex spaceItems={{ default: 'spaceItemsXs' }}>
             <DisconnectedIcon className="pf-u-mr-xs" />
-            <p style={{ borderBottomStyle: 'dotted', maxWidth: 'fit-content' }}>
-              Disconnected
-            </p>
+            <p style={{ maxWidth: 'fit-content' }}>Disconnected</p>
           </Flex>
         </Tooltip>
       );
@@ -72,23 +68,19 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
             'The Red Hat Satellite instance that this system is registered to is disconnected from Red Hat Insights.'
           }
         >
-          <Flex>
+          <Flex spaceItems={{ default: 'spaceItemsXs' }}>
             <DisconnectedIcon className="pf-u-mr-xs" />
-            <p style={{ borderBottomStyle: 'dotted', maxWidth: 'fit-content' }}>
-              Disconnected
-            </p>
+            <p style={{ maxWidth: 'fit-content' }}>Disconnected</p>
           </Flex>
         </Tooltip>
       );
     }
   } else {
     return (
-      <Tooltip content={'Connection Status Unkown'}>
-        <Flex>
+      <Tooltip content={'Connection Status Unknown'}>
+        <Flex spaceItems={{ default: 'spaceItemsXs' }}>
           <UnknownIcon className="pf-u-mr-xs" />
-          <p style={{ borderBottomStyle: 'dotted', maxWidth: 'fit-content' }}>
-            Unknown
-          </p>
+          <p style={{ maxWidth: 'fit-content' }}>Unknown</p>
         </Flex>
       </Tooltip>
     );
