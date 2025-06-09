@@ -6,7 +6,6 @@ import { emptyRows } from '../../../Frameworks/AsyncTableTools/AsyncTableTools/h
 import { Button } from '@patternfly/react-core';
 import TableStateProvider from '../../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
 import useRemediationTableState from '../../../api/useRemediationTableState';
-import { API_BASE } from '../../../config';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import useRemediationsQuery from '../../../api/useRemediationsQuery';
 import useRemediationFetchExtras from '../../../api/useRemediationFetchExtras';
@@ -18,6 +17,7 @@ import ConfirmationDialog from '../../../components/ConfirmationDialog';
 import useStateCallbacks from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
 import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
+import { API_BASE } from '../../api';
 
 const deleteIssues = (axios) => (params) => {
   return axios({
@@ -29,7 +29,7 @@ const deleteIssues = (axios) => (params) => {
   });
 };
 
-const ActionsContent = ({ remediationDetails, refetch }) => {
+const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   const axios = useAxiosWithPlatformInterceptors();
   const { id } = useParams();
   const { params } = useRemediationTableState(true);
@@ -167,6 +167,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
         aria-label="ActionsTable"
         ouiaId="ActionsTable"
         variant="compact"
+        loading={loading}
         items={pageOfIssues}
         total={filteredIssues.length}
         columns={[...columnsWithSystemsButton]}
@@ -213,6 +214,7 @@ const ActionsContent = ({ remediationDetails, refetch }) => {
 ActionsContent.propTypes = {
   remediationDetails: PropTypes.object,
   refetch: PropTypes.func,
+  loading: PropTypes.bool,
 };
 
 const ActionsContentProvider = (props) => {
