@@ -131,7 +131,7 @@ const DetailsCard = ({
                         onChange={(_, v) => setValue(v)}
                         aria-label="Rename Input"
                         autoFocus
-                        validated={validationState} /* drives the red border */
+                        validated={validationState}
                       />
                       {nameStatus === 'duplicate' && (
                         <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">

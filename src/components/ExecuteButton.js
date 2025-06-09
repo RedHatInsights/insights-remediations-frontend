@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
-import { Button, Flex, Spinner, Tooltip } from '@patternfly/react-core';
+import { Button, Flex, Tooltip } from '@patternfly/react-core';
 import { ExecuteModal } from './Modals/ExecuteModal';
 import './ExecuteButton.scss';
 import './Status.scss';
@@ -17,7 +17,6 @@ const ExecuteButton = ({
   etag,
   remediationStatus,
   setEtag,
-  areDetailsLoading,
   remediation,
   refetchRemediationPlaybookRuns,
 }) => {
@@ -75,31 +74,31 @@ const ExecuteButton = ({
     );
   };
 
-  return isEnabled() && !areDetailsLoading ? (
-    <React.Fragment>
-      {buttonWithTooltip()}
-      {open && (
-        <ExecuteModal
-          isOpen={open}
-          onClose={() => {
-            setShowRefreshMessage(false);
-            setOpen(false);
-          }}
-          showRefresh={showRefreshMessage}
-          remediationId={remediation.id}
-          remediationName={remediation.name}
-          data={data}
-          etag={etag}
-          isLoading={isLoading}
-          issueCount={issueCount}
-          setEtag={setEtag}
-          refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
-        />
-      )}
-    </React.Fragment>
-  ) : areDetailsLoading ? (
-    <Spinner size="lg" />
-  ) : null;
+  return (
+    isEnabled() && (
+      <React.Fragment>
+        {buttonWithTooltip()}
+        {open && (
+          <ExecuteModal
+            isOpen={open}
+            onClose={() => {
+              setShowRefreshMessage(false);
+              setOpen(false);
+            }}
+            showRefresh={showRefreshMessage}
+            remediationId={remediation.id}
+            remediationName={remediation.name}
+            data={data}
+            etag={etag}
+            isLoading={isLoading}
+            issueCount={issueCount}
+            setEtag={setEtag}
+            refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
+          />
+        )}
+      </React.Fragment>
+    )
+  );
 };
 
 ExecuteButton.propTypes = {

@@ -2,13 +2,12 @@ import React, { createContext, useState, useEffect } from 'react';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { connect } from 'react-redux';
 import Routes from './Routes';
-import './App.scss';
-import GlobalSkeleton from './skeletons/GlobalSkeleton';
 
 import { getIsReceptorConfigured } from './api';
 
 // Notifications
 import NotificationsPortal from '@redhat-cloud-services/frontend-components-notifications/NotificationPortal';
+import { Spinner } from '@patternfly/react-core';
 
 export const PermissionContext = createContext();
 
@@ -85,7 +84,7 @@ const App = () => {
       <Routes />
     </PermissionContext.Provider>
   ) : (
-    <GlobalSkeleton />
+    <Spinner />
   );
 };
 
