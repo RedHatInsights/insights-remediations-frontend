@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Button, Modal, ModalVariant } from '@patternfly/react-core';
-import './ConfirmationDialog.scss';
 
 export default function ConfirmationDialog({
   isOpen = true,
