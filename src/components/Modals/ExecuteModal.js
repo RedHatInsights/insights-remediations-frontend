@@ -23,34 +23,31 @@ import {
 } from '@patternfly/react-table/deprecated';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
-import './ExecuteModal.scss';
 import EmptyExecutePlaybookState from '../EmptyExecutePlaybookState';
 import { dispatchNotification } from '../../Utilities/dispatcher';
 import { renderConnectionStatus } from '../../routes/helpers';
 import useRemediationsQuery from '../../api/useRemediationsQuery';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import { executeRemediation } from '../../routes/api';
+// import RemediationsTable from '../RemediationsTable/RemediationsTable';
+// import TableStateProvider from '../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
 
 export const ExecuteModal = ({
   isOpen,
   onClose,
   showRefresh,
-  isLoading,
-  data,
-  remediationId,
-  remediationName,
+  remediation,
   issueCount,
-  etag,
-  setEtag,
   refetchRemediationPlaybookRuns,
+  remediationStatus,
 }) => {
   const axios = useAxiosWithPlatformInterceptors();
   const [connected, setConnected] = useState([]);
   const [disconnected, setDisconnected] = useState([]);
-  const isDebug = () => localStorage.getItem('remediations:debug') === 'true';
 
   useEffect(() => {
-    const [con, dis] = data.reduce(
+    // eslint-disable-next-line no-unsafe-optional-chaining
+    const [con, dis] = remediationStatus?.connectedData.reduce(
       ([pass, fail], e) =>
         e && e.connection_status === 'connected'
           ? [[...pass, { ...e }], fail]
@@ -59,7 +56,7 @@ export const ExecuteModal = ({
     );
     setConnected(con);
     setDisconnected(dis);
-  }, [data]);
+  }, [remediationStatus]);
 
   const generateStatus = (con) => {
     if (con.connection_status !== 'connected') {
@@ -94,7 +91,10 @@ export const ExecuteModal = ({
   }));
 
   const connectedCount = connected.reduce((acc, e) => e.system_count + acc, 0);
-  const systemCount = data.reduce((acc, e) => e.system_count + acc, 0);
+  const systemCount = remediationStatus?.connectedData.reduce(
+    (acc, e) => e.system_count + acc,
+    0
+  );
 
   const pluralize = (number, str) =>
     number > 1 ? `${number} ${str}s` : `${number} ${str}`;
@@ -108,12 +108,11 @@ export const ExecuteModal = ({
 
   const handleClick = () => {
     const exclude = disconnected.map((e) => e.executor_id).filter(Boolean);
-
-    executeRun({ id: remediationId, etag, exclude })
+    executeRun({ id: remediation.id, etag, exclude })
       .then(() => {
         refetchRemediationPlaybookRuns();
         dispatchNotification({
-          title: `Executing playbook ${remediationName}`,
+          title: `Executing playbook ${remediation.name}`,
           description: (
             <span>
               View results in the <b>Execution History tab</b>
@@ -140,7 +139,7 @@ export const ExecuteModal = ({
     <Modal
       data-testid="execute-modal"
       className="remediations rem-c-execute-modal"
-      variant={isDebug() ? ModalVariant.large : ModalVariant.small}
+      variant={ModalVariant.small}
       title={'Execute playbook'}
       isOpen={isOpen}
       onClose={onClose}
@@ -155,7 +154,7 @@ export const ExecuteModal = ({
                 isDisabled={connected.length === 0}
                 onClick={handleClick}
               >
-                {isLoading
+                {remediationStatus?.areDetailsLoading
                   ? 'Execute playbook'
                   : `Execute playbook on ${pluralize(
                       connectedCount,
@@ -167,7 +166,7 @@ export const ExecuteModal = ({
                 variant="secondary"
                 ouiaId="download-playbook"
                 onClick={() => {
-                  downloadPlaybook(remediationId);
+                  downloadPlaybook(remediation?.id);
                   dispatchNotification({
                     title: 'Preparing playbook for download',
                     description:
@@ -180,15 +179,6 @@ export const ExecuteModal = ({
               >
                 Download playbook
               </Button>,
-              isDebug() ? (
-                <Button
-                  key="reset-etag"
-                  onClick={() => setEtag('test')}
-                  ouiaId="reset-etag"
-                >
-                  Reset etag
-                </Button>
-              ) : null,
             ]
           : [
               <Button
@@ -201,16 +191,16 @@ export const ExecuteModal = ({
             ]
       }
     >
-      <div className="rem-c-execute-modal__body">
-        {showRefresh ? (
+      <div>
+        {showRefresh && (
           <Alert
             variant="warning"
             isInline
             title="The connection status of systems associated with this Playbook has changed. Please review again."
           />
-        ) : null}
+        )}
         <TextContent>
-          {isLoading ? (
+          {remediationStatus?.areDetailsLoading ? (
             <Skeleton size="lg" />
           ) : (
             <Text component={TextVariants.p}>
@@ -275,7 +265,6 @@ export const ExecuteModal = ({
             variant="link"
             isInline
             component="a"
-            // eslint-disable-next-line max-len
             href="https://access.redhat.com/articles/rhc"
             rel="noreferrer"
             target="_blank"
@@ -289,8 +278,17 @@ export const ExecuteModal = ({
             </Text>
           )}
         </TextContent>
-        {isLoading && <Skeleton size="lg" />}
-        {!isLoading && systemCount !== 0 && (
+        {/* {isLoading && <Skeleton size="lg" />} */}
+        {/* <RemediationsTable
+          aria-label="ExecutionModalTable"
+          ouiaId="ExecutionModalTable"
+          variant="compact"
+          loading={loading}
+          items={result?.data}
+          total={result?.meta?.total}
+          columns={[...columns]}
+        /> */}
+        {!remediationStatus?.areDetailsLoading && systemCount !== 0 && (
           <Table
             variant={TableVariant.compact}
             aria-label="Systems"
@@ -314,11 +312,19 @@ export const ExecuteModal = ({
             <TableBody role="tablebody" />
           </Table>
         )}
-        {!isLoading && systemCount === 0 && <EmptyExecutePlaybookState />}
+        {!remediationStatus?.areDetailsLoading && systemCount === 0 && (
+          <EmptyExecutePlaybookState />
+        )}
       </div>
     </Modal>
   );
 };
+
+// const ExecuteModalProvider = () => (
+//   <TableStateProvider>
+//     <ExecuteModal />
+//   </TableStateProvider>
+// );
 
 ExecuteModal.propTypes = {
   isOpen: PropTypes.bool,
@@ -326,10 +332,10 @@ ExecuteModal.propTypes = {
   showRefresh: PropTypes.bool,
   isLoading: PropTypes.bool,
   data: PropTypes.array,
-  remediationId: PropTypes.string,
-  remediationName: PropTypes.string,
+  remediation: PropTypes.object,
   issueCount: PropTypes.number,
   etag: PropTypes.string,
   setEtag: PropTypes.func,
   refetchRemediationPlaybookRuns: PropTypes.func,
+  remediationStatus: PropTypes.object,
 };
