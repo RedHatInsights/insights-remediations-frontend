@@ -10,6 +10,7 @@ import uniqWith from 'lodash/uniqWith';
 import isEqual from 'lodash/isEqual';
 import { applyReducerHash } from '@redhat-cloud-services/frontend-components-utilities/ReducerRegistry/ReducerRegistry';
 import { SystemsTableWithContext } from '../modules/RemediationsModal/common/SystemsTable';
+import { pluralize } from '../components/statusHelper';
 
 export const CAN_REMEDIATE = 'remediations:remediation:write';
 export const AUTO_REBOOT = 'auto-reboot';
@@ -43,9 +44,6 @@ export const remediationUrl = (id) =>
   `${getBaseUri()}${getGroup()}/remediations${id ? `/${id}` : ''}`;
 
 export const dedupeArray = (array) => [...new Set(array)];
-
-export const pluralize = (count, str, fallback) =>
-  count !== 1 ? fallback || str + 's' : str;
 
 const sortRecords = (records, sortByState) =>
   [...records].sort((a, b) => {

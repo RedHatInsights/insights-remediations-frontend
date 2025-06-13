@@ -91,7 +91,7 @@ const RemediationDetailsPageHeader = ({
                     isFedramp ||
                     !isExecutable
                   }
-                  issueCount={remediation?.issues}
+                  issueCount={remediation?.issues.length}
                   remediationStatus={remediationStatus}
                   remediation={remediation}
                   refetchRemediationPlaybookRuns={
