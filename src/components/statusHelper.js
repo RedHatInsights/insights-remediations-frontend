@@ -5,8 +5,8 @@ import { CancelButton } from '../containers/CancelButton';
 import { capitalize } from '../Utilities/utils';
 import { StatusIcon, StatusLabel } from '../routes/helpers';
 
-export const pluralize = (n, word) =>
-  n === 1 ? `${n} ${word}` : `${n} ${word}s`;
+export const pluralize = (count, word) =>
+  count === 1 ? `${count} ${word}` : `${count} ${word}s`;
 
 export const normalizeStatus = (raw) =>
   ({

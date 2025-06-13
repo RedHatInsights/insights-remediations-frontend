@@ -4,8 +4,6 @@ import PropTypes from 'prop-types';
 import { Button } from '@patternfly/react-core';
 import ConfirmationDialog from './ConfirmationDialog';
 
-import './DeleteButton.scss';
-
 const DeleteButton = ({
   label,
   dialogTitle,
