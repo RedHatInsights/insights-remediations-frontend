@@ -28,6 +28,7 @@
     "@unleash/proxy-client-react": "^4.5.2",
     "axios": "^1.7.7",
     "classnames": "^2.3.1",
+    "identity-obj-proxy": "^3.0.0",
     "p-all": "^5.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
@@ -55,6 +56,9 @@
     "transformIgnorePatterns": [
       "/node_modules/(?!(uuid|@redhat-cloud-services|p-all|p-map|aggregate-error|indent-string|clean-stack)/)"
     ],
+    "moduleNameMapper": {
+      "\\.(css|scss|svg)$": "identity-obj-proxy"
+    },
     "setupFiles": [
       "<rootDir>/config/setupTests.js"
     ],

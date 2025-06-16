@@ -18,8 +18,8 @@ export const Systems = {
   renderFunc: renderComponent(SystemsCell),
 };
 
-export const ConnectonType = {
-  title: 'Connecton type',
+export const ConnectionType = {
+  title: 'Connection type',
   transforms: [wrappable],
   exportKey: 'connection_type',
   renderFunc: renderComponent(ConnectionTypeCell),
@@ -31,4 +31,4 @@ export const ConnectionStatus = {
   exportKey: 'connection_status',
   renderFunc: renderComponent(ConnectionStatusCell),
 };
-export default [ConnectonType, Systems, ConnectionStatus];
+export default [ConnectionType, Systems, ConnectionStatus];

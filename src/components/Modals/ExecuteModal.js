@@ -50,7 +50,7 @@ export const ExecuteModal = ({
   }, [remediationStatus]);
 
   const connectedCount = connected.reduce((acc, e) => acc + e.system_count, 0);
-  const systemCount = remediationStatus?.connectedData.reduce(
+  const systemCount = (remediationStatus?.connectedData ?? []).reduce(
     (acc, e) => acc + e.system_count,
     0
   );
