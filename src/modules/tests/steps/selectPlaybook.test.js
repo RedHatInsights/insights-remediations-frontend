@@ -17,8 +17,6 @@ import { remediationWizardTestData } from '../testData';
 import { getRemediation } from '../../../api';
 import { withTableState } from '../../../__testUtils__/withTableState';
 
-// ⚠️ NEW: helper that injects TableStateProvider so ATT hooks have context\ nimport { withTableState } from '__testUtils__/withTableState';
-
 jest.mock('../../../api', () => ({
   ...jest.requireActual('../../../api'),
   getRemediations: jest.fn(() =>
@@ -36,9 +34,6 @@ jest.mock('../../../api', () => ({
   ),
 }));
 
-/* ---------------------------------------------------------------------
- *              Helpers
- * ------------------------------------------------------------------- */
 const RendererWrapper = (props) => (
   <FormRenderer
     onSubmit={() => {}}
@@ -74,9 +69,6 @@ const createSchema = () => ({
 const renderWithProviders = (ui, store, tableProps = {}) =>
   render(withTableState(<Provider store={store}>{ui}</Provider>, tableProps));
 
-/* ---------------------------------------------------------------------
- *               Tests
- * ------------------------------------------------------------------- */
 describe('SelectPlaybook', () => {
   const mockStore = configureStore([promiseMiddleware]);
 

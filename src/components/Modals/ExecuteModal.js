@@ -37,14 +37,20 @@ export const ExecuteModal = ({
   const [disconnected, setDisconnected] = useState([]);
 
   useEffect(() => {
-    if (!remediationStatus?.connectedData) return;
+    if (!remediationStatus?.connectedData?.length) {
+      setConnected([]);
+      setDisconnected([]);
+      return;
+    }
+
     const [con, dis] = remediationStatus.connectedData.reduce(
       ([pass, fail], e) =>
-        e && e.connection_status === 'connected'
+        e.connection_status === 'connected'
           ? [[...pass, e], fail]
           : [pass, [...fail, e]],
       [[], []]
     );
+
     setConnected(con);
     setDisconnected(dis);
   }, [remediationStatus]);
@@ -244,10 +250,8 @@ export const ExecuteModal = ({
 ExecuteModal.propTypes = {
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
-  showRefresh: PropTypes.bool,
   remediation: PropTypes.object,
   issueCount: PropTypes.number,
-  etag: PropTypes.string,
   refetchRemediationPlaybookRuns: PropTypes.func,
   remediationStatus: PropTypes.object,
 };
