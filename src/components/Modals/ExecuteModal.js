@@ -19,10 +19,10 @@ import { dispatchNotification } from '../../Utilities/dispatcher';
 import useRemediationsQuery from '../../api/useRemediationsQuery';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import { executeRemediation } from '../../routes/api';
-import { pluralize } from '../statusHelper';
 import RemediationsTable from '../RemediationsTable/RemediationsTable';
 import TableStateProvider from '../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
 import columns from './Columns';
+import { pluralize } from '../../Utilities/utils';
 
 export const ExecuteModal = ({
   isOpen,

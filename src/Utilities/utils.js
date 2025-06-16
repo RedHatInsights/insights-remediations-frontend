@@ -10,7 +10,6 @@ import uniqWith from 'lodash/uniqWith';
 import isEqual from 'lodash/isEqual';
 import { applyReducerHash } from '@redhat-cloud-services/frontend-components-utilities/ReducerRegistry/ReducerRegistry';
 import { SystemsTableWithContext } from '../modules/RemediationsModal/common/SystemsTable';
-import { pluralize } from '../components/statusHelper';
 
 export const CAN_REMEDIATE = 'remediations:remediation:write';
 export const AUTO_REBOOT = 'auto-reboot';
@@ -24,6 +23,9 @@ export const SYSTEMS = 'systems';
 export const RESOLUTIONS = 'resolutions';
 export const ISSUES_MULTIPLE = 'issues-multiple';
 export const TOGGLE_BULK_SELECT = 'toggle-bulk-select';
+
+export const pluralize = (count, word) =>
+  count === 1 ? `${count} ${word}` : `${count} ${word}s`;
 
 // Get the current group since we can be mounted at two urls
 export const getGroup = () =>
