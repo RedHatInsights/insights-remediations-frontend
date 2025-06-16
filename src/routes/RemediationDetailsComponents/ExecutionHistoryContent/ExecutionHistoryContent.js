@@ -132,7 +132,7 @@ const ExecutionHistoryTab = ({
       runId: run.id,
       systemId: system.system_id,
       systemName: system.system_name,
-      status: run.status,
+      status: system.status,
       executor_name: system.executor_name,
     });
     setIsLogOpen(true);
