@@ -9,7 +9,7 @@ const INVENTORY_TOTAL_FETCH_URL = '/api/inventory/v1/hosts';
 const RHEL_ONLY_FILTER =
   '?filter[system_profile][operating_system][RHEL][version][gte]=0';
 
-export const routes = {
+const routes = {
   home: {
     path: '/*',
     component: lazy(() =>

@@ -5,7 +5,7 @@ import RemediationButton from '../modules/RemediationsButton';
 
 import propTypes from 'prop-types';
 
-import { getHosts } from '../api';
+import { getHosts } from '../api/inventory';
 
 class TestButtons extends React.Component {
   constructor(props) {

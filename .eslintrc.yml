@@ -3,8 +3,12 @@ extends:
   - 'plugin:cypress/recommended'
   - "plugin:testing-library/react"
   - "plugin:jest-dom/recommended"
+plugins:
+  - 'import'
 root: true
 globals:
   insights: readable
 rules:
   rulesdir/forbid-pf-relative-imports: 'off'
+  import/no-unresolved: 'error'
+  import/named: 'error'

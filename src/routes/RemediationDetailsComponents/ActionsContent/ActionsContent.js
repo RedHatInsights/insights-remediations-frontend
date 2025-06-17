@@ -17,7 +17,7 @@ import ConfirmationDialog from '../../../components/ConfirmationDialog';
 import useStateCallbacks from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
 import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
-import { API_BASE } from '../../api';
+import { API_BASE } from '../../../api';
 
 const deleteIssues = (axios) => (params) => {
   return axios({

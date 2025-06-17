@@ -1,4 +1,4 @@
-export const API_BASE = '/api/remediations/v1';
+import { API_BASE } from '../api';
 
 export const getRemediationDetails = (axios) => (params) => {
   return axios.get(`${API_BASE}/remediations/${params.remId}`, { params });

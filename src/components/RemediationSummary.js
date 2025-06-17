@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Button,
+  DescriptionList,
   Flex,
   FlexItem,
   Icon,
@@ -17,7 +18,6 @@ import {
   OffIcon,
   ExclamationTriangleIcon,
 } from '@patternfly/react-icons';
-import DescriptionList from '../components/Layouts/DescriptionList';
 import classnames from 'classnames';
 import { StatusSummary } from '../components/statusHelper';
 import { DateFormat } from '@redhat-cloud-services/frontend-components/DateFormat';

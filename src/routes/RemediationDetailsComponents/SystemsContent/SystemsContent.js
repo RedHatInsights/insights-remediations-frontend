@@ -14,9 +14,9 @@ import useStateCallbacks from '../../../Frameworks/AsyncTableTools/AsyncTableToo
 import chunk from 'lodash/chunk';
 import { useParams } from 'react-router-dom';
 import useRemediationFetchExtras from '../../../api/useRemediationFetchExtras';
-import { API_BASE } from '../../../config';
 import ActionsModal from './ActionsModal/ActionsModal';
 import { systemNameFilter } from '../Filters';
+import { API_BASE } from '../../../api';
 
 const getHostTags = (axios) => (params) => {
   return axios.get(`/api/inventory/v1/hosts/${params.host_id_list}/tags`);
