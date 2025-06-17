@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { SystemsTableWithContext } from '../../RemediationsModal/common/SystemsTable';
+import { SystemsTableWithContext } from '../RemediationsModal/common/SystemsTable';
 
 jest.mock(
   '@redhat-cloud-services/frontend-components/Inventory/InventoryTable',

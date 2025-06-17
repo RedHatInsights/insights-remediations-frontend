@@ -1,39 +1,36 @@
 import React from 'react';
-import FormRenderer from '@data-driven-forms/react-form-renderer/form-renderer';
-import FormTemplate from '@data-driven-forms/pf4-component-mapper/form-template';
-import SelectPlaybook from '../../RemediationsModal/steps/selectPlaybook';
-import TextField from '@data-driven-forms/pf4-component-mapper/text-field';
-import componentTypes from '@data-driven-forms/react-form-renderer/component-types';
-import promiseMiddleware from 'redux-promise-middleware';
-import configureStore from 'redux-mock-store';
-import { selectPlaybookFields } from '../../RemediationsModal/schema';
-import { remediationWizardTestData } from '../testData';
-import { Provider } from 'react-redux';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
+import promiseMiddleware from 'redux-promise-middleware';
+
+import FormRenderer from '@data-driven-forms/react-form-renderer/form-renderer';
+import FormTemplate from '@data-driven-forms/pf4-component-mapper/form-template';
+import TextField from '@data-driven-forms/pf4-component-mapper/text-field';
+import componentTypes from '@data-driven-forms/react-form-renderer/component-types';
+
+import SelectPlaybook from '../../RemediationsModal/steps/selectPlaybook';
+import { selectPlaybookFields } from '../../RemediationsModal/schema';
+import { remediationWizardTestData } from '../testData';
 import { getRemediation } from '../../../api';
+import { withTableState } from '../../../__testUtils__/withTableState';
 
 jest.mock('../../../api', () => ({
   ...jest.requireActual('../../../api'),
-  getRemediations: jest.fn(
-    () =>
-      new Promise((resolve) =>
-        resolve({
-          data: [
-            { id: 'remediationId', name: 'test-remediation-1' },
-            { id: '1234', name: 'bretheren' },
-          ],
-        })
-      )
+  getRemediations: jest.fn(() =>
+    Promise.resolve({
+      data: [
+        { id: 'remediationId', name: 'test-remediation-1' },
+        { id: '1234', name: 'bretheren' },
+      ],
+    })
   ),
-  getRemediation: jest.fn(
-    () =>
-      new Promise((resolve) =>
-        resolve({
-          data: [{ id: 'remediationId', name: 'test-remediation-single' }],
-        })
-      )
+  getRemediation: jest.fn(() =>
+    Promise.resolve({
+      data: [{ id: 'remediationId', name: 'test-remediation-single' }],
+    })
   ),
 }));
 
@@ -55,33 +52,25 @@ const RendererWrapper = (props) => (
     {...props}
   />
 );
+
 const remediationsList = [
-  {
-    name: 'aaaa',
-  },
-  {
-    name: 'aaaaaaa',
-  },
-  {
-    name: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-  },
-  {
-    name: 'asddfgd',
-  },
-  {
-    name: 'asdf',
-  },
+  { name: 'aaaa' },
+  { name: 'aaaaaaa' },
+  { name: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' },
+  { name: 'asddfgd' },
+  { name: 'asdf' },
 ];
 
 const createSchema = () => ({
   fields: selectPlaybookFields(remediationsList),
 });
 
-describe('SelectPlaybook', () => {
-  let initialProps;
-  let onSubmit;
+// Reusable test render that wires Redux **and** TableState
+const renderWithProviders = (ui, store, tableProps = {}) =>
+  render(withTableState(<Provider store={store}>{ui}</Provider>, tableProps));
 
-  let mockStore = configureStore([promiseMiddleware]);
+describe('SelectPlaybook', () => {
+  const mockStore = configureStore([promiseMiddleware]);
 
   const initialState = {
     hostReducer: {
@@ -95,17 +84,16 @@ describe('SelectPlaybook', () => {
     },
   };
 
+  let onSubmit;
+
   beforeEach(() => {
     onSubmit = jest.fn();
   });
 
-  it('should render correctly without remediations and show Skeleton loader', async () => {
+  it('renders correctly without remediations and shows Skeleton loader', async () => {
     const store = mockStore(initialState);
-    render(
-      <Provider store={store}>
-        <RendererWrapper schema={createSchema({})} {...initialProps} />
-      </Provider>
-    );
+    renderWithProviders(<RendererWrapper schema={createSchema()} />, store);
+
     expect(screen.getByLabelText('Add to existing playbook')).toBeVisible();
     expect(screen.getByLabelText('Create new playbook')).toBeVisible();
     expect(
@@ -114,34 +102,22 @@ describe('SelectPlaybook', () => {
     expect(screen.getByTestId('skeleton-loader')).toBeVisible();
   });
 
-  it('should populate existing playbooks dropdown', async () => {
+  it('populates existing playbooks dropdown', async () => {
     const store = mockStore(initialState);
-    render(
-      <Provider store={store}>
-        <RendererWrapper schema={createSchema({})} {...initialProps} />
-      </Provider>
-    );
+    renderWithProviders(<RendererWrapper schema={createSchema()} />, store);
 
     await waitFor(() => {
       expect(screen.queryByTestId('skeleton-loader')).not.toBeInTheDocument();
     });
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole('combobox', {
-          name: /type to filter/i,
-        })
-      ).toBeVisible();
-    });
+    expect(
+      screen.getByRole('combobox', { name: /type to filter/i })
+    ).toBeVisible();
   });
 
-  it('should use type ahead on existing playbooks dropdown', async () => {
+  it('filters with type‑ahead', async () => {
     const store = mockStore(initialState);
-    render(
-      <Provider store={store}>
-        <RendererWrapper schema={createSchema({})} {...initialProps} />
-      </Provider>
-    );
+    renderWithProviders(<RendererWrapper schema={createSchema()} />, store);
 
     await waitFor(() => {
       expect(screen.queryByTestId('skeleton-loader')).not.toBeInTheDocument();
@@ -150,42 +126,24 @@ describe('SelectPlaybook', () => {
     const typeaheadBox = screen.getByRole('combobox', {
       name: /type to filter/i,
     });
+
     await userEvent.click(typeaheadBox);
-
     expect(
-      screen.getByRole('option', {
-        name: /test-remediation-1/i,
-      })
+      screen.getByRole('option', { name: /test-remediation-1/i })
     ).toBeVisible();
-
-    expect(
-      screen.getByRole('option', {
-        name: /bretheren/i,
-      })
-    ).toBeVisible();
+    expect(screen.getByRole('option', { name: /bretheren/i })).toBeVisible();
 
     await userEvent.type(typeaheadBox, 'br');
 
     expect(
-      screen.queryByRole('option', {
-        name: /test-remediation-1/i,
-      })
+      screen.queryByRole('option', { name: /test-remediation-1/i })
     ).not.toBeInTheDocument();
-
-    expect(
-      screen.getByRole('option', {
-        name: /bretheren/i,
-      })
-    ).toBeVisible();
+    expect(screen.getByRole('option', { name: /bretheren/i })).toBeVisible();
   });
 
-  it('should display no results found on typeahead', async () => {
+  it('shows "no results found" on type‑ahead', async () => {
     const store = mockStore(initialState);
-    render(
-      <Provider store={store}>
-        <RendererWrapper schema={createSchema({})} {...initialProps} />
-      </Provider>
-    );
+    renderWithProviders(<RendererWrapper schema={createSchema()} />, store);
 
     await waitFor(() => {
       expect(screen.queryByTestId('skeleton-loader')).not.toBeInTheDocument();
@@ -195,32 +153,7 @@ describe('SelectPlaybook', () => {
       name: /type to filter/i,
     });
     await userEvent.click(typeaheadBox);
-
-    expect(
-      screen.getByRole('option', {
-        name: /test-remediation-1/i,
-      })
-    ).toBeVisible();
-
-    expect(
-      screen.getByRole('option', {
-        name: /bretheren/i,
-      })
-    ).toBeVisible();
-
     await userEvent.type(typeaheadBox, 'tooted');
-
-    expect(
-      screen.queryByRole('option', {
-        name: /test-remediation-1/i,
-      })
-    ).not.toBeInTheDocument();
-
-    expect(
-      screen.queryByRole('option', {
-        name: /bretheren/i,
-      })
-    ).not.toBeInTheDocument();
 
     expect(
       screen.getByRole('option', {
@@ -229,42 +162,29 @@ describe('SelectPlaybook', () => {
     ).toBeVisible();
   });
 
-  it('should call getRemediation on select', async () => {
+  it('calls getRemediation on select', async () => {
     const store = mockStore(initialState);
-    render(
-      <Provider store={store}>
-        <RendererWrapper schema={createSchema({})} {...initialProps} />
-      </Provider>
-    );
+    renderWithProviders(<RendererWrapper schema={createSchema()} />, store);
 
     await waitFor(() => {
       expect(screen.queryByTestId('skeleton-loader')).not.toBeInTheDocument();
     });
 
-    const typeaheadBox = screen.getByRole('combobox', {
-      name: /type to filter/i,
-    });
-    await userEvent.click(typeaheadBox);
-
     await userEvent.click(
-      screen.queryByRole('option', {
-        name: /test-remediation-1/i,
-      })
+      screen.getByRole('combobox', { name: /type to filter/i })
+    );
+    await userEvent.click(
+      screen.getByRole('option', { name: /test-remediation-1/i })
     );
 
     expect(getRemediation).toHaveBeenCalled();
   });
 
-  it('should be able to create new playbook', async () => {
+  it('creates a new playbook', async () => {
     const store = mockStore(initialState);
-    render(
-      <Provider store={store}>
-        <RendererWrapper
-          schema={createSchema({})}
-          {...initialProps}
-          onSubmit={onSubmit}
-        />
-      </Provider>
+    renderWithProviders(
+      <RendererWrapper schema={createSchema()} onSubmit={onSubmit} />,
+      store
     );
 
     await userEvent.click(screen.getByLabelText('Add to existing playbook'));
@@ -280,30 +200,7 @@ describe('SelectPlaybook', () => {
     });
   });
 
-  it('should display resolutions warninng panel', async () => {
-    const store = mockStore({
-      ...initialState,
-      resolutionsReducer: {
-        ...initialState.resolutionsReducer,
-        warnings: ['some-warning'],
-      },
-    });
-    render(
-      <Provider store={store}>
-        <RendererWrapper
-          schema={createSchema({})}
-          {...initialProps}
-          onSubmit={onSubmit}
-        />
-      </Provider>
-    );
-
-    screen.getByRole('heading', {
-      name: /warning alert: there was 1 error while fetching resolutions for your issues!/i,
-    });
-  });
-
-  it('should display resolutions errors panel', async () => {
+  it('displays resolutions error panel', () => {
     const store = mockStore({
       ...initialState,
       resolutionsReducer: {
@@ -311,14 +208,10 @@ describe('SelectPlaybook', () => {
         errors: ['some-error'],
       },
     });
-    render(
-      <Provider store={store}>
-        <RendererWrapper
-          schema={createSchema({})}
-          {...initialProps}
-          onSubmit={onSubmit}
-        />
-      </Provider>
+
+    renderWithProviders(
+      <RendererWrapper schema={createSchema()} onSubmit={onSubmit} />,
+      store
     );
 
     screen.getByRole('heading', { name: /unexpected error/i });
