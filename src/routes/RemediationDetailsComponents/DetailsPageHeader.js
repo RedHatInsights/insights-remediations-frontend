@@ -4,11 +4,11 @@ import {
   PageHeaderTitle,
 } from '@redhat-cloud-services/frontend-components/PageHeader';
 import React, { useCallback } from 'react';
-import { ExecutePlaybookButton } from '../../containers/ExecuteButtons';
 import { downloadPlaybook } from '../../api';
 import { dispatchNotification } from '../../Utilities/dispatcher';
 import RemediationDetailsDropdown from '../../components/RemediationDetailsDropdown';
 import PropTypes from 'prop-types';
+import ExecuteButton from '../../components/ExecuteButton';
 
 const RemediationDetailsPageHeader = ({
   remediation,
@@ -20,6 +20,7 @@ const RemediationDetailsPageHeader = ({
   refetch,
   permissions,
   refetchRemediationPlaybookRuns,
+  isExecutable,
 }) => {
   const handleDownload = useCallback(async () => {
     dispatchNotification({
@@ -83,18 +84,15 @@ const RemediationDetailsPageHeader = ({
               flexWrap={{ default: 'wrap' }}
             >
               <FlexItem>
-                <ExecutePlaybookButton
+                <ExecuteButton
                   isDisabled={
                     remediationStatus.connectedSystems === 0 ||
                     !permissions?.execute ||
-                    isFedramp
+                    isFedramp ||
+                    !isExecutable
                   }
-                  connectedSystems={remediationStatus.connectedSystems}
-                  totalSystems={remediationStatus.totalSystems}
-                  areDetailsLoading={remediationStatus.areDetailsLoading}
-                  detailsError={remediationStatus.detailsError}
-                  permissions={permissions.execute}
-                  issueCount={remediation?.issues}
+                  issueCount={remediation?.issues.length}
+                  remediationStatus={remediationStatus}
                   remediation={remediation}
                   refetchRemediationPlaybookRuns={
                     refetchRemediationPlaybookRuns

@@ -24,6 +24,9 @@ export const RESOLUTIONS = 'resolutions';
 export const ISSUES_MULTIPLE = 'issues-multiple';
 export const TOGGLE_BULK_SELECT = 'toggle-bulk-select';
 
+export const pluralize = (count, word) =>
+  count === 1 ? `${count} ${word}` : `${count} ${word}s`;
+
 // Get the current group since we can be mounted at two urls
 export const getGroup = () =>
   window.location.pathname
@@ -43,9 +46,6 @@ export const remediationUrl = (id) =>
   `${getBaseUri()}${getGroup()}/remediations${id ? `/${id}` : ''}`;
 
 export const dedupeArray = (array) => [...new Set(array)];
-
-export const pluralize = (count, str, fallback) =>
-  count !== 1 ? fallback || str + 's' : str;
 
 const sortRecords = (records, sortByState) =>
   [...records].sort((a, b) => {
