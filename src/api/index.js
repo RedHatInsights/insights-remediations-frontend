@@ -8,6 +8,8 @@ import axiosInstance from '@redhat-cloud-services/frontend-components-utilities/
 import * as remediationsEndpoints from '@redhat-cloud-services/remediations-client';
 import * as sourcesEndpoints from '@redhat-cloud-services/sources-client';
 
+import { downloadPlaybooksParamCreator } from '@redhat-cloud-services/remediations-client/DownloadPlaybooks';
+
 export const remediationsApi = APIFactory(API_BASE, remediationsEndpoints, {
   axios: axiosInstance,
 });
@@ -15,8 +17,6 @@ export const remediationsApi = APIFactory(API_BASE, remediationsEndpoints, {
 export const sourcesApi = APIFactory(SOURCES_BASE, sourcesEndpoints, {
   axios: axiosInstance,
 });
-
-import downloadPlaybooksParamCreator from '@redhat-cloud-services/remediations-client/DownloadPlaybooks';
 
 export function downloadPlaybook(selectedIds) {
   return new Promise((resolve) => {
@@ -45,7 +45,6 @@ export function getIsReceptorConfigured() {
   );
 }
 
-// RemediationDetails blocked
 export function deleteSystemsFromRemediation(systems, remediation) {
   return Promise.all(
     systems.flatMap((system) =>
@@ -64,7 +63,7 @@ export const createRemediation = async (data) =>
   remediationsApi.createRemediation(data);
 
 export const patchRemediation = (id, data) =>
-  remediationsApi.updateRemediation({ id, remediationInput: data });
+  remediationsApi.updateRemediation(id, data);
 
 export const getRemediations = () =>
   remediationsApi.getRemediations({ limit: 200 });

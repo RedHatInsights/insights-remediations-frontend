@@ -57,9 +57,13 @@ export const filtersSerialiser = (state, filters) =>
       ? filterSerialiser(filterConfigItem, value)
       : value;
 
+    console.log({ filters, state });
+
     const filterParams = {
-      ...allFilters,
-      [`filter[${filterConfigItem.filterAttribute}]`]: serialiseValue,
+      filter: {
+        ...allFilters?.filter,
+        [`${filterConfigItem.filterAttribute}`]: serialiseValue,
+      },
     };
     return filterParams;
   }, {});
