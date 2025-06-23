@@ -19,7 +19,6 @@ import AsyncTableToolsTable from '../../Frameworks/AsyncTableTools/AsyncTableToo
  *
  */
 const RemediationsTable = (props) => {
-  console.log('remediation table props', props);
   return (
     <AsyncTableToolsTable
       {...props}

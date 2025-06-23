@@ -30,7 +30,6 @@ const RemediationDetails = () => {
 
   const { result: allRemediations, refetch: refetchAllRemediations } =
     useRemediationsQuery(getRemediationsList);
-  console.log({ allRemediations });
 
   const { result: isExecutable } = useRemediationsQuery(checkExecutableStatus, {
     params: { remId: id },

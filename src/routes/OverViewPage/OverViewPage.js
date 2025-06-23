@@ -55,7 +55,6 @@ export const OverViewPage = () => {
     useTableState: true,
     params: { hideArchived: false, fieldsData: ['playbook_runs'] },
   });
-  console.log('query res', { result });
 
   const { result: allRemediations, refetch: refetchAllRemediations } =
     useRemediationsQuery(getRemediationsList);
