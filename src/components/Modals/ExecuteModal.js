@@ -48,7 +48,7 @@ export const ExecuteModal = ({
         e.connection_status === 'connected'
           ? [[...pass, e], fail]
           : [pass, [...fail, e]],
-      [[], []]
+      [[], []],
     );
 
     setConnected(con);
@@ -58,14 +58,14 @@ export const ExecuteModal = ({
   const connectedCount = connected.reduce((acc, e) => acc + e.system_count, 0);
   const systemCount = (remediationStatus?.connectedData ?? []).reduce(
     (acc, e) => acc + e.system_count,
-    0
+    0,
   );
 
   const { fetch: executeRun } = useRemediationsQuery(
     executeRemediation(axios),
     {
       skip: true,
-    }
+    },
   );
 
   const handleExecute = () => {
@@ -119,7 +119,7 @@ export const ExecuteModal = ({
                   ? 'Execute playbook'
                   : `Execute playbook on ${pluralize(
                       connectedCount,
-                      'system'
+                      'system',
                     )}`}
               </Button>,
               <Button

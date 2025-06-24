@@ -12,18 +12,20 @@ const RHEL_ONLY_FILTER =
 export const routes = {
   home: {
     path: '/*',
-    component: lazy(() =>
-      import(
-        /* webpackChunkName: "Home" */ './routes/OverViewPage/OverViewPage'
-      )
+    component: lazy(
+      () =>
+        import(
+          /* webpackChunkName: "Home" */ './routes/OverViewPage/OverViewPage'
+        ),
     ),
   },
   details: {
     path: ':id',
-    component: lazy(() =>
-      import(
-        /* webpackChunkName: "RemediationDetails" */ './routes/RemediationDetails'
-      )
+    component: lazy(
+      () =>
+        import(
+          /* webpackChunkName: "RemediationDetails" */ './routes/RemediationDetails'
+        ),
     ),
   },
 };
@@ -35,7 +37,7 @@ const RemediationRoutes = () => {
     try {
       axios
         .get(
-          `${INVENTORY_TOTAL_FETCH_URL}${RHEL_ONLY_FILTER}&page=1&per_page=1`
+          `${INVENTORY_TOTAL_FETCH_URL}${RHEL_ONLY_FILTER}&page=1&per_page=1`,
         )
         .then(({ data }) => {
           setHasSystems(data.total > 0);
@@ -60,7 +62,7 @@ const RemediationRoutes = () => {
           {Object.entries(routes).map(
             ([key, { path, component: Component }]) => (
               <Route key={key} path={path} element={<Component />} />
-            )
+            ),
           )}
         </Routes>
       </Suspense>

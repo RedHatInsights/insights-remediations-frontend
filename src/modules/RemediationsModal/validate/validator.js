@@ -8,8 +8,8 @@ function checkAllowedKeys(reference, ...keys) {
   Object.keys(reference).forEach((key) =>
     assert(
       keys.includes(key),
-      `Unexpected key: ${key} Expected one of: ${keys}`
-    )
+      `Unexpected key: ${key} Expected one of: ${keys}`,
+    ),
   );
 }
 
@@ -17,8 +17,8 @@ function checkRequiredKeys(reference, ...keys) {
   keys.forEach((key) =>
     assert(
       Object.prototype.hasOwnProperty.call(reference, key),
-      `Required key missing: ${key}`
-    )
+      `Required key missing: ${key}`,
+    ),
   );
 }
 
@@ -26,7 +26,7 @@ function checkSystems(systems) {
   assert(Array.isArray(systems), 'Systems must be an array');
   assert(systems.length, 'Systems array must not be empty');
   systems.forEach((system) =>
-    assert(typeof system === 'string', 'System must be of type string')
+    assert(typeof system === 'string', 'System must be of type string'),
   );
 }
 
@@ -40,7 +40,7 @@ export default function validate(data) {
   data.issues.forEach((issue) => {
     assert(
       typeof issue === 'object' && issue !== null,
-      'Issue must be an object'
+      'Issue must be an object',
     );
     checkAllowedKeys(issue, 'id', 'description', 'systems');
     checkRequiredKeys(issue, 'id', 'description');
@@ -49,7 +49,7 @@ export default function validate(data) {
     assert(
       Object.prototype.hasOwnProperty.call(issue, 'systems') ||
         Object.prototype.hasOwnProperty.call(data, 'systems'),
-      `No systems defined for ${issue.id}`
+      `No systems defined for ${issue.id}`,
     );
   });
 

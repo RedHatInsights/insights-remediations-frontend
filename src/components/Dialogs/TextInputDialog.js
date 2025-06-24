@@ -19,7 +19,7 @@ export default function TextInputDialog(props) {
 
   const [isVerifyingName, isDisabled] = useVerifyName(
     value,
-    props.remediationsList
+    props.remediationsList,
   );
 
   const nameStatus = (() => {

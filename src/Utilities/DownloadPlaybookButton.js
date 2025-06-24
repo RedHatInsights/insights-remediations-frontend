@@ -28,7 +28,7 @@ export const download = (selectedIds, data, dispatch) => {
       addNotification({
         variant: 'danger',
         title: 'No remediation plans downloaded.',
-      })
+      }),
     );
   } else if (valid.length < selectedIds.length) {
     downloadPlaybook(valid);
@@ -39,7 +39,7 @@ export const download = (selectedIds, data, dispatch) => {
         description: `${
           selectedIds.length - valid.length
         } empty remediaton plan was not downloaded`,
-      })
+      }),
     );
   } else {
     downloadPlaybook(valid);
@@ -49,7 +49,7 @@ export const download = (selectedIds, data, dispatch) => {
         title: `Downloading remediation plan${
           selectedIds.length > 1 ? 's' : ''
         }`,
-      })
+      }),
     );
   }
 };

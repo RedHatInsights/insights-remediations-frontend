@@ -23,7 +23,7 @@ const getHostTags = (axios) => (params) => {
 };
 const getHostOS = (axios) => (params) => {
   return axios.get(
-    `/api/inventory/v1/hosts/${params.host_id_list}/system_profile`
+    `/api/inventory/v1/hosts/${params.host_id_list}/system_profile`,
   );
 };
 
@@ -51,7 +51,7 @@ const SystemsContent = ({ remediationDetails, remediationStatus, refetch }) => {
   const [system, setSystem] = useState();
   const [rowSystemName, setRowSystemName] = useState('');
   const allSystems = remediationDetails.issues.flatMap(
-    (issue) => issue.systems
+    (issue) => issue.systems,
   );
   const systemIds = allSystems.map((s) => s.id);
 
@@ -59,13 +59,13 @@ const SystemsContent = ({ remediationDetails, remediationStatus, refetch }) => {
     getHostTags(axios),
     {
       params: { host_id_list: systemIds },
-    }
+    },
   );
   const { result: hostOs, isLoading: hostLoading } = useRemediationsQuery(
     getHostOS(axios),
     {
       params: { host_id_list: systemIds },
-    }
+    },
   );
   const loadingProfile = tagsLoading || hostLoading;
 
@@ -74,7 +74,7 @@ const SystemsContent = ({ remediationDetails, remediationStatus, refetch }) => {
     {
       skip: true,
       batched: true,
-    }
+    },
   );
   const { fetchQueue } = useRemediationFetchExtras({
     fetch: deleteSystems,
@@ -101,7 +101,7 @@ const SystemsContent = ({ remediationDetails, remediationStatus, refetch }) => {
     allSystems.forEach((system) => {
       if (!byId[system.id]) {
         const osEntry = hostOs?.results?.find(
-          (h) => h.id === system.id
+          (h) => h.id === system.id,
         )?.system_profile;
         const tagsForThis = hostTags?.results?.[system.id] || [];
 
@@ -127,7 +127,7 @@ const SystemsContent = ({ remediationDetails, remediationStatus, refetch }) => {
     }
     const lower = nameFilter.toLowerCase();
     return mergedSystems.filter((sys) =>
-      sys.display_name?.toLowerCase().includes(lower)
+      sys.display_name?.toLowerCase().includes(lower),
     );
   }, [mergedSystems, nameFilter]);
 
@@ -140,7 +140,7 @@ const SystemsContent = ({ remediationDetails, remediationStatus, refetch }) => {
             renderFunc: (
               _data,
               _id,
-              { actionCount, id: systemId, display_name }
+              { actionCount, id: systemId, display_name },
             ) => (
               <Button
                 variant="link"
@@ -148,7 +148,7 @@ const SystemsContent = ({ remediationDetails, remediationStatus, refetch }) => {
                 onClick={() => {
                   const relatedActions = remediationDetails.issues.filter(
                     (issue) =>
-                      issue.systems.some((system) => system.id === systemId)
+                      issue.systems.some((system) => system.id === systemId),
                   );
                   setRowSystemName(display_name);
                   setActionsToShow(relatedActions);
@@ -162,7 +162,7 @@ const SystemsContent = ({ remediationDetails, remediationStatus, refetch }) => {
         }
         return col;
       }),
-    [baseColumns, remediationDetails]
+    [remediationDetails],
   );
   const handleDelete = async (selected) => {
     const chunks = chunk(selected, 100);
@@ -274,7 +274,7 @@ SystemsContent.propTypes = {
       PropTypes.shape({
         connection_status: PropTypes.string,
         system_ids: PropTypes.arrayOf(PropTypes.string),
-      })
+      }),
     ),
   }),
 };

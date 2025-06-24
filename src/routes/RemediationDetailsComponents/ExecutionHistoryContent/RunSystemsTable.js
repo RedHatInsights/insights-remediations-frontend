@@ -12,7 +12,7 @@ const RunSystemsTable = ({ run, loading, viewLogColumn }) => {
 
   const filtered = nameFilter
     ? run.systems.filter((s) =>
-        s.system_name.toLowerCase().includes(nameFilter)
+        s.system_name.toLowerCase().includes(nameFilter),
       )
     : run.systems;
   return (

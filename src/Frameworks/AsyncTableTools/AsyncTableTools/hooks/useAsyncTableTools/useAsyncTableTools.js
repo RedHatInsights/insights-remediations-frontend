@@ -60,7 +60,7 @@ const useAsyncTableTools = (items, columns, options = {}) => {
         ],
       }),
 
-    [columnManagerAction, options]
+    [columnManagerAction, options],
   );
 
   const { toolbarProps: paginationToolbarProps } = usePagination(options);
@@ -130,7 +130,7 @@ const useAsyncTableTools = (items, columns, options = {}) => {
       JSON.stringify(exportConfig.toolbarProps),
       tableViewToolbarProps,
       toolbarPropsOption,
-    ]
+    ],
   );
 
   const tableProps = useMemo(
@@ -157,7 +157,7 @@ const useAsyncTableTools = (items, columns, options = {}) => {
       tableViewTableProps,
       actionResolver,
       actionResolverEnabled,
-    ]
+    ],
   );
 
   return {

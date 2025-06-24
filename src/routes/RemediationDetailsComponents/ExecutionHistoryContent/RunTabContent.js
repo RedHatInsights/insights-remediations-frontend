@@ -32,7 +32,7 @@ const RunTabContent = ({
     run,
     isActive,
     remId,
-    fetchSystems
+    fetchSystems,
   );
 
   const handleClick = async () => {
