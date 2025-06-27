@@ -18,9 +18,7 @@ import { useDispatch } from 'react-redux';
 import RenameModal from '../../components/RenameModal';
 import { dispatchNotification } from '../../Utilities/dispatcher';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
-import { useRawTableState } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
-import TableStateProvider from '../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
-import useStateCallbacks from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
+import { useTableState, TableStateProvider } from 'bastilian-tabletools';
 import NoRemediationsPage from '../../components/NoRemediationsPage';
 import { TextContent } from '@patternfly/react-core';
 import { emptyRows } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
@@ -44,8 +42,7 @@ export const OverViewPage = () => {
   const [isBulkDelete, setIsBulkDelete] = useState(false);
   const context = useContext(PermissionContext);
 
-  const callbacks = useStateCallbacks();
-  const tableState = useRawTableState();
+  const tableState = useTableState();
 
   const currentlySelected = tableState?.selected;
   const {
@@ -54,7 +51,7 @@ export const OverViewPage = () => {
     loading,
     refetch: fetchRemediations,
   } = useRemediationsQuery(getRemediations(axios), {
-    useTableState: true,
+    // useTableState: true,
     params: { hide_archived: false, 'fields[data]': 'playbook_runs' },
   });
 
@@ -154,7 +151,7 @@ export const OverViewPage = () => {
                   dismissable: true,
                   autoDismiss: true,
                 });
-                callbacks?.current?.resetSelection();
+                tableState.resetSelection();
                 fetchRemediations();
                 setIsDeleteModalOpen(false);
               });
@@ -199,7 +196,6 @@ export const OverViewPage = () => {
                   index: 6,
                   direction: 'desc',
                 },
-                onSelect: () => '',
                 itemIdsInTable: fetchAllIds,
                 manageColumns: true,
                 itemIdsOnPage: result?.data.map(({ id }) => id),
