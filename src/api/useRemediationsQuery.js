@@ -51,8 +51,12 @@ const useRemediationsQuery = (
     useTableState,
     paramsOption
   );
-
-  const skip = !!(useTableState && !hasState) || !!skipOption;
+  // const skip = !!(useTableState && !hasState) || !!skipOption;
+  const skip = !useTableState && !hasState && !skipOption
+  // console.log(params,'params here')
+  // console.log(useTableState,'useTableState here')
+  // console.log(!hasState,'hasState here')
+  // console.log(skip,'skip here')
 
   const {
     result: queryData,

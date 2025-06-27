@@ -10,16 +10,12 @@ import {
 } from './Cells.js';
 import { wrappable } from '@patternfly/react-table';
 
-// eslint-disable-next-line react/display-name
-export const renderComponent = (Component, props) => (_data, _id, entity) =>
-  <Component {...entity} {...props} />;
-
 export const Name = {
   title: 'Name',
   transforms: [wrappable],
   sortable: 'name',
   exportKey: 'name',
-  renderFunc: renderComponent(NameCell),
+  component: NameCell,
 };
 
 export const LastExecuted = {
@@ -27,7 +23,7 @@ export const LastExecuted = {
   transforms: [wrappable],
   sortable: 'last_run_at',
   exportKey: 'last_run_at',
-  renderFunc: renderComponent(LastExecutedCell),
+  component: LastExecutedCell,
 };
 
 export const ExecutionStatus = {
@@ -36,7 +32,7 @@ export const ExecutionStatus = {
   //TODO: Enable once Backend is ready
   // sortable: 'status',
   exportKey: 'status',
-  renderFunc: renderComponent(ExecutionStatusCell),
+  component: ExecutionStatusCell,
 };
 
 export const Actions = {
@@ -44,7 +40,7 @@ export const Actions = {
   transforms: [wrappable],
   sortable: 'issue_count',
   exportKey: 'Actions',
-  renderFunc: renderComponent(ActionsCell),
+  component: ActionsCell,
 };
 
 export const Systems = {
@@ -52,7 +48,7 @@ export const Systems = {
   transforms: [wrappable],
   sortable: 'system_count',
   exportKey: 'system_count',
-  renderFunc: renderComponent(SystemsCell),
+  component: SystemsCell,
 };
 
 export const Created = {
@@ -60,7 +56,7 @@ export const Created = {
   transforms: [wrappable],
   sortable: 'created_at',
   exportKey: 'created_at',
-  renderFunc: renderComponent(CreatedCell),
+  component: CreatedCell,
 };
 
 export const LastModified = {
@@ -68,7 +64,7 @@ export const LastModified = {
   transforms: [wrappable],
   sortable: 'updated_at',
   exportKey: 'updated_at',
-  renderFunc: renderComponent(LastModifiedCell),
+  component: LastModifiedCell,
 };
 
 export default [
