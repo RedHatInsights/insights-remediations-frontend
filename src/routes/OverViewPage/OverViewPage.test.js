@@ -1,15 +1,12 @@
-// src/routes/OverViewPage/OverViewPage.test.js
 /* eslint-disable react/prop-types */
 import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-
 import configureStore from 'redux-mock-store';
 import promiseMiddleware from 'redux-promise-middleware';
 import { Provider as ReduxProvider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
-
 import OverViewPageProvider from './OverViewPage';
 import { PermissionContext } from '../../App';
 
@@ -58,7 +55,7 @@ const mockActivateQuickstart = jest.fn();
 jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
   __esModule: true,
   default: () => ({
-    getApp: () => 'remediations', // stub needed by InsightsLink
+    getApp: () => 'remediations',
     quickStarts: { activateQuickstart: mockActivateQuickstart },
   }),
 }));
@@ -70,7 +67,6 @@ jest.mock(
   }),
 );
 
-/* ───────── silence ATT circular-ref warnings ───────── */
 const realStringify = JSON.stringify;
 beforeAll(() => {
   jest.spyOn(JSON, 'stringify').mockImplementation((v, ...a) => {
@@ -107,23 +103,16 @@ const renderPageWithList = (list) => {
   return renderPage();
 };
 
-/* ───────── tests ───────── */
 describe('OverViewPage', () => {
   it('renders table rows and opens delete modal', async () => {
     renderPage();
-
-    /* grab the row by accessible name */
-    const row = await screen.findByRole('row', { name: /fix things/i });
-
-    /* select the row */
-    const checkbox = within(row).getByRole('checkbox');
-    await userEvent.click(checkbox);
-    expect(checkbox).toBeChecked();
-
-    /* open kebab & click Delete */
+    const row = await screen.findByRole('row', { name: /patch stuff/i });
     const kebab = within(row).getByRole('button', { name: /kebab toggle/i });
     await userEvent.click(kebab);
-    await userEvent.click(screen.getByRole('menuitem', { name: /^delete$/i }));
+    const deleteItem = await screen.findByRole('menuitem', {
+      name: /^delete$/i,
+    });
+    await userEvent.click(deleteItem);
 
     expect(
       screen.getByRole('dialog', { name: /delete remediation plan/i }),
@@ -133,29 +122,23 @@ describe('OverViewPage', () => {
   it('calls download helper for single row', async () => {
     const { download } = require('../../Utilities/DownloadPlaybookButton');
     renderPage();
-
     const row = await screen.findByRole('row', { name: /patch stuff/i });
-
     const kebab = within(row).getByRole('button', { name: /kebab toggle/i });
     await userEvent.click(kebab);
-    await userEvent.click(
-      screen.getByRole('menuitem', { name: /^download$/i }),
-    );
-
+    const downloadItem = await screen.findByRole('menuitem', {
+      name: /^download$/i,
+    });
+    await userEvent.click(downloadItem);
     expect(download).toHaveBeenCalledTimes(1);
     expect(download.mock.calls[0][0]).toEqual(['b']);
   });
 
-  /* ───────── header behaviour ───────── */
-
   it('shows Launch Quick Start button when remediations exist and triggers QS', async () => {
     renderPage();
-
     const qsBtn = await screen.findByRole('button', {
       name: /launch quick start/i,
     });
     expect(qsBtn).toBeInTheDocument();
-
     await userEvent.click(qsBtn);
     expect(mockActivateQuickstart).toHaveBeenCalledWith(
       'insights-remediate-plan-create',
@@ -163,13 +146,10 @@ describe('OverViewPage', () => {
   });
 
   it('hides Launch Quick Start button when no remediations exist', async () => {
-    renderPageWithList([]); // no data
-
+    renderPageWithList([]);
     expect(
       screen.queryByRole('button', { name: /launch quick start/i }),
     ).not.toBeInTheDocument();
-
-    /* helper text still visible */
     expect(
       screen.getByText(/use ansible playbooks to resolve issues/i, {
         exact: false,

@@ -18,12 +18,13 @@ import { useDispatch } from 'react-redux';
 import RenameModal from '../../components/RenameModal';
 import { dispatchNotification } from '../../Utilities/dispatcher';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
-import { useRawTableState } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
-import TableStateProvider from '../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
-import useStateCallbacks from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
+import {
+  useRawTableState,
+  TableStateProvider,
+  useStateCallbacks,
+} from 'bastilian-tabletools';
 import NoRemediationsPage from '../../components/NoRemediationsPage';
 import { TextContent } from '@patternfly/react-core';
-import { emptyRows } from '../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
 import useRemediationFetchExtras from '../../api/useRemediationFetchExtras';
 import { OverViewPageHeader } from './OverViewPageHeader';
 import { PermissionContext } from '../../App';
@@ -34,6 +35,8 @@ import {
   getRemediations,
   getRemediationsList,
 } from '../api';
+import TableEmptyState from './TableEmptyState';
+import { CalendarFilterType } from './CalendarFilterType';
 
 export const OverViewPage = () => {
   const dispatch = useDispatch();
@@ -181,7 +184,7 @@ export const OverViewPage = () => {
               ouiaId="OverViewTable"
               variant="compact"
               loading={loading}
-              items={result?.data}
+              items={result?.data.map((item) => ({ ...item, itemId: item.id }))}
               total={result?.meta?.total}
               columns={[...columns]}
               filters={{
@@ -193,15 +196,18 @@ export const OverViewPage = () => {
                   ...LastModifiedFilter,
                   ...CreatedByFilter,
                 ],
+                customFilterTypes: {
+                  calendar: CalendarFilterType,
+                },
               }}
               options={{
                 sortBy: {
                   index: 6,
                   direction: 'desc',
                 },
+                manageColumns: true,
                 onSelect: () => '',
                 itemIdsInTable: fetchAllIds,
-                manageColumns: true,
                 itemIdsOnPage: result?.data.map(({ id }) => id),
                 total: result?.meta?.total,
                 actionResolver: () => {
@@ -242,7 +248,7 @@ export const OverViewPage = () => {
                     dispatch={dispatch}
                   />
                 ),
-                emptyRows: emptyRows(columns.length),
+                EmptyState: TableEmptyState,
               }}
             />
           </section>

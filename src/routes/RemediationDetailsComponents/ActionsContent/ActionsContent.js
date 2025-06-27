@@ -1,23 +1,25 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
+/* eslint-disable react/prop-types */
+import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import columns from './Columns';
-import { emptyRows } from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
 import { Button } from '@patternfly/react-core';
-import TableStateProvider from '../../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
-import useRemediationTableState from '../../../api/useRemediationTableState';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import useRemediationsQuery from '../../../api/useRemediationsQuery';
 import useRemediationFetchExtras from '../../../api/useRemediationFetchExtras';
-import { useRawTableState } from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
 import { useParams } from 'react-router-dom';
 import { dispatchNotification } from '../../../Utilities/dispatcher';
 import chunk from 'lodash/chunk';
 import ConfirmationDialog from '../../../components/ConfirmationDialog';
-import useStateCallbacks from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
 import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
 import { API_BASE } from '../../api';
+import {
+  useTableState,
+  TableStateProvider,
+  StaticTableToolsTable,
+  useStateCallbacks,
+} from 'bastilian-tabletools';
+import TableEmptyState from '../../OverViewPage/TableEmptyState';
 
 const deleteIssues = (axios) => (params) => {
   return axios({
@@ -32,8 +34,7 @@ const deleteIssues = (axios) => (params) => {
 const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   const axios = useAxiosWithPlatformInterceptors();
   const { id } = useParams();
-  const { params } = useRemediationTableState(true);
-  const tableState = useRawTableState();
+  const tableState = useTableState();
   const currentlySelected = tableState?.selected;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isBulkDelete, setIsBulkDelete] = useState(false);
@@ -41,9 +42,6 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   const [isSystemsModalOpen, setIsSystemsModalOpen] = useState(false);
   const [systemsToShow, setSystemsToShow] = useState([]);
   const [actionToShow, setActionToShow] = useState('');
-
-  const callbacks = useStateCallbacks();
-
   const { fetchBatched: deleteActions } = useRemediationsQuery(
     deleteIssues(axios),
     {
@@ -51,9 +49,8 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
       batched: true,
     },
   );
-  const { fetchQueue } = useRemediationFetchExtras({
-    fetch: deleteActions,
-  });
+  const callbacks = useStateCallbacks();
+  const { fetchQueue } = useRemediationFetchExtras({ fetch: deleteActions });
 
   const handleDelete = async (selected) => {
     const chunks = chunk(selected, 100);
@@ -65,24 +62,13 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   };
 
   //Back end is currently working on filtering - This filter acts as a placegholder
-  const nameFilter = tableState?.filters?.name?.[0] ?? '';
   const allIssues = remediationDetails?.issues ?? [];
-  const filteredIssues = useMemo(() => {
-    if (!nameFilter) {
-      return allIssues;
-    }
-    return allIssues.filter((issue) => issue.description.includes(nameFilter));
-  }, [allIssues, nameFilter]);
-  const start = params?.offset ?? 0;
-  const end = (params?.limit ?? 10) + start;
-  const pageOfIssues = filteredIssues.slice(start, end);
-
   const columnsWithSystemsButton = useMemo(() => {
     return columns.map((col) => {
       if (col.exportKey === 'system_count') {
         return {
           ...col,
-          renderFunc: (_data, _id, { systems, description }) => (
+          Component: ({ systems, description }) => (
             <Button
               size="sm"
               style={{ padding: '0' }}
@@ -101,14 +87,9 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
       return col;
     });
   }, []);
-  const getAllIssueIds = useCallback(
-    () => filteredIssues.map((i) => i.id),
-    [filteredIssues],
-  );
+
   return (
-    <section
-      className={'pf-v5-l-page__main-section pf-v5-c-page__main-section'}
-    >
+    <section className="pf-v5-l-page__main-section pf-v5-c-page__main-section">
       {isSystemsModalOpen && (
         <SystemsModal
           isOpen={isSystemsModalOpen}
@@ -134,52 +115,52 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
             )
           }
           confirmText="Remove"
-          onClose={(confirm) => {
-            setIsDeleteModalOpen(false);
-            if (confirm) {
-              const chopped = isBulkDelete ? currentlySelected : action;
-              handleDelete(chopped)
-                .then(() => {
-                  dispatchNotification({
-                    title: `Succesfully deleted actions`,
-                    variant: 'success',
-                    dismissable: true,
-                    autoDismiss: true,
-                  });
-                  callbacks?.current?.resetSelection();
-                  refetch();
-                  setIsDeleteModalOpen(false);
-                  setIsBulkDelete(false);
-                })
-                .catch(() => {
-                  dispatchNotification({
-                    title: `Failed to delete actions`,
-                    variant: 'danger',
-                    dismissable: true,
-                    autoDismiss: true,
-                  });
-                });
+          onClose={async (confirm) => {
+            const chopped = isBulkDelete ? currentlySelected : action;
+
+            if (!confirm) {
+              setIsDeleteModalOpen(false);
+              return;
+            }
+            try {
+              await handleDelete(chopped);
+              dispatchNotification({
+                title: 'Successfully deleted actions',
+                variant: 'success',
+                dismissable: true,
+                autoDismiss: true,
+              });
+              refetch();
+              callbacks?.current?.resetSelection();
+            } catch (err) {
+              console.error(err);
+              dispatchNotification({
+                title: 'Failed to delete actions',
+                variant: 'danger',
+                dismissable: true,
+                autoDismiss: true,
+              });
+            } finally {
+              setIsDeleteModalOpen(false);
+              setIsBulkDelete(false);
             }
           }}
         />
       )}
-      <RemediationsTable
+      <StaticTableToolsTable
         aria-label="ActionsTable"
         ouiaId="ActionsTable"
         variant="compact"
         loading={loading}
-        items={pageOfIssues}
-        total={filteredIssues.length}
+        items={allIssues}
         columns={[...columnsWithSystemsButton]}
         filters={{
           filterConfig: [...actionNameFilter],
         }}
         options={{
-          //Known bug in asyncTableTools - needed for bulkSelect
           onSelect: () => '',
-          itemIdsInTable: getAllIssueIds,
-          itemIdsOnPage: pageOfIssues.map((i) => i.id),
-          total: filteredIssues.length,
+          itemIdsInTable: () => allIssues.map(({ id }) => id),
+          itemIdsOnPage: () => allIssues.map(({ id }) => id),
           actionResolver: () => {
             return [
               {
@@ -204,7 +185,7 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
               Remove
             </Button>
           ),
-          emptyRows: emptyRows(columns.length),
+          EmptyState: TableEmptyState,
         }}
       />
     </section>
@@ -217,12 +198,10 @@ ActionsContent.propTypes = {
   loading: PropTypes.bool,
 };
 
-const ActionsContentProvider = (props) => {
-  return (
-    <TableStateProvider>
-      <ActionsContent {...props} />
-    </TableStateProvider>
-  );
-};
+const ActionsContentProvider = (props) => (
+  <TableStateProvider>
+    <ActionsContent {...props} />
+  </TableStateProvider>
+);
 
 export default ActionsContentProvider;
