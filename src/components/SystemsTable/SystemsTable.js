@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState, Fragment } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  Fragment,
+  useCallback,
+} from 'react';
 import PropTypes from 'prop-types';
 import { InventoryTable } from '@redhat-cloud-services/frontend-components/Inventory';
 import { remediationSystems } from '../../store/reducers';
@@ -24,17 +30,32 @@ const SystemsTableWrapper = ({
   refreshRemediation,
   connectedData,
   areDetailsLoading,
+  refetchConnectionStatus,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const systemsRef = useRef();
-  const getEntitiesRef = useRef(() => undefined);
+  const inventory = useRef(null);
   const activeSystem = useRef(undefined);
   const dispatch = useDispatch();
   const selected = useSelector(
     ({ entities }) => entities?.selected || new Map(),
   );
+
   const loaded = useSelector(({ entities }) => entities?.loaded);
   const rows = useSelector(({ entities }) => entities?.rows);
+
+  // Create a getEntities function that always reads the current systemsRef.current
+  const getEntitiesFunction = useCallback(
+    async (_i, config, _hasItems, defaultGetEntities) => {
+      return fetchInventoryData(
+        config,
+        systemsRef.current,
+        connectedData,
+        defaultGetEntities,
+      );
+    },
+    [connectedData],
+  );
 
   const onConfirm = () => {
     (async () => {
@@ -49,12 +70,32 @@ const SystemsTableWrapper = ({
       const action = deleteSystems(selectedSystems, remediation);
       dispatch(action);
       await action.payload;
-      refreshRemediation();
+
+      // Clear the bulk selection after deletion
+      if (selected.size > 0) {
+        selected.forEach((value, key) => {
+          dispatch(selectEntity(key, false));
+        });
+      }
+
+      // Refresh the remediation data first and wait for it to complete
+      await refreshRemediation();
+
+      // Refetch connection status to get updated connectedData
+      if (refetchConnectionStatus) {
+        await refetchConnectionStatus();
+      }
+
+      inventory?.current?.onRefreshData();
     })();
     activeSystem.current = undefined;
+
+    // Calculate the actual number of items being deleted
+    const itemsToDelete = selected.size > 0 ? selected.size : 1;
+
     dispatchNotification({
-      title: `Removed ${selected.size} ${
-        selected.size > 1 ? 'systems' : 'system'
+      title: `Removed ${itemsToDelete} ${
+        itemsToDelete > 1 ? 'systems' : 'system'
       } from playbook`,
       description: '',
       variant: 'success',
@@ -94,10 +135,12 @@ const SystemsTableWrapper = ({
   };
   useEffect(() => {
     systemsRef.current = calculateSystems(remediation);
-  }, [remediation.id]);
+  }, [remediation]);
+
   return (
     !areDetailsLoading && (
       <InventoryTable
+        ref={inventory}
         variant="compact"
         showTags
         noDetail
@@ -155,16 +198,8 @@ const SystemsTableWrapper = ({
               : bulkSelectorSwitch('page');
           },
         }}
-        getEntities={async (_i, config) =>
-          fetchInventoryData(
-            config,
-            systemsRef.current,
-            getEntitiesRef.current,
-            connectedData,
-          )
-        }
-        onLoad={({ INVENTORY_ACTION_TYPES, mergeWithEntities, api }) => {
-          getEntitiesRef.current = api?.getEntities;
+        getEntities={getEntitiesFunction}
+        onLoad={({ INVENTORY_ACTION_TYPES, mergeWithEntities }) => {
           registry?.register?.({
             ...mergeWithEntities(remediationSystems(INVENTORY_ACTION_TYPES)),
           });
@@ -231,9 +266,12 @@ const SystemsTable = (props) => {
     <Provider store={registry.store}>
       <SystemsTableWrapper
         registry={registry}
-        refreshRemediation={() =>
-          dispatch(loadRemediation(props.remediation.id))
-        }
+        refreshRemediation={() => {
+          const action = loadRemediation(props.remediation.id);
+          dispatch(action);
+          return action.payload;
+        }}
+        refetchConnectionStatus={props.refetchConnectionStatus}
         {...props}
       />
     </Provider>
@@ -265,6 +303,7 @@ SystemsTableWrapper.propTypes = {
     register: PropTypes.func,
   }),
   refreshRemediation: PropTypes.func,
+  refetchConnectionStatus: PropTypes.func,
 };
 
 export default SystemsTable;

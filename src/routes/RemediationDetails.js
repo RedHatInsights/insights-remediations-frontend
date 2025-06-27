@@ -41,7 +41,7 @@ const RemediationDetails = () => {
 
   const {
     result: remediationDetails,
-    refetch: fetchRemediation,
+    refetch: refetchRemediationDetails,
     loading: detailsLoading,
   } = useRemediationsQuery(getRemediationDetails(axios), {
     params: { remId: id },
@@ -75,6 +75,7 @@ const RemediationDetails = () => {
     areDetailsLoading,
     detailsError,
     connectedData,
+    refetchConnectionStatus,
   ] = useConnectionStatus({ id });
 
   const remediationStatus = {
@@ -103,7 +104,7 @@ const RemediationDetails = () => {
           allRemediations={allRemediations?.data}
           refetchAllRemediations={refetchAllRemediations}
           updateRemPlan={updateRemPlan}
-          refetch={fetchRemediation}
+          refetch={refetchRemediationDetails}
           permissions={context.permissions}
           isExecutable={getIsExecutable(isExecutable)}
           refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
@@ -120,7 +121,7 @@ const RemediationDetails = () => {
               isRenameModalOpen={isRenameModalOpen}
               setIsRenameModalOpen={setIsRenameModalOpen}
               remediationsList={allRemediations?.data}
-              fetch={fetchRemediation}
+              fetch={refetchRemediationDetails}
             />
           )}
 
@@ -133,7 +134,7 @@ const RemediationDetails = () => {
               details={remediationDetails}
               refetchAllRemediations={refetchAllRemediations}
               onRename={setIsRenameModalOpen}
-              refetch={fetchRemediation}
+              refetch={refetchRemediationDetails}
               remediationStatus={remediationStatus}
               updateRemPlan={updateRemPlan}
               onNavigateToTab={handleTabClick}
@@ -149,7 +150,7 @@ const RemediationDetails = () => {
           >
             <ActionsContent
               remediationDetails={remediationDetails}
-              refetch={fetchRemediation}
+              refetch={refetchRemediationDetails}
               loading={detailsLoading}
             />
           </Tab>
@@ -173,6 +174,8 @@ const RemediationDetails = () => {
                 remediation={remediationDetails}
                 connectedData={remediationStatus?.connectedData}
                 areDetailsLoading={remediationStatus?.areDetailsLoading}
+                refreshRemediation={refetchRemediationDetails}
+                refetchConnectionStatus={refetchConnectionStatus}
               />
             </section>
           </Tab>

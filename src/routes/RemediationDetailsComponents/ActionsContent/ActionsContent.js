@@ -64,7 +64,7 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
     return await fetchQueue(queue);
   };
 
-  //Back end is currently working on filtering - This filter acts as a placegholder
+  //Back end is currently working on filtering - This filter acts as a placeholder
   const nameFilter = tableState?.filters?.name?.[0] ?? '';
   const allIssues = remediationDetails?.issues ?? [];
   const filteredIssues = useMemo(() => {

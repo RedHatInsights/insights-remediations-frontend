@@ -34,8 +34,8 @@ export const calculateSystems = (remediation) =>
 export const fetchInventoryData = async (
   { page = 0, ...config } = {},
   systems,
-  getEntities,
   connectedData,
+  getEntities,
 ) => {
   const currSystems = systems.filter(({ display_name }) =>
     config.filters?.hostnameOrId
@@ -43,15 +43,15 @@ export const fetchInventoryData = async (
       : true,
   );
 
-  const data = await getEntities(
+  const data = (await getEntities(
     currSystems
       .slice((page - 1) * config.per_page, page * config.per_page)
       .map(({ id }) => id),
     { ...config, hasItems: true },
     true,
-  );
+  )) || { results: [] };
 
-  const updatedResults = data.results.map((result) => {
+  const updatedResults = (data.results || []).map((result) => {
     const systemId = result.id;
     const matchedItem =
       connectedData !== 403 &&
@@ -67,14 +67,28 @@ export const fetchInventoryData = async (
     }
   });
 
+  const filteredResults = updatedResults.filter((result) =>
+    systems.some((system) => system.id === result.id),
+  );
+
+  const connectedSystemIds =
+    (connectedData !== 403 &&
+      connectedData?.flatMap((group) => group.system_ids || [])) ||
+    [];
+
+  const connectedResults = filteredResults.filter((result) =>
+    connectedSystemIds.includes(result.id),
+  );
+
   return {
     ...data,
     page,
-    results: updatedResults.map((host) => ({
-      ...currSystems.find(({ id }) => id === host.id),
-      ...host,
-    })),
-    total: currSystems.length,
+    results:
+      connectedResults?.map((host) => ({
+        ...systems.find(({ id }) => id === host.id),
+        ...host,
+      })) || [],
+    total: connectedResults?.length || 0,
   };
 };
 

@@ -57,7 +57,7 @@ export const remediationSystems = ({ LOAD_ENTITIES_FULFILLED }) =>
     [`${LOAD_ENTITIES_FULFILLED}`]: (state) => {
       return {
         ...state,
-        rows: state.rows.map(({ id, ...row }) => ({
+        rows: (state.rows || []).map(({ id, ...row }) => ({
           id,
           ...row,
           selected: !!state.selected?.get(id),
