@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import React from 'react';
 import FormRenderer from '@data-driven-forms/react-form-renderer/form-renderer';
 import FormTemplate from '@data-driven-forms/pf4-component-mapper/form-template';
@@ -18,7 +17,7 @@ import '@testing-library/jest-dom';
 
 jest.mock('../../RemediationsModal/common/SystemsTable', () => ({
   __esModule: true,
-  // eslint-disable-next-line react/display-name
+
   default: () => <table></table>,
 }));
 
@@ -91,7 +90,7 @@ describe('ReviewSystems', () => {
     render(
       <Provider store={store}>
         <RendererWrapper schema={schema} />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByTestId('wizard-review-systems')).toBeVisible();

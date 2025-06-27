@@ -1,3 +1,4 @@
+import fecPlugin from '@redhat-cloud-services/eslint-config-redhat-cloud-services';
 import tsParser from '@typescript-eslint/parser';
 import pluginCypress from 'eslint-plugin-cypress/flat';
 import jestDom from 'eslint-plugin-jest-dom';

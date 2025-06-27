@@ -18,7 +18,7 @@ export const calculateSystems = (remediation) =>
           { ...issue, resolved: found.resolved },
         ];
         found.rebootRequired = found.issues.some(
-          ({ resolution }) => resolution?.needs_reboot
+          ({ resolution }) => resolution?.needs_reboot,
         );
       } else {
         acc.push({
@@ -35,12 +35,12 @@ export const fetchInventoryData = async (
   { page = 0, ...config } = {},
   systems,
   getEntities,
-  connectedData
+  connectedData,
 ) => {
   const currSystems = systems.filter(({ display_name }) =>
     config.filters?.hostnameOrId
       ? display_name.includes(config.filters.hostnameOrId)
-      : true
+      : true,
   );
 
   const data = await getEntities(
@@ -48,7 +48,7 @@ export const fetchInventoryData = async (
       .slice((page - 1) * config.per_page, page * config.per_page)
       .map(({ id }) => id),
     { ...config, hasItems: true },
-    true
+    true,
   );
 
   const updatedResults = data.results.map((result) => {
@@ -81,7 +81,7 @@ export const fetchInventoryData = async (
 export const mergedColumns = (defaultColumns = [], customColumns = []) => {
   return customColumns.map((column) => {
     const inventoryColumn = defaultColumns.find(
-      (invColumn) => invColumn.key === column.key
+      (invColumn) => invColumn.key === column.key,
     );
 
     return inventoryColumn ? { ...inventoryColumn, ...column } : column;

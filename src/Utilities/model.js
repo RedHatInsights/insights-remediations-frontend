@@ -17,7 +17,6 @@ export function getIssueApplication({ id }) {
   }
 }
 
-/* eslint-disable camelcase */
 export function getSystemName({ display_name, hostname, id }) {
   if (display_name) {
     return display_name;

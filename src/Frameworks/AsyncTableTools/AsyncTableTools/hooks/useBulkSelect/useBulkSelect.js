@@ -59,7 +59,7 @@ const useBulkSelect = ({
   const noneSelected = selectedIdsTotal === 0;
   const currentPageSelected = checkCurrentPageSelected(
     itemIdsOnPage,
-    selectedIds
+    selectedIds,
   );
 
   // TODO this is not totally wrong, but when the tree view is active there is currently no total, which causes the selection to be disabled there.
@@ -71,7 +71,7 @@ const useBulkSelect = ({
 
   const isItemSelected = useCallback(
     (itemId) => selectedIds.includes(itemId),
-    [selectedIds]
+    [selectedIds],
   );
 
   const selectOne = useCallback(
@@ -80,12 +80,12 @@ const useBulkSelect = ({
         ? deselect(item[identifier])
         : select(item[identifier]);
     },
-    [isItemSelected, select, deselect, identifier]
+    [isItemSelected, select, deselect, identifier],
   );
   const selectPage = useCallback(
     () =>
       !currentPageSelected ? select(itemIdsOnPage) : deselect(itemIdsOnPage),
-    [select, deselect, itemIdsOnPage, currentPageSelected]
+    [select, deselect, itemIdsOnPage, currentPageSelected],
   );
 
   const resetSelection = useCallback(() => {
@@ -125,7 +125,7 @@ const useBulkSelect = ({
         ...remainingRows,
       ];
     },
-    [selectedIds]
+    [selectedIds],
   );
 
   const [, setTableState] = useTableState('selected');
@@ -166,7 +166,7 @@ const useBulkSelect = ({
                   ? [
                       {
                         title: `${selectOrUnselect(
-                          currentPageSelected
+                          currentPageSelected,
                         )} page (${paginatedTotal} items)`,
                         onClick: selectPage,
                       },
@@ -176,7 +176,7 @@ const useBulkSelect = ({
                   ? [
                       {
                         title: `${selectOrUnselect(
-                          allSelected
+                          allSelected,
                         )} all (${total} items)`,
                         onClick: selectAll,
                       },

@@ -31,7 +31,7 @@ const ReviewActions = (props) => {
   const formOptions = useFormApi();
   const values = formOptions.getState().values;
   const issues = props.issues.filter((issue) =>
-    Object.keys(values[SYSTEMS]).includes(issue.id)
+    Object.keys(values[SYSTEMS]).includes(issue.id),
   );
   const { input } = useFieldApi(props);
   const [sortByState, setSortByState] = useState({
@@ -40,14 +40,14 @@ const ReviewActions = (props) => {
   });
   const allSystemsNamed = useSelector(
     ({ hostReducer: { hosts } }) =>
-      hosts?.map((host) => ({ id: host.id, name: host.display_name })) || []
+      hosts?.map((host) => ({ id: host.id, name: host.display_name })) || [],
   );
 
   const multiples = (
     values[EXISTING_PLAYBOOK_SELECTED]
       ? values[ISSUES_MULTIPLE].filter(
           (issue) =>
-            !values[EXISTING_PLAYBOOK].issues.some((i) => i.id === issue.id)
+            !values[EXISTING_PLAYBOOK].issues.some((i) => i.id === issue.id),
         )
       : values[ISSUES_MULTIPLE]
   )
@@ -58,7 +58,7 @@ const ReviewActions = (props) => {
     .filter((record) => record?.systems?.length > 0);
 
   const [rows, setRows] = useState(
-    buildRows(multiples, sortByState, true, allSystemsNamed)
+    buildRows(multiples, sortByState, true, allSystemsNamed),
   );
 
   useEffect(() => {
@@ -92,9 +92,9 @@ const ReviewActions = (props) => {
             multiples.length !== 1 ? 'these' : 'this'
           }
                          ${multiples.length} ${pluralize(
-            multiples.length,
-            'action'
-          )}.`}
+                           multiples.length,
+                           'action',
+                         )}.`}
           id="change"
           name="radio"
           isChecked={input.value}
@@ -106,7 +106,7 @@ const ReviewActions = (props) => {
               issues.length - multiples.length
             } other selected ${pluralize(
               issues.length - multiples.length,
-              'issue'
+              'issue',
             )} 
                     ${
                       issues.length - multiples.length !== 1 ? 'do' : 'does'
@@ -171,7 +171,7 @@ ReviewActions.propTypes = {
     propTypes.shape({
       description: propTypes.string,
       id: propTypes.string,
-    })
+    }),
   ).isRequired,
 };
 

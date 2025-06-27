@@ -24,7 +24,7 @@ export const getRemediationPlaybookSystemsList = (axios) => (params) => {
     `${API_BASE}/remediations/${params.remId}/playbook_runs/${params.playbook_run_id}/systems`,
     {
       params,
-    }
+    },
   );
 };
 
@@ -33,7 +33,7 @@ export const getPlaybookLogs = (axios) => (params) => {
     `${API_BASE}/remediations/${params.remId}/playbook_runs/${params.playbook_run_id}/systems/${params.system_id}`,
     {
       params,
-    }
+    },
   );
 };
 
@@ -65,6 +65,6 @@ export const executeRemediation = (axios) => (params) => {
   return axios.post(
     `${API_BASE}/remediations/${id}/playbook_runs`,
     { exclude },
-    { headers: { 'If-Match': etag } }
+    { headers: { 'If-Match': etag } },
   );
 };

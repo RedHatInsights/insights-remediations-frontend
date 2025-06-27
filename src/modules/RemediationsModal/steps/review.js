@@ -40,7 +40,7 @@ const Review = (props) => {
     data: {
       ...props.data,
       issues: props.data.issues.filter(
-        (issue) => systems[issue.id]?.length > 0
+        (issue) => systems[issue.id]?.length > 0,
       ),
     },
   };
@@ -52,13 +52,13 @@ const Review = (props) => {
 
   const allSystemsNamed = useSelector(
     ({ hostReducer: { hosts } }) =>
-      hosts?.map((host) => ({ id: host.id, name: host.display_name })) || []
+      hosts?.map((host) => ({ id: host.id, name: host.display_name })) || [],
   );
 
   const records = data.issues.map((issue) => {
     const issueResolutions = getResolution(
       issue.id,
-      formOptions.getState().values
+      formOptions.getState().values,
     );
     const { description, needs_reboot: needsReboot } =
       issueResolutions?.[0] || {};
@@ -75,12 +75,12 @@ const Review = (props) => {
       input.value !== ''
         ? input.value
         : (existingPlaybookSelected && selectedPlaybook.auto_reboot) ||
-            records.some((record) => record.needsReboot)
+            records.some((record) => record.needsReboot),
     );
   }, []);
 
   const [rows, setRows] = useState(
-    buildRows(records, sortByState, false, allSystemsNamed)
+    buildRows(records, sortByState, false, allSystemsNamed),
   );
 
   useEffect(() => {

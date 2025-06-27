@@ -120,7 +120,7 @@ export function downloadPlaybook(selectedIds) {
 
 export function getIsReceptorConfigured() {
   return doGet(
-    `${window.location.origin}/api/sources/v2.0/endpoints?filter[receptor_node][not_nil]`
+    `${window.location.origin}/api/sources/v2.0/endpoints?filter[receptor_node][not_nil]`,
   );
 }
 
@@ -131,10 +131,10 @@ export function deleteSystemsFromRemediation(systems, remediation) {
         remediations.deleteRemediationIssueSystem(
           remediation.id,
           issue.id,
-          system.id
-        )
-      )
-    )
+          system.id,
+        ),
+      ),
+    ),
   );
 }
 

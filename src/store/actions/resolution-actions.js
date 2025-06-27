@@ -17,11 +17,12 @@ const batchResolutions = async (issues) => {
 
         return [resolutions, errors];
       },
-      [[], []]
+      [[], []],
     );
 
     return { resolutions, warnings };
   } catch (e) {
+    console.log(e);
     return {
       errors: [
         'Error obtaining resolution information. Please try again later.',

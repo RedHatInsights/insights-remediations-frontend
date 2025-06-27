@@ -26,7 +26,7 @@ let initialProps = {
     Promise.resolve({
       issues: remediationWizardTestData.issues,
       systems: ['something'],
-    })
+    }),
   ),
   isDisabled: false,
   onRemediationCreated: jest.fn(),
@@ -47,7 +47,8 @@ describe('RemediationButton', () => {
   it('should open remediation wizard with permissions', async () => {
     useChrome.mockImplementation(() => ({
       getUserPermissions: jest.fn(
-        () => new Promise((resolve) => resolve([{ permission: CAN_REMEDIATE }]))
+        () =>
+          new Promise((resolve) => resolve([{ permission: CAN_REMEDIATE }])),
       ),
     }));
 
@@ -55,7 +56,7 @@ describe('RemediationButton', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByTestId('remediationButton-with-permissions')
+        screen.getByTestId('remediationButton-with-permissions'),
       ).toBeInTheDocument();
     });
 
@@ -72,11 +73,11 @@ describe('RemediationButton', () => {
     render(<RemediationButton {...initialProps} />);
 
     expect(
-      screen.getByTestId('remediationButton-no-permissions')
+      screen.getByTestId('remediationButton-no-permissions'),
     ).toBeInTheDocument();
 
     expect(
-      screen.queryByTestId('remediation-wizard-mock')
+      screen.queryByTestId('remediation-wizard-mock'),
     ).not.toBeInTheDocument();
   });
 });

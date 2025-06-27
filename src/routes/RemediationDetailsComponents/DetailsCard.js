@@ -53,7 +53,7 @@ const DetailsCard = ({
 
   const [isVerifyingName, isDuplicate] = useVerifyName(
     value,
-    allRemediations?.data
+    allRemediations?.data,
   );
 
   const nameStatus = (() => {
@@ -313,9 +313,9 @@ DetailsCard.propTypes = {
             hostname: PropTypes.string.isRequired,
             display_name: PropTypes.string.isRequired,
             resolved: PropTypes.bool.isRequired,
-          })
+          }),
         ).isRequired,
-      })
+      }),
     ).isRequired,
     autoreboot: PropTypes.bool.isRequired,
   }).isRequired,

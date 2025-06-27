@@ -64,7 +64,7 @@ const useFetchTotalBatched = (fetchFn, options = {}) => {
             ...(firstPage.data || []),
             ...results.reduce(
               (acc, response) => [...acc, ...(response.data || [])],
-              []
+              [],
             ),
           ];
           const newTotalResult = {
@@ -86,7 +86,7 @@ const useFetchTotalBatched = (fetchFn, options = {}) => {
         }
       }
     },
-    [fetchFn, batchSize]
+    [fetchFn, batchSize],
   );
 
   useDeepCompareEffect(() => {

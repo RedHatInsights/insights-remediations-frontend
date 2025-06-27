@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import React from 'react';
 import FormRenderer from '@data-driven-forms/react-form-renderer/form-renderer';
 import FormTemplate from '@data-driven-forms/pf4-component-mapper/form-template';
@@ -65,10 +64,10 @@ describe('ReviewActions', () => {
     render(<RendererWrapper schema={createSchema({})} {...initialProps} />);
 
     expect(
-      screen.getAllByRole('option', { 'aria-selected': 'true' })
+      screen.getAllByRole('option', { 'aria-selected': 'true' }),
     ).toHaveLength(2);
     expect(
-      screen.getAllByRole('option', { 'aria-selected': 'false' })
+      screen.getAllByRole('option', { 'aria-selected': 'false' }),
     ).toHaveLength(2);
   });
 
@@ -87,13 +86,13 @@ describe('ReviewActions', () => {
         schema={createSchema({})}
         {...initialProps}
         onSubmit={onSubmit}
-      />
+      />,
     );
 
     await user.click(
       screen.getByRole('button', {
         name: /submit/i,
-      })
+      }),
     );
 
     expect(onSubmit).toHaveBeenCalledTimes(1);

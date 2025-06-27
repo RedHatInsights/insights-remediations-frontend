@@ -11,7 +11,7 @@ import AsyncTableToolsTable from '../../Frameworks/AsyncTableTools/AsyncTableToo
  * This component serves as a place to either use the non-async TableTools or the AsyncTableTools
  * And allow preparing the AsyncTableToolsTable props/options common across tables in Remediations
  *
- *  @param   {object}             props Component props
+ *  @param   {object}               props Component props
  *
  *  @returns {AsyncTableToolsTable}       Returns either a Async TableToolsTable
  *

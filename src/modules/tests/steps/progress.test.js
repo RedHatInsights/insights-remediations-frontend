@@ -20,13 +20,13 @@ describe('Progress', () => {
           percent: 0,
           failed: false,
         }}
-      />
+      />,
     );
 
     expect(screen.getByTestId('wizard-progress')).toBeVisible();
     expect(screen.getByTestId('finished-create-remediation')).toBeVisible();
     expect(screen.getByTestId('finished-create-remediation')).toHaveTextContent(
-      'In progress'
+      'In progress',
     );
   });
 
@@ -44,11 +44,11 @@ describe('Progress', () => {
           percent: 100,
           failed: false,
         }}
-      />
+      />,
     );
 
     expect(screen.getByTestId('finished-create-remediation')).toHaveTextContent(
-      'Completed'
+      'Completed',
     );
 
     await user.click(screen.getByTestId('OpenPlaybookButton'));
@@ -71,11 +71,11 @@ describe('Progress', () => {
           percent: 10,
           failed: true,
         }}
-      />
+      />,
     );
 
     expect(screen.getByTestId('finished-create-remediation')).toHaveTextContent(
-      'Error'
+      'Error',
     );
 
     await user.click(screen.getByTestId('BackToWizardButton'));

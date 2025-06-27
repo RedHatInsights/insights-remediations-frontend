@@ -11,8 +11,9 @@ import {
 import { wrappable } from '@patternfly/react-table';
 
 // eslint-disable-next-line react/display-name
-export const renderComponent = (Component, props) => (_data, _id, entity) =>
-  <Component {...entity} {...props} />;
+export const renderComponent = (Component, props) => (_data, _id, entity) => (
+  <Component {...entity} {...props} />
+);
 
 export const Name = {
   title: 'Name',

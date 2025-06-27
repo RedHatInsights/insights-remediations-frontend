@@ -19,7 +19,7 @@ const useRunSystems = (run, shouldFetch, remId, fetchSystems) => {
         setSystems(
           (data ?? [])
             .filter((s) => s.playbook_run_executor_id === run.id)
-            .map((s) => ({ ...s, executor_name: exec?.executor_name }))
+            .map((s) => ({ ...s, executor_name: exec?.executor_name })),
         );
       })
       .finally(() => setLoading(false));
@@ -42,7 +42,7 @@ const useRunSystems = (run, shouldFetch, remId, fetchSystems) => {
         setSystems(
           (data ?? [])
             .filter((s) => s.playbook_run_executor_id === run.id)
-            .map((s) => ({ ...s, executor_name: exec?.executor_name }))
+            .map((s) => ({ ...s, executor_name: exec?.executor_name })),
         );
       })
       .finally(() => setLoading(false));

@@ -47,30 +47,30 @@ const SelectPlaybook = (props) => {
 
   const [existingRemediations, setExistingRemediations] = useState();
   const [existingPlaybookSelected, setExistingPlaybookSelected] = useState(
-    values[EXISTING_PLAYBOOK_SELECTED]
+    values[EXISTING_PLAYBOOK_SELECTED],
   );
   const [newPlaybookName, setNewPlaybookName] = useState(
-    values[EXISTING_PLAYBOOK_SELECTED] ? '' : input.value
+    values[EXISTING_PLAYBOOK_SELECTED] ? '' : input.value,
   );
   const [selectedPlaybook, setSelectedPlaybook] = useState(
-    values[EXISTING_PLAYBOOK]
+    values[EXISTING_PLAYBOOK],
   );
   const [isLoadingRemediation, setIsLoadingRemediation] = useState(false);
 
   const errors = useSelector(
     ({ resolutionsReducer }) => resolutionsReducer?.errors || [],
-    shallowEqual
+    shallowEqual,
   );
   const warnings = useSelector(
     ({ resolutionsReducer }) => resolutionsReducer?.warnings || [],
-    shallowEqual
+    shallowEqual,
   );
   const resolutions = useSelector(
     ({ resolutionsReducer }) => resolutionsReducer?.resolutions || [],
-    shallowEqual
+    shallowEqual,
   );
   const isLoading = useSelector(
-    ({ resolutionsReducer }) => resolutionsReducer?.isLoading
+    ({ resolutionsReducer }) => resolutionsReducer?.isLoading,
   );
 
   useEffect(() => {
@@ -87,7 +87,7 @@ const SelectPlaybook = (props) => {
       formOptions.change(RESOLUTIONS, resolutions);
       formOptions.change(
         ISSUES_MULTIPLE,
-        getIssuesMultiple(issues, systems, resolutions)
+        getIssuesMultiple(issues, systems, resolutions),
       );
     }
   });
@@ -260,7 +260,7 @@ SelectPlaybook.propTypes = {
     propTypes.shape({
       description: propTypes.string,
       id: propTypes.string,
-    })
+    }),
   ).isRequired,
   systems: propTypes.arrayOf(propTypes.string).isRequired,
   allSystems: propTypes.arrayOf(propTypes.string).isRequired,

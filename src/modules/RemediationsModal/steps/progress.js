@@ -51,8 +51,8 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
             {failed
               ? 'Error: Unable to add items to playbook'
               : percent === 100
-              ? 'Items added to playbook'
-              : 'Adding items to the playbook'}
+                ? 'Items added to playbook'
+                : 'Adding items to the playbook'}
           </>
         }
         icon={
@@ -62,15 +62,15 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
               failed
                 ? 'var(--pf-global--danger-color--100)'
                 : percent === 100
-                ? 'var(--pf-global--success-color--100)'
-                : undefined
+                  ? 'var(--pf-global--success-color--100)'
+                  : undefined
             }
             icon={
               failed
                 ? ExclamationCircleIcon
                 : percent === 100
-                ? CheckCircleIcon
-                : InProgressIcon
+                  ? CheckCircleIcon
+                  : InProgressIcon
             }
           />
         }
@@ -88,12 +88,12 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
               <div>
                 {`${issues.length} ${pluralize(
                   issues.length,
-                  'action'
+                  'action',
                 )} affecting 
                         ${systems.length} ${pluralize(
-                  systems.length,
-                  'system'
-                )} 
+                          systems.length,
+                          'system',
+                        )} 
                         ${
                           issues.length > 1 ? 'were' : 'was'
                         } added to the playbook `}

@@ -19,26 +19,26 @@ export const execStatus = (status, date) => {
   }
 
   if (status === 'success') {
-    (icon = (
+    ((icon = (
       <Icon status="success">
         <CheckCircleIcon />
       </Icon>
     )),
-      (displayValue = 'Succeeded');
+      (displayValue = 'Succeeded'));
   } else if (status === 'running') {
-    (icon = (
+    ((icon = (
       <Icon>
         <InProgressIcon color="var(--pf-v5-global--icon--Color--light--dark)" />
       </Icon>
     )),
-      (displayValue = 'In progress');
+      (displayValue = 'In progress'));
   } else if (status === 'failure') {
-    (icon = (
+    ((icon = (
       <Icon status="danger">
         <ExclamationCircleIcon />
       </Icon>
     )),
-      (displayValue = 'Failed');
+      (displayValue = 'Failed'));
   }
   return (
     <Flex spaceItems={{ default: 'spaceItemsSm' }}>
@@ -77,5 +77,6 @@ export const getTimeAgo = (date) => {
 };
 
 // eslint-disable-next-line react/display-name
-export const renderComponent = (Component, props) => (_data, _id, entity) =>
-  <Component {...entity} {...props} />;
+export const renderComponent = (Component, props) => (_data, _id, entity) => (
+  <Component {...entity} {...props} />
+);

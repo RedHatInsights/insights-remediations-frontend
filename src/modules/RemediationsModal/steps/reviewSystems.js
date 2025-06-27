@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import React, { useEffect, useState } from 'react';
 import propTypes from 'prop-types';
 import useFieldApi from '@data-driven-forms/react-form-renderer/use-field-api';
@@ -21,19 +20,19 @@ const ReviewSystems = ({ issues, systems, allSystems, registry, ...props }) => {
   const [bootcError, setBootcError] = useState(null);
 
   const rowsLength = useSelector(
-    ({ entities }) => (entities?.rows || []).length
+    ({ entities }) => (entities?.rows || []).length,
   );
   const selected = useSelector(({ entities }) => entities?.selected || []);
   const bootcIds = useSelector(
     ({ entities }) =>
       entities?.rows
         ?.filter((r) => r.system_profile?.bootc_status?.booted?.image)
-        .map((r) => r.id) || []
+        .map((r) => r.id) || [],
   );
   const loaded = useSelector(({ entities }) => entities?.loaded);
   const allSystemsNamed = useSelector(
     ({ hostReducer: { hosts } }) =>
-      hosts?.map((host) => ({ id: host.id, name: host.display_name })) || []
+      hosts?.map((host) => ({ id: host.id, name: host.display_name })) || [],
   );
 
   useEffect(() => {
@@ -42,7 +41,7 @@ const ReviewSystems = ({ issues, systems, allSystems, registry, ...props }) => {
 
     if (hasBootc && !isAdvisor) {
       setBootcError(
-        'Image mode systems cannot be added to a remediation playbook.'
+        'Image mode systems cannot be added to a remediation playbook.',
       );
       return input.onChange({});
     }
@@ -128,7 +127,7 @@ ReviewSystems.propTypes = {
     propTypes.shape({
       description: propTypes.string,
       id: propTypes.string,
-    })
+    }),
   ).isRequired,
   systems: propTypes.arrayOf(propTypes.string).isRequired,
   allSystems: propTypes.arrayOf(propTypes.string).isRequired,

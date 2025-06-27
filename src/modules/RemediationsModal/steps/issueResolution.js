@@ -35,7 +35,7 @@ const IssueResolution = ({ issue }) => {
   const removedResolutions = differenceWith(
     issueResolutions,
     uniqueResolutions,
-    isEqual
+    isEqual,
   );
 
   return (
@@ -88,7 +88,7 @@ const IssueResolution = ({ issue }) => {
           <Text className="ins-c-remediations-action-description">
             {`Resolution affects ${systems.length} ${pluralize(
               systems.length,
-              'system'
+              'system',
             )}`}
           </Text>
         </TextContent>

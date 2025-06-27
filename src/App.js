@@ -37,32 +37,32 @@ const App = () => {
       chrome?.hideGlobalFilter?.();
 
       getIsReceptorConfigured().then((isConfigured) =>
-        setIsReceptorConfigured(isConfigured.data.length > 0)
+        setIsReceptorConfigured(isConfigured.data.length > 0),
       );
 
       chrome
         .getUserPermissions('remediations')
         .then((remediationsPermissions) => {
           const permissionList = remediationsPermissions.map(
-            (permissions) => permissions.permission
+            (permissions) => permissions.permission,
           );
           if (
             permissionList.includes(
-              'remediations:*:*' || 'remediations:remediation:*'
+              'remediations:*:*' || 'remediations:remediation:*',
             )
           ) {
             handlePermissionUpdate(true, true, true);
           } else {
             handlePermissionUpdate(
               permissionList.includes(
-                'remediations:remediation:read' || 'remediations:*:read'
+                'remediations:remediation:read' || 'remediations:*:read',
               ),
               permissionList.includes(
-                'remediations:remediation:write' || 'remediations:*:write'
+                'remediations:remediation:write' || 'remediations:*:write',
               ),
               permissionList.includes(
-                'remediations:remediation:execute' || 'remediations:*:execute'
-              )
+                'remediations:remediation:execute' || 'remediations:*:execute',
+              ),
             );
           }
         });

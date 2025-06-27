@@ -10,7 +10,7 @@ jest.mock(
       <div data-testid="systems-table">
         <div>This is child</div>
       </div>
-    ))
+    )),
 );
 
 describe('SystemsTable', () => {
@@ -20,7 +20,7 @@ describe('SystemsTable', () => {
         allSystemsNamed={[]}
         allSystems={[]}
         disabledColumns={['updated']}
-      />
+      />,
     );
 
     expect(screen.getByTestId('systems-table')).toBeVisible();

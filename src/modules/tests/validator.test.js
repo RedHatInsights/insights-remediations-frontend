@@ -116,7 +116,7 @@ describe('validator', () => {
               description: 'CVE-2017-17713',
             },
           ],
-        })
+        }),
       ).toThrow(TypeError);
     });
 
@@ -130,7 +130,7 @@ describe('validator', () => {
               systems: [],
             },
           ],
-        })
+        }),
       ).toThrow(TypeError);
     });
   });

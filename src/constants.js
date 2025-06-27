@@ -26,7 +26,7 @@ const asyncActions = flatMap(
     'GET_ENDPOINT',
     'CHECK_EXECUTABLE',
   ],
-  (a) => [a, `${a}_PENDING`, `${a}_FULFILLED`, `${a}_REJECTED`]
+  (a) => [a, `${a}_PENDING`, `${a}_FULFILLED`, `${a}_REJECTED`],
 );
 
 const actions = [

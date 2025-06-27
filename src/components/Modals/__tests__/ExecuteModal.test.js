@@ -16,8 +16,8 @@ describe('Execute modal', () => {
           issueCount={3}
           refetchRemediationPlaybookRuns={() => {}}
           onClose={() => {}}
-        />
-      )
+        />,
+      ),
     );
 
     expect(screen.getByTestId('execute-modal')).toBeVisible();
@@ -26,7 +26,7 @@ describe('Execute modal', () => {
       .queryAllByAttribute(
         'data-label',
         screen.getByTestId('execute-modal'),
-        'Connection type'
+        'Connection type',
       )
       .filter((el) => el.tagName.toLowerCase() === 'td');
 

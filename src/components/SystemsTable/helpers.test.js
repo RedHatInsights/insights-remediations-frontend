@@ -19,7 +19,7 @@ describe('calculateChecked', () => {
   it('should return false', () => {
     expect(calculateChecked([], new Map())).toBe(false);
     expect(calculateChecked([{ id: '1' }], new Map([['2', 'bla']]))).toBe(
-      false
+      false,
     );
   });
 
@@ -29,7 +29,7 @@ describe('calculateChecked', () => {
 
   it('should return null', () => {
     expect(
-      calculateChecked([{ id: '1' }, { id: '2' }], new Map([['2', 'bla']]))
+      calculateChecked([{ id: '1' }, { id: '2' }], new Map([['2', 'bla']])),
     ).toBe(null);
   });
 });
@@ -99,7 +99,7 @@ describe('fetchInventoryData', () => {
       { per_page: 10 },
       [{ id: 'one' }],
       getFn,
-      mockData
+      mockData,
     );
     expect(getFn).toHaveBeenCalled();
     expect(data).toMatchObject({
@@ -121,7 +121,7 @@ describe('fetchInventoryData', () => {
         { id: 'two', display_name: 'bar' },
       ],
       getFn,
-      mockData
+      mockData,
     );
     expect(getFn).toHaveBeenCalled();
     expect(data).toMatchObject({
@@ -140,7 +140,7 @@ describe('fetchInventoryData', () => {
         { id: 'two', display_name: 'bar' },
       ],
       getFn,
-      mockData
+      mockData,
     );
     expect(getFn).toHaveBeenCalled();
     expect(data).toMatchObject({

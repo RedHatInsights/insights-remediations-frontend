@@ -21,26 +21,26 @@ export const ExecutionStatusCell = ({ status }) => {
   let icon;
   let displayValue;
   if (status === 'success') {
-    (icon = (
+    ((icon = (
       <Icon status="success">
         <CheckCircleIcon />
       </Icon>
     )),
-      (displayValue = 'Succeeded');
+      (displayValue = 'Succeeded'));
   } else if (status === 'running') {
-    (icon = (
+    ((icon = (
       <Icon>
         <InProgressIcon color="var(--pf-v5-global--icon--Color--light--dark)" />
       </Icon>
     )),
-      (displayValue = 'In progress');
+      (displayValue = 'In progress'));
   } else if (status === 'failure') {
-    (icon = (
+    ((icon = (
       <Icon status="danger">
         <ExclamationCircleIcon />
       </Icon>
     )),
-      (displayValue = 'Failed');
+      (displayValue = 'Failed'));
   }
   return (
     <Flex spaceItems={{ default: 'spaceItemsXs' }}>

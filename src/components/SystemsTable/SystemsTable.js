@@ -31,7 +31,7 @@ const SystemsTableWrapper = ({
   const activeSystem = useRef(undefined);
   const dispatch = useDispatch();
   const selected = useSelector(
-    ({ entities }) => entities?.selected || new Map()
+    ({ entities }) => entities?.selected || new Map(),
   );
   const loaded = useSelector(({ entities }) => entities?.loaded);
   const rows = useSelector(({ entities }) => entities?.rows);
@@ -71,7 +71,7 @@ const SystemsTableWrapper = ({
     switch (selection) {
       case 'none':
         systemsRef.current.map((system) =>
-          dispatch(selectEntity(system.id, false))
+          dispatch(selectEntity(system.id, false)),
         );
         break;
       case 'page':
@@ -82,12 +82,12 @@ const SystemsTableWrapper = ({
         break;
       case 'all':
         systemsRef.current.map((system) =>
-          dispatch(selectEntity(system.id, true))
+          dispatch(selectEntity(system.id, true)),
         );
         break;
       case 'deselect all':
         systemsRef.current.map((system) =>
-          dispatch(selectEntity(system.id, false))
+          dispatch(selectEntity(system.id, false)),
         );
         break;
     }
@@ -127,10 +127,10 @@ const SystemsTableWrapper = ({
                       !selected //if nothing is selected - select the page
                         ? bulkSelectorSwitch('page')
                         : bulkSelectCheck(rows).length === rows.length //it compares the selected rows to the total selected values so you can deselect the page
-                        ? bulkSelectorSwitch('deselect page')
-                        : systemsRef.current.length > selected.size //it compares the total amount of rows to the selected values, so you can select additional page
-                        ? bulkSelectorSwitch('page')
-                        : bulkSelectorSwitch('deselect page');
+                          ? bulkSelectorSwitch('deselect page')
+                          : systemsRef.current.length > selected.size //it compares the total amount of rows to the selected values, so you can select additional page
+                            ? bulkSelectorSwitch('page')
+                            : bulkSelectorSwitch('deselect page');
                     },
                   }
                 : {}),
@@ -160,7 +160,7 @@ const SystemsTableWrapper = ({
             config,
             systemsRef.current,
             getEntitiesRef.current,
-            connectedData
+            connectedData,
           )
         }
         onLoad={({ INVENTORY_ACTION_TYPES, mergeWithEntities, api }) => {
@@ -177,7 +177,7 @@ const SystemsTableWrapper = ({
                 id,
                 display_name,
                 issues: remediation.issues.filter((issue) =>
-                  issue.systems.find(({ id: systemId }) => systemId === id)
+                  issue.systems.find(({ id: systemId }) => systemId === id),
                 ),
               };
               setIsOpen(true);
@@ -222,8 +222,8 @@ const SystemsTable = (props) => {
         {
           selected: new Map(),
         },
-        [promiseMiddleware]
-      )
+        [promiseMiddleware],
+      ),
     );
   }, []);
 
@@ -252,9 +252,9 @@ SystemsTable.propTypes = {
             id: PropTypes.string,
             display_name: PropTypes.string,
             resolved: PropTypes.bool,
-          })
+          }),
         ),
-      })
+      }),
     ),
   }),
 };

@@ -62,7 +62,7 @@ jest.mock(
         return res;
       },
     })),
-  })
+  }),
 );
 
 describe('RemediationWizard', () => {
@@ -93,7 +93,7 @@ describe('RemediationWizard', () => {
             register: registrySpy,
           }}
         />
-      </Provider>
+      </Provider>,
     );
 
     await screen.findByRole('button', { name: /select playbook/i });
@@ -101,19 +101,19 @@ describe('RemediationWizard', () => {
     await screen.findByRole('button', { name: /remediation review/i });
 
     expect(
-      screen.getByRole('button', { name: /select playbook/i })
+      screen.getByRole('button', { name: /select playbook/i }),
     ).toBeVisible();
     expect(
-      screen.getByRole('button', { name: /review systems/i })
+      screen.getByRole('button', { name: /review systems/i }),
     ).toBeVisible();
     expect(
-      screen.getByRole('button', { name: /remediation review/i })
+      screen.getByRole('button', { name: /remediation review/i }),
     ).toBeVisible();
 
     expect(
       screen.getByText(
-        /you selected to remediate with ansible, which in total includes of which can be remediated by ansible\./i
-      )
+        /you selected to remediate with ansible, which in total includes of which can be remediated by ansible\./i,
+      ),
     ).toBeVisible();
   });
 });

@@ -17,17 +17,17 @@ export const useConnectionStatus = (remediation) => {
     const fetchData = async () => {
       try {
         const connection_status = await axios.get(
-          `${API_BASE}/remediations/${remediation.id}/connection_status`
+          `${API_BASE}/remediations/${remediation.id}/connection_status`,
         );
-        mounted.current &&
+        (mounted.current &&
           (connection_status.data.forEach((connected_group) => {
-            (totalSystemsCount += connected_group.system_count),
+            ((totalSystemsCount += connected_group.system_count),
               connected_group.connection_status === 'connected' &&
-                (connectedSystemCount = connected_group.system_count);
+                (connectedSystemCount = connected_group.system_count));
           }),
           setConnectedSystems(connectedSystemCount)),
           setTotalSystems(totalSystemsCount),
-          setConnectedData(connection_status.data);
+          setConnectedData(connection_status.data));
       } catch (error) {
         console.error(error);
         setDetailsError(error?.errors[0].status || '');

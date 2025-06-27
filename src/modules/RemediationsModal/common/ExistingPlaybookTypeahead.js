@@ -32,7 +32,7 @@ const ExistingPlaybookTypeahead = ({
     let newSelectOptions = existingRemediations;
     if (filterValue) {
       newSelectOptions = existingRemediations.filter((menuItem) =>
-        String(menuItem.name).toLowerCase().includes(filterValue.toLowerCase())
+        String(menuItem.name).toLowerCase().includes(filterValue.toLowerCase()),
       );
 
       if (!newSelectOptions.length) {
@@ -110,7 +110,7 @@ const ExistingPlaybookTypeahead = ({
 
   const onInputKeyDown = (event) => {
     const enabledMenuItems = selectOptions.filter(
-      (option) => !option.isDisabled
+      (option) => !option.isDisabled,
     );
     const [firstMenuItem] = enabledMenuItems;
     const focusedItem = focusedItemIndex

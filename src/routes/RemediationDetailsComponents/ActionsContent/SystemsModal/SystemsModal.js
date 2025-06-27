@@ -20,7 +20,7 @@ const SystemsModal = ({ systems, isOpen, onClose, actionName }) => {
       return allIssues;
     }
     return allIssues.filter((system) =>
-      system?.display_name.includes(nameFilter)
+      system?.display_name.includes(nameFilter),
     );
   }, [allIssues, nameFilter]);
   const start = params?.offset ?? 0;

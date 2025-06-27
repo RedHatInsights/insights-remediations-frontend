@@ -27,7 +27,7 @@ const RemediationButton = ({
       setHasPermissions(
         permissions.some(({ permission }) => {
           return matchPermissions(permission, CAN_REMEDIATE);
-        })
+        }),
       );
     });
   }, []);
@@ -77,7 +77,7 @@ const RemediationButton = ({
         <RemediationWizard
           setOpen={(isOpen) =>
             setRemediationsData((prevData) =>
-              isOpen === false ? null : prevData
+              isOpen === false ? null : prevData,
             )
           }
           data={{

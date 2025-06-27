@@ -57,7 +57,7 @@ export const OverViewPageHeader = ({ hasRemediations }) => {
               variant="secondary"
               onClick={() =>
                 quickStarts?.activateQuickstart(
-                  'insights-remediate-plan-create'
+                  'insights-remediate-plan-create',
                 )
               }
             >

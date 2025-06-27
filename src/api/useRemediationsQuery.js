@@ -20,14 +20,17 @@ import useFetchTotalBatched from '../Utilities/Hooks/useFetchTotalBatched';
  * Hook to use a Remediation REST API v2 endpoint with useQuery.
  * Optionally support for using the serialised table state if a `<TableStateProvider/>` is available.
  *
- *  @param   {Function}                 endpoint                String of the javascript-clients export for the needed endpoint
+ *  @param   {Function}                  endpoint                String of the javascript-clients export for the needed endpoint
  *
- *  @param   {object}                   [options]               Options for useRemediationsQuery & useQuery
+ *  @param   {object}                    [options]               Options for useRemediationsQuery & useQuery
  *  @param   {useRemediationQueryParams} [options.params]        API endpoint params
- *  @param   {boolean}                  [options.useTableState] Use the serialised table state
- *  @param   {boolean}                  [options.onlyTotal]      Enables a predefined "compileResult" function for the useQuery to only return the meta.total as the `data`
+ *  @param   {boolean}                   [options.useTableState] Use the serialised table state
+ *  @param   {boolean}                   [options.onlyTotal]     Enables a predefined "compileResult" function for the useQuery to only return the meta.total as the `data`
  *
- *  @returns {useQueryReturn}                                   An object containing a data, loading and error state, as well as a fetch and refetch function.
+ *  @param                               options.batched
+ *  @param                               options.skip
+ *  @param                               options.batch
+ *  @returns {useQueryReturn}                                    An object containing a data, loading and error state, as well as a fetch and refetch function.
  *
  *  @category Remediation
  *  @subcategory Hooks
@@ -44,12 +47,12 @@ const useRemediationsQuery = (
     skip: skipOption,
     batch = {},
     ...options
-  } = {}
+  } = {},
 ) => {
   // const apiEndpoint = useRemediationsAPI(endpoint);
   const { params, hasState } = useRemediationTableState(
     useTableState,
-    paramsOption
+    paramsOption,
   );
 
   const skip = !!(useTableState && !hasState) || !!skipOption;
@@ -68,7 +71,7 @@ const useRemediationsQuery = (
   const fetchForBatch = useCallback(
     async (offset, limit, params) =>
       await queryFetch({ limit, offset, ...params }, false),
-    [queryFetch]
+    [queryFetch],
   );
   const {
     loading: batchedLoading,

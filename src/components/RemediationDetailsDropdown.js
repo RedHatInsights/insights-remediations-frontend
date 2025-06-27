@@ -45,7 +45,7 @@ function RemediationDetailsDropdown({
             setRenameDialogOpen(false);
             updateRemPlan
               ? updateRemPlan({ id: remediation.id, name: name }).then(() => {
-                  refetch(), refetchAllRemediations();
+                  (refetch(), refetchAllRemediations());
                 })
               : onRename(remediation.id, name);
 

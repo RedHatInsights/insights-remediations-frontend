@@ -14,7 +14,7 @@ export const loadRemediations = (
   limit,
   offset,
   system,
-  hideArchived
+  hideArchived,
 ) => ({
   type: ACTION_TYPES.LOAD_REMEDIATIONS,
   payload: remediations.getRemediations(
@@ -23,7 +23,7 @@ export const loadRemediations = (
     limit,
     offset,
     system,
-    hideArchived
+    hideArchived,
   ),
 });
 
@@ -129,7 +129,7 @@ export const getPlaybookRunSystems = (
   executorId,
   limit = 50,
   offset = 0,
-  ansibleHost
+  ansibleHost,
 ) => ({
   type: ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEMS,
   payload: remediations.getPlaybookRunSystems(
@@ -138,20 +138,20 @@ export const getPlaybookRunSystems = (
     executorId,
     limit,
     offset,
-    ansibleHost
+    ansibleHost,
   ),
 });
 
 export const getPlaybookRunSystemDetails = (
   remediationId,
   runId,
-  systemId
+  systemId,
 ) => ({
   type: ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEM_DETAILS,
   payload: remediations.getPlaybookRunSystemDetails(
     remediationId,
     runId,
-    systemId
+    systemId,
   ),
 });
 

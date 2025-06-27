@@ -44,7 +44,7 @@ const SystemsTable = ({
                 ]
               : []),
           ],
-          []
+          [],
         )
       }
       noDetail
@@ -58,12 +58,14 @@ const SystemsTable = ({
           config,
           sortableColumns,
           allSystemsNamed,
-          defaultGetEntities
+          defaultGetEntities,
         )
       }
       onLoad={({ mergeWithEntities, INVENTORY_ACTION_TYPES }) => {
         registry.register(
-          mergeWithEntities(entitiesReducer(allSystems, INVENTORY_ACTION_TYPES))
+          mergeWithEntities(
+            entitiesReducer(allSystems, INVENTORY_ACTION_TYPES),
+          ),
         );
       }}
       tableProps={{
@@ -84,7 +86,7 @@ SystemsTable.propTypes = {
     propTypes.shape({
       id: propTypes.string,
       name: propTypes.string,
-    })
+    }),
   ).isRequired,
   allSystems: propTypes.arrayOf(propTypes.string).isRequired,
   hasCheckbox: propTypes.bool,
