@@ -17,10 +17,14 @@ async function checkResponse(r) {
   if (r.headers.get('content-type').includes('application/json')) {
     // let's try to extract some more info
     let data = false;
+    const DEBUG = false; // Set to true to enable debug logging
+
     try {
       data = await r.json();
     } catch (e) {
+      if (DEBUG){
       console.log(e);
+      }
     }
 
     if (data.errors && data.errors.length) {
