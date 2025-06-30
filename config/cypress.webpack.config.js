@@ -1,53 +1,22 @@
-import tsParser from '@typescript-eslint/parser';
-import pluginCypress from 'eslint-plugin-cypress/flat';
-import jestDom from 'eslint-plugin-jest-dom';
-import jsdoc from 'eslint-plugin-jsdoc';
-import reactHooks from 'eslint-plugin-react-hooks';
-import testingLibrary from 'eslint-plugin-testing-library';
-import { defineConfig, globalIgnores } from 'eslint/config';
-import tseslint from 'typescript-eslint';
+const { resolve } = require('path');
+const config = require('@redhat-cloud-services/frontend-components-config');
 
-export default defineConfig([
-  globalIgnores(['node_modules/*', 'static/*', 'dist/*', 'docs/*']),
-  fecPlugin,
-  pluginCypress.configs.recommended,
-  reactHooks.configs['recommended-latest'],
-  jsdoc.configs['flat/recommended'],
-  testingLibrary.configs['flat/react'],
-  jestDom.configs['flat/recommended'],
-  {
-    languageOptions: {
-      parser: tsParser,
+const { config: webpackConfig, plugins } = config({
+  rootFolder: resolve(__dirname, '../'),
+});
 
-      globals: {
-        React: true,
+module.exports = {
+  ...webpackConfig,
+  plugins,
+  module: {
+    ...webpackConfig.module,
+    rules: [
+      ...webpackConfig.module.rules,
+      {
+        test: /\.(?:js|mjs|cjs)$/,
+        exclude: /(node_modules|bower_components)/i,
+        use: ['babel-loader'],
       },
-    },
-
-    plugins: {
-      '@typescript-eslint': tseslint.plugin,
-    },
-
-    rules: {
-      'rulesdir/disallow-fec-relative-imports': 'off',
-      'rulesdir/forbid-pf-relative-imports': 'off',
-      'jsdoc/tag-lines': 0,
-      'jsdoc/require-jsdoc': 0,
-      'jsdoc/check-line-alignment': [
-        'error',
-        'always',
-        {
-          customSpacings: {
-            postDelimiter: 2,
-          },
-        },
-      ],
-      'jsdoc/check-tag-names': [
-        'warn',
-        {
-          definedTags: ['category', 'subcategory'],
-        },
-      ],
-    },
+    ],
   },
-]);
+};

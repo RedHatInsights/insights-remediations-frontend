@@ -39,6 +39,33 @@
     "urijs": "^1.19.11",
     "use-deep-compare": "^1.3.0"
   },
+   "sassIncludes": {
+    "patternfly": "node_modules/patternfly/dist/sass",
+    "bootstrap": "node_modules/patternfly/node_modules/bootstrap-sass/assets/stylesheets",
+    "fontAwesome": "node_modules/patternfly/node_modules/font-awesome-sass/assets/stylesheets"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "test": "TZ=UTC jest --verbose --no-cache",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!**/node_modules/**"
+    ],
+    "transformIgnorePatterns": [
+      "/node_modules/(?!(uuid|@redhat-cloud-services|p-all|p-map|aggregate-error|indent-string|clean-stack)/)"
+    ],
+    "moduleNameMapper": {
+      "\\.(css|scss|svg)$": "identity-obj-proxy"
+    },
+    "setupFiles": [
+      "<rootDir>/config/setupTests.js"
+    ],
+    "roots": [
+      "<rootDir>/src/"
+    ],
+    "coverageDirectory": "coverage-jest"
+  },
   "devDependencies": {
     "@babel/core": "^7.14.6",
     "@babel/plugin-transform-runtime": "^7.14.5",
@@ -88,7 +115,7 @@
     "lint:sass": "stylelint 'src/**/*.scss' --config .stylelintrc.json",
     "nightly": "npm run ci:verify",
     "postinstall": "ts-patch install",
-    "test": "TZ=UTC jest --verbose --no-cache --config jest.config.cjs",
+    "test": "TZ=UTC jest --verbose --no-cache",
     "test:coverage": "curl -sSL 'https://raw.githubusercontent.com/RedHatInsights/insights-interact-tools/refs/heads/main/scripts/coverage.sh' | bash",
     "test:ct": "BABEL_ENV=componentTest cypress run --component",
     "test:jest": "jest --passWithNoTests --env=jsdom",
