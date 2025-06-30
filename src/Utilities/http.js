@@ -22,8 +22,8 @@ async function checkResponse(r) {
     try {
       data = await r.json();
     } catch (e) {
-      if (DEBUG){
-      console.log(e);
+      if (DEBUG) {
+        console.log(e);
       }
     }
 

@@ -4,8 +4,8 @@
   "private": false,
   "repository": "https://github.com/RedHatInsights/insights-remediations-frontend",
   "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=7.0.0"
+   "node": ">=20.11",
+   "npm": ">=9"
   },
   "dependencies": {
     "@data-driven-forms/pf4-component-mapper": "^3.21.0",
