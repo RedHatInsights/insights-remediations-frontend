@@ -30,7 +30,7 @@ const demoRows = [
 
 jest.mock('../api', () => ({
   getRemediations: jest.fn(
-    () => () => Promise.resolve({ data: demoRows, meta: { total: 2 } })
+    () => () => Promise.resolve({ data: demoRows, meta: { total: 2 } }),
   ),
   getRemediationsList: jest.fn(() => () => Promise.resolve({ data: demoRows })),
   deleteRemediation: jest.fn(() => () => Promise.resolve({})),
@@ -51,7 +51,7 @@ jest.mock(
     ),
     download: jest.fn(),
   }),
-  { virtual: true }
+  { virtual: true },
 );
 
 const mockActivateQuickstart = jest.fn();
@@ -67,7 +67,7 @@ jest.mock(
   '@redhat-cloud-services/frontend-components-utilities/interceptors',
   () => ({
     useAxiosWithPlatformInterceptors: () => ({}),
-  })
+  }),
 );
 
 /* ───────── silence ATT circular-ref warnings ───────── */
@@ -96,13 +96,13 @@ const renderPage = () =>
           <OverViewPageProvider />
         </MemoryRouter>
       </PermissionContext.Provider>
-    </ReduxProvider>
+    </ReduxProvider>,
   );
 
 const renderPageWithList = (list) => {
   const { getRemediationsList } = require('../api');
   getRemediationsList.mockImplementationOnce(
-    () => () => Promise.resolve({ data: list })
+    () => () => Promise.resolve({ data: list }),
   );
   return renderPage();
 };
@@ -126,7 +126,7 @@ describe('OverViewPage', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: /^delete$/i }));
 
     expect(
-      screen.getByRole('dialog', { name: /delete remediation plan/i })
+      screen.getByRole('dialog', { name: /delete remediation plan/i }),
     ).toBeVisible();
   });
 
@@ -139,7 +139,7 @@ describe('OverViewPage', () => {
     const kebab = within(row).getByRole('button', { name: /kebab toggle/i });
     await userEvent.click(kebab);
     await userEvent.click(
-      screen.getByRole('menuitem', { name: /^download$/i })
+      screen.getByRole('menuitem', { name: /^download$/i }),
     );
 
     expect(download).toHaveBeenCalledTimes(1);
@@ -158,7 +158,7 @@ describe('OverViewPage', () => {
 
     await userEvent.click(qsBtn);
     expect(mockActivateQuickstart).toHaveBeenCalledWith(
-      'insights-remediate-plan-create'
+      'insights-remediate-plan-create',
     );
   });
 
@@ -166,14 +166,14 @@ describe('OverViewPage', () => {
     renderPageWithList([]); // no data
 
     expect(
-      screen.queryByRole('button', { name: /launch quick start/i })
+      screen.queryByRole('button', { name: /launch quick start/i }),
     ).not.toBeInTheDocument();
 
     /* helper text still visible */
     expect(
       screen.getByText(/use ansible playbooks to resolve issues/i, {
         exact: false,
-      })
+      }),
     ).toBeInTheDocument();
   });
 });

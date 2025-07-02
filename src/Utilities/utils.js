@@ -2,7 +2,6 @@ export function capitalize(string) {
   return `${string.charAt(0).toUpperCase() + string.slice(1)}`;
 }
 
-/* eslint-disable camelcase */
 import React, { Fragment } from 'react';
 import { Bullseye, Spinner } from '@patternfly/react-core';
 import * as api from '../api';
@@ -60,7 +59,7 @@ export const buildRows = (
   records,
   sortByState,
   showAlternate,
-  allSystemsNamed
+  allSystemsNamed,
 ) =>
   sortRecords(records, sortByState).reduce(
     (acc, curr, index) => [
@@ -101,7 +100,7 @@ export const buildRows = (
               parent: index * 2,
               fullWidth: true,
               allSystemsNamed: allSystemsNamed.filter((system) =>
-                curr.systems.includes(system.id)
+                curr.systems.includes(system.id),
               ),
               allSystems: curr.systems,
               cells: [
@@ -118,7 +117,7 @@ export const buildRows = (
           ]
         : []),
     ],
-    []
+    [],
   );
 
 const buildSystemRow = (allSystemsNamed = [], allSystems = []) => (
@@ -136,7 +135,7 @@ export const onCollapse = (event, rowKey, isOpen, rows, setRows) => {
     {
       title: buildSystemRow(
         rows[rowKey + 1].allSystemsNamed,
-        rows[rowKey + 1].allSystems
+        rows[rowKey + 1].allSystems,
       ),
     },
   ];
@@ -152,13 +151,13 @@ export const getResolution = (issueId, formValues) => {
     issueId in formValues[SELECTED_RESOLUTIONS]
   ) {
     return issueResolutions.filter(
-      (r) => r.id === formValues[SELECTED_RESOLUTIONS][issueId]
+      (r) => r.id === formValues[SELECTED_RESOLUTIONS][issueId],
     );
   }
 
   if (formValues[EXISTING_PLAYBOOK_SELECTED]) {
     const existing = formValues[EXISTING_PLAYBOOK]?.issues?.find(
-      (i) => i.id === issueId
+      (i) => i.id === issueId,
     );
 
     if (existing) {
@@ -204,9 +203,12 @@ export const submitRemediation = (formValues, data, basePath, setState) => {
     })
     .filter((issue) => issue.systems.length > 0);
 
-  const interval = setInterval(() => {
-    percent < 99 && setState({ percent: ++percent });
-  }, (issues.length + Object.keys(formValues[SYSTEMS]).length) / 10);
+  const interval = setInterval(
+    () => {
+      percent < 99 && setState({ percent: ++percent });
+    },
+    (issues.length + Object.keys(formValues[SYSTEMS]).length) / 10,
+  );
 
   const add = { issues, systems: [] };
 
@@ -218,7 +220,7 @@ export const submitRemediation = (formValues, data, basePath, setState) => {
       api.patchRemediation(
         existing_id,
         { add, auto_reboot: formValues[AUTO_REBOOT] },
-        basePath
+        basePath,
       )) ||
     api.createRemediation(
       {
@@ -226,7 +228,7 @@ export const submitRemediation = (formValues, data, basePath, setState) => {
         add,
         auto_reboot: formValues[AUTO_REBOOT],
       },
-      basePath
+      basePath,
     )
   )
     // watch out, id is only returned from createRemediation endpoint,
@@ -239,7 +241,7 @@ export const submitRemediation = (formValues, data, basePath, setState) => {
           createNotification(
             id ?? existing_id,
             formValues[SELECT_PLAYBOOK],
-            !isUpdate
+            !isUpdate,
           ),
       });
     })
@@ -287,7 +289,7 @@ export const loadEntitiesFulfilled = (state, allSystems, sortBy) => {
         selected: !!selected?.includes(id),
       })),
       'display_name',
-      sortBy?.direction || 'asc'
+      sortBy?.direction || 'asc',
     ),
     sortBy,
   };
@@ -318,7 +320,7 @@ export const sortByAttr = (systems, attribute, direction) =>
     ? systems.sort(
         (a, b) =>
           ((a[attribute] > b[attribute] && 1) || -1) *
-          (direction === 'asc' ? 1 : -1)
+          (direction === 'asc' ? 1 : -1),
       )
     : [];
 
@@ -326,7 +328,7 @@ export const fetchSystemsInfo = async (
   config,
   sortableColumns = [],
   allSystemsNamed = [],
-  getEntities
+  getEntities,
 ) => {
   const isSortingValid = sortableColumns.includes(config.orderBy);
   config.orderBy = isSortingValid ? config.orderBy : undefined;
@@ -341,12 +343,12 @@ export const fetchSystemsInfo = async (
           ...acc,
           ...(curr.name.toLowerCase().includes(hostnameOrId) ? [curr.id] : []),
         ],
-        []
+        [],
       )
     : allSystemsNamed.map((system) => system.id);
   const sliced = systems.slice(
     (config.page - 1) * config.per_page,
-    config.page * config.per_page
+    config.page * config.per_page,
   );
   const data =
     sliced.length > 0
@@ -358,7 +360,7 @@ export const fetchSystemsInfo = async (
             hasItems: true,
             page: 1,
           },
-          true
+          true,
         )
       : {};
   return {
@@ -374,7 +376,7 @@ export const fetchSystemsInfo = async (
 
 export const splitArray = (inputArray, perChunk) =>
   [...new Array(Math.ceil(inputArray.length / perChunk))].map((_item, key) =>
-    inputArray.slice(key * perChunk, (key + 1) * perChunk)
+    inputArray.slice(key * perChunk, (key + 1) * perChunk),
   );
 
 export const getPlaybookSystems = (playbook) =>
@@ -388,15 +390,15 @@ export const getPlaybookSystems = (playbook) =>
             name: system.display_name,
           })),
         ],
-        []
+        [],
       ),
-      isEqual
+      isEqual,
     )) ||
   [];
 
 export const inventoryEntitiesReducer = (
   allSystems,
-  { LOAD_ENTITIES_FULFILLED }
+  { LOAD_ENTITIES_FULFILLED },
 ) =>
   applyReducerHash({
     SELECT_ENTITY: (state, action) => entitySelected(state, action),
@@ -414,7 +416,7 @@ export const shortenIssueId = (issueId) =>
 export const getIssuesMultiple = (
   issues = [],
   systems = [],
-  resolutions = []
+  resolutions = [],
 ) =>
   issues
     .map((issue) => {
@@ -445,6 +447,6 @@ export const matchPermissions = (permissionA, permissionB) => {
     (segmentA, index) =>
       segmentA === segmentsB[index] ||
       segmentA === '*' ||
-      segmentsB[index] === '*'
+      segmentsB[index] === '*',
   );
 };

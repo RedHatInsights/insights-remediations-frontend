@@ -4,8 +4,8 @@
   "private": false,
   "repository": "https://github.com/RedHatInsights/insights-remediations-frontend",
   "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=7.0.0"
+   "node": ">=20.11",
+   "npm": ">=9"
   },
   "dependencies": {
     "@data-driven-forms/pf4-component-mapper": "^3.21.0",
@@ -28,7 +28,6 @@
     "@unleash/proxy-client-react": "^4.5.2",
     "axios": "^1.7.7",
     "classnames": "^2.3.1",
-    "identity-obj-proxy": "^3.0.0",
     "p-all": "^5.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
@@ -78,7 +77,7 @@
     "@cypress/code-coverage": "^3.13.10",
     "@cypress/webpack-dev-server": "^4.0.0",
     "@patternfly/patternfly": "^4.221.2",
-    "@redhat-cloud-services/eslint-config-redhat-cloud-services": "^1.2.1",
+    "@redhat-cloud-services/eslint-config-redhat-cloud-services": "^3.0.0",
     "@redhat-cloud-services/frontend-components-config": "^6.3.1",
     "@redhat-cloud-services/tsc-transform-imports": "^1.0.7",
     "@testing-library/jest-dom": "^6.2.0",
@@ -88,10 +87,13 @@
     "babel-loader": "^9.2.1",
     "babel-plugin-istanbul": "^6.1.1",
     "cypress": "^14.4.0",
-    "eslint": "^8.20.0",
-    "eslint-plugin-cypress": "^3.4.0",
-    "eslint-plugin-jest-dom": "^5.1.0",
+    "eslint": "^9.24.0",
+    "eslint-plugin-cypress": "^5.1.0",
+    "eslint-plugin-jest-dom": "^5.5.0",
+    "eslint-plugin-jsdoc": "^51.3.1",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-testing-library": "^6.2.0",
+    "identity-obj-proxy": "^3.0.0",
     "jest": "^29.6.3",
     "jest-environment-jsdom": "^29.6.3",
     "jest-fetch-mock": "^3.0.3",
@@ -101,13 +103,14 @@
     "stylelint-config-recommended-scss": "^4.3.0",
     "stylelint-scss": "^3.19.0",
     "ts-patch": "^3.1.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.32.0"
   },
   "scripts": {
     "build": "fec build",
     "coverage": "curl -sSL 'https://raw.githubusercontent.com/RedHatInsights/insights-interact-tools/refs/heads/main/scripts/coverage.sh' | bash",
     "lint": "npm-run-all lint:*",
-    "lint-fix": "eslint config src --fix",
+    "lint:fix": "eslint src config --fix",
     "lint:js": "eslint config src",
     "lint:sass": "stylelint 'src/**/*.scss' --config .stylelintrc.json",
     "nightly": "npm run ci:verify",

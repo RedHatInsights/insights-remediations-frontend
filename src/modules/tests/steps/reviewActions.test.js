@@ -67,7 +67,7 @@ describe('ReviewActions', () => {
     render(
       <Provider store={store}>
         <RendererWrapper schema={createSchema()} />
-      </Provider>
+      </Provider>,
     );
     expect(screen.getByTestId('wizard-review-actions')).toBeVisible();
   });

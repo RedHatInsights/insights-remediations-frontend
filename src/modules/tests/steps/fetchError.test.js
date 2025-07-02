@@ -29,7 +29,7 @@ describe('FetchError', () => {
     expect(screen.getByText('Unexpected error')).toBeVisible();
     expect(screen.getByText('Please try again later.')).toBeVisible();
     expect(
-      screen.getByText('Hint: No resolutions for selected issues.')
+      screen.getByText('Hint: No resolutions for selected issues.'),
     ).toBeVisible();
   });
 });

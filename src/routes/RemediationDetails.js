@@ -36,7 +36,7 @@ const RemediationDetails = () => {
     checkExecutableStatus(axios),
     {
       params: { remId: id },
-    }
+    },
   );
 
   const {
@@ -59,13 +59,13 @@ const RemediationDetails = () => {
     updateRemediationPlans(axios),
     {
       skip: true,
-    }
+    },
   );
 
   useEffect(() => {
     remediationDetails &&
       chrome.updateDocumentTitle(
-        `${remediationDetails.name} - Remediation Plans - Automation`
+        `${remediationDetails.name} - Remediation Plans - Automation`,
       );
   }, [chrome, remediationDetails]);
 

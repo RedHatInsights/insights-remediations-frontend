@@ -17,9 +17,15 @@ async function checkResponse(r) {
   if (r.headers.get('content-type').includes('application/json')) {
     // let's try to extract some more info
     let data = false;
+    const DEBUG = false; // Set to true to enable debug logging
+
     try {
       data = await r.json();
-    } catch (e) {} // eslint-disable-line no-empty
+    } catch (e) {
+      if (DEBUG) {
+        console.log(e);
+      }
+    }
 
     if (data.errors && data.errors.length) {
       const error = data.errors[0];
@@ -53,7 +59,7 @@ function doFetch(
   method = 'GET',
   data = false,
   headers = false,
-  options = {}
+  options = {},
 ) {
   const opts = {
     credentials: 'same-origin',

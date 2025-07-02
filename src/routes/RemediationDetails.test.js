@@ -8,7 +8,7 @@ jest.mock(
   () => ({
     __esModule: true,
     useAxiosWithPlatformInterceptors: jest.fn(),
-  })
+  }),
 );
 
 describe('useConnectionStatus', () => {

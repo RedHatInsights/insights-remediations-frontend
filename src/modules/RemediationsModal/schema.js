@@ -66,10 +66,10 @@ export const reviewActionsNextStep = (values) => {
     ? values[ISSUES_MULTIPLE].filter(
         (issue) =>
           !values[EXISTING_PLAYBOOK].issues.some((i) => i.id === issue.id) &&
-          Object.keys(values[SYSTEMS]).includes(issue.id)
+          Object.keys(values[SYSTEMS]).includes(issue.id),
       )
     : values[ISSUES_MULTIPLE].filter((issue) =>
-        Object.keys(values[SYSTEMS]).includes(issue.id)
+        Object.keys(values[SYSTEMS]).includes(issue.id),
       );
   return values[MANUAL_RESOLUTION] ? filteredIssues[0]?.id : 'review';
 };
@@ -81,16 +81,16 @@ export const issueResolutionNextStep = (values, issue) => {
           !values[EXISTING_PLAYBOOK].issues.some(
             (i) =>
               i.id === issue.id &&
-              Object.keys(values[SYSTEMS]).includes(issue.id)
-          )
+              Object.keys(values[SYSTEMS]).includes(issue.id),
+          ),
       )
     : values[ISSUES_MULTIPLE].filter((issue) =>
-        Object.keys(values[SYSTEMS]).includes(issue.id)
+        Object.keys(values[SYSTEMS]).includes(issue.id),
       );
   return (
     filteredIssues.slice(
       filteredIssues.findIndex((i) => i.id === issue.id) + 1,
-      filteredIssues.length
+      filteredIssues.length,
     )[0]?.id || 'review'
   );
 };
@@ -102,11 +102,11 @@ export const reviewSystemsNextStep = (values) => {
           !values[EXISTING_PLAYBOOK].issues.some(
             (i) =>
               i.id === issue.id &&
-              Object.keys(values[SYSTEMS]).includes(issue.id)
-          )
+              Object.keys(values[SYSTEMS]).includes(issue.id),
+          ),
       )
     : values[ISSUES_MULTIPLE].filter((issue) =>
-        Object.keys(values[SYSTEMS]).includes(issue.id)
+        Object.keys(values[SYSTEMS]).includes(issue.id),
       );
   return filteredIssues.length > 0 ? 'actions' : 'review';
 };

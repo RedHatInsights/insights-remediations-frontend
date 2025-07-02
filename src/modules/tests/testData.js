@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {
   MANUAL_RESOLUTION,
   SELECTED_RESOLUTIONS,

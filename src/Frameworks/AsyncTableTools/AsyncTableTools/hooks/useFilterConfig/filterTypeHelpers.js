@@ -99,7 +99,7 @@ const groupType = {
     chips: Object.entries(value).flatMap((groupItem) =>
       Object.keys(groupItem[1]).map((itemValue) => ({
         name: itemForValueInGroups(configItem, itemValue).label,
-      }))
+      })),
     ),
   }),
   toSelectValue: (configItem, selectedValues) => [
@@ -180,4 +180,4 @@ export default (type) =>
     [conditionalFilterType.group]: groupType,
     [conditionalFilterType.singleSelect]: singleSelectType,
     calendar: calendarFilterType,
-  }[type]);
+  })[type];

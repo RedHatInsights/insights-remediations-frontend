@@ -57,7 +57,7 @@ const useQuery = (fn, options = {}) => {
               fn,
               params,
               convertToArray,
-              compileResult
+              compileResult,
             );
 
             if (mounted.current) {
@@ -81,7 +81,7 @@ const useQuery = (fn, options = {}) => {
         }
       }
     },
-    [loading, convertToArray]
+    [loading, convertToArray],
   );
 
   const fetch = useDeepCompareCallback(
@@ -94,13 +94,13 @@ const useQuery = (fn, options = {}) => {
               ...fetchParams,
             }
           : fetchParams,
-        false
+        false,
       ),
-    [fn, fetchFn, params]
+    [fn, fetchFn, params],
   );
   const refetch = useDeepCompareCallback(
     async () => await fetchFn(fn, params),
-    [fetchFn, fn, params]
+    [fetchFn, fn, params],
   );
 
   useDeepCompareEffect(() => {

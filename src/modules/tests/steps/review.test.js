@@ -13,7 +13,7 @@ import userEvent from '@testing-library/user-event';
 
 jest.mock('../../RemediationsModal/common/SystemsTable', () => ({
   __esModule: true,
-  // eslint-disable-next-line react/display-name
+
   SystemsTableWithContext: () => <table></table>,
 }));
 
@@ -90,7 +90,7 @@ describe('Review', () => {
     render(
       <Provider store={store}>
         <RendererWrapper schema={createSchema({})} {...initialProps} />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByTestId('wizard-review')).toBeVisible();
@@ -101,7 +101,7 @@ describe('Review', () => {
     render(
       <Provider store={store}>
         <RendererWrapper schema={createSchema({})} {...initialProps} />
-      </Provider>
+      </Provider>,
     );
 
     const autoreboot_switch = screen.getByTestId('autoreboot-switch');
@@ -117,15 +117,15 @@ describe('Review', () => {
     render(
       <Provider store={store}>
         <RendererWrapper schema={createSchema({})} {...initialProps} />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getAllByRole('cell')[1]).toHaveTextContent(
-      'test_description'
+      'test_description',
     );
     await userEvent.click(screen.getByRole('button', { name: /action/i }));
     expect(screen.getAllByRole('cell')[6]).toHaveTextContent(
-      'test_description'
+      'test_description',
     );
   });
 
@@ -138,7 +138,7 @@ describe('Review', () => {
           {...initialProps}
           onSubmit={onSubmit}
         />
-      </Provider>
+      </Provider>,
     );
 
     await userEvent.click(screen.getByRole('button', { name: /submit/i }));

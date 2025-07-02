@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import React from 'react';
 import ExecuteButton from '../ExecuteButton';
 import * as api from '../../api';
@@ -7,7 +6,6 @@ import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-// eslint-disable-next-line no-import-assign
 api.downloadPlaybook = jest.fn();
 global.insights = {
   chrome: {
@@ -61,11 +59,11 @@ describe('Execute button', () => {
           ],
         }}
         getConnectionStatus={() => null}
-      />
+      />,
     );
 
     expect(
-      screen.getByRole('button', { 'aria-disabled': 'true' })
+      screen.getByRole('button', { 'aria-disabled': 'true' }),
     ).toHaveTextContent('Execute');
   });
 
@@ -93,11 +91,11 @@ describe('Execute button', () => {
         }}
         isDisabled={false}
         getConnectionStatus={() => null}
-      />
+      />,
     );
 
     expect(
-      screen.getByRole('button', { 'aria-disabled': 'false' })
+      screen.getByRole('button', { 'aria-disabled': 'false' }),
     ).toHaveTextContent('Execute');
   });
 
@@ -127,14 +125,14 @@ describe('Execute button', () => {
           isDisabled={false}
           getConnectionStatus={() => null}
         />
-      </Router>
+      </Router>,
     );
 
     expect(screen.queryByTestId('execute-button')).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByTestId('execute-button-enabled'));
     await waitFor(() =>
-      expect(screen.getByTestId('execute-modal')).toBeVisible()
+      expect(screen.getByTestId('execute-modal')).toBeVisible(),
     );
   });
 });
