@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Name as NameCell,
   LastExecutedCell,
@@ -9,18 +8,18 @@ import {
   LastModifiedCell,
 } from './Cells.js';
 import { wrappable } from '@patternfly/react-table';
-
-// eslint-disable-next-line react/display-name
-export const renderComponent = (Component, props) => (_data, _id, entity) => (
-  <Component {...entity} {...props} />
-);
-
+const col = (title, cell, extra = {}) => ({
+  title,
+  transforms: [wrappable],
+  ...extra,
+  cell,
+});
 export const Name = {
   title: 'Name',
   transforms: [wrappable],
   sortable: 'name',
   exportKey: 'name',
-  renderFunc: renderComponent(NameCell),
+  component: NameCell,
 };
 
 export const LastExecuted = {
@@ -28,7 +27,7 @@ export const LastExecuted = {
   transforms: [wrappable],
   sortable: 'last_run_at',
   exportKey: 'last_run_at',
-  renderFunc: renderComponent(LastExecutedCell),
+  component: LastExecutedCell,
 };
 
 export const ExecutionStatus = {
@@ -37,7 +36,7 @@ export const ExecutionStatus = {
   //TODO: Enable once Backend is ready
   // sortable: 'status',
   exportKey: 'status',
-  renderFunc: renderComponent(ExecutionStatusCell),
+  component: ExecutionStatusCell,
 };
 
 export const Actions = {
@@ -45,7 +44,7 @@ export const Actions = {
   transforms: [wrappable],
   sortable: 'issue_count',
   exportKey: 'Actions',
-  renderFunc: renderComponent(ActionsCell),
+  component: ActionsCell,
 };
 
 export const Systems = {
@@ -53,23 +52,21 @@ export const Systems = {
   transforms: [wrappable],
   sortable: 'system_count',
   exportKey: 'system_count',
-  renderFunc: renderComponent(SystemsCell),
+  component: SystemsCell,
 };
 
-export const Created = {
-  title: 'Created',
-  transforms: [wrappable],
-  sortable: 'created_at',
-  exportKey: 'created_at',
-  renderFunc: renderComponent(CreatedCell),
-};
-
+export const Created = col(
+  'created_at',
+  'Created',
+  ({ item }) => <CreatedCell created_at={item.created_at} />,
+  { sortable: 'created_at', exportKey: 'created_at' },
+);
 export const LastModified = {
   title: 'Last modified',
   transforms: [wrappable],
   sortable: 'updated_at',
   exportKey: 'updated_at',
-  renderFunc: renderComponent(LastModifiedCell),
+  render: ({ item }) => <LastModifiedCell updated_at={item.updated_at} />,
 };
 
 export default [

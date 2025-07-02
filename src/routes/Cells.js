@@ -14,17 +14,21 @@ export const formatDate = (dateStr) => {
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
   return date.toLocaleDateString('en-US', options);
 };
-export const Name = ({ name, id }) => (
-  <InsightsLink to={id}>{name}</InsightsLink>
-);
+export const Name = ({ name, id, ...rest }) => {
+  console.log(rest, 'rest here');
 
-export const LastExecutedCell = ({ playbook_runs }) => (
-  <Text>
-    {playbook_runs.length > 0
-      ? formatDate(playbook_runs[0]?.created_at)
-      : 'Never'}{' '}
-  </Text>
-);
+  return <InsightsLink to={id}>{name}</InsightsLink>;
+};
+
+export const LastExecutedCell = ({ playbook_runs, ...rest }) => {
+  return (
+    <Text>
+      {playbook_runs.length > 0
+        ? formatDate(playbook_runs[0]?.created_at)
+        : 'Never'}{' '}
+    </Text>
+  );
+};
 
 export const ExecutionStatusCell = ({ playbook_runs }) => {
   if (!playbook_runs?.length) {
