@@ -25,12 +25,12 @@ jest.mock('../../../api', () => ({
         { id: 'remediationId', name: 'test-remediation-1' },
         { id: '1234', name: 'bretheren' },
       ],
-    })
+    }),
   ),
   getRemediation: jest.fn(() =>
     Promise.resolve({
       data: [{ id: 'remediationId', name: 'test-remediation-single' }],
-    })
+    }),
   ),
 }));
 
@@ -97,7 +97,7 @@ describe('SelectPlaybook', () => {
     expect(screen.getByLabelText('Add to existing playbook')).toBeVisible();
     expect(screen.getByLabelText('Create new playbook')).toBeVisible();
     expect(
-      screen.queryByLabelText('Select an existing playbook')
+      screen.queryByLabelText('Select an existing playbook'),
     ).not.toBeInTheDocument();
     expect(screen.getByTestId('skeleton-loader')).toBeVisible();
   });
@@ -111,7 +111,7 @@ describe('SelectPlaybook', () => {
     });
 
     expect(
-      screen.getByRole('combobox', { name: /type to filter/i })
+      screen.getByRole('combobox', { name: /type to filter/i }),
     ).toBeVisible();
   });
 
@@ -129,14 +129,14 @@ describe('SelectPlaybook', () => {
 
     await userEvent.click(typeaheadBox);
     expect(
-      screen.getByRole('option', { name: /test-remediation-1/i })
+      screen.getByRole('option', { name: /test-remediation-1/i }),
     ).toBeVisible();
     expect(screen.getByRole('option', { name: /bretheren/i })).toBeVisible();
 
     await userEvent.type(typeaheadBox, 'br');
 
     expect(
-      screen.queryByRole('option', { name: /test-remediation-1/i })
+      screen.queryByRole('option', { name: /test-remediation-1/i }),
     ).not.toBeInTheDocument();
     expect(screen.getByRole('option', { name: /bretheren/i })).toBeVisible();
   });
@@ -158,7 +158,7 @@ describe('SelectPlaybook', () => {
     expect(
       screen.getByRole('option', {
         name: /no results found for "tooted"/i,
-      })
+      }),
     ).toBeVisible();
   });
 
@@ -171,10 +171,10 @@ describe('SelectPlaybook', () => {
     });
 
     await userEvent.click(
-      screen.getByRole('combobox', { name: /type to filter/i })
+      screen.getByRole('combobox', { name: /type to filter/i }),
     );
     await userEvent.click(
-      screen.getByRole('option', { name: /test-remediation-1/i })
+      screen.getByRole('option', { name: /test-remediation-1/i }),
     );
 
     expect(getRemediation).toHaveBeenCalled();
@@ -184,18 +184,18 @@ describe('SelectPlaybook', () => {
     const store = mockStore(initialState);
     renderWithProviders(
       <RendererWrapper schema={createSchema()} onSubmit={onSubmit} />,
-      store
+      store,
     );
 
     await userEvent.click(screen.getByLabelText('Add to existing playbook'));
     await userEvent.type(
       screen.getByLabelText('Name your playbook'),
-      'new-playbook'
+      'new-playbook',
     );
 
     await waitFor(() => {
       expect(
-        screen.getByRole('textbox', { value: /new-playbook/i })
+        screen.getByRole('textbox', { value: /new-playbook/i }),
       ).toBeInTheDocument();
     });
   });
@@ -211,7 +211,7 @@ describe('SelectPlaybook', () => {
 
     renderWithProviders(
       <RendererWrapper schema={createSchema()} onSubmit={onSubmit} />,
-      store
+      store,
     );
 
     screen.getByRole('heading', { name: /unexpected error/i });

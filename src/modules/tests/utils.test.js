@@ -1,5 +1,3 @@
-/* eslint-disable no-import-assign */
-/* eslint-disable camelcase */
 import * as dependency from '../../api/index';
 import {
   EXISTING_PLAYBOOK,
@@ -29,12 +27,12 @@ const initialRows = [{ id: '123' }];
 
 describe('getResolution', () => {
   beforeEach(() => {
-    (data = {
+    ((data = {
       issues: remediationWizardTestData.issues,
       systems: remediationWizardTestData.systems,
       onRemediationCreated: jest.fn(),
     }),
-      (resolutions = remediationWizardTestData.resolutions);
+      (resolutions = remediationWizardTestData.resolutions));
     formValues = {
       ...remediationWizardTestData.formValues,
       [EXISTING_PLAYBOOK]: {
@@ -84,12 +82,12 @@ describe('getResolution', () => {
 
 describe('submitRemediation', () => {
   beforeEach(() => {
-    (data = {
+    ((data = {
       issues: remediationWizardTestData.issues,
       systems: remediationWizardTestData.systems,
       onRemediationCreated: jest.fn(),
     }),
-      (resolutions = remediationWizardTestData.resolutions);
+      (resolutions = remediationWizardTestData.resolutions));
     formValues = {
       ...remediationWizardTestData.formValues,
       [EXISTING_PLAYBOOK]: remediationWizardTestData.existingPlaybook,
@@ -119,7 +117,7 @@ describe('submitRemediation', () => {
       },
       data,
       undefined,
-      setState
+      setState,
     );
     expect(createFunction).toHaveBeenCalledTimes(1);
     expect(setState).toHaveBeenCalled();
@@ -137,7 +135,7 @@ describe('submitRemediation', () => {
       },
       data,
       undefined,
-      setState
+      setState,
     );
     expect(createFunction).toHaveBeenCalledTimes(1);
     expect(setState).toHaveBeenCalled();
@@ -152,7 +150,7 @@ describe('entitySelected', () => {
       },
       {
         payload: { id: 0, selected: true },
-      }
+      },
     );
     const unselectValue = entitySelected(
       {
@@ -161,7 +159,7 @@ describe('entitySelected', () => {
       },
       {
         payload: { id: 0, selected: false },
-      }
+      },
     );
     expect(selectValue).toEqual({ rows: initialRows, selected: ['123'] });
     expect(unselectValue).toEqual({ rows: initialRows, selected: [] });
@@ -174,7 +172,7 @@ describe('entitySelected', () => {
       },
       {
         payload: { id: -1, selected: false },
-      }
+      },
     );
     expect(value).toEqual({ rows: initialRows, selected: [] });
   });
@@ -187,7 +185,7 @@ describe('entitySelected', () => {
       },
       {
         payload: { id: '123', selected: false },
-      }
+      },
     );
     expect(value).toEqual({ rows: initialRows, selected: ['456'] });
   });
@@ -199,13 +197,13 @@ describe('loadEntitiesFulfilled', () => {
       {
         rows: initialRows,
       },
-      ['123']
+      ['123'],
     );
     const valuePage = loadEntitiesFulfilled(
       {
         rows: initialRows,
       },
-      undefined
+      undefined,
     );
     expect(valueAll).toEqual({
       rows: [{ id: '123', selected: true }],
@@ -223,7 +221,7 @@ describe('loadEntitiesFulfilled', () => {
         rows: initialRows,
         selected: ['123'],
       },
-      ['123', '456']
+      ['123', '456'],
     );
     expect(value).toEqual({
       rows: [{ id: '123', selected: true }],
@@ -239,7 +237,7 @@ describe('changeBulkSelect', () => {
         rows: initialRows,
         selected: ['123'],
       },
-      {}
+      {},
     );
     expect(value).toEqual({
       rows: [{ id: '123', selected: false }],
@@ -253,7 +251,7 @@ describe('changeBulkSelect', () => {
         rows: initialRows,
         selected: [],
       },
-      { payload: {} }
+      { payload: {} },
     );
     expect(value).toEqual({
       rows: [{ id: '123', selected: true }],
@@ -288,7 +286,7 @@ describe('fetchSystemsInfo', () => {
       { page: 1, per_page: 1 },
       ['display_name'],
       [{ id: '123' }, { id: '456' }],
-      (systems) => Promise.resolve({ results: systems, total: 2 })
+      (systems) => Promise.resolve({ results: systems, total: 2 }),
     );
     expect(value).toEqual({
       orderBy: undefined,
@@ -313,7 +311,7 @@ describe('fetchSystemsInfo', () => {
         { id: '456', name: 'test' },
         { id: '789', name: '12test' },
       ],
-      (systems) => Promise.resolve({ results: systems, total: 1 })
+      (systems) => Promise.resolve({ results: systems, total: 1 }),
     );
     expect(value).toEqual({
       orderBy: undefined,
@@ -340,7 +338,7 @@ describe('splitArray', () => {
 describe('getPlaybookSystems', () => {
   it('should get playbook systems correctly', () => {
     const value = getPlaybookSystems(
-      remediationWizardTestData.existingPlaybook
+      remediationWizardTestData.existingPlaybook,
     );
     expect(value).toEqual([{ id: 'test2', name: 'test2' }]);
     expect(getPlaybookSystems()).toEqual([]);

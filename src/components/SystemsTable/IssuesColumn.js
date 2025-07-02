@@ -32,7 +32,7 @@ const IssuesColumn = ({ issues, display_name }) => {
   const [isOpen, setIsOpen] = useState();
   const sortedIssues = sortBy(
     issues,
-    (sortIssue) => sortByIndex(sortIssue)[sortByConfig.index]
+    (sortIssue) => sortByIndex(sortIssue)[sortByConfig.index],
   );
   return (
     <Fragment>

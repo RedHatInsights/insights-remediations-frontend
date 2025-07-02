@@ -70,7 +70,7 @@ export const OverViewPage = () => {
     {
       skip: true,
       batched: true,
-    }
+    },
   );
 
   const { fetchQueue } = useRemediationFetchExtras({

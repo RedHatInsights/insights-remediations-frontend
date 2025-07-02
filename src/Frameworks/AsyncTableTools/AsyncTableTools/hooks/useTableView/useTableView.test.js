@@ -26,33 +26,33 @@ describe('useTableView', () => {
   it('returns a loading state if loaded is false', () => {
     const { result } = renderHook(
       () => useRowsView(undefined, columns, {}),
-      DEFAULT_RENDER_OPTIONS
+      DEFAULT_RENDER_OPTIONS,
     );
 
     expect(result.current.table.tableProps.rows[0].cells[0].title()).toEqual(
-      <Spinner />
+      <Spinner />,
     );
   });
 
   it('returns rows when everything is loaded and has items', async () => {
     const { result } = renderHook(
       () => useRowsView(exampleItems, columns),
-      DEFAULT_RENDER_OPTIONS
+      DEFAULT_RENDER_OPTIONS,
     );
 
     await waitFor(() =>
-      expect(result.current.table.tableProps.rows.length).toEqual(100)
+      expect(result.current.table.tableProps.rows.length).toEqual(100),
     );
   });
 
   it('returns an empty state if it is loaded, but has no items', () => {
     const { result } = renderHook(
       () => useRowsView([], columns),
-      DEFAULT_RENDER_OPTIONS
+      DEFAULT_RENDER_OPTIONS,
     );
 
     expect(result.current.table.tableProps.rows[0].cells[0].title()).toEqual(
-      <TableEmptyState />
+      <TableEmptyState />,
     );
   });
 
@@ -60,7 +60,7 @@ describe('useTableView', () => {
     it('returns no toggle by default', () => {
       const { result } = renderHook(
         () => useTableView(exampleItems, columns, {}),
-        DEFAULT_RENDER_OPTIONS
+        DEFAULT_RENDER_OPTIONS,
       );
 
       expect(result.current.TableViewToggle).not.toBeDefined();
@@ -69,7 +69,7 @@ describe('useTableView', () => {
     it('returns a toggle if enabled via showViewToggle', () => {
       const { result } = renderHook(
         () => useTableView(exampleItems, columns, { showViewToggle: true }),
-        DEFAULT_RENDER_OPTIONS
+        DEFAULT_RENDER_OPTIONS,
       );
 
       expect(result.current.TableViewToggle).toBeDefined();
@@ -82,7 +82,7 @@ describe('useTableView', () => {
             enableTreeView: true,
             tableTree,
           }),
-        DEFAULT_RENDER_OPTIONS
+        DEFAULT_RENDER_OPTIONS,
       );
 
       expect(result.current.TableViewToggle).toBeDefined();
@@ -95,7 +95,7 @@ describe('useTableView', () => {
             showViewToggle: false,
             tableTree,
           }),
-        DEFAULT_RENDER_OPTIONS
+        DEFAULT_RENDER_OPTIONS,
       );
 
       expect(result.current.TableViewToggle).not.toBeDefined();

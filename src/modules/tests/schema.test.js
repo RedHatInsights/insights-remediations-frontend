@@ -43,7 +43,7 @@ describe('reviewActionsNextStep', () => {
         [EXISTING_PLAYBOOK_SELECTED]: true,
         [SYSTEMS]: remediationWizardTestData.selectedSystems,
       },
-      [{ id: 'testId' }]
+      [{ id: 'testId' }],
     );
     expect(value).toEqual('testId');
   });
@@ -84,7 +84,7 @@ describe('issueResolutionNextStep', () => {
           { id: 'testId3' },
         ],
       },
-      { id: 'testId' }
+      { id: 'testId' },
     );
     expect(value).toEqual('testId3');
   });
@@ -133,11 +133,11 @@ describe('schema', () => {
   it('should render issues', () => {
     const schema = schemaBuilder(remediationWizardTestData.issues);
     expect(schema.fields[0].fields[1].nextStep({ values: formValues })).toEqual(
-      'actions'
+      'actions',
     );
     expect(schema.fields[0].fields[2].name).toEqual('actions');
     expect(schema.fields[0].fields[2].nextStep({ values: formValues })).toEqual(
-      'review'
+      'review',
     );
   });
 });

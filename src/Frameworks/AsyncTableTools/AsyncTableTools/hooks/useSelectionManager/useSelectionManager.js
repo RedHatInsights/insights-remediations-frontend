@@ -26,7 +26,7 @@ const useSelectionManager = (preselected, options = {}, handleSelect) => {
       return newState;
     },
     preselected,
-    initReducer(withGroups)
+    initReducer(withGroups),
   );
 
   const set = (items, group) => dispatch({ type: 'set', group, items });

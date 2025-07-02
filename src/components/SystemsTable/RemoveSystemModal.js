@@ -47,7 +47,7 @@ RemoveSystemModal.propTypes = {
     PropTypes.shape({
       id: PropTypes.string,
       display_name: PropTypes.string,
-    })
+    }),
   ).isRequired,
   remediationName: PropTypes.string.isRequired,
   isOpen: PropTypes.bool.isRequired,

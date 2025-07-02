@@ -55,17 +55,17 @@ const ExecutionHistoryTab = ({
           ? {
               ...run,
               systems: run.systems.map((s) =>
-                s.system_id === systemId ? { ...s, status: newStatus } : s
+                s.system_id === systemId ? { ...s, status: newStatus } : s,
               ),
             }
-          : run
-      )
+          : run,
+      ),
     );
   }, []);
 
   const { fetch: fetchSystems } = useRemediationsQuery(
     getRemediationPlaybookSystemsList(axios),
-    { skip: true }
+    { skip: true },
   );
 
   const logParams =

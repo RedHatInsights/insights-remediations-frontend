@@ -49,7 +49,7 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
     {
       skip: true,
       batched: true,
-    }
+    },
   );
   const { fetchQueue } = useRemediationFetchExtras({
     fetch: deleteActions,
@@ -103,7 +103,7 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   }, []);
   const getAllIssueIds = useCallback(
     () => filteredIssues.map((i) => i.id),
-    [filteredIssues]
+    [filteredIssues],
   );
   return (
     <section

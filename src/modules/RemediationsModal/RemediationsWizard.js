@@ -71,9 +71,9 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
     dedupeArray(
       data.issues?.reduce(
         (acc, curr) => [...acc, ...(curr.systems || [])],
-        [...(data.systems || [])]
-      )
-    )
+        [...(data.systems || [])],
+      ),
+    ),
   );
   const remediationsList = useRemediationsList();
 
@@ -101,7 +101,7 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
       hostReducer: applyReducerHash(hostReducer, hostsInitialState),
       resolutionsReducer: applyReducerHash(
         resolutionsReducer,
-        resolutionsInitialState
+        resolutionsInitialState,
       ),
     });
     dispatch(fetchResolutions(data.issues));
@@ -179,7 +179,7 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
               payload: { submitted: true, formValues: formValues },
             });
             submitRemediation(formValues, data, basePath, (payload) =>
-              setState({ type: 'state', payload: payload })
+              setState({ type: 'state', payload: payload }),
             );
           }}
           onCancel={() => setOpen(false)}
@@ -223,7 +223,7 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
                         data,
                         basePath,
                         (payload) =>
-                          setState({ type: 'state', payload: payload })
+                          setState({ type: 'state', payload: payload }),
                       )
                     }
                     setState={(payload) =>
@@ -261,7 +261,7 @@ RemediationWizard.propTypes = {
       propTypes.shape({
         description: propTypes.string,
         id: propTypes.string,
-      })
+      }),
     ),
     systems: propTypes.arrayOf(propTypes.string),
     onRemediationCreated: propTypes.func,

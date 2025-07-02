@@ -25,7 +25,7 @@ export default [
   {
     key: 'issues',
     title: 'Actions',
-    // eslint-disable-next-line react/display-name
+
     renderFunc: (issues, _, { display_name }) => (
       <IssuesColumn issues={issues} display_name={display_name} />
     ),
@@ -37,7 +37,7 @@ export default [
   {
     key: 'rebootRequired',
     title: 'Reboot required',
-    // eslint-disable-next-line react/display-name
+
     renderFunc: (rebootRequired) => (
       <RebootColumn rebootRequired={rebootRequired} />
     ),
@@ -49,7 +49,7 @@ export default [
   {
     key: 'connection_status',
     title: 'Connection status',
-    // eslint-disable-next-line react/display-name
+
     renderFunc: (connection_status, _, { executor_type }) => (
       <ConnectionStatusColumn
         connection_status={connection_status}

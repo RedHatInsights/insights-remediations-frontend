@@ -7,14 +7,14 @@ import uniq from 'lodash/uniq';
 
 function issuesToSystemsIds(issues) {
   return uniq(
-    flatMap(issues, (issue) => issue.systems.map((system) => system.id))
+    flatMap(issues, (issue) => issue.systems.map((system) => system.id)),
   );
 }
 
 function computeRebootStats(remediation) {
   const systems = issuesToSystemsIds(remediation.issues);
   const rebootRequired = issuesToSystemsIds(
-    remediation.issues.filter((issue) => issue.resolution.needs_reboot)
+    remediation.issues.filter((issue) => issue.resolution.needs_reboot),
   );
 
   return {
@@ -35,7 +35,7 @@ export const remediationSystems = ({ LOAD_ENTITIES_FULFILLED }) =>
           state?.rows?.forEach((row) => selected.set(row?.id, row));
         } else {
           const selectedRow = state?.rows?.find(
-            ({ id } = {}) => id === payload.id
+            ({ id } = {}) => id === payload.id,
           );
           selected.set(payload.id, { ...(selectedRow || {}), id: payload.id });
         }
@@ -82,7 +82,7 @@ const reducers = {
     },
     {
       status: 'initial',
-    }
+    },
   ),
 
   selectedRemediation: applyReducerHash(
@@ -109,7 +109,7 @@ const reducers = {
       }),
       [ACTION_TYPES.PATCH_REMEDIATION_FULFILLED]: (
         { status, remediation },
-        action
+        action,
       ) => {
         return {
           status,
@@ -121,7 +121,7 @@ const reducers = {
       },
       [ACTION_TYPES.DELETE_REMEDIATION_ISSUE_FULFILLED]: (state, action) => {
         const issues = state.remediation.issues.filter(
-          (issue) => issue.id !== action.payload.issueId
+          (issue) => issue.id !== action.payload.issueId,
         );
         if (action.payload.id === state.remediation.id) {
           return {
@@ -130,8 +130,8 @@ const reducers = {
               ...state.remediation,
               issues,
               needs_reboot: issues.some(
-                (issue) => issue.resolution.needs_reboot
-              ), // eslint-disable-line camelcase
+                (issue) => issue.resolution.needs_reboot,
+              ),
             }),
           };
         }
@@ -140,7 +140,7 @@ const reducers = {
       },
       [ACTION_TYPES.DELETE_REMEDIATION_ISSUE_SYSTEM_FULFILLED]: (
         state,
-        action
+        action,
       ) => {
         if (action.payload.id !== state.remediation.id) {
           return state;
@@ -153,7 +153,7 @@ const reducers = {
 
           // if the action only had 1 systems, which is now gone, remove the action also
           issue.systems = issue.systems.filter(
-            (system) => system.id !== action.payload.system
+            (system) => system.id !== action.payload.system,
           );
           return issue.systems.length > 0;
         });
@@ -163,14 +163,14 @@ const reducers = {
           remediation: computeRebootStats({
             ...state.remediation,
             issues,
-            needs_reboot: issues.some((issue) => issue.resolution.needs_reboot), // eslint-disable-line camelcase
+            needs_reboot: issues.some((issue) => issue.resolution.needs_reboot),
           }),
         };
       },
     },
     {
       status: 'initial',
-    }
+    },
   ),
 
   selectedRemediationStatus: applyReducerHash(
@@ -188,7 +188,7 @@ const reducers = {
     },
     {
       status: 'initial',
-    }
+    },
   ),
 
   connectionStatus: applyReducerHash(
@@ -212,32 +212,34 @@ const reducers = {
     },
     {
       status: 'initial',
-    }
+    },
   ),
 
   inventoryEntitiesReducer:
     (props = { INVENTORY_ACTION_TYPES: {} }) =>
     () =>
       applyReducerHash({
-        [props.INVENTORY_ACTION_TYPES.LOAD_ENTITIES_FULFILLED]: (state) => {
-          return {
-            ...state,
-            columns: [
-              {
-                key: 'display_name',
-                title: 'Name',
-                // eslint-disable-next-line
-                renderFunc: (name, id, { display_name }) => <div><a href={props.urlBuilder(id)}>{display_name}</a></div>
-              },
-              {
-                key: 'system_status',
-                title: 'Status',
-                // eslint-disable-next-line
-                        renderFunc: (name, id) => <div>{props.generateStatus(id)}</div>
-              },
-            ],
-          };
-        },
+        [props.INVENTORY_ACTION_TYPES.LOAD_ENTITIES_FULFILLED]: (state) => ({
+          ...state,
+          columns: [
+            {
+              key: 'display_name',
+              title: 'Name',
+
+              renderFunc: (name, id, { display_name }) => (
+                <div>
+                  <a href={props.urlBuilder(id)}>{display_name}</a>
+                </div>
+              ),
+            },
+            {
+              key: 'system_status',
+              title: 'Status',
+
+              renderFunc: (name, id) => <div>{props.generateStatus(id)}</div>,
+            },
+          ],
+        }),
       }),
 
   playbookActivityIntentory: () => () =>
@@ -277,7 +279,7 @@ const reducers = {
     },
     {
       status: 'initial',
-    }
+    },
   ),
 
   playbookRun: applyReducerHash({
@@ -304,13 +306,13 @@ const reducers = {
     {
       data: [],
       meta: {},
-    }
+    },
   ),
 
   playbookRunSystemDetails: applyReducerHash({
     [ACTION_TYPES.GET_PLAYBOOK_RUN_SYSTEM_DETAILS_FULFILLED]: (
       state,
-      action
+      action,
     ) => ({
       ...action.payload,
     }),
@@ -332,7 +334,7 @@ const reducers = {
     },
     {
       status: 'initial',
-    }
+    },
   ),
 
   sources: applyReducerHash(
@@ -347,14 +349,14 @@ const reducers = {
     },
     {
       status: 'initial',
-    }
+    },
   ),
   executable: applyReducerHash(
     {
       [ACTION_TYPES.CHECK_EXECUTABLE_REJECTED]: () => false,
       [ACTION_TYPES.CHECK_EXECUTABLE_FULFILLED]: () => true,
     },
-    false
+    false,
   ),
 };
 
