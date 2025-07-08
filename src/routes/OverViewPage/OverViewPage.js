@@ -1,7 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
 import columns from '../Columns';
 import useRemediationsQuery from '../../api/useRemediationsQuery';
-import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import RemediationsTable from '../../components/RemediationsTable/RemediationsTable';
 import {
   CreatedByFilter,
@@ -40,7 +39,6 @@ import { CalendarFilterType } from './CalendarFilterType';
 
 export const OverViewPage = () => {
   const dispatch = useDispatch();
-  const axios = useAxiosWithPlatformInterceptors();
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [remediation, setRemediation] = useState('');
@@ -56,20 +54,20 @@ export const OverViewPage = () => {
     fetchAllIds,
     loading,
     refetch: fetchRemediations,
-  } = useRemediationsQuery(getRemediations(axios), {
+  } = useRemediationsQuery(getRemediations, {
     useTableState: true,
-    params: { hide_archived: false, 'fields[data]': 'playbook_runs' },
+    params: { hideArchived: false, fieldsData: ['playbook_runs'] },
   });
 
   const { result: allRemediations, refetch: refetchAllRemediations } =
-    useRemediationsQuery(getRemediationsList(axios));
+    useRemediationsQuery(getRemediationsList);
 
-  const { fetch: deleteRem } = useRemediationsQuery(deleteRemediation(axios), {
+  const { fetch: deleteRem } = useRemediationsQuery(deleteRemediation, {
     skip: true,
   });
 
   const { fetchBatched: deleteRelList } = useRemediationsQuery(
-    deleteRemediationList(axios),
+    deleteRemediationList,
     {
       skip: true,
       batched: true,
