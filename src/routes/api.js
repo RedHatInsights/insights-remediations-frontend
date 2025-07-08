@@ -42,12 +42,13 @@ export const deleteRemediationList = ({ remediation_ids }) =>
     remediation_ids,
   });
 
-export const executeRemediation = (axios) => (params) => {
-  const { id, etag, exclude } = params;
-  return axios.post(
-    `${API_BASE}/remediations/${id}/playbook_runs`,
+export const executeRemediation = ({ id, etag, exclude }) => {
+  remediationsApi.runRemediation(
+    id,
     { exclude },
-    { headers: { 'If-Match': etag } },
+    {
+      headers: { 'If-Match': etag },
+    },
   );
 };
 

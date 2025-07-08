@@ -61,12 +61,9 @@ export const ExecuteModal = ({
     0,
   );
 
-  const { fetch: executeRun } = useRemediationsQuery(
-    executeRemediation(axios),
-    {
-      skip: true,
-    },
-  );
+  const { fetch: executeRun } = useRemediationsQuery(executeRemediation, {
+    skip: true,
+  });
 
   const handleExecute = () => {
     const exclude = disconnected.map((e) => e.executor_id).filter(Boolean);
