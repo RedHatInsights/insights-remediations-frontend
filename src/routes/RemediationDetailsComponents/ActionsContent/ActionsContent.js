@@ -29,6 +29,7 @@ const deleteIssues = (axios) => (params) => {
     },
   });
 };
+import { API_BASE, deleteIssues } from '../../api';
 
 const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   const axios = useAxiosWithPlatformInterceptors();
@@ -41,13 +42,10 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   const [isSystemsModalOpen, setIsSystemsModalOpen] = useState(false);
   const [systemsToShow, setSystemsToShow] = useState([]);
   const [actionToShow, setActionToShow] = useState('');
-  const { fetchBatched: deleteActions } = useRemediationsQuery(
-    deleteIssues(axios),
-    {
-      skip: true,
-      batched: true,
-    },
-  );
+  const { fetchBatched: deleteActions } = useRemediationsQuery(deleteIssues, {
+    skip: true,
+    batched: true,
+  });
   const callbacks = useStateCallbacks();
   const { fetchQueue } = useRemediationFetchExtras({ fetch: deleteActions });
 
