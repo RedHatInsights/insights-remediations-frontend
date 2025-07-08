@@ -1,64 +1,46 @@
-export const API_BASE = '/api/remediations/v1';
+import { remediationsApi } from '../api';
 
-export const getRemediationDetails = (axios) => (params) => {
-  return axios.get(`${API_BASE}/remediations/${params.remId}`, { params });
+export const getRemediationDetails = ({ remId }) =>
+  remediationsApi.getRemediation(remId);
+
+export const getRemediations = (params) =>
+  remediationsApi.getRemediations(params);
+
+export const getRemediationPlaybook = ({ remId }) =>
+  remediationsApi.listPlaybookRuns(remId);
+
+export const checkExecutableStatus = ({ remId }) =>
+  remediationsApi.checkExecutable(remId);
+
+export const getRemediationPlaybookSystemsList = ({
+  remId,
+  playbook_run_id,
+}) => {
+  return remediationsApi.getPlaybookRunSystems(remId, playbook_run_id);
 };
 
-export const getRemediations = (axios) => (params) => {
-  return axios.get(`${API_BASE}/remediations`, { params });
-};
-export const getRemediationPlaybook = (axios) => (params) => {
-  return axios.get(`${API_BASE}/remediations/${params.remId}/playbook_runs`, {
-    params,
-  });
-};
-
-export const checkExecutableStatus = (axios) => (params) => {
-  return axios.get(`${API_BASE}/remediations/${params.remId}/executable`, {
-    params,
-  });
-};
-
-export const getRemediationPlaybookSystemsList = (axios) => (params) => {
-  return axios.get(
-    `${API_BASE}/remediations/${params.remId}/playbook_runs/${params.playbook_run_id}/systems`,
-    {
-      params,
-    },
+export const getPlaybookLogs = (params) =>
+  remediationsApi.getPlaybookRunSystemDetails(
+    params.remId,
+    params.playbook_run_id,
+    params.system_id,
   );
-};
 
-export const getPlaybookLogs = (axios) => (params) => {
-  return axios.get(
-    `${API_BASE}/remediations/${params.remId}/playbook_runs/${params.playbook_run_id}/systems/${params.system_id}`,
-    {
-      params,
-    },
-  );
-};
+export const getRemediationsList = () =>
+  remediationsApi.getRemediations({ fieldsData: ['name'] });
 
-export const getRemediationsList = (axios) => () => {
-  return axios.get(`${API_BASE}/remediations/?fields[data]=name`);
-};
-
-export const updateRemediationPlans = (axios) => (params) => {
+export const updateRemediationPlans = (params) => {
   const { id, ...updateData } = params;
-  return axios.patch(`${API_BASE}/remediations/${id}`, updateData);
+  return remediationsApi.updateRemediation(id, updateData);
 };
 
-export const deleteRemediation = (axios) => (params) => {
-  return axios.delete(`${API_BASE}/remediations/${params.id}`);
-};
+export const deleteRemediation = ({ id }) =>
+  remediationsApi.deleteRemediation(id);
 
-export const deleteRemediationList = (axios) => (params) => {
-  return axios({
-    method: 'delete',
-    url: `${API_BASE}/remediations`,
-    data: {
-      remediation_ids: params.remediation_ids,
-    },
+export const deleteRemediationList = ({ remediation_ids }) =>
+  remediationsApi.deleteRemediations({
+    remediation_ids,
   });
-};
 
 export const executeRemediation = (axios) => (params) => {
   const { id, etag, exclude } = params;
@@ -68,3 +50,5 @@ export const executeRemediation = (axios) => (params) => {
     { headers: { 'If-Match': etag } },
   );
 };
+
+export const API_BASE = '/api/remediations/v1';

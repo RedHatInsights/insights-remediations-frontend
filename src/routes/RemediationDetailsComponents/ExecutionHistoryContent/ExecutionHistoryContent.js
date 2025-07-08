@@ -64,7 +64,7 @@ const ExecutionHistoryTab = ({
   }, []);
 
   const { fetch: fetchSystems } = useRemediationsQuery(
-    getRemediationPlaybookSystemsList(axios),
+    getRemediationPlaybookSystemsList,
     { skip: true },
   );
 
@@ -81,7 +81,7 @@ const ExecutionHistoryTab = ({
     result: logData,
     loading: logsLoading,
     refetch: refetchLogs,
-  } = useRemediationsQuery(getPlaybookLogs(axios), {
+  } = useRemediationsQuery(getPlaybookLogs, {
     params: logParams,
     skip: !logParams,
   });
