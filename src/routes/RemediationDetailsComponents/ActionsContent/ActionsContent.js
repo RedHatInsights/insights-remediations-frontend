@@ -17,17 +17,7 @@ import ConfirmationDialog from '../../../components/ConfirmationDialog';
 import useStateCallbacks from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
 import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
-import { API_BASE } from '../../api';
-
-const deleteIssues = (axios) => (params) => {
-  return axios({
-    method: 'delete',
-    url: `${API_BASE}/remediations/${params.id}/issues`,
-    data: {
-      issue_ids: params.issue_ids,
-    },
-  });
-};
+import { API_BASE, deleteIssues } from '../../api';
 
 const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   const axios = useAxiosWithPlatformInterceptors();
@@ -45,7 +35,7 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   const callbacks = useStateCallbacks();
 
   const { fetchBatched: deleteActions } = useRemediationsQuery(
-    deleteIssues(axios),
+    deleteIssues,
     {
       skip: true,
       batched: true,
