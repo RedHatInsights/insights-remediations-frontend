@@ -1,5 +1,7 @@
 import { remediationsApi } from '../api';
 
+export const API_BASE = '/api/remediations/v1';
+
 export const getRemediationDetails = ({ remId }) =>
   remediationsApi.getRemediation(remId);
 
@@ -51,5 +53,3 @@ export const executeRemediation = ({ id, etag, exclude }) => {
     },
   );
 };
-
-export const API_BASE = '/api/remediations/v1';
