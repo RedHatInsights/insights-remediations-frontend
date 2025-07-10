@@ -44,7 +44,6 @@ const SystemsTableWrapper = ({
   const loaded = useSelector(({ entities }) => entities?.loaded);
   const rows = useSelector(({ entities }) => entities?.rows);
 
-  // Create a getEntities function that always reads the current systemsRef.current
   const getEntitiesFunction = useCallback(
     async (_i, config, _hasItems, defaultGetEntities) => {
       return fetchInventoryData(

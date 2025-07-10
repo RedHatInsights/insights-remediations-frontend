@@ -31,20 +31,17 @@ export const calculateSystems = (remediation) =>
     return acc;
   }, []) || [];
 
-The new pipeline does three separate passes over your data (`updatedResults`, `filteredResults`, `connectedResults`) and also reorders `getEntities`/`connectedData` in the signature, which is both verbose and a breaking change. You can collapse all three steps into one reduce and restore a more intuitive parameter order. For example:
-
-```js
 export const fetchInventoryData = async (
   { page = 0, ...config } = {},
   systems,
+  connectedData,
   getEntities,
-  connectedData
 ) => {
   // 1) filter systems by hostname/id
   const filteredSystems = systems.filter(({ display_name }) =>
     config.filters?.hostnameOrId
       ? display_name.includes(config.filters.hostnameOrId)
-      : true
+      : true,
   );
 
   // 2) fetch entities (safely defaulting to empty results)
@@ -53,30 +50,30 @@ export const fetchInventoryData = async (
       .slice((page - 1) * config.per_page, page * config.per_page)
       .map(({ id }) => id),
     { ...config, hasItems: true },
-    true
+    true,
   )) || { results: [] };
 
   // 3) single-pass merge, filter out unconnected & unmapped
   const results = data.results.reduce((acc, result) => {
-    const system = filteredSystems.find(s => s.id === result.id);
+    const system = filteredSystems.find((s) => s.id === result.id);
     if (!system) {
       return acc;
     }
     // skip if not connected
     if (
       connectedData === 403 ||
-      !connectedData.some(cd => cd.system_ids.includes(result.id))
+      !connectedData.some((cd) => cd.system_ids.includes(result.id))
     ) {
       return acc;
     }
     // merge connection info
     const { connection_status, executor_type } =
-      connectedData.find(cd => cd.system_ids.includes(result.id)) || {};
+      connectedData.find((cd) => cd.system_ids.includes(result.id)) || {};
     acc.push({
       ...system,
       ...result,
       connection_status,
-      executor_type
+      executor_type,
     });
     return acc;
   }, []);
@@ -85,66 +82,7 @@ export const fetchInventoryData = async (
     ...data,
     page,
     results,
-    total: results.length
-  };
-};
-  { page = 0, ...config } = {},
-  systems,
-  connectedData,
-  getEntities,
-) => {
-  const currSystems = systems.filter(({ display_name }) =>
-    config.filters?.hostnameOrId
-      ? display_name.includes(config.filters.hostnameOrId)
-      : true,
-  );
-
-  const data = (await getEntities(
-    currSystems
-      .slice((page - 1) * config.per_page, page * config.per_page)
-      .map(({ id }) => id),
-    { ...config, hasItems: true },
-    true,
-  )) || { results: [] };
-
-  const updatedResults = (data.results || []).map((result) => {
-    const systemId = result.id;
-    const matchedItem =
-      connectedData !== 403 &&
-      connectedData.find((item) => item.system_ids.includes(systemId));
-    if (matchedItem) {
-      return {
-        ...result,
-        connection_status: matchedItem.connection_status,
-        executor_type: matchedItem.executor_type,
-      };
-    } else {
-      return result;
-    }
-  });
-
-  const filteredResults = updatedResults.filter((result) =>
-    systems.some((system) => system.id === result.id),
-  );
-
-  const connectedSystemIds =
-    (connectedData !== 403 &&
-      connectedData?.flatMap((group) => group.system_ids || [])) ||
-    [];
-
-  const connectedResults = filteredResults.filter((result) =>
-    connectedSystemIds.includes(result.id),
-  );
-
-  return {
-    ...data,
-    page,
-    results:
-      connectedResults?.map((host) => ({
-        ...systems.find(({ id }) => id === host.id),
-        ...host,
-      })) || [],
-    total: connectedResults?.length || 0,
+    total: results.length,
   };
 };
 

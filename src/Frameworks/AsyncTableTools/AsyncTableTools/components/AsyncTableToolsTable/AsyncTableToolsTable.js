@@ -74,7 +74,7 @@ const AsyncTableToolsTable = ({
         />
       ) : (
         <Table {...tableProps}>
-          <TableHeader {...tableHeaderProps} />
+          <TableHeader aria-label="Table header" {...tableHeaderProps} />
           <TableBody {...tableBodyProps} />
         </Table>
       )}
