@@ -31,7 +31,63 @@ export const calculateSystems = (remediation) =>
     return acc;
   }, []) || [];
 
+The new pipeline does three separate passes over your data (`updatedResults`, `filteredResults`, `connectedResults`) and also reorders `getEntities`/`connectedData` in the signature, which is both verbose and a breaking change. You can collapse all three steps into one reduce and restore a more intuitive parameter order. For example:
+
+```js
 export const fetchInventoryData = async (
+  { page = 0, ...config } = {},
+  systems,
+  getEntities,
+  connectedData
+) => {
+  // 1) filter systems by hostname/id
+  const filteredSystems = systems.filter(({ display_name }) =>
+    config.filters?.hostnameOrId
+      ? display_name.includes(config.filters.hostnameOrId)
+      : true
+  );
+
+  // 2) fetch entities (safely defaulting to empty results)
+  const data = (await getEntities(
+    filteredSystems
+      .slice((page - 1) * config.per_page, page * config.per_page)
+      .map(({ id }) => id),
+    { ...config, hasItems: true },
+    true
+  )) || { results: [] };
+
+  // 3) single-pass merge, filter out unconnected & unmapped
+  const results = data.results.reduce((acc, result) => {
+    const system = filteredSystems.find(s => s.id === result.id);
+    if (!system) {
+      return acc;
+    }
+    // skip if not connected
+    if (
+      connectedData === 403 ||
+      !connectedData.some(cd => cd.system_ids.includes(result.id))
+    ) {
+      return acc;
+    }
+    // merge connection info
+    const { connection_status, executor_type } =
+      connectedData.find(cd => cd.system_ids.includes(result.id)) || {};
+    acc.push({
+      ...system,
+      ...result,
+      connection_status,
+      executor_type
+    });
+    return acc;
+  }, []);
+
+  return {
+    ...data,
+    page,
+    results,
+    total: results.length
+  };
+};
   { page = 0, ...config } = {},
   systems,
   connectedData,
