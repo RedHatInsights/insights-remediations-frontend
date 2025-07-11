@@ -31,12 +31,44 @@ export const calculateSystems = (remediation) =>
     return acc;
   }, []) || [];
 
+// Helper function to normalize connectedData for easier mapping
+export const normalizeConnectedData = (connectedData) => {
+  if (
+    !connectedData ||
+    connectedData === 403 ||
+    !Array.isArray(connectedData)
+  ) {
+    return new Map();
+  }
+
+  const connectionMap = new Map();
+  connectedData.forEach((item) => {
+    if (item.system_ids && Array.isArray(item.system_ids)) {
+      item.system_ids.forEach((systemId) => {
+        connectionMap.set(systemId, {
+          connection_status: item.connection_status,
+          executor_type: item.executor_type,
+        });
+      });
+    }
+  });
+
+  return connectionMap;
+};
+
 export const fetchInventoryData = async (
   { page = 0, ...config } = {},
   systems,
   getEntities,
   connectedData,
 ) => {
+  console.log('fetchInventoryData called here', {
+    page,
+    systemsCount: systems?.length,
+    connectedDataCount: connectedData?.length,
+    connectedData,
+  });
+
   const currSystems = systems.filter(({ display_name }) =>
     config.filters?.hostnameOrId
       ? display_name.includes(config.filters.hostnameOrId)
@@ -51,16 +83,16 @@ export const fetchInventoryData = async (
     true,
   );
 
+  const connectionMap = normalizeConnectedData(connectedData);
+
   const updatedResults = data.results.map((result) => {
     const systemId = result.id;
-    const matchedItem =
-      connectedData !== 403 &&
-      connectedData.find((item) => item.system_ids.includes(systemId));
-    if (matchedItem) {
+    const connectionInfo = connectionMap.get(systemId);
+
+    if (connectionInfo) {
       return {
         ...result,
-        connection_status: matchedItem.connection_status,
-        executor_type: matchedItem.executor_type,
+        ...connectionInfo,
       };
     } else {
       return result;

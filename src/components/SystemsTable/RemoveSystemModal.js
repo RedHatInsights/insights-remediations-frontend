@@ -15,7 +15,6 @@ const RemoveSystemModal = ({
     isOpen={isOpen}
     onClose={onClose}
     titleIconVariant={'warning'}
-    appendTo={document.getElementsByClassName('remediations')[0]}
     actions={[
       <Button
         key="remove-confirm"
