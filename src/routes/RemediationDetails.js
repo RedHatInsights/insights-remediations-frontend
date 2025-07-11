@@ -37,7 +37,7 @@ const RemediationDetails = () => {
 
   const {
     result: remediationDetails,
-    refetch: fetchRemediation,
+    refetch: refetchRemediationDetails,
     loading: detailsLoading,
   } = useRemediationsQuery(getRemediationDetails, {
     params: { remId: id },
@@ -71,7 +71,7 @@ const RemediationDetails = () => {
     areDetailsLoading,
     detailsError,
     connectedData,
-  ] = useConnectionStatus({ id });
+  ] = useConnectionStatus(remediationDetails?.id, axios);
 
   const remediationStatus = {
     connectedSystems,
@@ -81,14 +81,13 @@ const RemediationDetails = () => {
     connectedData,
   };
 
-  const handleTabClick = (event, tabName) =>
+  const handleTabClick = (_event, tabName) =>
     setSearchParams({
       ...Object.fromEntries(searchParams),
       activeTab: tabName,
     });
 
   const getIsExecutable = (item) => String(item).trim().toUpperCase() === 'OK';
-
   return (
     remediationDetails && (
       <>
@@ -99,7 +98,7 @@ const RemediationDetails = () => {
           allRemediations={allRemediations?.data}
           refetchAllRemediations={refetchAllRemediations}
           updateRemPlan={updateRemPlan}
-          refetch={fetchRemediation}
+          refetch={refetchRemediationDetails}
           permissions={context.permissions}
           isExecutable={getIsExecutable(isExecutable)}
           refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
@@ -116,7 +115,7 @@ const RemediationDetails = () => {
               isRenameModalOpen={isRenameModalOpen}
               setIsRenameModalOpen={setIsRenameModalOpen}
               remediationsList={allRemediations?.data}
-              fetch={fetchRemediation}
+              fetch={refetchRemediationDetails}
             />
           )}
 
@@ -129,7 +128,7 @@ const RemediationDetails = () => {
               details={remediationDetails}
               refetchAllRemediations={refetchAllRemediations}
               onRename={setIsRenameModalOpen}
-              refetch={fetchRemediation}
+              refetch={refetchRemediationDetails}
               remediationStatus={remediationStatus}
               updateRemPlan={updateRemPlan}
               onNavigateToTab={handleTabClick}
@@ -145,7 +144,7 @@ const RemediationDetails = () => {
           >
             <ActionsContent
               remediationDetails={remediationDetails}
-              refetch={fetchRemediation}
+              refetch={refetchRemediationDetails}
               loading={detailsLoading}
             />
           </Tab>
@@ -158,7 +157,7 @@ const RemediationDetails = () => {
             {/* <SystemsContent
               remediationDetails={remediationDetails}
               remediationStatus={remediationStatus}
-              refetch={fetchRemediation}
+              refetch={refetchRemediationDetails}
             /> */}
             <section
               className={
@@ -169,6 +168,7 @@ const RemediationDetails = () => {
                 remediation={remediationDetails}
                 connectedData={remediationStatus?.connectedData}
                 areDetailsLoading={remediationStatus?.areDetailsLoading}
+                refreshRemediation={refetchRemediationDetails}
               />
             </section>
           </Tab>

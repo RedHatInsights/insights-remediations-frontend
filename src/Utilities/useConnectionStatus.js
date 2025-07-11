@@ -1,23 +1,22 @@
-import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef } from 'react';
 import { API_BASE } from '../routes/api';
 
-export const useConnectionStatus = (remediation) => {
-  const axios = useAxiosWithPlatformInterceptors();
+export const useConnectionStatus = (remediationId, axios) => {
   const [connectedSystems, setConnectedSystems] = useState(0);
   const [totalSystems, setTotalSystems] = useState(0);
   const [areDetailsLoading, setAreDetailsLoading] = useState(true);
   const [detailsError, setDetailsError] = useState();
   const [connectedData, setConnectedData] = useState([]);
   const mounted = useRef(false);
-  let connectedSystemCount = 0;
-  let totalSystemsCount = 0;
   useEffect(() => {
     mounted.current = true;
+    let connectedSystemCount = 0;
+    let totalSystemsCount = 0;
     const fetchData = async () => {
       try {
         const connection_status = await axios.get(
-          `${API_BASE}/remediations/${remediation.id}/connection_status`,
+          `${API_BASE}/remediations/${remediationId}/connection_status`,
         );
         (mounted.current &&
           (connection_status.data.forEach((connected_group) => {
@@ -38,11 +37,11 @@ export const useConnectionStatus = (remediation) => {
       setAreDetailsLoading(false);
     };
 
-    remediation && fetchData();
+    remediationId && fetchData();
     return () => {
       mounted.current = false;
     };
-  }, [remediation?.id]);
+  }, [remediationId]);
 
   return [
     connectedSystems,
