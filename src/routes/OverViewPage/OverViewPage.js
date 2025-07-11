@@ -184,7 +184,7 @@ export const OverViewPage = () => {
               ouiaId="OverViewTable"
               variant="compact"
               loading={loading}
-              items={result?.data.map((item) => ({ ...item, itemId: item.id }))}
+              items={result?.data}
               total={result?.meta?.total}
               columns={[...columns]}
               filters={{

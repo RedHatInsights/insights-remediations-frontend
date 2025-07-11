@@ -51,15 +51,6 @@ jest.mock(
   { virtual: true },
 );
 
-const mockActivateQuickstart = jest.fn();
-jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
-  __esModule: true,
-  default: () => ({
-    getApp: () => 'remediations',
-    quickStarts: { activateQuickstart: mockActivateQuickstart },
-  }),
-}));
-
 jest.mock(
   '@redhat-cloud-services/frontend-components-utilities/interceptors',
   () => ({
@@ -140,7 +131,7 @@ describe('OverViewPage', () => {
     });
     expect(qsBtn).toBeInTheDocument();
     await userEvent.click(qsBtn);
-    expect(mockActivateQuickstart).toHaveBeenCalledWith(
+    expect(global.mockActivateQuickstart).toHaveBeenCalledWith(
       'insights-remediate-plan-create',
     );
   });

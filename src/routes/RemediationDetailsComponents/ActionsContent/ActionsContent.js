@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import columns from './Columns';
@@ -52,6 +51,34 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   const callbacks = useStateCallbacks();
   const { fetchQueue } = useRemediationFetchExtras({ fetch: deleteActions });
 
+  const SystemsButton = ({
+    systems = [],
+    description,
+    setActionToShow,
+    setSystemsToShow,
+    setIsSystemsModalOpen,
+  }) => (
+    <Button
+      size="sm"
+      style={{ padding: '0' }}
+      variant="link"
+      onClick={() => {
+        setActionToShow(description);
+        setSystemsToShow(systems);
+        setIsSystemsModalOpen(true);
+      }}
+    >
+      {`${systems.length} system${systems.length !== 1 ? 's' : ''}`}
+    </Button>
+  );
+  SystemsButton.propTypes = {
+    systems: PropTypes.array.isRequired,
+    description: PropTypes.string,
+    setActionToShow: PropTypes.func.isRequired,
+    setSystemsToShow: PropTypes.func.isRequired,
+    setIsSystemsModalOpen: PropTypes.func.isRequired,
+  };
+
   const handleDelete = async (selected) => {
     const chunks = chunk(selected, 100);
     const queue = chunks.map((chunk) => ({
@@ -68,20 +95,18 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
       if (col.exportKey === 'system_count') {
         return {
           ...col,
-          Component: ({ systems, description }) => (
-            <Button
-              size="sm"
-              style={{ padding: '0' }}
-              variant="link"
-              onClick={() => {
-                setActionToShow(description);
-                setSystemsToShow(systems);
-                setIsSystemsModalOpen(true);
-              }}
-            >
-              {`${systems.length} system${systems.length !== 1 ? 's' : ''}`}
-            </Button>
-          ),
+          Component: (props) => {
+            const rowData = props;
+            return (
+              <SystemsButton
+                systems={rowData.systems || []}
+                setActionToShow={setActionToShow}
+                setSystemsToShow={setSystemsToShow}
+                setIsSystemsModalOpen={setIsSystemsModalOpen}
+                description={rowData.description}
+              />
+            );
+          },
         };
       }
       return col;
