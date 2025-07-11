@@ -38,7 +38,7 @@ export const download = (selectedIds, data, dispatch) => {
         title: `Downloading remediation plan${valid.length > 1 ? 's' : ''}`,
         description: `${
           selectedIds.length - valid.length
-        } empty remediaton plan was not downloaded`,
+        } empty remediation plans were not downloaded`,
       }),
     );
   } else {

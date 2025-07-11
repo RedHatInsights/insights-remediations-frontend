@@ -7,7 +7,7 @@ import {
 import { SearchIcon } from '@patternfly/react-icons';
 import React from 'react';
 
-export const TableEmptyState = () => {
+const TableEmptyState = () => {
   return (
     <EmptyState>
       <EmptyStateHeader
@@ -19,3 +19,5 @@ export const TableEmptyState = () => {
     </EmptyState>
   );
 };
+
+export default TableEmptyState;

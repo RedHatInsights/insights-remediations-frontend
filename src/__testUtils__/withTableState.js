@@ -1,5 +1,5 @@
 import React from 'react';
-import TableStateProvider from '../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
+import { TableStateProvider } from 'bastilian-tabletools';
 
 /**
  * Wrap UI (or hook) in a minimal ATT provider so

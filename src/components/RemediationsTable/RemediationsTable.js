@@ -5,8 +5,7 @@ import {
   sortSerialiser,
 } from './serealisers';
 import propTypes from 'prop-types';
-import AsyncTableToolsTable from '../../Frameworks/AsyncTableTools/AsyncTableTools/components/AsyncTableToolsTable';
-
+import { TableToolsTable } from 'bastilian-tabletools';
 /**
  * This component serves as a place to either use the non-async TableTools or the AsyncTableTools
  * And allow preparing the AsyncTableToolsTable props/options common across tables in Remediations
@@ -20,7 +19,7 @@ import AsyncTableToolsTable from '../../Frameworks/AsyncTableTools/AsyncTableToo
  */
 const RemediationsTable = (props) => {
   return (
-    <AsyncTableToolsTable
+    <TableToolsTable
       {...props}
       options={{
         serialisers: {

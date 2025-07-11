@@ -52,7 +52,7 @@ function buildToPath(key, description) {
   return `/${route}/${slug}`;
 }
 
-export const ActionsCell = ({ id, description, resolution }) => {
+export const ActionsCell = ({ id, description = '', resolution }) => {
   const { app } = getAppInfo(id);
 
   return (
