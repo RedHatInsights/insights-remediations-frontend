@@ -62,13 +62,6 @@ export const fetchInventoryData = async (
   getEntities,
   connectedData,
 ) => {
-  console.log('fetchInventoryData called here', {
-    page,
-    systemsCount: systems?.length,
-    connectedDataCount: connectedData?.length,
-    connectedData,
-  });
-
   const currSystems = systems.filter(({ display_name }) =>
     config.filters?.hostnameOrId
       ? display_name.includes(config.filters.hostnameOrId)

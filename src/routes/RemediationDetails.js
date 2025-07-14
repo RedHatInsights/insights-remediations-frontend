@@ -19,6 +19,7 @@ import {
   getRemediationsList,
   updateRemediationPlans,
 } from './api';
+import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 
 const RemediationDetails = () => {
   const chrome = useChrome();
@@ -27,7 +28,7 @@ const RemediationDetails = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { isFedramp } = chrome;
   const context = useContext(PermissionContext);
-
+  const axios = useAxiosWithPlatformInterceptors();
   const { result: allRemediations, refetch: refetchAllRemediations } =
     useRemediationsQuery(getRemediationsList);
 

@@ -39,12 +39,6 @@ const SystemsTableWrapper = ({
 
   useEffect(() => {
     systemsRef.current = calculateSystems(remediation);
-    console.log('systemsRef.current here', systemsRef.current);
-    // TODO: onRefreshData is not working, so we are using refreshKey to force table remount
-    // if (inventory.current) {
-    //   inventory.current.onRefreshData?.();
-    // }
-
     setRefreshKey((prev) => prev + 1);
   }, [remediation]);
 
@@ -59,14 +53,13 @@ const SystemsTableWrapper = ({
     setIsOpen,
   });
 
-  const bulkSelectRaw = useBulkSelect({
+  const bulkSelect = useBulkSelect({
     systemsRef,
     rows,
     selected,
     loaded,
     calculateChecked,
   });
-  const bulkSelect = useMemo(() => bulkSelectRaw, [bulkSelectRaw]);
 
   const actions = useMemo(
     () => [
@@ -93,61 +86,63 @@ const SystemsTableWrapper = ({
   );
 
   return (
-    <InventoryTable
-      key={refreshKey}
-      variant="compact"
-      ref={inventory}
-      isLoading={areDetailsLoading}
-      showTags
-      noDetail
-      hideFilters={{
-        all: true,
-        name: false,
-      }}
-      tableProps={{
-        canSelectAll: false,
-      }}
-      columns={columns}
-      bulkSelect={bulkSelect}
-      getEntities={async (_i, config, _hasItems, defaultGetEntities) =>
-        await fetchInventoryData(
-          config,
-          systemsRef.current,
-          defaultGetEntities,
-          connectedData,
-        )
-      }
-      onLoad={({ INVENTORY_ACTION_TYPES, mergeWithEntities }) => {
-        registry?.register?.({
-          ...mergeWithEntities(remediationSystems(INVENTORY_ACTION_TYPES)),
-        });
-      }}
-      actions={actions}
-    >
-      {loaded && (
-        <Button
-          variant="secondary"
-          onClick={() => setIsOpen(true)}
-          isDisabled={selected.size === 0}
-        >
-          Remove
-        </Button>
-      )}
-      <RemoveSystemModal
-        isOpen={isOpen}
-        onConfirm={onConfirm}
-        selected={
-          selected.size > 0
-            ? Array.from(selected, ([, value]) => value)
-            : [activeSystem.current]
-        }
-        onClose={() => {
-          activeSystem.current = undefined;
-          setIsOpen(false);
+    !areDetailsLoading && (
+      <InventoryTable
+        key={refreshKey}
+        variant="compact"
+        ref={inventory}
+        isLoading={areDetailsLoading}
+        showTags
+        noDetail
+        hideFilters={{
+          all: true,
+          name: false,
         }}
-        remediationName={remediation.name}
-      />
-    </InventoryTable>
+        tableProps={{
+          canSelectAll: false,
+        }}
+        columns={columns}
+        bulkSelect={bulkSelect}
+        getEntities={async (_i, config, _hasItems, defaultGetEntities) =>
+          await fetchInventoryData(
+            config,
+            systemsRef.current,
+            defaultGetEntities,
+            connectedData,
+          )
+        }
+        onLoad={({ INVENTORY_ACTION_TYPES, mergeWithEntities }) => {
+          registry?.register?.({
+            ...mergeWithEntities(remediationSystems(INVENTORY_ACTION_TYPES)),
+          });
+        }}
+        actions={actions}
+      >
+        {loaded && (
+          <Button
+            variant="secondary"
+            onClick={() => setIsOpen(true)}
+            isDisabled={selected.size === 0}
+          >
+            Remove
+          </Button>
+        )}
+        <RemoveSystemModal
+          isOpen={isOpen}
+          onConfirm={onConfirm}
+          selected={
+            selected.size > 0
+              ? Array.from(selected, ([, value]) => value)
+              : [activeSystem.current]
+          }
+          onClose={() => {
+            activeSystem.current = undefined;
+            setIsOpen(false);
+          }}
+          remediationName={remediation.name}
+        />
+      </InventoryTable>
+    )
   );
 };
 
