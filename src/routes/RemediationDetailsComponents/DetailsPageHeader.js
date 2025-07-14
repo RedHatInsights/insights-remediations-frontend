@@ -4,11 +4,11 @@ import {
   PageHeaderTitle,
 } from '@redhat-cloud-services/frontend-components/PageHeader';
 import React, { useCallback } from 'react';
-import { downloadPlaybook } from '../../api';
-import { dispatchNotification } from '../../Utilities/dispatcher';
 import RemediationDetailsDropdown from '../../components/RemediationDetailsDropdown';
 import PropTypes from 'prop-types';
 import ExecuteButton from '../../components/ExecuteButton';
+import { useDispatch } from 'react-redux';
+import { download } from '../../Utilities/DownloadPlaybookButton';
 
 const RemediationDetailsPageHeader = ({
   remediation,
@@ -21,35 +21,12 @@ const RemediationDetailsPageHeader = ({
   permissions,
   refetchRemediationPlaybookRuns,
   isExecutable,
+  fullRemList,
 }) => {
-  const handleDownload = useCallback(async () => {
-    dispatchNotification({
-      title: 'Preparing playbook for download…',
-      variant: 'info',
-      dismissable: true,
-      autoDismiss: true,
-    });
-
-    try {
-      await downloadPlaybook(remediation.id);
-      dispatchNotification({
-        title: 'Download ready',
-        description: 'Your playbook is downloading now.',
-        variant: 'success',
-        dismissable: true,
-        autoDismiss: true,
-      });
-    } catch (err) {
-      dispatchNotification({
-        title: 'Download failed',
-        description:
-          err?.message || 'There was an error preparing your download.',
-        variant: 'danger',
-        dismissable: true,
-        autoDismiss: true,
-      });
-    }
-  }, [remediation.id]);
+  const dispatch = useDispatch();
+  const handleDownload = useCallback(() => {
+    download([remediation.id], fullRemList, dispatch);
+  }, [remediation.id, fullRemList, dispatch]);
 
   return (
     <PageHeader>
@@ -146,6 +123,7 @@ RemediationDetailsPageHeader.propTypes = {
   isExecutable: PropTypes.any,
   refetchAllRemediations: PropTypes.func,
   refetchRemediationPlaybookRuns: PropTypes.func,
+  fullRemList: PropTypes.array,
 };
 
 export default RemediationDetailsPageHeader;
