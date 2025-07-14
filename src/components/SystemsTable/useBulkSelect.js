@@ -47,7 +47,7 @@ const useBulkSelect = ({
 
   return useMemo(
     () => ({
-      isDisabled: rows ? false : true,
+      isDisabled: !rows,
       count: selected ? selected.size : 0,
       items: [
         {

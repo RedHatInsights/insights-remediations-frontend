@@ -39,12 +39,6 @@ const SystemsTableWrapper = ({
 
   useEffect(() => {
     systemsRef.current = calculateSystems(remediation);
-    console.log('systemsRef.current here', systemsRef.current);
-    // TODO: onRefreshData is not working, so we are using refreshKey to force table remount
-    // if (inventory.current) {
-    //   inventory.current.onRefreshData?.();
-    // }
-
     setRefreshKey((prev) => prev + 1);
   }, [remediation]);
 
@@ -59,14 +53,13 @@ const SystemsTableWrapper = ({
     setIsOpen,
   });
 
-  const bulkSelectRaw = useBulkSelect({
+  const bulkSelect = useBulkSelect({
     systemsRef,
     rows,
     selected,
     loaded,
     calculateChecked,
   });
-  const bulkSelect = useMemo(() => bulkSelectRaw, [bulkSelectRaw]);
 
   const actions = useMemo(
     () => [
