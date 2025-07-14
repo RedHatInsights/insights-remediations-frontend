@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   EmptyState,
   EmptyStateBody,
@@ -6,7 +7,6 @@ import {
   Title,
 } from '@patternfly/react-core';
 import { CubesIcon } from '@patternfly/react-icons';
-import React from 'react';
 
 const NoExecutions = () => {
   return (

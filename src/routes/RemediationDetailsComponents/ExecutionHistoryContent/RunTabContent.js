@@ -8,7 +8,7 @@ import {
   Button,
   TabContent,
 } from '@patternfly/react-core';
-import TableStateProvider from '../../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
+import { TableStateProvider } from 'bastilian-tabletools';
 
 import DetailsBanner from '../DetailsBanners';
 import RunSystemsTable from './RunSystemsTable';

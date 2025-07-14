@@ -9,6 +9,15 @@ export const actionNameFilter = [
   },
 ];
 
+export const actionsSystemFilter = [
+  {
+    type: conditionalFilterType.text,
+    label: 'Name',
+    placeholder: 'Filter by actions',
+    filterAttribute: 'display_name',
+  },
+];
+
 export const systemNameFilter = [
   {
     type: conditionalFilterType.text,

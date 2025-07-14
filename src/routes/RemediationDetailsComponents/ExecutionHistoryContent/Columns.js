@@ -4,7 +4,6 @@ import {
   InsightsConnectCell,
   ExecutionStatusCell,
 } from './Cells';
-import { renderComponent } from '../helpers';
 
 export default [
   {
@@ -12,20 +11,20 @@ export default [
     transforms: [wrappable],
     // sortable: 'action',
     exportKey: 'action',
-    renderFunc: renderComponent(SystemNameCell),
+    Component: SystemNameCell,
   },
   {
     title: 'Insights connection',
     transforms: [wrappable],
     // sortable: 'reboot',
     exportKey: 'reboot',
-    renderFunc: renderComponent(InsightsConnectCell),
+    Component: InsightsConnectCell,
   },
   {
     title: 'Execution status',
     transforms: [wrappable],
     // sortable: 'system_count',
     exportKey: 'system_count',
-    renderFunc: renderComponent(ExecutionStatusCell),
+    Component: ExecutionStatusCell,
   },
 ];

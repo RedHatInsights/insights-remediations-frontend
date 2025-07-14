@@ -1,5 +1,4 @@
 import { wrappable } from '@patternfly/react-table';
-import { renderComponent } from '../helpers';
 import {
   ActionsCell,
   IssueTypeCell,
@@ -13,27 +12,27 @@ export default [
     transforms: [wrappable],
     // sortable: 'action',
     exportKey: 'action',
-    renderFunc: renderComponent(ActionsCell),
+    Component: ActionsCell,
   },
   {
     title: 'Reboot required',
     transforms: [wrappable],
     // sortable: 'reboot',
     exportKey: 'reboot',
-    renderFunc: renderComponent(RebootRequiredCell),
+    Component: RebootRequiredCell,
   },
   {
     title: 'Affected systems',
     transforms: [wrappable],
     // sortable: 'system_count',
     exportKey: 'system_count',
-    renderFunc: renderComponent(SystemsCell),
+    Component: SystemsCell,
   },
   {
     title: 'Issue type',
     transforms: [wrappable],
     // sortable: 'type',
     exportKey: 'type',
-    renderFunc: renderComponent(IssueTypeCell),
+    Component: IssueTypeCell,
   },
 ];

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, ModalVariant } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
-import TableStateProvider from '../../../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
+import { TableStateProvider } from 'bastilian-tabletools';
 
 import RemediationsTable from '../../../../components/RemediationsTable/RemediationsTable';
 import columns from './Columns';

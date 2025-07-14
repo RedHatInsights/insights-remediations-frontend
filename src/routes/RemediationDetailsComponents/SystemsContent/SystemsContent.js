@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import TableStateProvider from '../../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
+import { TableStateProvider } from 'bastilian-tabletools';
 import { Button } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';

@@ -1,10 +1,10 @@
 import React from 'react';
-import { useRawTableState } from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
+import { useRawTableState } from 'bastilian-tabletools';
 import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
 import columns from './Columns';
 import { systemFilter } from './Filter';
 import PropTypes from 'prop-types';
-import { emptyRows } from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
+import TableEmptyState from '../../OverViewPage/TableEmptyState';
 
 const RunSystemsTable = ({ run, loading, viewLogColumn }) => {
   const tableState = useRawTableState();
@@ -28,7 +28,7 @@ const RunSystemsTable = ({ run, loading, viewLogColumn }) => {
       options={{
         itemIdsOnPage: filtered.map((s) => s.system_id),
         total: filtered.length,
-        emptyRows: emptyRows(columns.length + 1),
+        EmptyState: TableEmptyState,
       }}
     />
   );
