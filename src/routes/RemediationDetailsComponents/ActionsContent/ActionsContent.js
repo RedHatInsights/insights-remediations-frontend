@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import columns from './Columns';
 import { Button } from '@patternfly/react-core';
-import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
+import TableStateProvider from '../../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
 import useRemediationsQuery from '../../../api/useRemediationsQuery';
 import useRemediationFetchExtras from '../../../api/useRemediationFetchExtras';
 import { useParams } from 'react-router-dom';
@@ -11,7 +11,6 @@ import chunk from 'lodash/chunk';
 import ConfirmationDialog from '../../../components/ConfirmationDialog';
 import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
-import { API_BASE } from '../../api';
 import {
   useTableState,
   TableStateProvider,
@@ -20,19 +19,9 @@ import {
 } from 'bastilian-tabletools';
 import TableEmptyState from '../../OverViewPage/TableEmptyState';
 
-const deleteIssues = (axios) => (params) => {
-  return axios({
-    method: 'delete',
-    url: `${API_BASE}/remediations/${params.id}/issues`,
-    data: {
-      issue_ids: params.issue_ids,
-    },
-  });
-};
-import { API_BASE, deleteIssues } from '../../api';
+import { deleteIssues } from '../../api';
 
 const ActionsContent = ({ remediationDetails, refetch, loading }) => {
-  const axios = useAxiosWithPlatformInterceptors();
   const { id } = useParams();
   const tableState = useTableState();
   const currentlySelected = tableState?.selected;
@@ -46,6 +35,7 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
     skip: true,
     batched: true,
   });
+
   const callbacks = useStateCallbacks();
   const { fetchQueue } = useRemediationFetchExtras({ fetch: deleteActions });
 

@@ -3,6 +3,10 @@ import { useConnectionStatus } from '../Utilities/useConnectionStatus';
 import { renderHook, act } from '@testing-library/react';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 
+jest.mock('./api', () => ({
+  API_BASE: '',
+}));
+
 jest.mock(
   '@redhat-cloud-services/frontend-components-utilities/interceptors',
   () => ({

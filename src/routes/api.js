@@ -53,3 +53,6 @@ export const executeRemediation = ({ id, etag, exclude }) => {
     },
   );
 };
+
+export const deleteIssues = ({ id, issue_ids }) =>
+  remediationsApi.deleteRemediationIssues(id, { issue_ids });
