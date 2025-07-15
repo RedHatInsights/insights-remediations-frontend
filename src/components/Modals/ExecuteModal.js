@@ -17,7 +17,6 @@ import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import EmptyExecutePlaybookState from '../EmptyExecutePlaybookState';
 import { dispatchNotification } from '../../Utilities/dispatcher';
 import useRemediationsQuery from '../../api/useRemediationsQuery';
-import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import { executeRemediation } from '../../routes/api';
 import RemediationsTable from '../RemediationsTable/RemediationsTable';
 import { TableStateProvider } from 'bastilian-tabletools';
@@ -32,7 +31,6 @@ export const ExecuteModal = ({
   refetchRemediationPlaybookRuns,
   remediationStatus,
 }) => {
-  const axios = useAxiosWithPlatformInterceptors();
   const [connected, setConnected] = useState([]);
   const [disconnected, setDisconnected] = useState([]);
 
