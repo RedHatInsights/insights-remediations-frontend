@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import columns from './Columns';
 import { Button } from '@patternfly/react-core';
-import TableStateProvider from '../../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
 import useRemediationsQuery from '../../../api/useRemediationsQuery';
 import useRemediationFetchExtras from '../../../api/useRemediationFetchExtras';
 import { useParams } from 'react-router-dom';
@@ -12,7 +11,7 @@ import ConfirmationDialog from '../../../components/ConfirmationDialog';
 import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
 import {
-  useTableState,
+  useRawTableState,
   TableStateProvider,
   StaticTableToolsTable,
   useStateCallbacks,
@@ -23,7 +22,7 @@ import { deleteIssues } from '../../api';
 
 const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   const { id } = useParams();
-  const tableState = useTableState();
+  const tableState = useRawTableState();
   const currentlySelected = tableState?.selected;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isBulkDelete, setIsBulkDelete] = useState(false);
