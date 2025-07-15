@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-// import useRemediationsApi from '../Utilities/Hooks/api/useRemediationsApi';
 import useQuery from '../Utilities/Hooks/useQuery';
 import useRemediationTableState from './useRemediationTableState';
 import useFetchTotalBatched from '../Utilities/Hooks/useFetchTotalBatched';
@@ -54,8 +53,7 @@ const useRemediationsQuery = (
     useTableState,
     paramsOption,
   );
-
-  const skip = !!(useTableState && !hasState) || !!skipOption;
+  const skip = !!(skipOption || (useTableState && !hasState));
 
   const {
     result: queryData,

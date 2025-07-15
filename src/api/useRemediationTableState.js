@@ -1,5 +1,5 @@
 import { useDeepCompareMemo } from 'use-deep-compare';
-import { useSerialisedTableState } from '../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
+import { useSerialisedTableState } from 'bastilian-tabletools';
 
 const useRemediationTableState = (useTableState, paramsOption) => {
   const serialisedTableState = useSerialisedTableState();

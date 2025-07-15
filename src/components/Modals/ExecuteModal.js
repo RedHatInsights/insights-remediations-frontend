@@ -20,7 +20,7 @@ import useRemediationsQuery from '../../api/useRemediationsQuery';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import { executeRemediation } from '../../routes/api';
 import RemediationsTable from '../RemediationsTable/RemediationsTable';
-import TableStateProvider from '../../Frameworks/AsyncTableTools/AsyncTableTools/components/TableStateProvider';
+import { TableStateProvider } from 'bastilian-tabletools';
 import columns from './Columns';
 import { pluralize } from '../../Utilities/utils';
 
