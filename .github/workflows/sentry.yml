@@ -40,18 +40,20 @@ jobs:
       - name: Install Sentry CLI
         if: ${{ github.event.inputs.commit_hash != '' }}
         run: npm install -g @sentry/cli
-
       - name: Upload sourcemaps to Sentry
         if: ${{ github.event.inputs.commit_hash != '' }}
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
-          sentry-cli sourcemaps upload \
-            --org red-hat-it \
-            --project inventory-rhel \
-            --project advisor-rhel \
-            --project vulnerability-rhel \
-            --project compliance-rhel \
-            --release ${{ github.event.inputs.commit_hash || github.sha }} \
-            --dist ${{ github.event.inputs.commit_hash || github.sha }} \
-            ./build
+          COMMIT=${{ github.event.inputs.commit_hash || github.sha }}
+
+          for PROJECT in inventory-rhel advisor-rhel vulnerability-rhel compliance-rhel; do
+            echo "Uploading sourcemaps to $PROJECT..."
+            sentry-cli releases files "$COMMIT" upload-sourcemaps ./dist/js \
+              --org red-hat-it \
+              --project "$PROJECT" \
+              --release "$COMMIT" \
+              --dist "$COMMIT" \
+              --url-prefix '~/insights/remediations/js' \
+              --validate
+          done
