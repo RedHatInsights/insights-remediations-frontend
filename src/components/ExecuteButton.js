@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 
 import PropTypes from 'prop-types';
-import { Button, Flex, Tooltip } from '@patternfly/react-core';
+import { Flex } from '@patternfly/react-core';
 import { ExecuteModal } from './Modals/ExecuteModal';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
+import ButtonWithToolTip from '../Utilities/ButtonWithToolTip';
 
 const ExecuteButton = ({
   isDisabled,
@@ -14,24 +15,13 @@ const ExecuteButton = ({
 }) => {
   const [open, setOpen] = useState(false);
 
-  const buttonWithTooltip = () => {
-    const button = (
-      <Button
-        isAriaDisabled={isDisabled}
-        data-testid="execute-button-enabled"
-        onClick={() => {
-          setOpen(true);
-        }}
-      >
-        {isDisabled && <ExclamationTriangleIcon />} Execute
-      </Button>
-    );
-
-    return isDisabled ? (
-      <Tooltip
-        minWidth="400px"
-        aria-label="details Tooltip"
-        content={
+  return (
+    <React.Fragment>
+      <ButtonWithToolTip
+        isDisabled={isDisabled}
+        variant="primary"
+        onClick={() => setOpen(true)}
+        tooltipContent={
           <Flex
             className="pf-v5-u-ml-md"
             direction={{ default: 'column' }}
@@ -45,17 +35,10 @@ const ExecuteButton = ({
             </p>
           </Flex>
         }
+        data-testid="execute-button-enabled"
       >
-        {button}
-      </Tooltip>
-    ) : (
-      button
-    );
-  };
-
-  return (
-    <React.Fragment>
-      {buttonWithTooltip()}
+        {isDisabled && <ExclamationTriangleIcon />} Execute
+      </ButtonWithToolTip>
       {open && (
         <ExecuteModal
           isOpen={open}

@@ -1,4 +1,4 @@
-import { Button, Flex, FlexItem, Spinner } from '@patternfly/react-core';
+import { Flex, FlexItem, Spinner } from '@patternfly/react-core';
 import {
   PageHeader,
   PageHeaderTitle,
@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import ExecuteButton from '../../components/ExecuteButton';
 import { useDispatch } from 'react-redux';
 import { download } from '../../Utilities/DownloadPlaybookButton';
+import ButtonWithToolTip from '../../Utilities/ButtonWithToolTip';
 
 const RemediationDetailsPageHeader = ({
   remediation,
@@ -21,12 +22,11 @@ const RemediationDetailsPageHeader = ({
   permissions,
   refetchRemediationPlaybookRuns,
   isExecutable,
-  fullRemList,
 }) => {
   const dispatch = useDispatch();
   const handleDownload = useCallback(() => {
-    download([remediation.id], fullRemList, dispatch);
-  }, [remediation.id, fullRemList, dispatch]);
+    download([remediation.id], [remediation], dispatch);
+  }, [remediation, dispatch]);
 
   return (
     <PageHeader>
@@ -77,13 +77,18 @@ const RemediationDetailsPageHeader = ({
                 />
               </FlexItem>
               <FlexItem>
-                <Button
+                <ButtonWithToolTip
                   isDisabled={!remediation?.issues.length}
-                  variant="secondary"
                   onClick={handleDownload}
+                  tooltipContent={
+                    <div>
+                      The remediation plan cannot be downloaded because it does
+                      not include any actions or systems.
+                    </div>
+                  }
                 >
                   Download
-                </Button>
+                </ButtonWithToolTip>
               </FlexItem>
               <FlexItem>
                 <RemediationDetailsDropdown
@@ -123,7 +128,6 @@ RemediationDetailsPageHeader.propTypes = {
   isExecutable: PropTypes.any,
   refetchAllRemediations: PropTypes.func,
   refetchRemediationPlaybookRuns: PropTypes.func,
-  fullRemList: PropTypes.array,
 };
 
 export default RemediationDetailsPageHeader;
