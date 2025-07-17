@@ -8,14 +8,14 @@ import { pluralize } from './utils';
 
 const verifyDownload = (selectedIds, data) => {
   const byId = keyBy(data, (r) => r.id);
-
   return selectedIds?.reduce((result, id) => {
     const remediation = byId[id];
-
-    if (remediation && remediation.issue_count > 0) {
+    if (
+      (remediation && remediation?.issue_count > 0) ||
+      remediation?.issues?.length > 0
+    ) {
       result.push(remediation.id);
     }
-
     return result;
   }, []);
 };

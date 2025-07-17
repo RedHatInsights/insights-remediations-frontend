@@ -20,7 +20,7 @@ import {
   getRemediationsList,
   updateRemediationPlans,
 } from './api';
-import { getRemediations } from '../api';
+
 const RemediationDetails = () => {
   const chrome = useChrome();
   const { id } = useParams();
@@ -62,10 +62,6 @@ const RemediationDetails = () => {
       skip: true,
     },
   );
-
-  const { result: fullRemList } = useRemediationsQuery(getRemediations, {
-    params: { hide_archived: false, 'fields[data]': 'playbook_runs' },
-  });
 
   useEffect(() => {
     remediationDetails &&
@@ -112,7 +108,6 @@ const RemediationDetails = () => {
           permissions={context.permissions}
           isExecutable={getIsExecutable(isExecutable)}
           refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
-          fullRemList={fullRemList?.data}
         />
         <Tabs
           activeKey={searchParams.get('activeTab') || 'general'}
