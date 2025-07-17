@@ -20,6 +20,7 @@ import {
   getRemediationsList,
   updateRemediationPlans,
 } from './api';
+
 const RemediationDetails = () => {
   const chrome = useChrome();
   const { id } = useParams();

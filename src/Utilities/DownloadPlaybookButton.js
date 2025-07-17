@@ -1,21 +1,21 @@
 import React from 'react';
 import { Button } from '@patternfly/react-core';
 import { downloadPlaybook } from '../api';
-import { dispatchNotification } from './dispatcher';
 import keyBy from 'lodash/keyBy';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
 import PropTypes from 'prop-types';
+import { pluralize } from './utils';
 
 const verifyDownload = (selectedIds, data) => {
   const byId = keyBy(data, (r) => r.id);
-
   return selectedIds?.reduce((result, id) => {
     const remediation = byId[id];
-
-    if (remediation && remediation.issue_count > 0) {
+    if (
+      (remediation && remediation?.issue_count > 0) ||
+      remediation?.issues?.length > 0
+    ) {
       result.push(remediation.id);
     }
-
     return result;
   }, []);
 };
@@ -26,29 +26,32 @@ export const download = (selectedIds, data, dispatch) => {
   if (valid.length === 0) {
     dispatch(
       addNotification({
+        title: 'Download failed',
+        description: `There was ${pluralize(selectedIds.length, 'remediation plan')} selected, but none are eligible for download.`,
         variant: 'danger',
-        title: 'No remediation plans downloaded.',
+        dismissable: true,
+        autoDismiss: true,
       }),
     );
   } else if (valid.length < selectedIds.length) {
     downloadPlaybook(valid);
+    const skipped = selectedIds.length - valid.length;
     dispatch(
       addNotification({
-        variant: 'success',
-        title: `Downloading remediation plan${valid.length > 1 ? 's' : ''}`,
-        description: `${
-          selectedIds.length - valid.length
-        } empty remediation plans were not downloaded`,
+        variant: 'info',
+        title: `Downloading ${pluralize(valid.length, 'remediation plan')}`,
+        description: `${skipped} empty remediation plan${skipped === 1 ? ' was' : 's were'} not downloaded`,
       }),
     );
   } else {
     downloadPlaybook(valid);
     dispatch(
       addNotification({
+        title: `Download ready`,
+        description: `Your playbook${valid.length > 1 ? 's are' : ' is'} downloading now.`,
         variant: 'success',
-        title: `Downloading remediation plan${
-          selectedIds.length > 1 ? 's' : ''
-        }`,
+        dismissable: true,
+        autoDismiss: true,
       }),
     );
   }
@@ -65,14 +68,6 @@ export const DownloadPlaybookButton = ({
       variant="primary"
       onClick={() => {
         download(selectedItems, data, dispatch);
-        dispatchNotification({
-          title: `Your remediation plan${
-            selectedItems.length > 1 ? 's' : ''
-          } will be downloaded shortly`,
-          variant: 'info',
-          dismissable: true,
-          autoDismiss: true,
-        });
       }}
     >
       {`Download`}

@@ -1,14 +1,15 @@
-import { Button, Flex, FlexItem, Spinner } from '@patternfly/react-core';
+import { Flex, FlexItem, Spinner } from '@patternfly/react-core';
 import {
   PageHeader,
   PageHeaderTitle,
 } from '@redhat-cloud-services/frontend-components/PageHeader';
 import React, { useCallback } from 'react';
-import { downloadPlaybook } from '../../api';
-import { dispatchNotification } from '../../Utilities/dispatcher';
 import RemediationDetailsDropdown from '../../components/RemediationDetailsDropdown';
 import PropTypes from 'prop-types';
 import ExecuteButton from '../../components/ExecuteButton';
+import { useDispatch } from 'react-redux';
+import { download } from '../../Utilities/DownloadPlaybookButton';
+import ButtonWithToolTip from '../../Utilities/ButtonWithToolTip';
 
 const RemediationDetailsPageHeader = ({
   remediation,
@@ -22,34 +23,10 @@ const RemediationDetailsPageHeader = ({
   refetchRemediationPlaybookRuns,
   isExecutable,
 }) => {
-  const handleDownload = useCallback(async () => {
-    dispatchNotification({
-      title: 'Preparing playbook for download…',
-      variant: 'info',
-      dismissable: true,
-      autoDismiss: true,
-    });
-
-    try {
-      await downloadPlaybook(remediation.id);
-      dispatchNotification({
-        title: 'Download ready',
-        description: 'Your playbook is downloading now.',
-        variant: 'success',
-        dismissable: true,
-        autoDismiss: true,
-      });
-    } catch (err) {
-      dispatchNotification({
-        title: 'Download failed',
-        description:
-          err?.message || 'There was an error preparing your download.',
-        variant: 'danger',
-        dismissable: true,
-        autoDismiss: true,
-      });
-    }
-  }, [remediation.id]);
+  const dispatch = useDispatch();
+  const handleDownload = useCallback(() => {
+    download([remediation.id], [remediation], dispatch);
+  }, [remediation, dispatch]);
 
   return (
     <PageHeader>
@@ -100,13 +77,18 @@ const RemediationDetailsPageHeader = ({
                 />
               </FlexItem>
               <FlexItem>
-                <Button
+                <ButtonWithToolTip
                   isDisabled={!remediation?.issues.length}
-                  variant="secondary"
                   onClick={handleDownload}
+                  tooltipContent={
+                    <div>
+                      The remediation plan cannot be downloaded because it does
+                      not include any actions or systems.
+                    </div>
+                  }
                 >
                   Download
-                </Button>
+                </ButtonWithToolTip>
               </FlexItem>
               <FlexItem>
                 <RemediationDetailsDropdown

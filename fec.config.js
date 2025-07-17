@@ -45,15 +45,15 @@ module.exports = {
       './RootApp': resolve(__dirname, './src/AppEntry'),
       './RemediationButton': resolve(
         __dirname,
-        './src/modules/RemediationsButton.js'
+        './src/modules/RemediationsButton.js',
       ),
       './RemediationWizard': resolve(
         __dirname,
-        './src/modules/RemediationsModal/index.js'
+        './src/modules/RemediationsModal/index.js',
       ),
       './NoDataModal': resolve(
         __dirname,
-        './src/modules/RemediationsModal/NoDataModal.js'
+        './src/modules/RemediationsModal/NoDataModal.js',
       ),
     },
   },
