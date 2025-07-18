@@ -86,14 +86,8 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
               'Please try again.'
             ) : (
               <div>
-                {`${issues.length} ${pluralize(
-                  issues.length,
-                  'action',
-                )} affecting 
-                        ${systems.length} ${pluralize(
-                          systems.length,
-                          'system',
-                        )} 
+                {`${pluralize(issues.length, 'action')} affecting 
+                        ${pluralize(systems.length, 'system')} 
                         ${
                           issues.length > 1 ? 'were' : 'was'
                         } added to the playbook `}

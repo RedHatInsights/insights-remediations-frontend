@@ -86,10 +86,7 @@ const IssueResolution = ({ issue }) => {
             {issue.action}
           </Text>
           <Text className="ins-c-remediations-action-description">
-            {`Resolution affects ${systems.length} ${pluralize(
-              systems.length,
-              'system',
-            )}`}
+            {`Resolution affects ${pluralize(systems.length, 'system')}`}
           </Text>
         </TextContent>
       </StackItem>

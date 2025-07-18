@@ -149,12 +149,9 @@ const SelectPlaybook = (props) => {
         )}
         <TextContent>
           <Text>
-            You selected{' '}
-            <b>
-              {`${allSystems.length} ${pluralize(allSystems.length, 'system')}`}{' '}
-            </b>
+            You selected <b>{pluralize(allSystems.length, 'system')} </b>
             to remediate with Ansible, which in total includes{' '}
-            <b>{`${issues?.length} ${pluralize(issues?.length, 'issue')}`} </b>
+            <b>{pluralize(issues?.length, 'issue')} </b>
             {issues?.length !== resolutions.length && !isLoading ? (
               <Fragment>
                 of which <b>{resolutions.length} </b>
