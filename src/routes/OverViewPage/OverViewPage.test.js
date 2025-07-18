@@ -26,12 +26,13 @@ const demoRows = [
 ];
 
 jest.mock('../api', () => ({
-  getRemediations: jest.fn(
-    () => () => Promise.resolve({ data: demoRows, meta: { total: 2 } }),
+  API_BASE: '',
+  getRemediations: jest.fn(() =>
+    Promise.resolve({ data: demoRows, meta: { total: 2 } }),
   ),
-  getRemediationsList: jest.fn(() => () => Promise.resolve({ data: demoRows })),
-  deleteRemediation: jest.fn(() => () => Promise.resolve({})),
-  deleteRemediationList: jest.fn(() => () => Promise.resolve({})),
+  getRemediationsList: jest.fn(() => Promise.resolve({ data: demoRows })),
+  deleteRemediation: jest.fn(() => Promise.resolve({})),
+  deleteRemediationList: jest.fn(() => Promise.resolve({})),
 }));
 
 jest.mock(

@@ -217,11 +217,10 @@ export const submitRemediation = (formValues, data, basePath, setState) => {
 
   (
     (isUpdate &&
-      api.patchRemediation(
-        existing_id,
-        { add, auto_reboot: formValues[AUTO_REBOOT] },
-        basePath,
-      )) ||
+      api.patchRemediation(existing_id, {
+        add,
+        auto_reboot: formValues[AUTO_REBOOT],
+      })) ||
     api.createRemediation(
       {
         name: formValues[SELECT_PLAYBOOK].trim(),
