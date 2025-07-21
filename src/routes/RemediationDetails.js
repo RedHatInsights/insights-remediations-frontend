@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import useRemediationsQuery from '../api/useRemediationsQuery';
-import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import { Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import DetailsGeneralContent from './RemediationDetailsComponents/DetailsGeneralContent';
 import RenameModal from '../components/RenameModal';
@@ -24,27 +23,23 @@ import {
 const RemediationDetails = () => {
   const chrome = useChrome();
   const { id } = useParams();
-  const axios = useAxiosWithPlatformInterceptors();
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const { isFedramp } = chrome;
   const context = useContext(PermissionContext);
 
   const { result: allRemediations, refetch: refetchAllRemediations } =
-    useRemediationsQuery(getRemediationsList(axios));
+    useRemediationsQuery(getRemediationsList);
 
-  const { result: isExecutable } = useRemediationsQuery(
-    checkExecutableStatus(axios),
-    {
-      params: { remId: id },
-    },
-  );
+  const { result: isExecutable } = useRemediationsQuery(checkExecutableStatus, {
+    params: { remId: id },
+  });
 
   const {
     result: remediationDetails,
     refetch: fetchRemediation,
     loading: detailsLoading,
-  } = useRemediationsQuery(getRemediationDetails(axios), {
+  } = useRemediationsQuery(getRemediationDetails, {
     params: { remId: id },
   });
 
@@ -52,12 +47,12 @@ const RemediationDetails = () => {
     result: remediationPlaybookRuns,
     loading: isPlaybookRunsLoading,
     refetch: refetchRemediationPlaybookRuns,
-  } = useRemediationsQuery(getRemediationPlaybook(axios), {
+  } = useRemediationsQuery(getRemediationPlaybook, {
     params: { remId: id },
   });
 
   const { fetch: updateRemPlan } = useRemediationsQuery(
-    updateRemediationPlans(axios),
+    updateRemediationPlans,
     {
       skip: true,
     },
