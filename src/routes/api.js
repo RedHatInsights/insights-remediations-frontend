@@ -44,7 +44,7 @@ export const deleteRemediationList = ({ remediation_ids }) =>
     remediation_ids,
   });
 
-export const executeRemediation = ({ id, etag, exclude }) => {
+export const executeRemediation = ({ id, etag, exclude }) =>
   remediationsApi.runRemediation(
     id,
     { exclude },
@@ -52,7 +52,6 @@ export const executeRemediation = ({ id, etag, exclude }) => {
       headers: { 'If-Match': etag },
     },
   );
-};
 
 export const deleteIssues = ({ id, issue_ids }) =>
   remediationsApi.deleteRemediationIssues(id, { issue_ids });
