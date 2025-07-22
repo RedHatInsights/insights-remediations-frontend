@@ -46,14 +46,16 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
           COMMIT=${{ github.event.inputs.commit_hash || github.sha }}
+          PREFIX="/apps/remediations/js"
+          PROJECTS="inventory-rhel advisor-rhel vulnerability-rhel compliance-rhel"
 
-          for PROJECT in inventory-rhel advisor-rhel vulnerability-rhel compliance-rhel; do
-            echo "Uploading sourcemaps to $PROJECT..."
+          for PROJECT in $PROJECTS; do
+            echo "Uploading Remediations sourcemaps to $PROJECT…"
             sentry-cli releases files "$COMMIT" upload-sourcemaps ./dist/js \
               --org red-hat-it \
               --project "$PROJECT" \
               --release "$COMMIT" \
-              --dist "$COMMIT" \
-              --url-prefix '~/insights/remediations/js' \
+              --url-prefix "$PREFIX" \
+              --rewrite \
               --validate
           done
