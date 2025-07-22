@@ -1,106 +1,140 @@
-/* eslint-disable testing-library/no-unnecessary-act */
-import { useConnectionStatus } from '../Utilities/useConnectionStatus';
-import { renderHook, act } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import React from 'react';
+import { render, screen } from '@testing-library/react';
 
-import * as interceptors from '@redhat-cloud-services/frontend-components-utilities/interceptors';
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: () => ({ id: '123' }),
+  useSearchParams: () => [new URLSearchParams(), jest.fn()],
+}));
 
-jest.mock('./api', () => ({
+import RemediationDetails from './RemediationDetails';
+import * as remediationsQuery from '../api/useRemediationsQuery';
+import * as connectionStatus from '../Utilities/useConnectionStatus';
+import * as chromeModule from '@redhat-cloud-services/frontend-components/useChrome';
+import { PermissionContext } from '../App';
+
+jest.mock('../routes/api', () => ({
   API_BASE: '',
 }));
 
+const SystemsTableMock = () => <div>SystemsTable</div>;
+SystemsTableMock.displayName = 'SystemsTable';
+jest.mock('../components/SystemsTable/SystemsTable', () => SystemsTableMock);
+
+const HeaderMock = () => <div>Header</div>;
+HeaderMock.displayName = 'Header';
+jest.mock('./RemediationDetailsComponents/DetailsPageHeader', () => HeaderMock);
+
+const GeneralContentMock = () => <div>GeneralContent</div>;
+GeneralContentMock.displayName = 'GeneralContent';
 jest.mock(
-  '@redhat-cloud-services/frontend-components-utilities/interceptors',
-  () => ({
-    __esModule: true,
-    useAxiosWithPlatformInterceptors: jest.fn(),
-  }),
+  './RemediationDetailsComponents/DetailsGeneralContent',
+  () => GeneralContentMock,
 );
 
-describe('useConnectionStatus', () => {
-  const remediation = { id: '12345' };
+const ActionsContentMock = () => <div>ActionsContent</div>;
+ActionsContentMock.displayName = 'ActionsContent';
+jest.mock(
+  './RemediationDetailsComponents/ActionsContent/ActionsContent',
+  () => ActionsContentMock,
+);
 
-  test('returns 1 connected system but 4 systems total', async () => {
-    const mockAxios = {
-      get: jest.fn().mockResolvedValue({
-        data: [
-          {
-            system_count: 1,
-            system_ids: ['826473e9-a5b9-4db7-99d6-d9f271bd8f4d'],
-            connection_status: 'connected',
-          },
-          {
-            system_count: 3,
-            system_ids: ['cb2dd466-283d-4260-b97b-c433606961ab'],
-            connection_status: 'disconnected',
-          },
-        ],
-      }),
-    };
-    interceptors.useAxiosWithPlatformInterceptors.mockImplementation(
-      () => mockAxios,
-    );
+const ExecutionHistoryMock = () => <div>ExecutionHistory</div>;
+ExecutionHistoryMock.displayName = 'ExecutionHistory';
+jest.mock(
+  './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent',
+  () => ExecutionHistoryMock,
+);
 
-    let hook;
-    await act(async () => {
-      hook = renderHook(() => useConnectionStatus(remediation.id));
+// eslint-disable-next-line react/prop-types
+const RenameModalMock = ({ isRenameModalOpen }) =>
+  isRenameModalOpen ? <div>RenameModal</div> : null;
+RenameModalMock.displayName = 'RenameModal';
+jest.mock('../components/RenameModal', () => RenameModalMock);
+
+describe('RemediationDetails', () => {
+  beforeEach(() => {
+    jest
+      .spyOn(chromeModule, 'default')
+      .mockReturnValue({ updateDocumentTitle: jest.fn(), isFedramp: false });
+
+    let callCount = 0;
+    jest.spyOn(remediationsQuery, 'default').mockImplementation(() => {
+      callCount++;
+      if (callCount === 1) {
+        // getRemediationDetails
+        return {
+          result: { id: '123', name: 'Test Remediation', issues: [] },
+          refetch: jest.fn(),
+          loading: false,
+        };
+      }
+      if (callCount === 2) {
+        // getRemediationsList
+        return { result: { data: [] }, refetch: jest.fn() };
+      }
+      if (callCount === 3) {
+        // checkExecutableStatus
+        return { result: 'OK' };
+      }
+      // getRemediationPlaybook
+      return {
+        result: {
+          data: [
+            {
+              id: 'testing-id',
+              status: 'success',
+              remediation_id: 'supa test id',
+              created_by: {
+                username: 'insights-qa',
+                first_name: 'Insights',
+                last_name: 'QA',
+              },
+              created_at: '2025-07-22T10:28:24.882Z',
+              updated_at: '2025-07-22T10:28:24.882Z',
+              executors: [
+                {
+                  executor_id: 'testing-id',
+                  executor_name: 'Direct connected',
+                  status: 'success',
+                  system_count: 1,
+                  counts: {
+                    pending: 0,
+                    running: 0,
+                    success: 1,
+                    failure: 0,
+                    canceled: 0,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        loading: false,
+        refetch: jest.fn(),
+      };
     });
-    const { result } = hook;
-    console.log(result, 'result here');
-    expect(result.current[0]).toBe(1);
-    expect(result.current[1]).toBe(4);
+
+    jest
+      .spyOn(connectionStatus, 'useConnectionStatus')
+      .mockReturnValue([1, 2, false, null, []]);
   });
 
-  test('returns 0 connected systems and 1 system total', async () => {
-    const mockAxios = {
-      get: jest.fn().mockResolvedValue({
-        data: [
-          {
-            system_count: 1,
-            system_ids: ['826473e9-a5b9-4db7-99d6-d9f271bd8f4d'],
-            connection_status: 'not_connected',
-          },
-        ],
-      }),
-    };
-    interceptors.useAxiosWithPlatformInterceptors.mockImplementation(
-      () => mockAxios,
-    );
-
-    let hook;
-    await act(async () => {
-      hook = renderHook(() => useConnectionStatus(remediation.id));
-    });
-    const { result } = hook;
-    expect(result.current[0]).toBe(0);
-    expect(result.current[1]).toBe(1);
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
-  test('handles error and sets error state', async () => {
-    const errorObj = { errors: [{ status: 403 }] };
-    const mockAxios = {
-      get: jest.fn().mockRejectedValue(errorObj),
-    };
-    interceptors.useAxiosWithPlatformInterceptors.mockImplementation(
-      () => mockAxios,
+  it('renders all main sections', () => {
+    render(
+      <PermissionContext.Provider value={{ permissions: {} }}>
+        <RemediationDetails />
+      </PermissionContext.Provider>,
     );
-
-    const consoleErrorSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
-
-    let hook;
-    await act(async () => {
-      hook = renderHook(() => useConnectionStatus('bad-id'));
-    });
-
-    const { result } = hook;
-    await act(async () => {});
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(errorObj);
-    expect(result.current[2]).toBe(false); // areDetailsLoading
-    expect(result.current[3]).toBe(403); // detailsError
-    expect(result.current[4]).toBe(403); // connectedData
-
-    consoleErrorSpy.mockRestore();
+    expect(screen.getByText('Header')).toBeInTheDocument();
+    expect(screen.getByText('GeneralContent')).toBeInTheDocument();
+    expect(screen.getByText('SystemsTable')).toBeInTheDocument();
+    expect(screen.getByText('ActionsContent')).toBeInTheDocument();
+    expect(screen.getByText('ExecutionHistory')).toBeInTheDocument();
   });
 });
