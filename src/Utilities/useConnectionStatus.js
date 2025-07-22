@@ -1,15 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { API_BASE } from '../routes/api';
-import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 
-export const useConnectionStatus = (remediationId) => {
+export const useConnectionStatus = (remediationId, axios) => {
   const [connectedSystems, setConnectedSystems] = useState(0);
   const [totalSystems, setTotalSystems] = useState(0);
   const [areDetailsLoading, setAreDetailsLoading] = useState(true);
   const [detailsError, setDetailsError] = useState();
   const [connectedData, setConnectedData] = useState([]);
   const mounted = useRef(false);
-  const axios = useAxiosWithPlatformInterceptors();
   useEffect(() => {
     mounted.current = true;
     let connectedSystemCount = 0;

@@ -1,20 +1,11 @@
 /* eslint-disable testing-library/no-unnecessary-act */
 import { renderHook, act } from '@testing-library/react';
 
-import * as interceptors from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import { useConnectionStatus } from './useConnectionStatus';
 
 jest.mock('../routes/api', () => ({
   API_BASE: '',
 }));
-
-jest.mock(
-  '@redhat-cloud-services/frontend-components-utilities/interceptors',
-  () => ({
-    __esModule: true,
-    useAxiosWithPlatformInterceptors: jest.fn(),
-  }),
-);
 
 describe('useConnectionStatus', () => {
   const remediation = { id: '12345' };
@@ -36,13 +27,10 @@ describe('useConnectionStatus', () => {
         ],
       }),
     };
-    interceptors.useAxiosWithPlatformInterceptors.mockImplementation(
-      () => mockAxios,
-    );
 
     let hook;
     await act(async () => {
-      hook = renderHook(() => useConnectionStatus(remediation.id));
+      hook = renderHook(() => useConnectionStatus(remediation.id, mockAxios));
     });
     const { result } = hook;
     console.log(result, 'result here');
@@ -62,13 +50,10 @@ describe('useConnectionStatus', () => {
         ],
       }),
     };
-    interceptors.useAxiosWithPlatformInterceptors.mockImplementation(
-      () => mockAxios,
-    );
 
     let hook;
     await act(async () => {
-      hook = renderHook(() => useConnectionStatus(remediation.id));
+      hook = renderHook(() => useConnectionStatus(remediation.id, mockAxios));
     });
     const { result } = hook;
     expect(result.current[0]).toBe(0);
@@ -80,9 +65,6 @@ describe('useConnectionStatus', () => {
     const mockAxios = {
       get: jest.fn().mockRejectedValue(errorObj),
     };
-    interceptors.useAxiosWithPlatformInterceptors.mockImplementation(
-      () => mockAxios,
-    );
 
     const consoleErrorSpy = jest
       .spyOn(console, 'error')
@@ -90,7 +72,7 @@ describe('useConnectionStatus', () => {
 
     let hook;
     await act(async () => {
-      hook = renderHook(() => useConnectionStatus('bad-id'));
+      hook = renderHook(() => useConnectionStatus('bad-id', mockAxios));
     });
 
     const { result } = hook;
