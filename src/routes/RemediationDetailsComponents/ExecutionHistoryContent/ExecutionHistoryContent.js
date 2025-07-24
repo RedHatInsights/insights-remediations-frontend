@@ -181,6 +181,7 @@ const ExecutionHistoryTab = ({
               refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
               setManualRefreshClicked={setManualRefreshClicked}
               manualRefreshClicked={manualRefreshClicked}
+              isPlaybookRunsLoading={isPlaybookRunsLoading}
             />
           ))}
         </SidebarContent>

@@ -34,6 +34,8 @@ export default defineConfig([
       'rulesdir/forbid-pf-relative-imports': 'off',
       'jsdoc/tag-lines': 0,
       'jsdoc/require-jsdoc': 0,
+      'no-undef': 'error',
+      'no-unused-vars': 'error',
       'jsdoc/check-line-alignment': [
         'error',
         'always',
