@@ -25,7 +25,6 @@ import { formatUtc } from './helpers';
 import { getPlaybookLogs, getRemediationPlaybookSystemsList } from '../../api';
 
 import useRemediationsQuery from '../../../api/useRemediationsQuery';
-import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import { StatusIcon } from '../../helpers';
 import NoExecutions from './NoExections';
 
@@ -43,7 +42,6 @@ const ExecutionHistoryTab = ({
   const [manualRefreshClicked, setManualRefreshClicked] = useState(false);
 
   const { id: remId } = useParams();
-  const axios = useAxiosWithPlatformInterceptors();
 
   //Whenever runs is altered, copy that array to local state -> Execute button wont require a refresh down the line
   useEffect(() => setRunsState(runs), [runs]);
@@ -64,7 +62,7 @@ const ExecutionHistoryTab = ({
   }, []);
 
   const { fetch: fetchSystems } = useRemediationsQuery(
-    getRemediationPlaybookSystemsList(axios),
+    getRemediationPlaybookSystemsList,
     { skip: true },
   );
 
@@ -81,7 +79,7 @@ const ExecutionHistoryTab = ({
     result: logData,
     loading: logsLoading,
     refetch: refetchLogs,
-  } = useRemediationsQuery(getPlaybookLogs(axios), {
+  } = useRemediationsQuery(getPlaybookLogs, {
     params: logParams,
     skip: !logParams,
   });
@@ -183,6 +181,7 @@ const ExecutionHistoryTab = ({
               refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
               setManualRefreshClicked={setManualRefreshClicked}
               manualRefreshClicked={manualRefreshClicked}
+              isPlaybookRunsLoading={isPlaybookRunsLoading}
             />
           ))}
         </SidebarContent>

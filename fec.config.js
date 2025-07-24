@@ -20,6 +20,12 @@ module.exports = {
             }),
             org: 'red-hat-it',
             project: 'remediations-rhel',
+            release: process.env.SENTRY_RELEASE,
+            urlPrefix: '/apps/remediations/js',
+            include: 'dist/js',
+            rewrite: true,
+            inject: false,
+            cleanArtifacts: true,
             moduleMetadata: ({ release }) => ({
               dsn: `https://5d7d7a7fb9032c5316f131dc8323137c@o490301.ingest.us.sentry.io/4508683233787904`,
               org: 'red-hat-it',

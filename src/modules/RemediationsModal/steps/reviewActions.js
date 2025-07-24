@@ -74,12 +74,10 @@ const ReviewActions = (props) => {
       <StackItem>
         <TextContent>
           <Text>
-            You have selected{' '}
-            <b>{`${issues.length} ${pluralize(issues.length, 'item')}`}</b> to
+            You have selected <b>{pluralize(issues.length, 'item')}</b> to
             remediate.{' '}
             <b>
-              {multiples.length} of{' '}
-              {`${issues.length} ${pluralize(issues.length, 'item')}`}
+              {multiples.length} of {pluralize(issues.length, 'item')}
             </b>
             {multiples.length !== 1 ? ' allow' : ' allows'} for you to chose
             from multiple resolution steps.
