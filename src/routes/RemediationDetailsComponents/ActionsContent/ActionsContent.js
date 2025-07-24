@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import columns from './Columns';
 import { Button } from '@patternfly/react-core';
-import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import useRemediationsQuery from '../../../api/useRemediationsQuery';
 import useRemediationFetchExtras from '../../../api/useRemediationFetchExtras';
 import { useParams } from 'react-router-dom';
@@ -11,29 +10,19 @@ import chunk from 'lodash/chunk';
 import ConfirmationDialog from '../../../components/ConfirmationDialog';
 import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
-import { API_BASE } from '../../api';
 import {
-  useTableState,
+  useRawTableState,
   TableStateProvider,
   StaticTableToolsTable,
   useStateCallbacks,
 } from 'bastilian-tabletools';
 import TableEmptyState from '../../OverViewPage/TableEmptyState';
 
-const deleteIssues = (axios) => (params) => {
-  return axios({
-    method: 'delete',
-    url: `${API_BASE}/remediations/${params.id}/issues`,
-    data: {
-      issue_ids: params.issue_ids,
-    },
-  });
-};
+import { deleteIssues } from '../../api';
 
 const ActionsContent = ({ remediationDetails, refetch, loading }) => {
-  const axios = useAxiosWithPlatformInterceptors();
   const { id } = useParams();
-  const tableState = useTableState();
+  const tableState = useRawTableState();
   const currentlySelected = tableState?.selected;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isBulkDelete, setIsBulkDelete] = useState(false);
@@ -41,13 +30,11 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   const [isSystemsModalOpen, setIsSystemsModalOpen] = useState(false);
   const [systemsToShow, setSystemsToShow] = useState([]);
   const [actionToShow, setActionToShow] = useState('');
-  const { fetchBatched: deleteActions } = useRemediationsQuery(
-    deleteIssues(axios),
-    {
-      skip: true,
-      batched: true,
-    },
-  );
+  const { fetchBatched: deleteActions } = useRemediationsQuery(deleteIssues, {
+    skip: true,
+    batched: true,
+  });
+
   const callbacks = useStateCallbacks();
   const { fetchQueue } = useRemediationFetchExtras({ fetch: deleteActions });
 

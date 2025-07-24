@@ -21,15 +21,26 @@ jest.mock('../../store/actions/host-actions', () => {
 });
 
 jest.mock('../../api/index', () => {
-  const api = jest.requireActual('../../api/index');
   const { remediationWizardTestData } = jest.requireActual('./testData');
   return {
     __esModule: true,
-    ...api,
+    remediationsApi: {},
+    getRemediations: jest.fn(() =>
+      Promise.resolve({ data: [], meta: { total: 2 } }),
+    ),
     getResolutionsBatch: () =>
       Promise.resolve(remediationWizardTestData.issueResolutionsResponse),
   };
 });
+
+jest.mock('../../routes/api', () => ({
+  getRemediations: jest.fn(() =>
+    Promise.resolve({ data: [], meta: { total: 0 } }),
+  ),
+  getRemediationsList: jest.fn(() => Promise.resolve({ data: [] })),
+  deleteRemediation: jest.fn(() => Promise.resolve({})),
+  deleteRemediationList: jest.fn(() => Promise.resolve({})),
+}));
 
 jest.mock(
   '@redhat-cloud-services/frontend-components-utilities/interceptors',
