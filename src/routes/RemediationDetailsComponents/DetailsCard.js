@@ -44,11 +44,11 @@ const DetailsCard = ({
   refetchAllRemediations,
 }) => {
   const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState(details?.name);
+  const [value, setValue] = useState(details?.name || '');
   const [rebootToggle, setRebootToggle] = useState(details?.auto_reboot);
 
   useEffect(() => {
-    setValue(details?.name);
+    setValue(details?.name || '');
   }, [details?.name]);
 
   const [isVerifyingName, isDuplicate] = useVerifyName(
@@ -58,7 +58,7 @@ const DetailsCard = ({
 
   const nameStatus = (() => {
     if (isVerifyingName) return 'checking';
-    if (value.trim() === '') return 'empty';
+    if (!value || value.trim() === '') return 'empty';
     if (value === details?.name) return 'unchanged';
     if (isDuplicate) return 'duplicate';
     return 'valid';
@@ -112,7 +112,11 @@ const DetailsCard = ({
                 className="pf-v5-u-ml-sm"
               >
                 <PencilAltIcon
-                  color={editing && 'var(--pf-v5-global--palette--black-300)'}
+                  color={
+                    editing
+                      ? 'var(--pf-v5-global--palette--black-300)'
+                      : undefined
+                  }
                 />
               </Button>
             </DescriptionListTerm>
@@ -324,7 +328,9 @@ DetailsCard.propTypes = {
   onViewActions: PropTypes.func.isRequired,
   remediationStatus: PropTypes.any,
   onNavigateToTab: PropTypes.func,
-  allRemediations: PropTypes.array,
+  allRemediations: PropTypes.shape({
+    data: PropTypes.array,
+  }),
   updateRemPlan: PropTypes.func,
   refetch: PropTypes.func,
   remediationPlaybookRuns: PropTypes.object,
