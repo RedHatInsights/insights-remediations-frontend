@@ -10,7 +10,6 @@ import * as remediationsEndpoints from '@redhat-cloud-services/remediations-clie
 import * as sourcesEndpoints from '@redhat-cloud-services/sources-client';
 
 import { downloadPlaybooksParamCreator } from '@redhat-cloud-services/remediations-client/DownloadPlaybooks';
-import { getRemediationPlaybookParamCreator } from '@redhat-cloud-services/remediations-client/GetRemediationPlaybook';
 
 export const remediationsApi = APIFactory(API_BASE, remediationsEndpoints, {
   axios: axiosInstance,
@@ -27,7 +26,7 @@ export function getHosts() {
 export function downloadPlaybook(selectedIds) {
   return new Promise((resolve) => {
     const tab =
-      selectedIds.length > 1
+      selectedIds?.length > 1
         ? downloadPlaybooksParamCreator({
             selectedRemediations: selectedIds,
             options: { baseURL: API_BASE },
@@ -37,12 +36,12 @@ export function downloadPlaybook(selectedIds) {
             window.location.assign(url);
             return true;
           })
-        : getRemediationPlaybookParamCreator({
-            id: selectedIds[0],
-            options: { baseURL: API_BASE },
-          }).then(({ url }) => {
-            // `url` is a public, presigned link directly to S3…
+        : //TODO: Once JS Client is updated, replace with JS Client downloadPLaybooksParamCreator
+          Promise.resolve().then(() => {
+            const id = selectedIds[0];
+            const url = `${API_BASE}/remediations/${id}/playbook`;
             window.location.assign(url);
+            return true;
           });
 
     const handle = setInterval(async () => {
