@@ -19,8 +19,6 @@ export const sourcesApi = APIFactory(SOURCES_BASE, sourcesEndpoints, {
   axios: axiosInstance,
 });
 
-export const getRemediationStatus = (id) => doGet(url(id, 'status'));
-
 export function getHosts() {
   return doGet('/api/inventory/v1/hosts');
 }

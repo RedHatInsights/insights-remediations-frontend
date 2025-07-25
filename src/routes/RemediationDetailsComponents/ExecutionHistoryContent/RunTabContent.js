@@ -27,6 +27,7 @@ const RunTabContent = ({
   refetchRemediationPlaybookRuns,
   setManualRefreshClicked,
   manualRefreshClicked,
+  isPlaybookRunsLoading,
 }) => {
   const { systems = [], loading } = useRunSystems(
     run,
@@ -40,7 +41,7 @@ const RunTabContent = ({
     await refetchRemediationPlaybookRuns();
     setManualRefreshClicked(false);
   };
-  const isLoading = loading || manualRefreshClicked;
+  const isLoading = isPlaybookRunsLoading || loading || manualRefreshClicked;
 
   return (
     <TabContent
@@ -115,6 +116,7 @@ RunTabContent.propTypes = {
   refetchRemediationPlaybookRuns: PropTypes.func.isRequired,
   setManualRefreshClicked: PropTypes.func.isRequired,
   manualRefreshClicked: PropTypes.bool.isRequired,
+  isPlaybookRunsLoading: PropTypes.bool.isRequired,
 };
 
 export default RunTabContent;
