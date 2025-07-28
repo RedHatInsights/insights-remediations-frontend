@@ -203,7 +203,8 @@ export const OverViewPage = () => {
                   index: 6,
                   direction: 'desc',
                 },
-                manageColumns: true,
+                //TODO: Enable this once we have a way to manage columns with ATT
+                // manageColumns: true,
                 onSelect: () => '',
                 itemIdsInTable: fetchAllIds,
                 itemIdsOnPage: result?.data.map(({ id }) => id),
