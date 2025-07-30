@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import React from 'react';
-import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import * as utils from './utils';
 import * as api from '../api';
@@ -19,20 +18,6 @@ jest.mock('../modules/RemediationsModal/common/SystemsTable', () => ({
     </div>
   ),
 }));
-
-jest.mock('lodash/uniqWith', () =>
-  jest.fn((arr, compareFn) => {
-    if (!arr || !Array.isArray(arr)) return [];
-    return arr.filter(
-      (item, index, self) =>
-        index === self.findIndex((other) => compareFn(item, other)),
-    );
-  }),
-);
-
-jest.mock('lodash/isEqual', () =>
-  jest.fn((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-);
 
 jest.mock(
   '@redhat-cloud-services/frontend-components-utilities/ReducerRegistry/ReducerRegistry',
