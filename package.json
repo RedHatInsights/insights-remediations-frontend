@@ -54,7 +54,7 @@
       "!**/node_modules/**"
     ],
     "transformIgnorePatterns": [
-      "<rootDir>/node_modules/(?!(uuid|@redhat-cloud-services|p-all|p-map|aggregate-error|indent-string|clean-stack|bastilian-tabletools)/)"
+      "<rootDir>/node_modules/(?!(uuid|@redhat-cloud-services|p-all|p-map|aggregate-error|indent-string|clean-stack|bastilian-tabletools|lodash)/)"
     ],
     "moduleNameMapper": {
       "\\.(css|scss|svg)$": "identity-obj-proxy"
