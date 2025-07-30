@@ -29,6 +29,16 @@ spec:
     value: build-tools/Dockerfile
   - name: path-context
     value: .
+  - name: sentry-auth-token
+    valueFrom:
+      secretKeyRef:
+        name: sentry-auth
+        key: token
+  - name: build-args
+    value:
+    - ENABLE_SENTRY=true
+    - SENTRY_AUTH_TOKEN=$(params.sentry-auth-token)
+    - SENTRY_RELEASE=$(params.revision)
   pipelineRef:
     name: docker-build-oci-ta
   taskRunTemplate:
