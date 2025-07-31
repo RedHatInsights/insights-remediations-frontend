@@ -25,15 +25,24 @@ export function getHosts() {
 
 export function downloadPlaybook(selectedIds) {
   return new Promise((resolve) => {
-    const tab = downloadPlaybooksParamCreator({
-      selectedRemediations: selectedIds,
-      options: { baseURL: API_BASE },
-    }).then((res) => {
-      const { search, pathname } = res.urlObj;
-      const url = `${API_BASE}${pathname}${search}`;
-      window.location.assign(url);
-      return true;
-    });
+    const tab =
+      selectedIds?.length > 1
+        ? downloadPlaybooksParamCreator({
+            selectedRemediations: selectedIds,
+            options: { baseURL: API_BASE },
+          }).then((res) => {
+            const { search, pathname } = res.urlObj;
+            const url = `${API_BASE}${pathname}${search}`;
+            window.location.assign(url);
+            return true;
+          })
+        : //TODO: Once JS Client is updated, replace with JS Client downloadPLaybooksParamCreator
+          Promise.resolve().then(() => {
+            const id = selectedIds[0];
+            const url = `${API_BASE}/remediations/${id}/playbook`;
+            window.location.assign(url);
+            return true;
+          });
 
     const handle = setInterval(async () => {
       if (tab) {
