@@ -11,7 +11,7 @@ import ConfirmationDialog from '../../../components/ConfirmationDialog';
 import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
 import {
-  useTableState,
+  useFullTableState,
   TableStateProvider,
   useStateCallbacks,
   useSerialisedTableState,
@@ -23,9 +23,9 @@ import RemediationsTable from '../../../components/RemediationsTable/Remediation
 
 const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   const { id } = useParams();
-  const tableState = useTableState();
+  const fullTableState = useFullTableState();
   const serialisedTableState = useSerialisedTableState();
-  const currentlySelected = tableState?.selected;
+  const currentlySelected = fullTableState?.tableState?.selected;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isBulkDelete, setIsBulkDelete] = useState(false);
   const [action, setAction] = useState();
