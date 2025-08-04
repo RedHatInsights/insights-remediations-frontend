@@ -44,7 +44,7 @@ const DetailsCard = ({
   refetchAllRemediations,
 }) => {
   const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState(details?.name || '');
+  const [value, setValue] = useState(details?.name);
   const [rebootToggle, setRebootToggle] = useState(details?.auto_reboot);
 
   useEffect(() => {

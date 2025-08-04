@@ -73,6 +73,16 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
           </Flex>
         </Tooltip>
       );
+    } else {
+      // Fallback for disconnected with unknown executor type
+      return (
+        <Tooltip content={'Connection Status Unknown'}>
+          <Flex spaceItems={{ default: 'spaceItemsXs' }}>
+            <UnknownIcon className="pf-u-mr-xs" />
+            <p style={{ maxWidth: 'fit-content' }}>Unknown</p>
+          </Flex>
+        </Tooltip>
+      );
     }
   } else {
     return (
