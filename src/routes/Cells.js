@@ -10,7 +10,13 @@ import {
 import { getTimeAgo } from './RemediationDetailsComponents/helpers';
 
 export const formatDate = (dateStr) => {
+  if (!dateStr) {
+    return 'Invalid Date';
+  }
   const date = new Date(dateStr);
+  if (isNaN(date.getTime())) {
+    return 'Invalid Date';
+  }
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
   return date.toLocaleDateString('en-US', options);
 };
@@ -21,7 +27,7 @@ export const Name = ({ name, id }) => {
 export const LastExecutedCell = ({ playbook_runs }) => {
   return (
     <Text>
-      {playbook_runs.length > 0
+      {playbook_runs && playbook_runs.length > 0
         ? formatDate(playbook_runs[0]?.created_at)
         : 'Never'}{' '}
     </Text>

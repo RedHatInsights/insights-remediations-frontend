@@ -1,6 +1,5 @@
 import fecPlugin from '@redhat-cloud-services/eslint-config-redhat-cloud-services';
 import tsParser from '@typescript-eslint/parser';
-import pluginCypress from 'eslint-plugin-cypress/flat';
 import jestDom from 'eslint-plugin-jest-dom';
 import jsdoc from 'eslint-plugin-jsdoc';
 import reactHooks from 'eslint-plugin-react-hooks';
@@ -11,7 +10,6 @@ import tseslint from 'typescript-eslint';
 export default defineConfig([
   globalIgnores(['node_modules/*', 'static/*', 'dist/*', 'docs/*']),
   fecPlugin,
-  pluginCypress.configs.recommended,
   reactHooks.configs['recommended-latest'],
   jsdoc.configs['flat/recommended'],
   testingLibrary.configs['flat/react'],

@@ -38,9 +38,6 @@ updates:
       jest:
         patterns:
           - "jest*"
-      cypress:
-        patterns:
-          - "*cypress*"
       react:
         patterns:
           - "react"
