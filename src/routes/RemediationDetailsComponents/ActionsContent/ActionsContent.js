@@ -11,21 +11,19 @@ import ConfirmationDialog from '../../../components/ConfirmationDialog';
 import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
 import {
-  useFullTableState,
+  useRawTableState,
   TableStateProvider,
+  StaticTableToolsTable,
   useStateCallbacks,
-  useSerialisedTableState,
 } from 'bastilian-tabletools';
 import TableEmptyState from '../../OverViewPage/TableEmptyState';
 
 import { deleteIssues } from '../../api';
-import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
 
 const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   const { id } = useParams();
-  const fullTableState = useFullTableState();
-  const serialisedTableState = useSerialisedTableState();
-  const currentlySelected = fullTableState?.tableState?.selected;
+  const tableState = useRawTableState();
+  const currentlySelected = tableState?.selected;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isBulkDelete, setIsBulkDelete] = useState(false);
   const [action, setAction] = useState();
@@ -76,29 +74,8 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
     return await fetchQueue(queue);
   };
 
-  //Back end is currently working on filtering - This filter acts as a placeholder
-  const allIssues = useMemo(
-    () => remediationDetails?.issues ?? [],
-    [remediationDetails?.issues],
-  );
-
-  const filteredIssues = useMemo(() => {
-    const filterState = serialisedTableState?.filters;
-    if (!filterState || Object.keys(filterState).length === 0) {
-      return allIssues;
-    }
-
-    const searchTerm = filterState?.filter?.description;
-    if (!searchTerm) {
-      return allIssues;
-    }
-
-    const lowerSearchTerm = searchTerm.toLowerCase();
-    return allIssues.filter((item) =>
-      item.description?.toLowerCase().includes(lowerSearchTerm),
-    );
-  }, [allIssues, serialisedTableState]);
-
+  //Back end is currently working on filtering - This filter acts as a placegholder
+  const allIssues = remediationDetails?.issues ?? [];
   const columnsWithSystemsButton = useMemo(() => {
     return columns.map((col) => {
       if (col.exportKey === 'system_count') {
@@ -164,7 +141,7 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
                 dismissable: true,
                 autoDismiss: true,
               });
-              await refetch();
+              refetch();
               callbacks?.current?.resetSelection();
             } catch (err) {
               console.error(err);
@@ -181,22 +158,20 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
           }}
         />
       )}
-      <RemediationsTable
+      <StaticTableToolsTable
         aria-label="ActionsTable"
         ouiaId="ActionsTable"
         variant="compact"
         loading={loading}
-        items={filteredIssues}
-        total={filteredIssues?.length}
+        items={!loading ? allIssues : undefined}
         columns={[...columnsWithSystemsButton]}
         filters={{
           filterConfig: [...actionNameFilter],
         }}
         options={{
           onSelect: () => '',
-          itemIdsInTable: () => filteredIssues.map(({ id }) => id),
-          itemIdsOnPage: () => filteredIssues.map(({ id }) => id),
-          total: filteredIssues?.length,
+          itemIdsInTable: () => allIssues.map(({ id }) => id),
+          itemIdsOnPage: () => allIssues.map(({ id }) => id),
           actionResolver: () => {
             return [
               {
