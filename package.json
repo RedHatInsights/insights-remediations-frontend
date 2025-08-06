@@ -76,7 +76,6 @@
     "@babel/runtime": "^7.27.1",
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
-    "@cypress/code-coverage": "^3.13.10",
     "@cypress/webpack-dev-server": "^4.0.0",
     "@patternfly/patternfly": "^5.4.2",
     "@redhat-cloud-services/eslint-config-redhat-cloud-services": "^3.0.0",
