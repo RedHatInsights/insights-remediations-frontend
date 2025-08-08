@@ -4,8 +4,8 @@
   "private": false,
   "repository": "https://github.com/RedHatInsights/insights-remediations-frontend",
   "engines": {
-   "node": ">=20.11",
-   "npm": ">=9"
+    "node": ">=20.11",
+    "npm": ">=9"
   },
   "dependencies": {
     "@data-driven-forms/pf4-component-mapper": "^3.21.0",
@@ -20,15 +20,14 @@
     "@redhat-cloud-services/frontend-components": "^5.2.0",
     "@redhat-cloud-services/frontend-components-notifications": "^4.1.0",
     "@redhat-cloud-services/frontend-components-utilities": "^5.0.13",
-    "@scalprum/react-core": "^0.1.1",
-    "@redhat-cloud-services/host-inventory-client": "^4.1.0",
+    "@redhat-cloud-services/host-inventory-client": "^4.0.1",
     "@redhat-cloud-services/javascript-clients-shared": "^2.0.0",
     "@redhat-cloud-services/remediations-client": "^3.1.0",
     "@redhat-cloud-services/sources-client": "^3.0.1",
     "@sentry/webpack-plugin": "^3.1.0",
     "@unleash/proxy-client-react": "^4.5.2",
     "axios": "^1.7.7",
-    "bastilian-tabletools": "^1.12.0",
+    "bastilian-tabletools": "^2.1.0",
     "classnames": "^2.3.1",
     "p-all": "^5.0.0",
     "react": "^18.0.0",
@@ -128,6 +127,14 @@
     "start": "fec dev",
     "start:proxy": "PROXY=true fec dev",
     "verify": "npm-run-all build lint test:jest"
+  },
+  "overrides": {
+    "@patternfly/patternfly": "^5.4.2",
+    "@patternfly/react-component-groups": "^5.2.0",
+    "@patternfly/react-core": "^5.1.2",
+    "@patternfly/react-table": "^5.0.0",
+    "@redhat-cloud-services/frontend-components": "^5.2.0",
+    "@redhat-cloud-services/frontend-components-utilities": "^5.0.13"
   },
   "insights": {
     "appname": "remediations"

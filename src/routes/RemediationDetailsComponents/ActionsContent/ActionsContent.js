@@ -34,7 +34,6 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
     skip: true,
     batched: true,
   });
-
   const callbacks = useStateCallbacks();
   const { fetchQueue } = useRemediationFetchExtras({ fetch: deleteActions });
 
@@ -164,7 +163,7 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
         ouiaId="ActionsTable"
         variant="compact"
         loading={loading}
-        items={allIssues}
+        items={!loading ? allIssues : undefined}
         columns={[...columnsWithSystemsButton]}
         filters={{
           filterConfig: [...actionNameFilter],
