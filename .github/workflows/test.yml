@@ -28,6 +28,6 @@ jobs:
         uses: codecov/codecov-action@v5.3.1
         with:
           fail_ci_if_error: true
-          files: ./coverage/coverage-final.json,./coverage-jest/coverage-final.json,./coverage-cypress/coverage-final.json
+          files: ./coverage/coverage-final.json,./coverage-jest/coverage-final.json
           token: ${{ secrets.CODECOV_TOKEN }}
       - run: npm run build

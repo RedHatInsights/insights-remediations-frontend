@@ -95,6 +95,7 @@ const RunTabContent = ({
                 variant="link"
                 style={{ padding: 0 }}
                 onClick={() => openLogModal(run, system)}
+                data-testid="view-log-button"
               >
                 View log
               </Button>

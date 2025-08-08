@@ -36,36 +36,48 @@ const App = () => {
     if (chrome) {
       chrome?.hideGlobalFilter?.();
 
-      getIsReceptorConfigured().then((isConfigured) =>
-        setIsReceptorConfigured(isConfigured.data.length > 0),
-      );
-
-      chrome
-        .getUserPermissions('remediations')
-        .then((remediationsPermissions) => {
-          const permissionList = remediationsPermissions.map(
-            (permissions) => permissions.permission,
-          );
-          if (
-            permissionList.includes(
-              'remediations:*:*' || 'remediations:remediation:*',
-            )
-          ) {
-            handlePermissionUpdate(true, true, true);
-          } else {
-            handlePermissionUpdate(
-              permissionList.includes(
-                'remediations:remediation:read' || 'remediations:*:read',
-              ),
-              permissionList.includes(
-                'remediations:remediation:write' || 'remediations:*:write',
-              ),
-              permissionList.includes(
-                'remediations:remediation:execute' || 'remediations:*:execute',
-              ),
-            );
-          }
+      getIsReceptorConfigured()
+        .then((isConfigured) =>
+          setIsReceptorConfigured(isConfigured.data.length > 0),
+        )
+        .catch((error) => {
+          console.error('Error loading receptor configuration:', error);
         });
+
+      if (chrome && typeof chrome.getUserPermissions === 'function') {
+        chrome
+          .getUserPermissions('remediations')
+          .then((remediationsPermissions) => {
+            const permissionList = remediationsPermissions.map(
+              (permissions) => permissions.permission,
+            );
+            if (
+              permissionList.includes(
+                'remediations:*:*' || 'remediations:remediation:*',
+              )
+            ) {
+              handlePermissionUpdate(true, true, true);
+            } else {
+              handlePermissionUpdate(
+                permissionList.includes(
+                  'remediations:remediation:read' || 'remediations:*:read',
+                ),
+                permissionList.includes(
+                  'remediations:remediation:write' || 'remediations:*:write',
+                ),
+                permissionList.includes(
+                  'remediations:remediation:execute' ||
+                    'remediations:*:execute',
+                ),
+              );
+            }
+          })
+          .catch((error) => {
+            console.error('Error loading user permissions:', error);
+          });
+      } else {
+        console.error('Chrome getUserPermissions method not available');
+      }
     }
   }, []);
 

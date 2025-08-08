@@ -6,8 +6,23 @@ const useRunSystems = (run, shouldFetch, remId, fetchSystems) => {
 
   const fetchedOnce = useRef(false);
   const prevStatusRef = useRef(run?.status);
+  const prevRemIdRef = useRef(remId);
+  const prevFetchSystemsRef = useRef(fetchSystems);
+  const prevRunIdRef = useRef(run?.id);
 
   useEffect(() => {
+    // Reset fetchedOnce if remId, fetchSystems, or run.id changed
+    if (
+      prevRemIdRef.current !== remId ||
+      prevFetchSystemsRef.current !== fetchSystems ||
+      prevRunIdRef.current !== run?.id
+    ) {
+      fetchedOnce.current = false;
+      prevRemIdRef.current = remId;
+      prevFetchSystemsRef.current = fetchSystems;
+      prevRunIdRef.current = run?.id;
+    }
+
     if (!shouldFetch || !run || fetchedOnce.current) return;
 
     fetchedOnce.current = true;
@@ -21,6 +36,9 @@ const useRunSystems = (run, shouldFetch, remId, fetchSystems) => {
             .filter((s) => s.playbook_run_executor_id === run.id)
             .map((s) => ({ ...s, executor_name: exec?.executor_name })),
         );
+      })
+      .catch((error) => {
+        console.error('Failed to fetch systems:', error);
       })
       .finally(() => setLoading(false));
   }, [shouldFetch, run, remId, fetchSystems]);
@@ -44,6 +62,9 @@ const useRunSystems = (run, shouldFetch, remId, fetchSystems) => {
             .filter((s) => s.playbook_run_executor_id === run.id)
             .map((s) => ({ ...s, executor_name: exec?.executor_name })),
         );
+      })
+      .catch((error) => {
+        console.error('Failed to fetch systems:', error);
       })
       .finally(() => setLoading(false));
   }, [run?.status, shouldFetch, run, remId, fetchSystems]);
