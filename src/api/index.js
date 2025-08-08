@@ -8,8 +8,7 @@ import { APIFactory } from '@redhat-cloud-services/javascript-clients-shared';
 import axiosInstance from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import * as remediationsEndpoints from '@redhat-cloud-services/remediations-client';
 import * as sourcesEndpoints from '@redhat-cloud-services/sources-client';
-
-import { downloadPlaybooksParamCreator } from '@redhat-cloud-services/remediations-client/DownloadPlaybooks';
+import { downloadFile } from '../Utilities/helpers.js';
 
 export const remediationsApi = APIFactory(API_BASE, remediationsEndpoints, {
   axios: axiosInstance,
@@ -23,26 +22,29 @@ export function getHosts() {
   return doGet('/api/inventory/v1/hosts');
 }
 
-export function downloadPlaybook(selectedIds) {
-  return new Promise((resolve) => {
-    const tab = downloadPlaybooksParamCreator({
-      selectedRemediations: selectedIds,
-      options: { baseURL: API_BASE },
-    }).then((res) => {
-      const { search, pathname } = res.urlObj;
-      const url = `${API_BASE}${pathname}${search}`;
-      window.location.assign(url);
-      return true;
-    });
-
-    const handle = setInterval(async () => {
-      if (tab) {
-        clearInterval(handle);
-        resolve();
-      }
-    }, 500);
-  });
-}
+export const downloadPlaybook = async (selectedIds) => {
+  try {
+    const filename = `remediation-playbooks`;
+    if (selectedIds.length > 1) {
+      const res = await remediationsApi.downloadPlaybooks(selectedIds, {
+        responseType: 'blob',
+      });
+      downloadFile(res, filename, 'zip');
+    } else {
+      const res = await remediationsApi.getRemediationPlaybook(
+        selectedIds[0],
+        undefined,
+        undefined,
+        undefined,
+      );
+      const filename = `remediation-${selectedIds[0]}-playbook`;
+      downloadFile(res, filename, 'yml');
+    }
+  } catch (error) {
+    console.error('Error downloading playbook:', error);
+    throw error;
+  }
+};
 
 export function getIsReceptorConfigured() {
   return doGet(
