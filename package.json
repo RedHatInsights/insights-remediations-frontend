@@ -54,7 +54,7 @@
       "!**/node_modules/**"
     ],
     "transformIgnorePatterns": [
-      "<rootDir>/node_modules/(?!(uuid|@redhat-cloud-services|p-all|p-map|aggregate-error|indent-string|clean-stack|bastilian-tabletools)/)"
+      "<rootDir>/node_modules/(?!(uuid|@redhat-cloud-services|p-all|p-map|aggregate-error|indent-string|clean-stack|bastilian-tabletools|lodash)/)"
     ],
     "moduleNameMapper": {
       "\\.(css|scss|svg)$": "identity-obj-proxy"
@@ -75,8 +75,6 @@
     "@babel/runtime": "^7.27.1",
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
-    "@cypress/code-coverage": "^3.13.10",
-    "@cypress/webpack-dev-server": "^4.0.0",
     "@patternfly/patternfly": "^5.4.2",
     "@redhat-cloud-services/eslint-config-redhat-cloud-services": "^3.0.0",
     "@redhat-cloud-services/frontend-components-config": "^6.3.1",
@@ -87,9 +85,7 @@
     "@testing-library/user-event": "^14.5.2",
     "babel-loader": "^9.2.1",
     "babel-plugin-istanbul": "^6.1.1",
-    "cypress": "^14.4.0",
-    "eslint": "^9.32.0",
-    "eslint-plugin-cypress": "^5.1.0",
+    "eslint": "^9.31.0",
     "eslint-plugin-jest-dom": "^5.5.0",
     "eslint-plugin-jsdoc": "^52.0.2",
     "eslint-plugin-react-hooks": "^5.2.0",
@@ -118,10 +114,8 @@
     "postinstall": "ts-patch install",
     "test": "TZ=UTC jest --verbose --no-cache",
     "test:coverage": "curl -sSL 'https://raw.githubusercontent.com/RedHatInsights/insights-interact-tools/refs/heads/main/scripts/coverage.sh' | bash",
-    "test:ct": "BABEL_ENV=componentTest cypress run --component",
     "test:jest": "jest --passWithNoTests --env=jsdom",
     "static": "fec static",
-    "test:openct": "BABEL_ENV=componentTest cypress open --component",
     "ci:verify": "npm run test:coverage",
     "server:ctr": "node src/server/generateServerKey.js",
     "start": "fec dev",
@@ -140,7 +134,6 @@
     "appname": "remediations"
   },
   "nyc": {
-    "report-dir": "coverage-cypress",
     "include": [
       "src/**/*.{js,jsx}"
     ],
