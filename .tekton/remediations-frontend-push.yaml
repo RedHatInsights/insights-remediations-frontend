@@ -9,8 +9,7 @@ metadata:
     pipelinesascode.tekton.dev/max-keep-runs: "3"
     pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
       == "master"
-    pipelinesascode.tekton.dev/pipeline: https://github.com/RedHatInsights/konflux-pipelines/raw/aa27921/pipelines/docker-build-oci-ta.yaml
-  creationTimestamp: null
+    pipelinesascode.tekton.dev/pipeline: https://github.com/RedHatInsights/konflux-pipelines/raw/v1.31.0/pipelines/docker-build-oci-ta.yaml
   labels:
     appstudio.openshift.io/application: insights-remediations
     appstudio.openshift.io/component: remediations-frontend
@@ -29,13 +28,6 @@ spec:
     value: build-tools/Dockerfile
   - name: path-context
     value: .
-  - name: sentry-auth-token
-    value: sentry-auth
-  - name: build-args
-    value:
-    - ENABLE_SENTRY=true
-    - SENTRY_AUTH_TOKEN=$(params.sentry-auth-token)
-    - SENTRY_RELEASE=$(params.revision)
   pipelineRef:
     name: docker-build-oci-ta
   taskRunTemplate:
