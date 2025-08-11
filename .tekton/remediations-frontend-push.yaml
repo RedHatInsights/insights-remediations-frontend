@@ -30,10 +30,7 @@ spec:
   - name: path-context
     value: .
   - name: sentry-auth-token
-    valueFrom:
-      secretKeyRef:
-        name: sentry-auth
-        key: token
+    value: sentry-auth
   - name: build-args
     value:
     - ENABLE_SENTRY=true
