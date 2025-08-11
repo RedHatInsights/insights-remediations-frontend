@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from '@patternfly/react-core';
+import { Content } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 
@@ -56,23 +56,25 @@ export const ActionsCell = ({ id, description = '', resolution }) => {
   const { app } = getAppInfo(id);
 
   return (
-    <Text>
+    <Content component="p">
       <InsightsLink app={app} to={buildToPath(id, description)}>
         {description}
       </InsightsLink>
       {resolution?.description && <p>{resolution.description}</p>}
-    </Text>
+    </Content>
   );
 };
 export const RebootRequiredCell = ({ resolution }) => (
-  <Text>{resolution?.needs_reboot ? 'Yes' : 'No'}</Text>
+  <Content component="p">{resolution?.needs_reboot ? 'Yes' : 'No'}</Content>
 );
 
 export const SystemsCell = ({ systems }) => (
-  <Text>{`${systems?.length} system${systems?.length > 1 ? 's' : ''}`}</Text>
+  <Content component="p">{`${systems?.length} system${systems?.length > 1 ? 's' : ''}`}</Content>
 );
 
-export const IssueTypeCell = ({ id }) => <Text>{getAppInfo(id)?.label}</Text>;
+export const IssueTypeCell = ({ id }) => (
+  <Content component="p">{getAppInfo(id)?.label}</Content>
+);
 
 ActionsCell.propTypes = {
   description: PropTypes.string.isRequired,

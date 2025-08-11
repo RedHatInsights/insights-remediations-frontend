@@ -1,4 +1,4 @@
-.pf-c-content {
+.pf-v6-c-content {
     p.ins-c-remediations-action-description { 
         margin: 0;
     }   
@@ -12,16 +12,16 @@
 .ins-c-resolution-option {
     width: 50%;
     padding: var(--pf-global--spacer--sm);
-    .pf-c-tile {
+    .pf-v6-c-tile {
         width: 100%;
         height: 100%;
         text-align: left;
-        .pf-c-tile__header {
+        .pf-v6-c-tile__header {
             justify-content: left;
         }
-        .pf-c-tile__body {
+        .pf-v6-c-tile__body {
             display: flex;
-            .pf-c-content {
+            .pf-v6-c-content {
                 margin-top: auto;
             }
         }

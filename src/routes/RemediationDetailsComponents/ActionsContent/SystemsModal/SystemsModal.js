@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Modal, ModalVariant } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import PropTypes from 'prop-types';
 import columns from './Columns';
 import { actionsSystemFilter } from '../../Filters';

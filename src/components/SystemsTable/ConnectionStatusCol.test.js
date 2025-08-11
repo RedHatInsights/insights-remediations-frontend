@@ -45,7 +45,7 @@ describe('ConnectionStatusColumn', () => {
     );
 
     expect(screen.getByTestId('connected-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('connected-icon')).toHaveClass('pf-u-mr-xs');
+    expect(screen.getByTestId('connected-icon')).toHaveClass('pf-v6-u-mr-xs');
     expect(screen.getByText('Connected')).toBeInTheDocument();
   });
 
@@ -298,7 +298,7 @@ describe('ConnectionStatusColumn', () => {
       />,
     );
 
-    expect(screen.getByTestId('connected-icon')).toHaveClass('pf-u-mr-xs');
+    expect(screen.getByTestId('connected-icon')).toHaveClass('pf-v6-u-mr-xs');
 
     rerender(
       <ConnectionStatusColumn
@@ -306,7 +306,9 @@ describe('ConnectionStatusColumn', () => {
         executor_type="rhc"
       />,
     );
-    expect(screen.getByTestId('disconnected-icon')).toHaveClass('pf-u-mr-xs');
+    expect(screen.getByTestId('disconnected-icon')).toHaveClass(
+      'pf-v6-u-mr-xs',
+    );
 
     rerender(
       <ConnectionStatusColumn
@@ -314,7 +316,7 @@ describe('ConnectionStatusColumn', () => {
         executor_type="rhc"
       />,
     );
-    expect(screen.getByTestId('unknown-icon')).toHaveClass('pf-u-mr-xs');
+    expect(screen.getByTestId('unknown-icon')).toHaveClass('pf-v6-u-mr-xs');
   });
 
   it('should handle case variations in executor types', () => {

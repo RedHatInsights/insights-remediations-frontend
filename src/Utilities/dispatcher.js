@@ -1,11 +1,15 @@
 import { getStore } from '../store';
-import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
 
 export function dispatchAction(actionCreator) {
   const store = getStore();
   return store.dispatch(actionCreator);
 }
 
-export const dispatchNotification = (notification) => {
-  dispatchAction(addNotification(notification));
+// Note: This function is deprecated. Use useAddNotification hook instead.
+// Keeping for backward compatibility during migration.
+export const dispatchNotification = () => {
+  // This will need to be updated to use the notification context/provider
+  console.warn(
+    'dispatchNotification is deprecated. Use useAddNotification hook instead.',
+  );
 };

@@ -9,13 +9,7 @@ import {
   TableBody,
 } from '@patternfly/react-table/deprecated';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
-import {
-  Text,
-  TextContent,
-  Stack,
-  StackItem,
-  Switch,
-} from '@patternfly/react-core';
+import { Content, Stack, StackItem, Switch } from '@patternfly/react-core';
 import {
   buildRows,
   getResolution,
@@ -94,26 +88,26 @@ const Review = (props) => {
       data-testid="wizard-review"
     >
       <StackItem>
-        <TextContent>
-          <Text>
+        <Content>
+          <Content component="p">
             Issues listed below will be added to the playbook{' '}
             <b>{formOptions.getState().values[SELECT_PLAYBOOK]}</b>.
-          </Text>
-        </TextContent>
+          </Content>
+        </Content>
       </StackItem>
       {records.some((r) => r.needsReboot) && (
         <StackItem>
-          <TextContent>
-            <Text className="ins-c-playbook-reboot-required">
+          <Content>
+            <Content component="p" className="ins-c-playbook-reboot-required">
               <ExclamationTriangleIcon /> A system reboot is required to
               remediate selected issues
-            </Text>
-          </TextContent>
+            </Content>
+          </Content>
         </StackItem>
       )}
       <StackItem>
-        <TextContent>
-          <Text>
+        <Content>
+          <Content component="p">
             The playbook <b>{formOptions.getState().values[SELECT_PLAYBOOK]}</b>
             {input.value ? (
               ' auto reboots systems.'
@@ -123,14 +117,13 @@ const Review = (props) => {
                 does not auto reboot systems.
               </span>
             )}
-          </Text>
-        </TextContent>
+          </Content>
+        </Content>
       </StackItem>
       <StackItem>
         <Switch
           data-testid="autoreboot-switch"
           label="Auto reboot is on"
-          labelOff="Auto reboot is off"
           isChecked={input.value}
           onChange={() => input.onChange(!input.value)}
           ouiaId="autoreboot-switch"
@@ -141,6 +134,10 @@ const Review = (props) => {
         className="ins-c-remediation-summary-table"
         variant={TableVariant.compact}
         cells={[
+          {
+            title: '',
+            screenReaderText: 'Expand toggle',
+          },
           {
             title: 'Action',
             transforms: [sortable],

@@ -1,12 +1,12 @@
 .ins-c-playbook-reboot-required {
-    color: var(--pf-global--warning-color--200);
-    font-weight: var(--pf-global--FontWeight--semi-bold);
+    color: var(--pf-t--global--text--color--status--warning--default);
+    font-weight: var(--pf-t--global--font--weight--bold);
     svg {
-        margin-right: var(--pf-global--spacer--sm);
-        color: var(--pf-global--warning-color--100);
+        margin-right: var(--pf-t--global--spacer--sm);
+        color: var(--pf-t--global--icon--color--status--warning--default);
     }
 }
 
 .ins-c-remediation-danger-text {
-    color: var(--pf-global--danger-color--100);
+    color: var(--pf-t--global--text--color--status--danger--default);
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Modal, ModalVariant } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 
 const RemoveSystemModal = ({
   isOpen,
@@ -15,12 +16,13 @@ const RemoveSystemModal = ({
     isOpen={isOpen}
     onClose={onClose}
     titleIconVariant={'warning'}
+    data-testid="modal"
     actions={[
       <Button
         key="remove-confirm"
         variant="primary"
         onClick={onConfirm}
-        ouiaId="confirm-delete"
+        data-testid="confirm-delete"
       >
         Remove
       </Button>,
@@ -29,7 +31,7 @@ const RemoveSystemModal = ({
       </Button>,
     ]}
   >
-    <span>
+    <span data-testid="modal-content">
       {`Are you sure you want to remove the ${
         selected?.length
       } selected system${

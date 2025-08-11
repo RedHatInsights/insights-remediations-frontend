@@ -3,10 +3,8 @@ import {
   Button,
   EmptyState,
   EmptyStateVariant,
-  EmptyStateIcon,
   EmptyStateBody,
   EmptyStateActions,
-  EmptyStateHeader,
   EmptyStateFooter,
 } from '@patternfly/react-core';
 import ProgressBar from '../common/ProgressBar';
@@ -41,42 +39,28 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
 
   return (
     <EmptyState
+      headingLevel="h1"
+      icon={
+        failed
+          ? ExclamationCircleIcon
+          : percent === 100
+            ? CheckCircleIcon
+            : InProgressIcon
+      }
+      titleText={
+        <>
+          {failed
+            ? 'Error: Unable to add items to playbook'
+            : percent === 100
+              ? 'Items added to playbook'
+              : 'Adding items to the playbook'}
+        </>
+      }
       variant={EmptyStateVariant.lg}
       data-testid="wizard-progress"
       data-component-ouia-id="wizard-progress"
     >
-      <EmptyStateHeader
-        titleText={
-          <>
-            {failed
-              ? 'Error: Unable to add items to playbook'
-              : percent === 100
-                ? 'Items added to playbook'
-                : 'Adding items to the playbook'}
-          </>
-        }
-        icon={
-          <EmptyStateIcon
-            className="pf-u-mb-lg pf-u-mt-sm"
-            color={
-              failed
-                ? 'var(--pf-global--danger-color--100)'
-                : percent === 100
-                  ? 'var(--pf-global--success-color--100)'
-                  : undefined
-            }
-            icon={
-              failed
-                ? ExclamationCircleIcon
-                : percent === 100
-                  ? CheckCircleIcon
-                  : InProgressIcon
-            }
-          />
-        }
-        headingLevel="h1"
-      />
-      <EmptyStateBody className="pf-c-progress-bar pf-u-mt-md">
+      <EmptyStateBody className="pf-c-progress-bar pf-v6-u-mt-md">
         <ProgressBar percent={percent} failed={failed} />
       </EmptyStateBody>
       <EmptyStateFooter>
@@ -97,10 +81,10 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
           </EmptyStateBody>
         )}
         {percent === 100 && (
-          <EmptyStateBody className="pf-c-progress-message-description pf-u-mb-md">
+          <EmptyStateBody className="pf-c-progress-message-description pf-v6-u-mb-md">
             You can remediate these systems directly from Insights by enabling
             <Button
-              className="pf-u-py-0 pf-u-px-xs"
+              className="pf-v6-u-py-0 pf-v6-u-px-xs"
               variant="link"
               ouiaId="CloudConnectorButton"
               icon={<ExternalLinkAltIcon />}
@@ -119,7 +103,7 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
         )}
         {failed && (
           <Button
-            className="pf-u-mt-md pf-u-mb-sm"
+            className="pf-v6-u-mt-md pf-v6-u-mb-sm"
             variant="primary"
             ouiaId="TryAgainButton"
             data-testid={'TryAgainButton'}
@@ -133,7 +117,7 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
         )}
         {percent === 100 && (
           <Button
-            className="pf-u-mt-md pf-u-mb-sm"
+            className="pf-v6-u-mt-md pf-v6-u-mb-sm"
             variant="primary"
             ouiaId="ReturnToAppButton"
             onClick={() => {

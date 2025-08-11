@@ -21,7 +21,7 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
   if (status === 'connected') {
     return (
       <span>
-        <ConnectedIcon className="pf-u-mr-xs" /> Connected
+        <ConnectedIcon className="pf-v6-u-mr-xs" /> Connected
       </span>
     );
     //When execType === 'none' connection_status is no_rhc
@@ -39,7 +39,7 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
         }
       >
         <Flex spaceItems={{ default: 'spaceItemsXs' }}>
-          <DisconnectedIcon className="pf-u-mr-xs" />
+          <DisconnectedIcon className="pf-v6-u-mr-xs" />
           <p style={{ maxWidth: 'fit-content' }}>Not configured</p>
         </Flex>
       </Tooltip>
@@ -54,7 +54,7 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
           }
         >
           <Flex spaceItems={{ default: 'spaceItemsXs' }}>
-            <DisconnectedIcon className="pf-u-mr-xs" />
+            <DisconnectedIcon className="pf-v6-u-mr-xs" />
             <p style={{ maxWidth: 'fit-content' }}>Disconnected</p>
           </Flex>
         </Tooltip>
@@ -68,7 +68,7 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
           }
         >
           <Flex spaceItems={{ default: 'spaceItemsXs' }}>
-            <DisconnectedIcon className="pf-u-mr-xs" />
+            <DisconnectedIcon className="pf-v6-u-mr-xs" />
             <p style={{ maxWidth: 'fit-content' }}>Disconnected</p>
           </Flex>
         </Tooltip>
@@ -78,7 +78,7 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
       return (
         <Tooltip content={'Connection Status Unknown'}>
           <Flex spaceItems={{ default: 'spaceItemsXs' }}>
-            <UnknownIcon className="pf-u-mr-xs" />
+            <UnknownIcon className="pf-v6-u-mr-xs" />
             <p style={{ maxWidth: 'fit-content' }}>Unknown</p>
           </Flex>
         </Tooltip>
@@ -88,7 +88,7 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
     return (
       <Tooltip content={'Connection Status Unknown'}>
         <Flex spaceItems={{ default: 'spaceItemsXs' }}>
-          <UnknownIcon className="pf-u-mr-xs" />
+          <UnknownIcon className="pf-v6-u-mr-xs" />
           <p style={{ maxWidth: 'fit-content' }}>Unknown</p>
         </Flex>
       </Tooltip>

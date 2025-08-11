@@ -1,16 +1,13 @@
 import { download } from './DownloadPlaybookButton';
-import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
 
 jest.mock('../api', () => ({
   downloadPlaybook: jest.fn(() => Promise.resolve()),
 }));
 
-jest.mock(
-  '@redhat-cloud-services/frontend-components-notifications/redux',
-  () => ({
-    addNotification: jest.fn((args) => args),
-  }),
-);
+jest.mock('@redhat-cloud-services/frontend-components-notifications', () => ({
+  addNotification: jest.fn((args) => args),
+}));
 
 describe('download notification logic', () => {
   let dispatch;

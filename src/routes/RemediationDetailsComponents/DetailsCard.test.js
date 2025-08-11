@@ -417,7 +417,7 @@ describe('DetailsCard', () => {
     it('displays switch with correct initial state', () => {
       renderComponent();
 
-      const toggle = screen.getByRole('checkbox');
+      const toggle = screen.getByRole('switch');
       expect(toggle).toBeInTheDocument();
       expect(toggle).toBeChecked(); // auto_reboot is true in mockDetails
     });
@@ -426,14 +426,14 @@ describe('DetailsCard', () => {
       const detailsWithNoReboot = { ...mockDetails, auto_reboot: false };
       renderComponent({ details: detailsWithNoReboot });
 
-      const toggle = screen.getByRole('checkbox');
+      const toggle = screen.getByRole('switch');
       expect(toggle).not.toBeChecked();
     });
 
     it('calls updateRemPlan when toggle is changed', () => {
       renderComponent();
 
-      const toggle = screen.getByRole('checkbox');
+      const toggle = screen.getByRole('switch');
       fireEvent.click(toggle);
 
       expect(mockUpdateRemPlan).toHaveBeenCalledWith({
@@ -445,7 +445,7 @@ describe('DetailsCard', () => {
     it('updates local state when toggle is changed', () => {
       renderComponent();
 
-      const toggle = screen.getByRole('checkbox');
+      const toggle = screen.getByRole('switch');
       expect(toggle).toBeChecked();
 
       fireEvent.click(toggle);

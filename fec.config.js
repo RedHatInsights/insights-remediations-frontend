@@ -43,7 +43,7 @@ module.exports = {
           singleton: true,
           import: false,
           version: '^6.8.1',
-          requiredVersion: '^6.8.1',
+          requiredVersion: '*',
         },
       },
     ],

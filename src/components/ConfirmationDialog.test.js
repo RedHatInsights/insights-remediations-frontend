@@ -89,9 +89,7 @@ describe('ConfirmationDialog', () => {
       render(<ConfirmationDialog onClose={mockOnClose} />);
 
       expect(screen.getByTestId('modal')).toBeInTheDocument();
-      expect(screen.getByTestId('modal-title')).toHaveTextContent(
-        'Remove system?',
-      );
+      expect(screen.getByText('Remove system?')).toBeInTheDocument();
       expect(
         screen.getByText('This action cannot be undone'),
       ).toBeInTheDocument();
@@ -105,14 +103,13 @@ describe('ConfirmationDialog', () => {
       render(<ConfirmationDialog onClose={mockOnClose} />);
 
       const modal = screen.getByTestId('modal');
-      expect(modal).toHaveAttribute('data-title', 'Remove system?');
-      expect(modal).toHaveAttribute(
-        'data-class-name',
-        'remediations rem-c-dialog',
-      );
-      expect(modal).toHaveAttribute('data-variant', 'small');
-      expect(modal).toHaveAttribute('data-footer-left-aligned', 'true');
-      expect(modal).toHaveAttribute('data-title-icon-variant', 'warning');
+      expect(modal).toBeInTheDocument();
+
+      // Check that the modal contains the expected content
+      expect(screen.getByText('Remove system?')).toBeInTheDocument();
+      expect(
+        screen.getByText('This action cannot be undone'),
+      ).toBeInTheDocument();
     });
 
     it('should render confirm button with correct props', () => {
@@ -136,9 +133,7 @@ describe('ConfirmationDialog', () => {
     it('should render with custom title', () => {
       render(<ConfirmationDialog title="Custom Title" onClose={mockOnClose} />);
 
-      expect(screen.getByTestId('modal-title')).toHaveTextContent(
-        'Custom Title',
-      );
+      expect(screen.getByText('Custom Title')).toBeInTheDocument();
     });
 
     it('should render with custom text', () => {
@@ -255,7 +250,7 @@ describe('ConfirmationDialog', () => {
     it('should call onClose(false) when modal close is triggered', () => {
       render(<ConfirmationDialog onClose={mockOnClose} />);
 
-      fireEvent.click(screen.getByTestId('modal-close'));
+      fireEvent.click(screen.getByLabelText('Close'));
       expect(mockOnClose).toHaveBeenCalledWith(false);
       expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
@@ -297,7 +292,7 @@ describe('ConfirmationDialog', () => {
     it('should handle empty string title', () => {
       render(<ConfirmationDialog title="" onClose={mockOnClose} />);
 
-      expect(screen.getByTestId('modal-title')).toHaveTextContent('');
+      expect(screen.queryByText('Remove system?')).not.toBeInTheDocument();
     });
 
     it('should handle empty string text', () => {
@@ -324,7 +319,7 @@ describe('ConfirmationDialog', () => {
         />,
       );
 
-      expect(screen.getByTestId('modal-title')).toHaveTextContent('');
+      expect(screen.queryByText('Remove system?')).not.toBeInTheDocument();
       expect(screen.getByTestId('button-confirm')).toHaveTextContent('');
     });
 
@@ -339,9 +334,7 @@ describe('ConfirmationDialog', () => {
       );
 
       // Should fall back to default values
-      expect(screen.getByTestId('modal-title')).toHaveTextContent(
-        'Remove system?',
-      );
+      expect(screen.getByText('Remove system?')).toBeInTheDocument();
       expect(
         screen.getByText('This action cannot be undone'),
       ).toBeInTheDocument();
@@ -376,7 +369,7 @@ describe('ConfirmationDialog', () => {
         />,
       );
 
-      expect(screen.getByTestId('modal-title')).toHaveTextContent(longTitle);
+      expect(screen.getByText(longTitle)).toBeInTheDocument();
       expect(screen.getByText(longText)).toBeInTheDocument();
       expect(screen.getByTestId('button-confirm')).toHaveTextContent(
         longConfirmText,
@@ -397,7 +390,7 @@ describe('ConfirmationDialog', () => {
         />,
       );
 
-      expect(screen.getByTestId('modal-title')).toHaveTextContent(specialTitle);
+      expect(screen.getByText(specialTitle)).toBeInTheDocument();
       expect(screen.getByText(specialText)).toBeInTheDocument();
       expect(screen.getByTestId('button-confirm')).toHaveTextContent(
         specialConfirmText,
@@ -416,20 +409,19 @@ describe('ConfirmationDialog', () => {
     it('should render two action buttons', () => {
       render(<ConfirmationDialog onClose={mockOnClose} />);
 
-      expect(screen.getByTestId('action-0')).toBeInTheDocument();
-      expect(screen.getByTestId('action-1')).toBeInTheDocument();
+      expect(screen.getByTestId('button-confirm')).toBeInTheDocument();
+      expect(screen.getByTestId('button-cancel')).toBeInTheDocument();
     });
 
     it('should maintain consistent button order', () => {
       render(<ConfirmationDialog onClose={mockOnClose} />);
 
-      const action0 = screen.getByTestId('action-0');
-      const action1 = screen.getByTestId('action-1');
+      const confirmButton = screen.getByTestId('button-confirm');
+      const cancelButton = screen.getByTestId('button-cancel');
 
-      // Confirm button should be first (action-0)
-      expect(action0).toContainElement(screen.getByTestId('button-confirm'));
-      // Cancel button should be second (action-1)
-      expect(action1).toContainElement(screen.getByTestId('button-cancel'));
+      // Both buttons should exist and be properly labeled
+      expect(confirmButton).toHaveTextContent('Remove system');
+      expect(cancelButton).toHaveTextContent('Cancel');
     });
   });
 

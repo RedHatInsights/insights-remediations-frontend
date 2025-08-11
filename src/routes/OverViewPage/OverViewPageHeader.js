@@ -19,7 +19,7 @@ export const OverViewPageHeader = ({ hasRemediations }) => {
   const { quickStarts } = useChrome();
 
   return (
-    <PageHeader className="pf-v5-u-pb-lg">
+    <PageHeader className="pf-v6-u-pb-lg">
       <Flex
         justifyContent={{ default: 'spaceBetween' }}
         alignItems={{ default: 'alignItemsFlexStart' }}
@@ -54,6 +54,7 @@ export const OverViewPageHeader = ({ hasRemediations }) => {
         {hasRemediations && (
           <FlexItem>
             <Button
+              icon={<OpenDrawerRightIcon className="pf-v6-u-ml-sm" />}
               variant="secondary"
               onClick={() =>
                 quickStarts?.activateQuickstart(
@@ -62,7 +63,6 @@ export const OverViewPageHeader = ({ hasRemediations }) => {
               }
             >
               Launch Quick Start
-              <OpenDrawerRightIcon className="pf-v5-u-ml-sm" />
             </Button>
           </FlexItem>
         )}
