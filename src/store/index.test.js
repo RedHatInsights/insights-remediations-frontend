@@ -8,26 +8,16 @@ jest.mock(
   }),
 );
 
-jest.mock(
-  '@redhat-cloud-services/frontend-components-notifications/redux',
-  () => ({
-    notificationsReducer: jest.fn(),
-  }),
-);
-
-jest.mock(
-  '@redhat-cloud-services/frontend-components-notifications/notificationsMiddleware',
-  () => jest.fn(() => 'notificationsMiddleware'),
-);
+jest.mock('@redhat-cloud-services/frontend-components-notifications', () => ({
+  notificationsReducer: jest.fn(),
+  notificationsMiddleware: jest.fn(() => 'notificationsMiddleware'),
+}));
 
 jest.mock('redux-promise-middleware', () => 'promiseMiddleware');
 
 jest.mock('./reducers', () => 'mockReducers');
 
 import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/Registry';
-import { notificationsReducer } from '@redhat-cloud-services/frontend-components-notifications/redux';
-import notificationsMiddleware from '@redhat-cloud-services/frontend-components-notifications/notificationsMiddleware';
-
 describe('Store Index', () => {
   let mockRegistry;
 
@@ -46,20 +36,12 @@ describe('Store Index', () => {
     it('should initialize registry with default middleware', () => {
       const result = init();
 
-      expect(getRegistry).toHaveBeenCalledWith({}, [
-        'promiseMiddleware',
-        'notificationsMiddleware',
-      ]);
+      expect(getRegistry).toHaveBeenCalledWith({}, ['promiseMiddleware']);
 
-      expect(notificationsMiddleware).toHaveBeenCalledWith({
-        errorTitleKey: 'message',
-        errorDescriptionKey: 'description',
-      });
+      // notificationsMiddleware is no longer used - notifications handled via NotificationsProvider context
 
       expect(mockRegistry.register).toHaveBeenCalledWith('mockReducers');
-      expect(mockRegistry.register).toHaveBeenCalledWith({
-        notifications: notificationsReducer,
-      });
+      // notifications reducer is no longer registered - notifications handled via NotificationsProvider context
 
       expect(result).toBe(mockRegistry);
     });
@@ -72,7 +54,6 @@ describe('Store Index', () => {
 
       expect(getRegistry).toHaveBeenCalledWith({}, [
         'promiseMiddleware',
-        'notificationsMiddleware',
         customMiddleware1,
         customMiddleware2,
       ]);
@@ -89,7 +70,6 @@ describe('Store Index', () => {
 
       expect(getRegistry).toHaveBeenCalledWith({}, [
         'promiseMiddleware',
-        'notificationsMiddleware',
         customMiddleware1,
         customMiddleware2,
       ]);
@@ -98,19 +78,13 @@ describe('Store Index', () => {
     it('should handle empty middleware array', () => {
       init();
 
-      expect(getRegistry).toHaveBeenCalledWith({}, [
-        'promiseMiddleware',
-        'notificationsMiddleware',
-      ]);
+      expect(getRegistry).toHaveBeenCalledWith({}, ['promiseMiddleware']);
     });
 
     it('should handle all undefined middleware', () => {
       init(undefined, undefined);
 
-      expect(getRegistry).toHaveBeenCalledWith({}, [
-        'promiseMiddleware',
-        'notificationsMiddleware',
-      ]);
+      expect(getRegistry).toHaveBeenCalledWith({}, ['promiseMiddleware']);
     });
   });
 
@@ -176,7 +150,7 @@ describe('Store Index', () => {
       register({ reducer1: 'test1' });
       register({ reducer2: 'test2' });
 
-      expect(mockRegistry.register).toHaveBeenCalledTimes(4); // 2 from init + 2 from register calls
+      expect(mockRegistry.register).toHaveBeenCalledTimes(3); // 1 from init + 2 from register calls
     });
   });
 });

@@ -1,12 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  Icon,
-  Label,
-  Text,
-  TextContent,
-  TextVariants,
-} from '@patternfly/react-core';
+import { Icon, Label } from '@patternfly/react-core';
 import {
   CheckCircleIcon,
   InProgressIcon,
@@ -19,16 +13,19 @@ const STATUS_META = {
   success: {
     text: 'Succeeded',
     color: 'green',
+    status: 'success',
     Icon: CheckCircleIcon,
   },
   running: {
     text: 'In progress',
-    color: 'gold',
+    color: 'orange',
+    status: 'info',
     Icon: InProgressIcon,
   },
   failure: {
     text: 'Failed',
     color: 'red',
+    status: 'danger',
     Icon: ExclamationCircleIcon,
   },
   canceled: {
@@ -38,16 +35,24 @@ const STATUS_META = {
   },
 };
 
-export const getStatusMeta = (status = '') =>
-  STATUS_META[status.toLowerCase()] ?? null;
+export const getStatusMeta = (status = '') => {
+  if (!status || typeof status !== 'string') return null;
+  return STATUS_META[status.toLowerCase()] ?? null;
+};
 
 export const StatusLabel = ({ status = '' }) => {
   const meta = getStatusMeta(status);
   if (!meta) return null;
-  const { color, text, Icon: PFIcon } = meta;
+  const { color, text, status: pfStatus, Icon: PFIcon } = meta;
 
   return (
-    <Label color={color} icon={<PFIcon />} isCompact>
+    <Label
+      color={color}
+      icon={<PFIcon />}
+      isCompact
+      variant="filled"
+      {...(pfStatus && { status: pfStatus })}
+    >
       {text}
     </Label>
   );
@@ -70,20 +75,20 @@ StatusIcon.propTypes = {
 
 export const renderConnectionStatus = (status) => {
   const plain = (text) => (
-    <Text component={TextVariants.p} className="pf-v5-u-mb-0">
+    <p className="pf-v6-u-mb-0" data-testid="text">
       {text}
-    </Text>
+    </p>
   );
 
   switch (status) {
     case 'connected':
       return (
-        <Text component={TextVariants.p}>
+        <p>
           <Icon status="success">
             <StatusIcon status="success" />
           </Icon>{' '}
           Ready
-        </Text>
+        </p>
       );
 
     case 'disconnected':
@@ -91,12 +96,12 @@ export const renderConnectionStatus = (status) => {
 
     case 'no_executor':
       return (
-        <TextContent>
+        <div data-testid="text-content">
           {plain('Cannot remediate ‒ direct connection')}
-          <Text component={TextVariants.small}>
+          <small>
             Connect your systems to Satellite to automatically remediate.
-          </Text>
-        </TextContent>
+          </small>
+        </div>
       );
 
     case 'no_source':
@@ -104,26 +109,24 @@ export const renderConnectionStatus = (status) => {
 
     case 'no_receptor':
       return (
-        <TextContent>
+        <div data-testid="text-content">
           {plain('Cannot remediate ‒ Cloud Connector not defined')}
-          <Text component={TextVariants.small}>
-            Configure Cloud Connector to automatically remediate.
-          </Text>
-        </TextContent>
+          <small>Configure Cloud Connector to automatically remediate.</small>
+        </div>
       );
 
     case 'no_rhc':
       return (
-        <TextContent>
+        <div data-testid="text-content">
           {plain('Cannot remediate ‒ Cloud Connector not defined')}
-          <Text component={TextVariants.small}>
+          <small>
             Remediation from Insights requires Cloud Connector. Cloud Connector
             can be enabled via Satellite, or through&nbsp;
             <InsightsLink app="connector" to="/">
               RHC
             </InsightsLink>
-          </Text>
-        </TextContent>
+          </small>
+        </div>
       );
 
     case 'loading':

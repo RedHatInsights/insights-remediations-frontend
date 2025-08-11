@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Text, Tooltip } from '@patternfly/react-core';
+import { Content, Tooltip } from '@patternfly/react-core';
 import { renderConnectionStatus } from '../../routes/helpers';
 
-export const SystemsCell = ({ system_count }) => <Text>{system_count}</Text>;
+export const SystemsCell = ({ system_count }) => (
+  <Content component="p">{system_count}</Content>
+);
 SystemsCell.propTypes = { system_count: PropTypes.number };
 
 export const ConnectionTypeCell = ({
@@ -12,16 +14,16 @@ export const ConnectionTypeCell = ({
   executor_id,
 }) => {
   if (connection_status !== 'connected') {
-    return <Text>Not available</Text>;
+    return <Content component="p">Not available</Content>;
   }
 
   // Direct‑connected systems have no executor_id
   if (!executor_id) {
-    return <Text>Direct connection</Text>;
+    return <Content component="p">Direct connection</Content>;
   }
 
   if (!executor_name) {
-    return <Text>—</Text>;
+    return <Content component="p">—</Content>;
   }
 
   const truncated =

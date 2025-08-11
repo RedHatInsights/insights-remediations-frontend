@@ -48,7 +48,7 @@ const DetailsBanner = ({ status, remediationPlanName, canceledAt }) => {
       isInline
       variant={variant}
       title={title}
-      className="pf-v5-u-mb-md"
+      className="pf-v6-u-mb-md"
       actionClose={
         <AlertActionCloseButton
           title="Close alert"

@@ -19,11 +19,13 @@ jest.mock('./Routes', () => {
 jest.mock('./api', () => ({
   getIsReceptorConfigured: jest.fn(),
 }));
+
 jest.mock(
-  '@redhat-cloud-services/frontend-components-notifications/NotificationPortal',
+  '@redhat-cloud-services/frontend-components-notifications/NotificationsProvider',
   () => {
-    return function MockNotificationsPortal() {
-      return <div data-testid="notifications">Notifications Portal</div>;
+    // eslint-disable-next-line react/prop-types
+    return function MockNotificationsProvider({ children }) {
+      return <div>{children}</div>;
     };
   },
 );
@@ -338,18 +340,6 @@ describe('App Component', () => {
   });
 
   describe('Rendering', () => {
-    it('should render notifications portal when permissions are loaded', async () => {
-      mockChrome.getUserPermissions.mockResolvedValue([
-        { permission: 'remediations:*:*' },
-      ]);
-
-      renderApp();
-
-      await waitFor(() => {
-        expect(screen.getByTestId('notifications')).toBeInTheDocument();
-      });
-    });
-
     it('should render routes when permissions are loaded', async () => {
       mockChrome.getUserPermissions.mockResolvedValue([
         { permission: 'remediations:*:*' },

@@ -1,6 +1,6 @@
 import { dispatchAction, dispatchNotification } from './dispatcher';
 import { getStore } from '../store';
-import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
 
 // Mock the store
 jest.mock('../store', () => ({
@@ -8,12 +8,9 @@ jest.mock('../store', () => ({
 }));
 
 // Mock the notifications
-jest.mock(
-  '@redhat-cloud-services/frontend-components-notifications/redux',
-  () => ({
-    addNotification: jest.fn(),
-  }),
-);
+jest.mock('@redhat-cloud-services/frontend-components-notifications', () => ({
+  addNotification: jest.fn(),
+}));
 
 describe('dispatcher', () => {
   const mockDispatch = jest.fn();
@@ -47,42 +44,31 @@ describe('dispatcher', () => {
   });
 
   describe('dispatchNotification', () => {
-    it('should create notification action and dispatch it', () => {
+    it('should log deprecation warning', () => {
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+      dispatchNotification();
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'dispatchNotification is deprecated. Use useAddNotification hook instead.',
+      );
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should not call addNotification (deprecated)', () => {
       const mockNotification = {
-        variant: 'success',
         title: 'Test notification',
         description: 'Test description',
+        variant: 'success',
       };
-      const mockNotificationAction = {
-        type: 'ADD_NOTIFICATION',
-        payload: mockNotification,
-      };
-
-      addNotification.mockReturnValue(mockNotificationAction);
 
       dispatchNotification(mockNotification);
 
-      expect(addNotification).toHaveBeenCalledWith(mockNotification);
-      expect(getStore).toHaveBeenCalled();
-      expect(mockDispatch).toHaveBeenCalledWith(mockNotificationAction);
-    });
-
-    it('should handle different notification types', () => {
-      const errorNotification = {
-        variant: 'danger',
-        title: 'Error occurred',
-      };
-      const mockErrorAction = {
-        type: 'ADD_NOTIFICATION',
-        payload: errorNotification,
-      };
-
-      addNotification.mockReturnValue(mockErrorAction);
-
-      dispatchNotification(errorNotification);
-
-      expect(addNotification).toHaveBeenCalledWith(errorNotification);
-      expect(mockDispatch).toHaveBeenCalledWith(mockErrorAction);
+      // Should not call addNotification since function is deprecated
+      expect(addNotification).not.toHaveBeenCalled();
+      expect(getStore).not.toHaveBeenCalled();
+      expect(mockDispatch).not.toHaveBeenCalled();
     });
   });
 });

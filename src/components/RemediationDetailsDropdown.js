@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import useNavigate from '@redhat-cloud-services/frontend-components-utilities/useInsightsNavigate';
 
-import { Button } from '@patternfly/react-core';
 import {
   Dropdown,
-  DropdownPosition,
-  KebabToggle,
-} from '@patternfly/react-core/deprecated';
+  DropdownList,
+  DropdownItem,
+  MenuToggle,
+} from '@patternfly/react-core';
+import { EllipsisVIcon } from '@patternfly/react-icons';
 import TextInputDialog from './Dialogs/TextInputDialog';
 import ConfirmationDialog from './ConfirmationDialog';
 import { deleteRemediation, patchRemediation } from '../actions';
@@ -83,23 +84,35 @@ function RemediationDetailsDropdown({
 
       {permission.permissions.write && (
         <Dropdown
-          onSelect={(f) => f}
-          toggle={<KebabToggle onToggle={() => setOpen((value) => !value)} />}
+          onSelect={() => setOpen(false)}
+          toggle={(toggleRef) => (
+            <MenuToggle
+              ref={toggleRef}
+              variant="plain"
+              onClick={() => setOpen((value) => !value)}
+              isExpanded={open}
+            >
+              <EllipsisVIcon />
+            </MenuToggle>
+          )}
           isOpen={open}
-          position={DropdownPosition.right}
-          isPlain
+          popperProps={{ position: 'right' }}
         >
-          <Button onClick={() => setRenameDialogOpen(true)} variant="link">
-            Rename
-          </Button>
-          <Button
-            className="rem-c-button__danger-link"
-            onClick={() => setDeleteDialogOpen(true)}
-            variant="link"
-            isDanger
-          >
-            Delete
-          </Button>
+          <DropdownList>
+            <DropdownItem
+              key="rename"
+              onClick={() => setRenameDialogOpen(true)}
+            >
+              Rename
+            </DropdownItem>
+            <DropdownItem
+              key="delete"
+              onClick={() => setDeleteDialogOpen(true)}
+              isDanger
+            >
+              Delete
+            </DropdownItem>
+          </DropdownList>
         </Dropdown>
       )}
     </React.Fragment>

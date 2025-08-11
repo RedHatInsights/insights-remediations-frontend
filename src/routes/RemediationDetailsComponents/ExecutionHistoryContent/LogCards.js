@@ -20,13 +20,29 @@ import {
 const statusIcon = (status) => {
   const map = {
     success: (
-      <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+      <CheckCircleIcon
+        color="var(--pf-t--global--icon--color--status--success--default)"
+        data-testid="check-circle-icon"
+      />
     ),
-    running: <InProgressIcon color="var(--pf-v5-global--info-color--100)" />,
+    running: (
+      <InProgressIcon
+        color="var(--pf-v6-global--info-color--100)"
+        data-testid="in-progress-icon"
+      />
+    ),
     failure: (
-      <ExclamationCircleIcon color="var(--pf-v5-global--danger-color--100)" />
+      <ExclamationCircleIcon
+        color="var(--pf-v6-global--danger-color--100)"
+        data-testid="exclamation-circle-icon"
+      />
     ),
-    canceled: <BanIcon color="var(--pf-v5-global--danger-color--100)" />,
+    canceled: (
+      <BanIcon
+        color="var(--pf-v6-global--danger-color--100)"
+        data-testid="ban-icon"
+      />
+    ),
   };
   return map[status] ?? <QuestionCircleIcon />;
 };
@@ -39,22 +55,24 @@ const LogCards = ({ systemName, status, connectionType, executedBy }) => (
     spaceItems={{ default: 'spaceItemsLg' }}
     alignItems={{ default: 'stretch' }}
     flexWrap={{ default: 'nowrap' }}
-    className="pf-v5-u-mb-lg"
+    className="pf-v6-u-mb-lg"
+    data-testid="flex"
   >
-    <FlexItem style={cardStyle}>
-      <Card isFullHeight>
+    <FlexItem style={cardStyle} data-testid="flex-item">
+      <Card isFullHeight data-testid="card">
         <CardTitle>System</CardTitle>
-        <CardBody>{systemName ?? '-'}</CardBody>
+        <CardBody data-testid="card-body">{systemName ?? '-'}</CardBody>
       </Card>
     </FlexItem>
 
-    <FlexItem style={cardStyle}>
-      <Card isFullHeight>
+    <FlexItem style={cardStyle} data-testid="flex-item">
+      <Card isFullHeight data-testid="card">
         <CardTitle>System execution status</CardTitle>
-        <CardBody>
+        <CardBody data-testid="card-body">
           <Flex
             spaceItems={{ default: 'spaceItemsXs' }}
             alignItems={{ default: 'alignItemsCenter' }}
+            data-testid="flex"
           >
             {statusIcon(status)}
             <span>
@@ -65,32 +83,34 @@ const LogCards = ({ systemName, status, connectionType, executedBy }) => (
       </Card>
     </FlexItem>
 
-    <FlexItem style={cardStyle}>
-      <Card isFullHeight>
+    <FlexItem style={cardStyle} data-testid="flex-item">
+      <Card isFullHeight data-testid="card">
         <CardTitle>
           <Flex
             spaceItems={{ default: 'spaceItemsXs' }}
             alignItems={{ default: 'alignItemsCenter' }}
+            data-testid="flex"
           >
             <span>
               Insights connection type{' '}
               <Tooltip
                 content="Red Hat Enterprise Linux systems are connected to Insights directly via RHC, or through Satellite via Cloud Connector."
                 aria-label="Insights connection type info"
+                data-testid="tooltip"
               >
                 <OutlinedQuestionCircleIcon />
               </Tooltip>
             </span>
           </Flex>
         </CardTitle>
-        <CardBody>{connectionType ?? '-'}</CardBody>
+        <CardBody data-testid="card-body">{connectionType ?? '-'}</CardBody>
       </Card>
     </FlexItem>
 
-    <FlexItem style={cardStyle}>
-      <Card isFullHeight>
+    <FlexItem style={cardStyle} data-testid="flex-item">
+      <Card isFullHeight data-testid="card">
         <CardTitle>Executed by user</CardTitle>
-        <CardBody>{executedBy ?? '-'}</CardBody>
+        <CardBody data-testid="card-body">{executedBy ?? '-'}</CardBody>
       </Card>
     </FlexItem>
   </Flex>

@@ -136,6 +136,7 @@ const RemediationDetails = () => {
               allRemediations={allRemediations}
               permissions={context.permissions}
               remediationPlaybookRuns={remediationPlaybookRuns?.data[0]}
+              detailsLoading={detailsLoading}
             />
           </Tab>
           <Tab
@@ -154,15 +155,9 @@ const RemediationDetails = () => {
             aria-label="SystemTab"
             title={<TabTitleText>Systems</TabTitleText>}
           >
-            {/* We will eventually migrate away from systemsTable, and use SystemsContent */}
-            {/* <SystemsContent
-              remediationDetails={remediationDetails}
-              remediationStatus={remediationStatus}
-              refetch={refetchRemediationDetails}
-            /> */}
             <section
               className={
-                'pf-v5-l-page__main-section pf-v5-c-page__main-section'
+                'pf-v6-l-page__main-section pf-v6-c-page__main-section'
               }
             >
               <SystemsTable

@@ -174,7 +174,7 @@ describe('LogCards', () => {
         expect(screen.getByTestId('check-circle-icon')).toBeInTheDocument();
         expect(screen.getByTestId('check-circle-icon')).toHaveAttribute(
           'data-color',
-          'var(--pf-v5-global--success-color--100)',
+          'var(--pf-t--global--icon--color--status--success--default)',
         );
         expect(screen.getByText('Success')).toBeInTheDocument();
       });
@@ -185,7 +185,7 @@ describe('LogCards', () => {
         expect(screen.getByTestId('in-progress-icon')).toBeInTheDocument();
         expect(screen.getByTestId('in-progress-icon')).toHaveAttribute(
           'data-color',
-          'var(--pf-v5-global--info-color--100)',
+          'var(--pf-v6-global--info-color--100)',
         );
         expect(screen.getByText('Running')).toBeInTheDocument();
       });
@@ -198,7 +198,7 @@ describe('LogCards', () => {
         ).toBeInTheDocument();
         expect(screen.getByTestId('exclamation-circle-icon')).toHaveAttribute(
           'data-color',
-          'var(--pf-v5-global--danger-color--100)',
+          'var(--pf-v6-global--danger-color--100)',
         );
         expect(screen.getByText('Failure')).toBeInTheDocument();
       });
@@ -209,7 +209,7 @@ describe('LogCards', () => {
         expect(screen.getByTestId('ban-icon')).toBeInTheDocument();
         expect(screen.getByTestId('ban-icon')).toHaveAttribute(
           'data-color',
-          'var(--pf-v5-global--danger-color--100)',
+          'var(--pf-v6-global--danger-color--100)',
         );
         expect(screen.getByText('Canceled')).toBeInTheDocument();
       });
@@ -357,7 +357,7 @@ describe('LogCards', () => {
         'data-flex-wrap',
         '{"default":"nowrap"}',
       );
-      expect(mainFlex).toHaveClass('pf-v5-u-mb-lg');
+      expect(mainFlex).toHaveClass('pf-v6-u-mb-lg');
     });
 
     it('should render four flex items', () => {

@@ -1,4 +1,4 @@
-import { Flex, Icon, TextContent } from '@patternfly/react-core';
+import { Flex, Icon } from '@patternfly/react-core';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -12,38 +12,41 @@ export const execStatus = (status, date) => {
 
   if (!date || !status) {
     return (
-      <Flex spaceItems={{ default: 'spaceItemsSm' }}>
-        <TextContent>{displayValue}</TextContent>
+      <Flex spaceItems={{ default: 'spaceItemsSm' }} data-testid="flex">
+        <div data-testid="text-content">{displayValue}</div>
       </Flex>
     );
   }
 
   if (status === 'success') {
     ((icon = (
-      <Icon status="success">
+      <Icon status="success" data-testid="icon">
         <CheckCircleIcon />
       </Icon>
     )),
       (displayValue = 'Succeeded'));
   } else if (status === 'running') {
     ((icon = (
-      <Icon>
-        <InProgressIcon color="var(--pf-v5-global--icon--Color--light--dark)" />
+      <Icon data-testid="icon">
+        <InProgressIcon
+          color="var(--pf-v6-global--icon--Color--light--dark)"
+          data-testid="in-progress-icon"
+        />
       </Icon>
     )),
       (displayValue = 'In progress'));
   } else if (status === 'failure') {
     ((icon = (
-      <Icon status="danger">
+      <Icon status="danger" data-testid="icon">
         <ExclamationCircleIcon />
       </Icon>
     )),
       (displayValue = 'Failed'));
   }
   return (
-    <Flex spaceItems={{ default: 'spaceItemsSm' }}>
+    <Flex spaceItems={{ default: 'spaceItemsSm' }} data-testid="flex">
       {icon}
-      <span>{`${displayValue} ${getTimeAgo(date)}`}</span>
+      <span data-testid="text-content">{`${displayValue} ${getTimeAgo(date)}`}</span>
     </Flex>
   );
 };

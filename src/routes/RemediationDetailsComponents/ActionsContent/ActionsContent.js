@@ -100,7 +100,7 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   }, []);
 
   return (
-    <section className="pf-v5-l-page__main-section pf-v5-c-page__main-section">
+    <section className="pf-v6-l-page__main-section pf-v6-c-page__main-section">
       {isSystemsModalOpen && (
         <SystemsModal
           isOpen={isSystemsModalOpen}
@@ -169,10 +169,13 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
           filterConfig: [...actionNameFilter],
         }}
         options={{
-          onSelect: () => '',
           manageColumns: true,
+          onSelect: true,
           itemIdsInTable: () => allIssues.map(({ id }) => id),
           itemIdsOnPage: () => allIssues.map(({ id }) => id),
+          tableProps: {
+            variant: 'compact',
+          },
           actionResolver: () => {
             return [
               {

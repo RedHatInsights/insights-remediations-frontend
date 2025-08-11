@@ -103,7 +103,7 @@ export const SystemsTableWithContext = (props) => {
 
   return registry?.store ? (
     <Provider store={registry.store}>
-      <div className="pf-u-pl-lg">
+      <div className="pf-v6-u-pl-lg">
         <SystemsTable {...props} registry={registry} />
       </div>
     </Provider>

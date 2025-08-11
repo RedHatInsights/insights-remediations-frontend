@@ -20,6 +20,7 @@ jest.mock('@patternfly/react-core', () => ({
     variant,
     onClick,
     className,
+    icon,
     ...props
   }) {
     return (
@@ -29,6 +30,7 @@ jest.mock('@patternfly/react-core', () => ({
         className={className}
         {...props}
       >
+        {icon}
         {children}
       </button>
     );
@@ -631,21 +633,14 @@ describe('ProgressCard', () => {
       render(<ProgressCard {...defaultProps} />);
 
       const footer = screen.getByTestId('card-footer');
-      expect(footer).toHaveClass('pf-v5-u-font-size-sm');
+      expect(footer).toHaveClass('pf-v6-u-font-size-sm');
     });
 
     it('should apply correct CSS classes to Learn more button', () => {
       render(<ProgressCard {...defaultProps} />);
 
       const button = screen.getByRole('button', { name: /Learn more/ });
-      expect(button).toHaveClass('pf-v5-u-font-size-sm');
-    });
-
-    it('should apply correct CSS classes to icon', () => {
-      render(<ProgressCard {...defaultProps} />);
-
-      const icon = screen.getByTestId('open-drawer-icon');
-      expect(icon).toHaveClass('pf-v5-u-ml-sm');
+      expect(button).toHaveClass('pf-v6-u-font-size-sm');
     });
   });
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Flex, Icon, Text } from '@patternfly/react-core';
+import { Flex, Icon } from '@patternfly/react-core';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import {
   CheckCircleIcon,
@@ -9,13 +9,17 @@ import {
 } from '@patternfly/react-icons';
 
 export const SystemNameCell = ({ system_name, system_id }) => (
-  <InsightsLink app="inventory" to={`/${system_id}`}>
-    <Text>{system_name}</Text>
+  <InsightsLink
+    app="inventory"
+    to={`/${system_id}`}
+    data-testid="insights-link"
+  >
+    <p data-testid="text">{system_name}</p>
   </InsightsLink>
 );
 
 export const InsightsConnectCell = ({ executor_name }) => {
-  return <Text>{executor_name ?? ''}</Text>;
+  return <p data-testid="text">{executor_name ?? ''}</p>;
 };
 export const ExecutionStatusCell = ({ status }) => {
   let icon;
@@ -30,7 +34,7 @@ export const ExecutionStatusCell = ({ status }) => {
   } else if (status === 'running') {
     ((icon = (
       <Icon>
-        <InProgressIcon color="var(--pf-v5-global--icon--Color--light--dark)" />
+        <InProgressIcon />
       </Icon>
     )),
       (displayValue = 'In progress'));
@@ -43,9 +47,9 @@ export const ExecutionStatusCell = ({ status }) => {
       (displayValue = 'Failed'));
   }
   return (
-    <Flex spaceItems={{ default: 'spaceItemsXs' }}>
+    <Flex spaceItems={{ default: 'spaceItemsXs' }} data-testid="flex">
       {icon}
-      <Text>{displayValue}</Text>
+      <p data-testid="text">{displayValue || ''}</p>
     </Flex>
   );
 };
@@ -55,8 +59,8 @@ SystemNameCell.propTypes = {
   system_name: PropTypes.string.isRequired,
 };
 InsightsConnectCell.propTypes = {
-  executor_name: PropTypes.string.isRequired,
+  executor_name: PropTypes.string,
 };
 ExecutionStatusCell.propTypes = {
-  status: PropTypes.string.isRequired,
+  status: PropTypes.string,
 };

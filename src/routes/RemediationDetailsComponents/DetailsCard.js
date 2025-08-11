@@ -11,7 +11,7 @@ import {
   Button,
   Switch,
   Title,
-  Text,
+  Content,
   Spinner,
   Flex,
   TextInput,
@@ -107,18 +107,19 @@ const DetailsCard = ({
             <DescriptionListTerm>
               <span>Name</span>
               <Button
+                icon={
+                  <PencilAltIcon
+                    color={
+                      editing
+                        ? 'var(--pf-t--global--text--color--regular)'
+                        : undefined
+                    }
+                  />
+                }
                 variant="link"
                 onClick={() => setEditing(!editing)}
-                className="pf-v5-u-ml-sm"
-              >
-                <PencilAltIcon
-                  color={
-                    editing
-                      ? 'var(--pf-v5-global--palette--black-300)'
-                      : undefined
-                  }
-                />
-              </Button>
+                className="pf-v6-u-ml-sm"
+              ></Button>
             </DescriptionListTerm>
             <DescriptionListDescription>
               {editing ? (
@@ -138,14 +139,14 @@ const DetailsCard = ({
                         validated={validationState}
                       />
                       {nameStatus === 'duplicate' && (
-                        <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
+                        <p className="pf-v6-u-font-size-sm pf-v6-u-danger-color-100">
                           A remediation plan with the same name already exists
                           in your organization. Enter a unique name and try
                           again.
                         </p>
                       )}
                       {nameStatus === 'empty' && (
-                        <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
+                        <p className="pf-v6-u-font-size-sm pf-v6-u-danger-color-100">
                           Playbook name cannot be empty.
                         </p>
                       )}
@@ -154,28 +155,33 @@ const DetailsCard = ({
                   <FlexItem>
                     <Flex spaceItems={{ default: 'spaceItemsXs' }}>
                       <Button
+                        icon={
+                          <CheckIcon
+                            color={
+                              nameStatus !== 'valid'
+                                ? 'var(--pf-t--global--icon--color--disabled)'
+                                : 'var(--pf-t--global--text--color--link--default)'
+                            }
+                          />
+                        }
                         variant="link"
                         onClick={() => onSubmit(value)}
                         isDisabled={nameStatus !== 'valid'}
-                      >
-                        <CheckIcon
-                          color={
-                            nameStatus !== 'valid'
-                              ? 'var(--pf-v5-global--disabled-color--200)'
-                              : 'var(--pf-v5-global--link--Color)'
-                          }
-                        />
-                      </Button>
-                      <Button variant="link" onClick={() => setEditing(false)}>
-                        <TimesIcon color="var(--pf-v5-global--icon--Color--light--dark)" />
-                      </Button>
+                      ></Button>
+                      <Button
+                        icon={
+                          <TimesIcon color="var(--pf-t--global--text--color--subtle)" />
+                        }
+                        variant="link"
+                        onClick={() => setEditing(false)}
+                      ></Button>
                     </Flex>
                   </FlexItem>
                 </Flex>
               ) : (
-                <Text component="p" style={{ wordBreak: 'break-word' }}>
+                <Content component="p" style={{ wordBreak: 'break-word' }}>
                   {details.name}
-                </Text>
+                </Content>
               )}
             </DescriptionListDescription>
           </DescriptionListGroup>
@@ -257,13 +263,12 @@ const DetailsCard = ({
                 isChecked={rebootToggle}
                 onChange={onToggleAutoreboot}
                 label="On"
-                labelOff="Off"
               />
             </DescriptionListDescription>
           </DescriptionListGroup>
         </DescriptionList>
       </CardBody>
-      <CardFooter className="pf-v5-u-font-size-sm">
+      <CardFooter className="pf-v6-u-font-size-sm">
         New to remediating through Insights?{' '}
         <InsightsLink
           to={
@@ -271,8 +276,12 @@ const DetailsCard = ({
           }
           target="_blank"
         >
-          <Button variant="link" className="pf-v5-u-font-size-sm">
-            Learn More <ExternalLinkAltIcon />
+          <Button
+            icon={<ExternalLinkAltIcon />}
+            variant="link"
+            className="pf-v6-u-font-size-sm"
+          >
+            Learn More
           </Button>{' '}
         </InsightsLink>
       </CardFooter>

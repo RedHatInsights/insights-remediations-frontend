@@ -1,6 +1,7 @@
 import React from 'react';
 import propTypes from 'prop-types';
-import { Button, Modal, ModalVariant } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 
 export const NoDataModal = ({ isOpen, setOpen, patchNoAdvisoryText }) => {
   return (
@@ -10,22 +11,30 @@ export const NoDataModal = ({ isOpen, setOpen, patchNoAdvisoryText }) => {
       isOpen={isOpen}
       onClose={() => setOpen(false)}
       actions={[
-        <Button key="confirm" variant="primary" onClick={() => setOpen(false)}>
+        <Button
+          key="confirm"
+          variant="primary"
+          onClick={() => setOpen(false)}
+          data-testid="action-0"
+        >
           Back to Insights
         </Button>,
       ]}
+      data-testid="modal"
     >
-      {patchNoAdvisoryText ? (
-        patchNoAdvisoryText
-      ) : (
-        <>
-          None of the selected issues can be remediated with Ansible.
-          <br />
-          <br />
-          To remediate these issues, review the manual remediation steps
-          associated with each.
-        </>
-      )}
+      <div data-testid="modal-content">
+        {patchNoAdvisoryText ? (
+          patchNoAdvisoryText
+        ) : (
+          <>
+            None of the selected issues can be remediated with Ansible.
+            <br />
+            <br />
+            To remediate these issues, review the manual remediation steps
+            associated with each.
+          </>
+        )}
+      </div>
     </Modal>
   );
 };
