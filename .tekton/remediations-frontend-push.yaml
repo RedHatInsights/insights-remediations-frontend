@@ -30,7 +30,7 @@ spec:
   - name: path-context
     value: .
   - name: sentry-auth-token
-    value: "{{ secrets.sentry-auth.token }}"
+    value: '{{ index secrets "sentry-auth" "token" }}'
   - name: build-args
     value:
     - ENABLE_SENTRY=true
