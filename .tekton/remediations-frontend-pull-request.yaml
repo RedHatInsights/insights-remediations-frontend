@@ -32,6 +32,9 @@ spec:
     value: build-tools/Dockerfile
   - name: path-context
     value: .
+  - name: build-args
+    value:
+    - ENABLE_SENTRY=false
   pipelineRef:
     name: docker-build-oci-ta
   taskRunTemplate:
