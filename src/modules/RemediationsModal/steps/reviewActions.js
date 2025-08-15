@@ -9,13 +9,7 @@ import {
   TableHeader,
   TableBody,
 } from '@patternfly/react-table/deprecated';
-import {
-  Radio,
-  Text,
-  TextContent,
-  Stack,
-  StackItem,
-} from '@patternfly/react-core';
+import { Radio, Content, Stack, StackItem } from '@patternfly/react-core';
 import {
   buildRows,
   onCollapse,
@@ -72,8 +66,8 @@ const ReviewActions = (props) => {
       data-testid="wizard-review-actions"
     >
       <StackItem>
-        <TextContent>
-          <Text>
+        <Content>
+          <Content component="p">
             You have selected <b>{pluralize(issues.length, 'item')}</b> to
             remediate.{' '}
             <b>
@@ -81,8 +75,8 @@ const ReviewActions = (props) => {
             </b>
             {multiples.length !== 1 ? ' allow' : ' allows'} for you to chose
             from multiple resolution steps.
-          </Text>
-        </TextContent>
+          </Content>
+        </Content>
       </StackItem>
       <StackItem>
         <Radio
@@ -99,7 +93,7 @@ const ReviewActions = (props) => {
           onChange={() => input.onChange(true)}
         />
         {issues.length - multiples.length > 0 && (
-          <Text className="rem-c-choose-actions-description">
+          <Content component="p" className="rem-c-choose-actions-description">
             {`The ${
               issues.length - multiples.length
             } other selected ${pluralize(
@@ -109,7 +103,7 @@ const ReviewActions = (props) => {
                     ${
                       issues.length - multiples.length !== 1 ? 'do' : 'does'
                     } not have multiple resolution options.`}
-          </Text>
+          </Content>
         )}
       </StackItem>
       <Table
@@ -120,6 +114,10 @@ const ReviewActions = (props) => {
           onCollapse(event, rowKey, isOpen, rows, setRows)
         }
         cells={[
+          {
+            title: '',
+            screenReaderText: 'Expand toggle',
+          },
           {
             title: 'Action',
             transforms: [sortable],
@@ -155,10 +153,10 @@ const ReviewActions = (props) => {
           isChecked={!input.value}
           onChange={() => input.onChange(false)}
         />
-        <Text className="rem-c-choose-actions-description">
+        <Content component="p" className="rem-c-choose-actions-description">
           You may modify reboot status to manual reboot in the next step, or
           from the playbook.
-        </Text>
+        </Content>
       </StackItem>
     </Stack>
   );

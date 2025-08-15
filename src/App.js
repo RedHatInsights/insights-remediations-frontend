@@ -5,7 +5,7 @@ import Routes from './Routes';
 
 import { getIsReceptorConfigured } from './api';
 
-// Notifications
+import NotificationsProvider from '@redhat-cloud-services/frontend-components-notifications/NotificationsProvider';
 import NotificationsPortal from '@redhat-cloud-services/frontend-components-notifications/NotificationPortal';
 import { Spinner } from '@patternfly/react-core';
 
@@ -82,19 +82,21 @@ const App = () => {
   }, []);
 
   return arePermissionLoaded ? (
-    <PermissionContext.Provider
-      value={{
-        permissions: {
-          read: readPermission,
-          write: writePermission,
-          execute: executePermission,
-        },
-        isReceptorConfigured,
-      }}
-    >
-      <NotificationsPortal />
-      <Routes />
-    </PermissionContext.Provider>
+    <NotificationsProvider>
+      <PermissionContext.Provider
+        value={{
+          permissions: {
+            read: readPermission,
+            write: writePermission,
+            execute: executePermission,
+          },
+          isReceptorConfigured,
+        }}
+      >
+        <NotificationsPortal />
+        <Routes />
+      </PermissionContext.Provider>
+    </NotificationsProvider>
   ) : (
     <Spinner />
   );

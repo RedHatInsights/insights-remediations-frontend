@@ -27,6 +27,14 @@ jest.mock(
     };
   },
 );
+jest.mock(
+  '@redhat-cloud-services/frontend-components-notifications/NotificationsProvider',
+  () => {
+    return function MockNotificationsProvider({ children }) {
+      return <div>{children}</div>;
+    };
+  },
+);
 
 const mockStore = createStore(() => ({}));
 

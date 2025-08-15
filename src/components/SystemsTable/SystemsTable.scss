@@ -1,10 +1,10 @@
 svg.ins-m-alert {
-  fill: var(--pf-global--warning-color--100);
+  fill: var(--pf-t--global--color--status--warning--default);
 }
 
-.ins-c-entity-table.pf-c-table.pf-m-compact {
+.ins-c-entity-table.pf-v6-c-table.pf-m-compact {
     .ins-composed-col * {
-        font-size: var(--pf-global--FontSize--sm);
+        font-size: var(--pf-t--global--font--size--body--sm);
     }
     .ins-c-inventory__list-tags {
         vertical-align: bottom;
@@ -14,7 +14,7 @@ svg.ins-m-alert {
                 width: 14px;
             }
             .ins-c-tag__text {
-                font-size: var(--pf-global--FontSize--sm);
+                font-size: var(--pf-t--global--font--size--body--sm);
             }
         }
     }

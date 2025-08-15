@@ -110,7 +110,7 @@ export const buildRows = (
                       <Spinner />
                     </Bullseye>
                   ),
-                  props: { colSpan: 5, className: 'pf-m-no-padding' },
+                  props: { colSpan: 6, className: 'pf-m-no-padding' },
                 },
               ],
             },

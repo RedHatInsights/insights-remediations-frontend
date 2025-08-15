@@ -3,9 +3,8 @@ import {
   Button,
   Flex,
   Popover,
-  Text,
-  TextContent,
-  TextVariants,
+  Content,
+  ContentVariants,
   Title,
 } from '@patternfly/react-core';
 import {
@@ -21,9 +20,9 @@ export const RemediationsPopover = () => {
       position="right"
       maxWidth="650px"
       bodyContent={
-        <TextContent>
+        <Content>
           <Flex direction={{ default: 'column' }}>
-            <Text component={TextVariants.p}>
+            <Content component={ContentVariants.p}>
               Remediations allows you to resolve Advisor recommendations,
               content advisories, vulnerability CVEs, and failed compliance
               rules that Red Hat Insights has identified on your connected RHEL
@@ -33,7 +32,7 @@ export const RemediationsPopover = () => {
               execute remediation plans on connected RHEL systems or utilize
               integrations with Ansible Automation Platform and Satellite to
               enable issue resolution across your Red Hat portfolio.
-            </Text>
+            </Content>
             <span>
               <a
                 href={
@@ -43,7 +42,7 @@ export const RemediationsPopover = () => {
                 rel="noreferrer"
               >
                 Fixing issues on RHEL systems with remediation plans
-                <ExternalLinkAltIcon className="pf-v5-u-ml-xs" />
+                <ExternalLinkAltIcon className="pf-v6-u-ml-xs" />
               </a>
             </span>
             <span>
@@ -55,7 +54,7 @@ export const RemediationsPopover = () => {
                 rel="noreferrer"
               >
                 Setting up Insights for AAP remediations
-                <ExternalLinkAltIcon className="pf-v5-u-ml-xs" />
+                <ExternalLinkAltIcon className="pf-v6-u-ml-xs" />
               </a>
             </span>
             <span>
@@ -67,21 +66,20 @@ export const RemediationsPopover = () => {
                 rel="noreferrer"
               >
                 Creating an Insights remediation plan for hosts in Satellite
-                <ExternalLinkAltIcon className="pf-v5-u-ml-xs" />
+                <ExternalLinkAltIcon className="pf-v6-u-ml-xs" />
               </a>
             </span>
           </Flex>
-        </TextContent>
+        </Content>
       }
     >
       <Button
+        icon={<OutlinedQuestionCircleIcon />}
         variant="plain"
         aria-label="Open Remediations popover"
         style={{ padding: 0 }}
         ouiaId="AboutRemediationsPopover"
-      >
-        <OutlinedQuestionCircleIcon />
-      </Button>
+      />
     </Popover>
   );
 };

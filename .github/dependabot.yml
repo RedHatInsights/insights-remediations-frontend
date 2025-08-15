@@ -18,8 +18,6 @@ updates:
       patternfly:
         patterns:
           - "@patternfly/*"
-        exclude-patterns:
-          - "@patternfly/react-charts"
         update-types:
           - "minor"
           - "patch"

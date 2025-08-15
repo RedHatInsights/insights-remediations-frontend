@@ -15,7 +15,7 @@ import {
 } from '../../Utilities/DownloadPlaybookButton';
 import { useDispatch } from 'react-redux';
 import RenameModal from '../../components/RenameModal';
-import { dispatchNotification } from '../../Utilities/dispatcher';
+import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import {
   useRawTableState,
@@ -23,7 +23,7 @@ import {
   useStateCallbacks,
 } from 'bastilian-tabletools';
 import NoRemediationsPage from '../../components/NoRemediationsPage';
-import { TextContent } from '@patternfly/react-core';
+import { Content } from '@patternfly/react-core';
 import useRemediationFetchExtras from '../../api/useRemediationFetchExtras';
 import { OverViewPageHeader } from './OverViewPageHeader';
 import { PermissionContext } from '../../App';
@@ -39,6 +39,7 @@ import { CalendarFilterType } from './CalendarFilterType';
 
 export const OverViewPage = () => {
   const dispatch = useDispatch();
+  const addNotification = useAddNotification();
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [remediation, setRemediation] = useState('');
@@ -97,8 +98,8 @@ export const OverViewPage = () => {
         props: {
           className:
             !context.permissions.write || !currentlySelected?.length
-              ? 'pf-v5-u-color-200'
-              : 'pf-v5-u-danger-color-100',
+              ? 'pf-v6-u-color-200'
+              : 'pf-v6-u-danger-color-100',
           isDisabled: !context.permissions.write || !currentlySelected?.length,
         },
 
@@ -147,7 +148,7 @@ export const OverViewPage = () => {
                 : handleSingleDeleteClick(remediation.itemId);
 
               executeDeleteFunction.then(() => {
-                dispatchNotification({
+                addNotification({
                   title: `Remediation plan${
                     currentlySelected.length > 1 ? 's' : ''
                   } deleted`,
@@ -176,81 +177,80 @@ export const OverViewPage = () => {
           <OverViewPageHeader
             hasRemediations={Boolean(allRemediations?.data?.length)}
           />
-          <section className="pf-v5-l-page__main-section pf-v5-c-page__main-section">
-            <RemediationsTable
-              aria-label="OverViewTable"
-              ouiaId="OverViewTable"
-              variant="compact"
-              loading={loading}
-              items={result?.data}
-              total={result?.meta?.total}
-              columns={[...columns]}
-              filters={{
-                filterConfig: [
-                  ...remediationNameFilter,
-                  ...LastExecutedFilter,
-                  //TODO: Enable filter once backend is ready
-                  // ...ExecutionStatusFilter,
-                  ...LastModifiedFilter,
-                  ...CreatedByFilter,
-                ],
-                customFilterTypes: {
-                  calendar: CalendarFilterType,
-                },
-              }}
-              options={{
-                sortBy: {
-                  index: 6,
-                  direction: 'desc',
-                },
-                //TODO: Enable this once we have a way to manage columns with ATT
-                // manageColumns: true,
-                onSelect: () => '',
-                itemIdsInTable: fetchAllIds,
-                itemIdsOnPage: result?.data.map(({ id }) => id),
-                total: result?.meta?.total,
-                actionResolver: () => {
-                  return [
-                    {
-                      title: 'Download',
-                      onClick: (_event, _index, { item }) => {
-                        handleDownloadClick(item.id);
-                      },
+          <RemediationsTable
+            aria-label="OverViewTable"
+            ouiaId="OverViewTable"
+            loading={loading}
+            items={result?.data}
+            total={result?.meta?.total}
+            columns={[...columns]}
+            filters={{
+              filterConfig: [
+                ...remediationNameFilter,
+                ...LastExecutedFilter,
+                //TODO: Enable filter once backend is ready
+                // ...ExecutionStatusFilter,
+                ...LastModifiedFilter,
+                ...CreatedByFilter,
+              ],
+              customFilterTypes: {
+                calendar: CalendarFilterType,
+              },
+            }}
+            options={{
+              sortBy: {
+                index: 6,
+                direction: 'desc',
+              },
+              manageColumns: true,
+              onSelect: true,
+              itemIdsInTable: fetchAllIds,
+              itemIdsOnPage: result?.data.map(({ id }) => id),
+              total: result?.meta?.total,
+              tableProps: {
+                variant: 'compact',
+              },
+              actionResolver: () => {
+                return [
+                  {
+                    title: 'Download',
+                    onClick: (_event, _index, { item }) => {
+                      handleDownloadClick(item.id);
                     },
-                    {
-                      title: 'Rename',
-                      onClick: (_event, _index, { item }) => {
-                        setRemediation(item);
-                        setIsRenameModalOpen(true);
-                      },
+                  },
+                  {
+                    title: 'Rename',
+                    onClick: (_event, _index, { item }) => {
+                      setRemediation(item);
+                      setIsRenameModalOpen(true);
                     },
-                    {
-                      title: (
-                        <TextContent className="pf-v5-u-danger-color-100">
-                          Delete
-                        </TextContent>
-                      ),
-                      onClick: (_event, _index, { item }) => {
-                        setIsBulkDelete(false);
-                        setRemediation(item);
-                        setIsDeleteModalOpen(true);
-                      },
-                      props: { screenReaderText: 'Delete button' },
+                  },
+                  {
+                    title: (
+                      <Content className="pf-v6-u-danger-color-100">
+                        Delete
+                      </Content>
+                    ),
+                    onClick: (_event, _index, { item }) => {
+                      setIsBulkDelete(false);
+                      setRemediation(item);
+                      setIsDeleteModalOpen(true);
                     },
-                  ];
-                },
-                actions: actions,
-                dedicatedAction: () => (
-                  <DownloadPlaybookButton
-                    selectedItems={currentlySelected}
-                    data={result?.data}
-                    dispatch={dispatch}
-                  />
-                ),
-                EmptyState: TableEmptyState,
-              }}
-            />
-          </section>
+                    props: { screenReaderText: 'Delete button' },
+                  },
+                ];
+              },
+              actions: actions,
+              dedicatedAction: () => (
+                <DownloadPlaybookButton
+                  selectedItems={currentlySelected}
+                  data={result?.data}
+                  dispatch={dispatch}
+                />
+              ),
+              EmptyState: TableEmptyState,
+            }}
+          />
         </>
       )}
     </div>

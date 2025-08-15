@@ -37,9 +37,14 @@ jest.mock('./RunSystemsTable', () => {
       {viewLogColumn && (
         <button
           data-testid="view-log-button"
-          onClick={() =>
-            viewLogColumn.renderFunc(null, null, { id: 'test-system' })
-          }
+          onClick={() => {
+            if (viewLogColumn.renderFunc) {
+              viewLogColumn.renderFunc(null, null, { id: 'test-system' });
+            } else if (viewLogColumn.Component) {
+              // Component returns JSX, can't be called like a function in onClick
+              // This is just for testing the click event
+            }
+          }}
         >
           {viewLogColumn.title || 'View log'}
         </button>
@@ -85,7 +90,15 @@ jest.mock('@patternfly/react-core', () => ({
   TextVariants: {
     small: ({ children }) => <small data-testid="text-small">{children}</small>,
   },
-  Button: ({ children, onClick, isDisabled, isInline, variant, style }) => (
+  Button: ({
+    children,
+    onClick,
+    isDisabled,
+    isInline,
+    variant,
+    style,
+    icon,
+  }) => (
     <button
       data-testid="button"
       onClick={onClick}
@@ -94,6 +107,7 @@ jest.mock('@patternfly/react-core', () => ({
       data-variant={variant}
       style={style}
     >
+      {icon}
       {children}
     </button>
   ),

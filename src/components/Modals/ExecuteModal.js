@@ -2,15 +2,13 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Button,
-  Modal,
-  ModalVariant,
-  TextContent,
-  Text,
-  TextVariants,
+  Content,
+  ContentVariants,
   ExpandableSection,
   List,
   ListItem,
 } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { downloadPlaybook } from '../../api';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
@@ -144,18 +142,18 @@ export const ExecuteModal = ({
       }
     >
       <div>
-        <TextContent>
+        <Content>
           {remediationStatus?.areDetailsLoading ? (
             <Skeleton size="lg" />
           ) : (
-            <Text component={TextVariants.p}>
+            <Content component={ContentVariants.p}>
               Playbook contains <b>{pluralize(issueCount, 'action')}</b>
               &nbsp;affecting
               <b>&nbsp;{pluralize(systemCount, 'system')}.</b>
-            </Text>
+            </Content>
           )}
 
-          <Text>
+          <Content component="p">
             <ExpandableSection toggleText="About remote execution with Cloud connector">
               Playbooks can be executed on systems which:
               <List>
@@ -163,7 +161,8 @@ export const ExecuteModal = ({
                   Are connected to Insights via a Satellite instance which has
                   Receptor/Cloud Connector enabled, or <br />
                   <Button
-                    className="pf-u-p-0"
+                    icon={<ExternalLinkAltIcon />}
+                    className="pf-v6-u-p-0"
                     variant="link"
                     isInline
                     component="a"
@@ -173,14 +172,14 @@ export const ExecuteModal = ({
                   >
                     How to configure Receptor/Cloud Connector on Red Hat
                     Satellite&nbsp;
-                    <ExternalLinkAltIcon />
                   </Button>
                 </ListItem>
                 <ListItem>
                   Are directly connected to Insights via Red Hat connector, and
                   Cloud Connector is enabled <br />
                   <Button
-                    className="pf-u-p-0"
+                    icon={<ExternalLinkAltIcon />}
+                    className="pf-v6-u-p-0"
                     variant="link"
                     isInline
                     component="a"
@@ -189,22 +188,22 @@ export const ExecuteModal = ({
                     rel="noreferrer"
                   >
                     How to enable Cloud Connector with Red Hat connector&nbsp;
-                    <ExternalLinkAltIcon />
                   </Button>
                 </ListItem>
               </List>
             </ExpandableSection>
-          </Text>
+          </Content>
 
-          <Text component={TextVariants.p}>
+          <Content component={ContentVariants.p}>
             Executed Ansible Playbooks run on eligible systems with Cloud
             Connector. The playbook will be pushed immediately after selecting
             “Execute playbook”. If the playbook has “Auto reboot” on, systems
             requiring reboot to complete an action will reboot.
-          </Text>
+          </Content>
 
           <Button
-            className="pf-u-p-0"
+            icon={<ExternalLinkAltIcon />}
+            className="pf-v6-u-p-0"
             variant="link"
             isInline
             component="a"
@@ -213,15 +212,14 @@ export const ExecuteModal = ({
             rel="noreferrer"
           >
             Learn more about Cloud Connector&nbsp;
-            <ExternalLinkAltIcon />
           </Button>
 
           {systemCount > 0 && (
-            <Text component={TextVariants.h4} className="pf-u-mt-md">
+            <Content component={ContentVariants.h4} className="pf-v6-u-mt-md">
               Connection status of systems
-            </Text>
+            </Content>
           )}
-        </TextContent>
+        </Content>
         {systemCount === 0 ? (
           <EmptyExecutePlaybookState />
         ) : (

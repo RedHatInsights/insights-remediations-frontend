@@ -4,7 +4,6 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import DetailsGeneralContent from './DetailsGeneralContent';
 
-// Mock child components
 jest.mock('./DetailsCard', () => {
   return function MockDetailsCard(props) {
     return (
@@ -139,7 +138,7 @@ describe('DetailsGeneralContent', () => {
     it('should calculate readyOrNot as true when all conditions are met', () => {
       const props = {
         ...defaultProps,
-        permissions: { execute: true }, // Note: component has typo "exectute"
+        permissions: { execute: true },
         remediationStatus: {
           detailsError: null,
           connectedSystems: 5,
@@ -158,10 +157,10 @@ describe('DetailsGeneralContent', () => {
       expect(progressCardProps.readyOrNot).toBe(true);
     });
 
-    it('should calculate readyOrNot correctly despite typo in component', () => {
+    it('should calculate canExecute correctly when permissions.execute is false', () => {
       const props = {
         ...defaultProps,
-        permissions: { execute: false }, // Note: component checks "exectute" (typo)
+        permissions: { execute: false },
         remediationStatus: {
           detailsError: null,
           connectedSystems: 5,
@@ -170,14 +169,14 @@ describe('DetailsGeneralContent', () => {
 
       render(<DetailsGeneralContent {...props} />);
 
-      // Should NOT show alert because due to typo, permissions.execute doesn't affect readyOrNot
-      expect(screen.queryByTestId('alert')).not.toBeInTheDocument();
+      // Should show alert because permissions.execute is false
+      expect(screen.getByTestId('alert')).toBeInTheDocument();
 
-      // Check that ProgressCard receives correct readyOrNot value
+      // Check that ProgressCard receives correct canExecute value
       const progressCardProps = JSON.parse(
         screen.getByTestId('progress-card-props').textContent,
       );
-      expect(progressCardProps.readyOrNot).toBe(true); // Because of the typo, this will be true
+      expect(progressCardProps.readyOrNot).toBe(false); // Should be false when execute permission is false
     });
 
     it('should calculate readyOrNot as false when detailsError is 403', () => {
@@ -236,13 +235,13 @@ describe('DetailsGeneralContent', () => {
 
       render(<DetailsGeneralContent {...props} />);
 
-      // Should not show alert (because permissions?.exectute will be undefined, not false)
+      // Should NOT show alert because isStillLoading is true when !permissions is true
       expect(screen.queryByTestId('alert')).not.toBeInTheDocument();
 
       const progressCardProps = JSON.parse(
         screen.getByTestId('progress-card-props').textContent,
       );
-      expect(progressCardProps.readyOrNot).toBe(true);
+      expect(progressCardProps.readyOrNot).toBeUndefined(); // canExecute is undefined when permissions?.execute is undefined
     });
 
     it('should handle missing remediationStatus properties', () => {
@@ -279,7 +278,7 @@ describe('DetailsGeneralContent', () => {
       const alert = screen.getByTestId('alert');
       expect(alert).toHaveAttribute('data-inline', 'true');
       expect(alert).toHaveAttribute('data-variant', 'danger');
-      expect(alert).toHaveClass('pf-v5-u-mb-md');
+      expect(alert).toHaveClass('pf-v6-u-mb-md');
 
       expect(screen.getByTestId('alert-title')).toHaveTextContent(
         'Remediation plan cannot be executed',
@@ -384,7 +383,7 @@ describe('DetailsGeneralContent', () => {
     it('should handle all conditions false for readyOrNot', () => {
       const props = {
         ...defaultProps,
-        permissions: { execute: false }, // Note: component checks "exectute" (typo)
+        permissions: { execute: false },
         remediationStatus: {
           detailsError: 403,
           connectedSystems: 0,

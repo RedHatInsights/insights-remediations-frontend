@@ -77,7 +77,7 @@ describe('routes/helpers', () => {
 
       expect(result).toEqual({
         text: 'In progress',
-        color: 'gold',
+        color: 'orange',
         Icon: expect.any(Function),
       });
     });
@@ -87,7 +87,7 @@ describe('routes/helpers', () => {
 
       expect(result).toEqual({
         text: 'In progress',
-        color: 'gold',
+        color: 'orange',
         Icon: expect.any(Function),
       });
     });
@@ -148,10 +148,9 @@ describe('routes/helpers', () => {
     });
 
     it('should return null for null status', () => {
-      // The function doesn't handle null properly, it will throw
-      expect(() => {
-        getStatusMeta(null);
-      }).toThrow();
+      // Now handles null gracefully
+      const result = getStatusMeta(null);
+      expect(result).toBeNull();
     });
 
     it('should handle mixed case status', () => {
@@ -181,7 +180,7 @@ describe('routes/helpers', () => {
       render(<StatusLabel status="running" />);
 
       const label = screen.getByTestId('label');
-      expect(label).toHaveAttribute('data-color', 'gold');
+      expect(label).toHaveAttribute('data-color', 'orange');
       expect(screen.getByTestId('in-progress-icon')).toBeInTheDocument();
       expect(label).toHaveTextContent('In progress');
     });
@@ -220,10 +219,9 @@ describe('routes/helpers', () => {
     });
 
     it('should render nothing for null status', () => {
-      // This will throw because getStatusMeta doesn't handle null
-      expect(() => {
-        render(<StatusLabel status={null} />);
-      }).toThrow();
+      // Now handles null gracefully
+      const { container } = render(<StatusLabel status={null} />);
+      expect(container).toBeEmptyDOMElement();
     });
 
     it('should handle uppercase status', () => {
@@ -238,7 +236,7 @@ describe('routes/helpers', () => {
       render(<StatusLabel status="Running" />);
 
       const label = screen.getByTestId('label');
-      expect(label).toHaveAttribute('data-color', 'gold');
+      expect(label).toHaveAttribute('data-color', 'orange');
       expect(label).toHaveTextContent('In progress');
     });
 

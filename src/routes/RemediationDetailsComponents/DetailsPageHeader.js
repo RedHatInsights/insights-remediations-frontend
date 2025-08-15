@@ -37,7 +37,7 @@ const RemediationDetailsPageHeader = ({
       >
         <FlexItem grow={{ default: 'grow' }} style={{ minWidth: 0 }}>
           <PageHeaderTitle
-            className="pf-v5-u-mb-sm"
+            className="pf-v6-u-mb-sm"
             title={
               <div
                 style={{
@@ -52,7 +52,7 @@ const RemediationDetailsPageHeader = ({
           />
           <p style={{ wordBreak: 'break-word' }}>{`ID: ${remediation.id}`}</p>
         </FlexItem>
-        <FlexItem style={{ marginTop: 'var(--pf-v5-global--spacer--sm)' }}>
+        <FlexItem style={{ marginTop: 'var(--pf-t--global--spacer--sm)' }}>
           {remediationStatus.areDetailsLoading ? (
             <Spinner />
           ) : (

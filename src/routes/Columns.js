@@ -27,7 +27,7 @@ export const LastExecuted = {
 
 export const ExecutionStatus = {
   title: 'Execution status',
-  transforms: [wrappable],
+  // transforms: [wrappable],
   //TODO: Enable once Backend is ready
   // sortable: 'status',
   exportKey: 'status',

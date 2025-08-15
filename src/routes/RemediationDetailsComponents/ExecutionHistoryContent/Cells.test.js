@@ -195,10 +195,7 @@ describe('ExecutionHistoryContent Cells', () => {
 
         const inProgressIcon = screen.getByTestId('in-progress-icon');
         expect(inProgressIcon).toBeInTheDocument();
-        expect(inProgressIcon).toHaveAttribute(
-          'data-color',
-          'var(--pf-v5-global--icon--Color--light--dark)',
-        );
+        // In PatternFly v6, the InProgressIcon no longer has the data-color attribute
 
         const text = screen.getByTestId('text');
         expect(text).toHaveTextContent('In progress');

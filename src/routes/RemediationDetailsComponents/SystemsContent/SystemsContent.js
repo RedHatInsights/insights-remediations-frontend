@@ -174,9 +174,7 @@ const SystemsContent = ({ remediationDetails, remediationStatus, refetch }) => {
   };
 
   return (
-    <section
-      className={'pf-v5-l-page__main-section pf-v5-c-page__main-section'}
-    >
+    <section>
       {isActionsModalOpen && (
         <ActionsModal
           isOpen={isActionsModalOpen}

@@ -23,7 +23,7 @@ const ExecuteButton = ({
         onClick={() => setOpen(true)}
         tooltipContent={
           <Flex
-            className="pf-v5-u-ml-md"
+            className="pf-v6-u-ml-md"
             direction={{ default: 'column' }}
             spaceItems={{ default: 'spaceItemsNone' }}
             alignItems={{ default: 'alignItemsFlexStart' }}

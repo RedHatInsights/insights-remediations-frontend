@@ -20,8 +20,8 @@ import FormRenderer from '@data-driven-forms/react-form-renderer/form-renderer';
 import Pf4FormTemplate from '@data-driven-forms/pf4-component-mapper/form-template';
 import schemaBuilder from './schema';
 import WizardMapper from '@data-driven-forms/pf4-component-mapper/wizard';
-import { Modal } from '@patternfly/react-core';
-import { Wizard } from '@patternfly/react-core/deprecated';
+
+import { Wizard, Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import TextField from '@data-driven-forms/pf4-component-mapper/text-field';
 import componentTypes from '@data-driven-forms/react-form-renderer/component-types';
 import SelectPlaybook from './steps/selectPlaybook';
@@ -44,7 +44,7 @@ import {
   ISSUES_MULTIPLE,
 } from '../../Utilities/utils';
 import Progress from './steps/progress';
-import { ModalVariant } from '@patternfly/react-core';
+
 import { useRemediationsList } from '../../Utilities/useRemediationsList';
 
 const initialState = {

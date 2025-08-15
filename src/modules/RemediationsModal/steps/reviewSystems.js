@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import propTypes from 'prop-types';
 import useFieldApi from '@data-driven-forms/react-form-renderer/use-field-api';
 import useFormApi from '@data-driven-forms/react-form-renderer/use-form-api';
-import { Text, TextContent, Stack, StackItem } from '@patternfly/react-core';
+import { Content, Stack, StackItem } from '@patternfly/react-core';
 import ReducerRegistry from '@redhat-cloud-services/frontend-components-utilities/ReducerRegistry';
 import { useDispatch, useSelector } from 'react-redux';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
@@ -75,11 +75,11 @@ const ReviewSystems = ({ issues, systems, allSystems, registry, ...props }) => {
       data-testid="wizard-review-systems"
     >
       <StackItem>
-        <TextContent>
-          <Text>
+        <Content>
+          <Content component="p">
             Review and optionally exclude systems from your selection.
-          </Text>
-        </TextContent>
+          </Content>
+        </Content>
       </StackItem>
       <StackItem>
         <SystemsTable
@@ -112,7 +112,7 @@ const ReviewSystems = ({ issues, systems, allSystems, registry, ...props }) => {
       </StackItem>
       {(bootcError || error) && loaded && (
         <StackItem>
-          <ExclamationCircleIcon className="ins-c-remediations-error pf-u-mr-sm" />
+          <ExclamationCircleIcon className="ins-c-remediations-error pf-v6-u-mr-sm" />
           <span className="ins-c-remediations-error">
             {bootcError || error}
           </span>
