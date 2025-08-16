@@ -90,7 +90,7 @@ const RunTabContent = ({
             title: '',
             props: { screenReaderText: 'View log' },
             exportKey: 'viewLog',
-            renderFunc: (_d, _i, system) => (
+            Component: (system) => (
               <Button
                 variant="link"
                 style={{ padding: 0 }}

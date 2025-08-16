@@ -37,9 +37,7 @@ jest.mock('./RunSystemsTable', () => {
       {viewLogColumn && (
         <button
           data-testid="view-log-button"
-          onClick={() =>
-            viewLogColumn.renderFunc(null, null, { id: 'test-system' })
-          }
+          onClick={() => viewLogColumn.Component({ id: 'test-system' })}
         >
           {viewLogColumn.title || 'View log'}
         </button>
