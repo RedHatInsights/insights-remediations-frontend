@@ -170,6 +170,7 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
         }}
         options={{
           onSelect: () => '',
+          manageColumns: true,
           itemIdsInTable: () => allIssues.map(({ id }) => id),
           itemIdsOnPage: () => allIssues.map(({ id }) => id),
           actionResolver: () => {

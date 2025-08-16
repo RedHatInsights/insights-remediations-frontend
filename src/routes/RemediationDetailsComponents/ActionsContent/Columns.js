@@ -13,6 +13,7 @@ export default [
     // sortable: 'action',
     exportKey: 'action',
     Component: ActionsCell,
+    manageable: false,
   },
   {
     title: 'Reboot required',

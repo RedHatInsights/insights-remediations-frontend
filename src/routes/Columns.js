@@ -15,6 +15,7 @@ export const Name = {
   sortable: 'name',
   exportKey: 'name',
   Component: NameCell,
+  manageable: false,
 };
 
 export const LastExecuted = {
@@ -28,8 +29,7 @@ export const LastExecuted = {
 export const ExecutionStatus = {
   title: 'Execution status',
   transforms: [wrappable],
-  //TODO: Enable once Backend is ready
-  // sortable: 'status',
+  sortable: 'status',
   exportKey: 'status',
   Component: ExecutionStatusCell,
 };

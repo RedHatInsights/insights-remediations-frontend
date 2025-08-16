@@ -61,8 +61,6 @@ export const ExecutionStatusFilter = [
       { label: 'Succeeded', value: 'success' },
       { label: 'In progress', value: 'running' },
       { label: 'Failed', value: 'failure' },
-      { label: 'Timed out', value: 'timeout' },
-      { label: 'Cancelled', value: 'cancelled' },
     ],
   },
 ];
