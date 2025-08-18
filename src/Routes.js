@@ -53,7 +53,7 @@ const RemediationRoutes = () => {
       module="./AppZeroState"
       scope="dashboard"
       ErrorComponent={<ErrorState />}
-      app="Remediations"
+      app="Remediation_plans"
       appId="remediation_zero_state"
       customFetchResults={hasSystems}
     >
