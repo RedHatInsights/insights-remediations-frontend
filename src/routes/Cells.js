@@ -126,10 +126,10 @@ Name.propTypes = {
   archived: PropTypes.string,
 };
 LastExecutedCell.propTypes = {
-  playbook_runs: PropTypes.object,
+  playbook_runs: PropTypes.array,
 };
 ExecutionStatusCell.propTypes = {
-  playbook_runs: PropTypes.string,
+  playbook_runs: PropTypes.array,
 };
 ActionsCell.propTypes = {
   issue_count: PropTypes.number,
