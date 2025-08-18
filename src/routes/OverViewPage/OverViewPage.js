@@ -4,7 +4,7 @@ import useRemediationsQuery from '../../api/useRemediationsQuery';
 import RemediationsTable from '../../components/RemediationsTable/RemediationsTable';
 import {
   CreatedByFilter,
-  // ExecutionStatusFilter,
+  ExecutionStatusFilter,
   LastExecutedFilter,
   LastModifiedFilter,
   remediationNameFilter,
@@ -189,8 +189,7 @@ export const OverViewPage = () => {
                 filterConfig: [
                   ...remediationNameFilter,
                   ...LastExecutedFilter,
-                  //TODO: Enable filter once backend is ready
-                  // ...ExecutionStatusFilter,
+                  ...ExecutionStatusFilter,
                   ...LastModifiedFilter,
                   ...CreatedByFilter,
                 ],
@@ -203,8 +202,7 @@ export const OverViewPage = () => {
                   index: 6,
                   direction: 'desc',
                 },
-                //TODO: Enable this once we have a way to manage columns with ATT
-                // manageColumns: true,
+                manageColumns: true,
                 onSelect: () => '',
                 itemIdsInTable: fetchAllIds,
                 itemIdsOnPage: result?.data.map(({ id }) => id),
