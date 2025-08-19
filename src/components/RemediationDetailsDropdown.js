@@ -13,7 +13,7 @@ import { EllipsisVIcon } from '@patternfly/react-icons';
 import TextInputDialog from './Dialogs/TextInputDialog';
 import ConfirmationDialog from './ConfirmationDialog';
 import { deleteRemediation, patchRemediation } from '../actions';
-import { dispatchNotification } from '../Utilities/dispatcher';
+import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 
 import { PermissionContext } from '../App';
 
@@ -33,6 +33,7 @@ function RemediationDetailsDropdown({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const permission = useContext(PermissionContext);
   const navigate = useNavigate();
+  const addNotification = useAddNotification();
 
   return (
     <React.Fragment>
@@ -50,7 +51,7 @@ function RemediationDetailsDropdown({
                 })
               : onRename(remediation.id, name);
 
-            dispatchNotification({
+            addNotification({
               title: `Updated playbook name to ${name}`,
               description: '',
               variant: 'success',
@@ -71,7 +72,7 @@ function RemediationDetailsDropdown({
           setDeleteDialogOpen(false);
           if (confirm) {
             onDelete(remediation.id);
-            dispatchNotification({
+            addNotification({
               title: `Deleted remediation plan ${remediation.name}`,
               variant: 'success',
               dismissable: true,

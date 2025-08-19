@@ -32,6 +32,7 @@ import { formatDate } from '../Cells';
 import { useVerifyName } from '../../Utilities/useVerifyName';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import { execStatus } from './helpers';
+import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 
 const DetailsCard = ({
   details,
@@ -46,6 +47,7 @@ const DetailsCard = ({
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(details?.name);
   const [rebootToggle, setRebootToggle] = useState(details?.auto_reboot);
+  const addNotification = useAddNotification();
 
   useEffect(() => {
     setValue(details?.name || '');
@@ -69,11 +71,32 @@ const DetailsCard = ({
     : ValidatedOptions.default;
 
   const onSubmit = async () => {
-    await updateRemPlan({
-      id: details.id,
-      name: value,
-    }).then(async () => await refetch(), await refetchAllRemediations());
-    setEditing(false);
+    try {
+      await updateRemPlan({
+        id: details.id,
+        name: value,
+      }).then(async () => {
+        await refetch();
+        await refetchAllRemediations();
+      });
+
+      addNotification({
+        title: `Remediation plan renamed`,
+        variant: 'success',
+        dismissable: true,
+        autoDismiss: true,
+      });
+
+      setEditing(false);
+    } catch (error) {
+      console.error(error);
+      addNotification({
+        title: `Failed to update playbook name`,
+        variant: 'danger',
+        dismissable: true,
+        autoDismiss: true,
+      });
+    }
   };
   if (!details) {
     return <Spinner />;

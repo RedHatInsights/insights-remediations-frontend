@@ -48,21 +48,28 @@ jest.mock('./Dialogs/TextInputDialog', () => {
   };
 });
 
-jest.mock('../Utilities/dispatcher', () => ({
-  dispatchNotification: jest.fn(),
-}));
+jest.mock(
+  '@redhat-cloud-services/frontend-components-notifications/hooks',
+  () => ({
+    useAddNotification: jest.fn(),
+  }),
+);
 
 jest.mock('../api', () => ({
   patchRemediation: jest.fn(),
 }));
 
-const { dispatchNotification } = require('../Utilities/dispatcher');
+const {
+  useAddNotification,
+} = require('@redhat-cloud-services/frontend-components-notifications/hooks');
 const { patchRemediation } = require('../api');
 
 // Create a simple mock store
 const mockStore = createStore(() => ({}));
 
 describe('RenameModal', () => {
+  const mockAddNotification = jest.fn();
+
   const defaultProps = {
     remediation: {
       id: 'remediation-1',
@@ -79,6 +86,7 @@ describe('RenameModal', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    useAddNotification.mockReturnValue(mockAddNotification);
     patchRemediation.mockResolvedValue({});
   });
 
@@ -185,7 +193,7 @@ describe('RenameModal', () => {
       });
 
       await waitFor(() => {
-        expect(dispatchNotification).toHaveBeenCalledWith({
+        expect(mockAddNotification).toHaveBeenCalledWith({
           title: 'Remediation plan renamed',
           variant: 'success',
           dismissable: true,
@@ -244,8 +252,8 @@ describe('RenameModal', () => {
       });
 
       await waitFor(() => {
-        expect(dispatchNotification).toHaveBeenCalledWith({
-          title: 'Failed to update playbook name',
+        expect(mockAddNotification).toHaveBeenCalledWith({
+          title: 'Failed to update plan name',
           variant: 'danger',
           dismissable: true,
           autoDismiss: true,
@@ -280,11 +288,11 @@ describe('RenameModal', () => {
     });
   });
 
-  describe('Redux connection', () => {
-    it('should be connected to Redux', () => {
-      // The default export should be the connected component
+  describe('Component export', () => {
+    it('should export a function component', () => {
+      // The default export should be a function component
       expect(RenameModal).toBeDefined();
-      expect(typeof RenameModal).toBe('object'); // Connected components are objects
+      expect(typeof RenameModal).toBe('function'); // Function components are functions
     });
 
     it('should work with minimal props', () => {
@@ -372,8 +380,8 @@ describe('RenameModal', () => {
       });
 
       await waitFor(() => {
-        expect(dispatchNotification).toHaveBeenCalledWith({
-          title: 'Failed to update playbook name',
+        expect(mockAddNotification).toHaveBeenCalledWith({
+          title: 'Failed to update plan name',
           variant: 'danger',
           dismissable: true,
           autoDismiss: true,

@@ -13,7 +13,7 @@ import { downloadPlaybook } from '../../api';
 import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import EmptyExecutePlaybookState from '../EmptyExecutePlaybookState';
-import { dispatchNotification } from '../../Utilities/dispatcher';
+import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import useRemediationsQuery from '../../api/useRemediationsQuery';
 import { executeRemediation } from '../../routes/api';
 import RemediationsTable from '../RemediationsTable/RemediationsTable';
@@ -31,6 +31,7 @@ export const ExecuteModal = ({
 }) => {
   const [connected, setConnected] = useState([]);
   const [disconnected, setDisconnected] = useState([]);
+  const addNotification = useAddNotification();
 
   useEffect(() => {
     if (!remediationStatus?.connectedData?.length) {
@@ -66,7 +67,7 @@ export const ExecuteModal = ({
     executeRun({ id: remediation.id, exclude })
       .then(() => {
         refetchRemediationPlaybookRuns();
-        dispatchNotification({
+        addNotification({
           title: `Executing playbook ${remediation.name}`,
           description: (
             <span>
@@ -80,7 +81,7 @@ export const ExecuteModal = ({
         onClose();
       })
       .catch((err) => {
-        dispatchNotification({
+        addNotification({
           title: 'Failed to execute playbook',
           description: err.message || 'Unknown error',
           variant: 'danger',
@@ -121,7 +122,7 @@ export const ExecuteModal = ({
                 ouiaId="download-playbook"
                 onClick={() => {
                   downloadPlaybook(remediation?.id);
-                  dispatchNotification({
+                  addNotification({
                     title: 'Preparing playbook for download',
                     description:
                       'Once complete, your download will start automatically.',

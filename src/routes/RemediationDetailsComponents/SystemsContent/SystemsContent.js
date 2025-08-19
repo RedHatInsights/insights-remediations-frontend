@@ -9,7 +9,7 @@ import useRemediationsQuery from '../../../api/useRemediationsQuery';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import { useRawTableState } from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
 import ConfirmationDialog from '../../../components/ConfirmationDialog';
-import { dispatchNotification } from '../../../Utilities/dispatcher';
+import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import useStateCallbacks from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState/hooks/useStateCallbacks';
 import chunk from 'lodash/chunk';
 import { useParams } from 'react-router-dom';
@@ -50,6 +50,7 @@ const SystemsContent = ({ remediationDetails, remediationStatus, refetch }) => {
   const [actionsToShow, setActionsToShow] = useState([]);
   const [system, setSystem] = useState();
   const [rowSystemName, setRowSystemName] = useState('');
+  const addNotification = useAddNotification();
   const allSystems = remediationDetails.issues.flatMap(
     (issue) => issue.systems,
   );
@@ -196,7 +197,7 @@ const SystemsContent = ({ remediationDetails, remediationStatus, refetch }) => {
               const chopped = isBulkDelete ? currentlySelected : system;
               handleDelete(chopped)
                 .then(() => {
-                  dispatchNotification({
+                  addNotification({
                     title: `Succesfully deleted systems`,
                     variant: 'success',
                     dismissable: true,
@@ -208,7 +209,7 @@ const SystemsContent = ({ remediationDetails, remediationStatus, refetch }) => {
                   setIsBulkDelete(false);
                 })
                 .catch(() => {
-                  dispatchNotification({
+                  addNotification({
                     title: `Failed to delete systems`,
                     variant: 'danger',
                     dismissable: true,

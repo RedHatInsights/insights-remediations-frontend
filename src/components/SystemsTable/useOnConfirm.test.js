@@ -1,15 +1,10 @@
 import { renderHook, act } from '@testing-library/react';
 import { useDispatch } from 'react-redux';
 import useOnConfirm from './useOnConfirm';
-import { dispatchNotification } from '../../Utilities/dispatcher';
 
 // Mock external dependencies
 jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),
-}));
-
-jest.mock('../../Utilities/dispatcher', () => ({
-  dispatchNotification: jest.fn(),
 }));
 
 describe('useOnConfirm Hook', () => {
@@ -20,12 +15,14 @@ describe('useOnConfirm Hook', () => {
   let mockActiveSystem;
   let mockSelected;
   let mockRemediation;
+  let mockAddNotification;
 
   beforeEach(() => {
     mockDispatch = jest.fn();
     mockDeleteSystems = jest.fn();
     mockRefreshRemediation = jest.fn();
     mockSetIsOpen = jest.fn();
+    mockAddNotification = jest.fn();
     mockActiveSystem = {
       current: { id: 'active-system-1', name: 'Active System' },
     };
@@ -33,10 +30,10 @@ describe('useOnConfirm Hook', () => {
 
     // Reset mocks
     useDispatch.mockReturnValue(mockDispatch);
-    dispatchNotification.mockClear();
     mockDeleteSystems.mockClear();
     mockRefreshRemediation.mockClear();
     mockSetIsOpen.mockClear();
+    mockAddNotification.mockClear();
     mockDispatch.mockClear();
   });
 
@@ -56,6 +53,7 @@ describe('useOnConfirm Hook', () => {
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
         }),
       );
 
@@ -72,6 +70,7 @@ describe('useOnConfirm Hook', () => {
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
         }),
       );
 
@@ -124,6 +123,7 @@ describe('useOnConfirm Hook', () => {
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
         }),
       );
 
@@ -150,6 +150,7 @@ describe('useOnConfirm Hook', () => {
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
         }),
       );
 
@@ -172,6 +173,7 @@ describe('useOnConfirm Hook', () => {
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
         }),
       );
 
@@ -194,6 +196,7 @@ describe('useOnConfirm Hook', () => {
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
         }),
       );
 
@@ -201,7 +204,7 @@ describe('useOnConfirm Hook', () => {
         result.current();
       });
 
-      expect(dispatchNotification).toHaveBeenCalledWith({
+      expect(mockAddNotification).toHaveBeenCalledWith({
         title: 'Removed 1 system from playbook',
         description: '',
         variant: 'success',
@@ -222,6 +225,7 @@ describe('useOnConfirm Hook', () => {
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
         }),
       );
 
@@ -254,6 +258,7 @@ describe('useOnConfirm Hook', () => {
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
         }),
       );
 
@@ -283,6 +288,7 @@ describe('useOnConfirm Hook', () => {
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
         }),
       );
 
@@ -290,7 +296,7 @@ describe('useOnConfirm Hook', () => {
         result.current();
       });
 
-      expect(dispatchNotification).toHaveBeenCalledWith({
+      expect(mockAddNotification).toHaveBeenCalledWith({
         title: 'Removed 3 systems from playbook',
         description: '',
         variant: 'success',
@@ -312,6 +318,7 @@ describe('useOnConfirm Hook', () => {
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
         }),
       );
 
@@ -319,7 +326,7 @@ describe('useOnConfirm Hook', () => {
         result.current();
       });
 
-      expect(dispatchNotification).toHaveBeenCalledWith({
+      expect(mockAddNotification).toHaveBeenCalledWith({
         title: 'Removed 1 system from playbook',
         description: '',
         variant: 'success',
@@ -346,6 +353,7 @@ describe('useOnConfirm Hook', () => {
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
         }),
       );
 
@@ -372,6 +380,7 @@ describe('useOnConfirm Hook', () => {
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
         }),
       );
 
@@ -400,6 +409,7 @@ describe('useOnConfirm Hook', () => {
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
         }),
       );
 
@@ -427,6 +437,7 @@ describe('useOnConfirm Hook', () => {
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
         }),
       );
 
@@ -435,7 +446,7 @@ describe('useOnConfirm Hook', () => {
       });
 
       expect(mockSelected.size).toBe(0);
-      expect(dispatchNotification).toHaveBeenCalledWith(
+      expect(mockAddNotification).toHaveBeenCalledWith(
         expect.objectContaining({
           title: 'Removed 1 system from playbook',
         }),
@@ -455,6 +466,7 @@ describe('useOnConfirm Hook', () => {
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
         }),
       );
 
@@ -469,7 +481,7 @@ describe('useOnConfirm Hook', () => {
 
       expect(mockDeleteSystems).toHaveBeenCalledTimes(3);
       expect(mockSetIsOpen).toHaveBeenCalledTimes(3);
-      expect(dispatchNotification).toHaveBeenCalledTimes(3);
+      expect(mockAddNotification).toHaveBeenCalledTimes(3);
     });
   });
 });

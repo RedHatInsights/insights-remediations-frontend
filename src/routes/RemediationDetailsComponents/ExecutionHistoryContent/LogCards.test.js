@@ -198,7 +198,7 @@ describe('LogCards', () => {
         ).toBeInTheDocument();
         expect(screen.getByTestId('exclamation-circle-icon')).toHaveAttribute(
           'data-color',
-          'var(--pf-v6-global--danger-color--100)',
+          'var(--pf-t--global--icon--color--status--danger--default)',
         );
         expect(screen.getByText('Failure')).toBeInTheDocument();
       });
@@ -209,7 +209,7 @@ describe('LogCards', () => {
         expect(screen.getByTestId('ban-icon')).toBeInTheDocument();
         expect(screen.getByTestId('ban-icon')).toHaveAttribute(
           'data-color',
-          'var(--pf-v6-global--danger-color--100)',
+          'var(--pf-t--global--icon--color--status--danger--default)',
         );
         expect(screen.getByText('Canceled')).toBeInTheDocument();
       });

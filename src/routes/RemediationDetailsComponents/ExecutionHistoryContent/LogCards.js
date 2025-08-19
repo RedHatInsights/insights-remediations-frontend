@@ -33,13 +33,13 @@ const statusIcon = (status) => {
     ),
     failure: (
       <ExclamationCircleIcon
-        color="var(--pf-v6-global--danger-color--100)"
+        color="var(--pf-t--global--icon--color--status--danger--default)"
         data-testid="exclamation-circle-icon"
       />
     ),
     canceled: (
       <BanIcon
-        color="var(--pf-v6-global--danger-color--100)"
+        color="var(--pf-t--global--icon--color--status--danger--default)"
         data-testid="ban-icon"
       />
     ),
