@@ -3,16 +3,17 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import useNavigate from '@redhat-cloud-services/frontend-components-utilities/useInsightsNavigate';
 
-import { Button } from '@patternfly/react-core';
 import {
   Dropdown,
-  DropdownPosition,
-  KebabToggle,
-} from '@patternfly/react-core/deprecated';
+  DropdownList,
+  DropdownItem,
+  MenuToggle,
+} from '@patternfly/react-core';
+import { EllipsisVIcon } from '@patternfly/react-icons';
 import TextInputDialog from './Dialogs/TextInputDialog';
 import ConfirmationDialog from './ConfirmationDialog';
 import { deleteRemediation, patchRemediation } from '../actions';
-import { dispatchNotification } from '../Utilities/dispatcher';
+import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 
 import { PermissionContext } from '../App';
 
@@ -32,6 +33,7 @@ function RemediationDetailsDropdown({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const permission = useContext(PermissionContext);
   const navigate = useNavigate();
+  const addNotification = useAddNotification();
 
   return (
     <React.Fragment>
@@ -49,7 +51,7 @@ function RemediationDetailsDropdown({
                 })
               : onRename(remediation.id, name);
 
-            dispatchNotification({
+            addNotification({
               title: `Updated playbook name to ${name}`,
               description: '',
               variant: 'success',
@@ -70,7 +72,7 @@ function RemediationDetailsDropdown({
           setDeleteDialogOpen(false);
           if (confirm) {
             onDelete(remediation.id);
-            dispatchNotification({
+            addNotification({
               title: `Deleted remediation plan ${remediation.name}`,
               variant: 'success',
               dismissable: true,
@@ -83,23 +85,35 @@ function RemediationDetailsDropdown({
 
       {permission.permissions.write && (
         <Dropdown
-          onSelect={(f) => f}
-          toggle={<KebabToggle onToggle={() => setOpen((value) => !value)} />}
+          onSelect={() => setOpen(false)}
+          toggle={(toggleRef) => (
+            <MenuToggle
+              ref={toggleRef}
+              variant="plain"
+              onClick={() => setOpen((value) => !value)}
+              isExpanded={open}
+            >
+              <EllipsisVIcon />
+            </MenuToggle>
+          )}
           isOpen={open}
-          position={DropdownPosition.right}
-          isPlain
+          popperProps={{ position: 'right' }}
         >
-          <Button onClick={() => setRenameDialogOpen(true)} variant="link">
-            Rename
-          </Button>
-          <Button
-            className="rem-c-button__danger-link"
-            onClick={() => setDeleteDialogOpen(true)}
-            variant="link"
-            isDanger
-          >
-            Delete
-          </Button>
+          <DropdownList>
+            <DropdownItem
+              key="rename"
+              onClick={() => setRenameDialogOpen(true)}
+            >
+              Rename
+            </DropdownItem>
+            <DropdownItem
+              key="delete"
+              onClick={() => setDeleteDialogOpen(true)}
+              isDanger
+            >
+              Delete
+            </DropdownItem>
+          </DropdownList>
         </Dropdown>
       )}
     </React.Fragment>

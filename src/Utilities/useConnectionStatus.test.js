@@ -33,7 +33,6 @@ describe('useConnectionStatus', () => {
       hook = renderHook(() => useConnectionStatus(remediation.id, mockAxios));
     });
     const { result } = hook;
-    console.log(result, 'result here');
     expect(result.current[0]).toBe(1);
     expect(result.current[1]).toBe(4);
   });

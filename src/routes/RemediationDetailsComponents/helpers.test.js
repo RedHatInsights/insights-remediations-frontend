@@ -149,7 +149,7 @@ describe('RemediationDetailsComponents helpers', () => {
         expect(screen.queryByTestId('icon')).not.toHaveAttribute('data-status');
         expect(screen.getByTestId('in-progress-icon')).toHaveAttribute(
           'data-color',
-          'var(--pf-v5-global--icon--Color--light--dark)',
+          'var(--pf-v6-global--icon--Color--light--dark)',
         );
         expect(
           screen.getByText('In progress 30 minutes ago'),

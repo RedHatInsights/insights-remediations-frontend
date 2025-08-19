@@ -10,7 +10,7 @@ export default [
   {
     title: 'Action',
     transforms: [wrappable],
-    // sortable: 'action',
+    sortable: 'description',
     exportKey: 'action',
     Component: ActionsCell,
     manageable: false,

@@ -16,8 +16,7 @@ import {
   Grid,
   GridItem,
   Radio,
-  Text,
-  TextContent,
+  Content,
   TextInput,
   Stack,
   StackItem,
@@ -122,7 +121,7 @@ const SelectPlaybook = (props) => {
               variant="warning"
               isInline
               title={
-                <Text>
+                <Content component="p">
                   There {pluralize(warnings.length, 'was', 'were')}{' '}
                   <Popover
                     aria-label="Resolution error popover"
@@ -142,13 +141,13 @@ const SelectPlaybook = (props) => {
                     </b>
                   </Popover>{' '}
                   while fetching resolutions for your issues!{' '}
-                </Text>
+                </Content>
               }
             />
           </StackItem>
         )}
-        <TextContent>
-          <Text>
+        <Content>
+          <Content component="p">
             You selected <b>{pluralize(allSystems.length, 'system')} </b>
             to remediate with Ansible, which in total includes{' '}
             <b>{pluralize(issues?.length, 'issue')} </b>
@@ -160,8 +159,8 @@ const SelectPlaybook = (props) => {
               'which'
             )}{' '}
             can be remediated by Ansible.
-          </Text>
-        </TextContent>
+          </Content>
+        </Content>
       </StackItem>
       <StackItem>
         <Grid hasGutter>
@@ -237,7 +236,7 @@ const SelectPlaybook = (props) => {
               />
 
               {isDisabled && !existingPlaybookSelected && (
-                <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
+                <p className="pf-v6-u-font-size-sm pf-v6-u-danger-color-100">
                   A remediation plan with the same name already exists in your
                   organization. Enter a unique name and try again.
                 </p>

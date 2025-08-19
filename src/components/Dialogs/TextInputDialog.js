@@ -4,13 +4,11 @@ import PropTypes from 'prop-types';
 import {
   Button,
   FormGroup,
-  Modal,
   TextInput,
-  ModalVariant,
   Spinner,
   ValidatedOptions,
-  TextVariants,
 } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { useVerifyName } from '../../Utilities/useVerifyName';
 
 export default function TextInputDialog(props) {
@@ -41,7 +39,7 @@ export default function TextInputDialog(props) {
       onClose={(event) => onCancel(event)}
       actions={[
         nameStatus === 'checking' ? (
-          <Spinner size="lg" className="pf-u-mr-sm" />
+          <Spinner size="lg" className="pf-v6-u-mr-sm" />
         ) : (
           <Button
             key="confirm"
@@ -63,38 +61,37 @@ export default function TextInputDialog(props) {
         </Button>,
       ]}
       variant={ModalVariant.small}
-      className={className}
     >
-      <FormGroup
-        fieldId="remediation-name"
-        helperTextInvalid="Playbook name has to contain alphanumeric characters"
-        isValid={nameStatus !== 'empty' && nameStatus !== 'duplicate'}
-      >
-        <TextVariants.p className="pf-v5-u-font-weight-bold">
-          Name
-        </TextVariants.p>
-
-        <TextInput
-          value={value}
-          type="text"
-          onChange={(_event, value) => setValue(value)}
-          aria-label={ariaLabel || 'input text'}
-          autoFocus
+      <div data-testid="modal" className={className}>
+        <FormGroup
+          fieldId="remediation-name"
+          helperTextInvalid="Playbook name has to contain alphanumeric characters"
           isValid={nameStatus !== 'empty' && nameStatus !== 'duplicate'}
-          validated={validationState}
-        />
-        {nameStatus === 'duplicate' && (
-          <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
-            A remediation plan with the same name already exists in your
-            organization. Enter a unique name and try again.
-          </p>
-        )}
-        {nameStatus === 'empty' && (
-          <p className="pf-v5-u-font-size-sm pf-v5-u-danger-color-100">
-            Playbook name cannot be empty.
-          </p>
-        )}
-      </FormGroup>
+        >
+          <p className="pf-v6-u-font-weight-bold">Name</p>
+
+          <TextInput
+            value={value}
+            type="text"
+            onChange={(_event, value) => setValue(value)}
+            aria-label={ariaLabel || 'input text'}
+            autoFocus
+            isValid={nameStatus !== 'empty' && nameStatus !== 'duplicate'}
+            validated={validationState}
+          />
+          {nameStatus === 'duplicate' && (
+            <p className="pf-v6-u-font-size-sm pf-v6-u-danger-color-100">
+              A remediation plan with the same name already exists in your
+              organization. Enter a unique name and try again.
+            </p>
+          )}
+          {nameStatus === 'empty' && (
+            <p className="pf-v6-u-font-size-sm pf-v6-u-danger-color-100">
+              Playbook name cannot be empty.
+            </p>
+          )}
+        </FormGroup>
+      </div>
     </Modal>
   );
 }

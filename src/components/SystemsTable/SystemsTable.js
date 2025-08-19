@@ -18,6 +18,7 @@ import {
 import systemsColumns from './Columns';
 import useBulkSelect from './useBulkSelect';
 import useOnConfirm from './useOnConfirm';
+import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 
 const SystemsTableWrapper = ({
   remediation,
@@ -31,6 +32,7 @@ const SystemsTableWrapper = ({
   const systemsRef = useRef();
   const activeSystem = useRef(undefined);
   const [refreshKey, setRefreshKey] = useState(0);
+  const addNotification = useAddNotification();
   const selected = useSelector(
     ({ entities }) => entities?.selected || new Map(),
   );
@@ -51,6 +53,7 @@ const SystemsTableWrapper = ({
       await refreshRemediation();
     },
     setIsOpen,
+    addNotification,
   });
 
   const bulkSelect = useBulkSelect({

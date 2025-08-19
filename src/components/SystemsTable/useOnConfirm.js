@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { dispatchNotification } from '../../Utilities/dispatcher';
 
 const useOnConfirm = ({
   selected,
@@ -9,6 +8,7 @@ const useOnConfirm = ({
   remediation,
   refreshRemediation,
   setIsOpen,
+  addNotification,
 }) => {
   const dispatch = useDispatch();
   return useCallback(() => {
@@ -28,7 +28,7 @@ const useOnConfirm = ({
     })();
     activeSystem.current = undefined;
     const itemsToDelete = selected.size > 0 ? selected.size : 1;
-    dispatchNotification({
+    addNotification({
       title: `Removed ${itemsToDelete} ${
         itemsToDelete > 1 ? 'systems' : 'system'
       } from playbook`,
@@ -45,6 +45,7 @@ const useOnConfirm = ({
     remediation,
     refreshRemediation,
     setIsOpen,
+    addNotification,
     dispatch,
   ]);
 };

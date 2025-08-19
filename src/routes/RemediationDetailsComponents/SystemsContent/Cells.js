@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, TextContent, Tooltip } from '@patternfly/react-core';
+import { Flex, Content, Tooltip } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 import {
   ConnectedIcon,
@@ -8,38 +8,38 @@ import {
 } from '@patternfly/react-icons';
 
 export const NameCell = ({ hostname }) => {
-  return <TextContent>{hostname}</TextContent>;
+  return <Content>{hostname}</Content>;
 };
 export const TagsCell = ({ tags }) => {
-  return <TextContent>{tags?.count ?? '0'}</TextContent>;
+  return <Content>{tags?.count ?? '0'}</Content>;
 };
 export const OSCell = ({ system_profile }) => {
   return (
-    <TextContent>
+    <Content>
       {`${
         system_profile?.os_release
           ? `REHL ${system_profile?.os_release}`
           : 'N/A'
       }`}
-    </TextContent>
+    </Content>
   );
 };
 
 export const ActionsCell = ({ actionCount }) => {
   return (
-    <TextContent>
+    <Content>
       {actionCount} action{actionCount !== 1 ? 's' : ''}
-    </TextContent>
+    </Content>
   );
 };
 export const RebootRequiredCell = ({ resolution }) => (
-  <TextContent>{resolution?.needs_reboot ? 'Yes' : 'No'}</TextContent>
+  <Content>{resolution?.needs_reboot ? 'Yes' : 'No'}</Content>
 );
 
 export const SystemsCell = ({ systems }) => (
-  <TextContent>{`${systems?.length} system${
+  <Content>{`${systems?.length} system${
     systems?.length > 1 ? 's' : ''
-  }`}</TextContent>
+  }`}</Content>
 );
 
 export const ConnectionStatusCell = ({ connection_status, executor_type }) => {
@@ -56,7 +56,7 @@ export const ConnectionStatusCell = ({ connection_status, executor_type }) => {
   if (status === 'connected') {
     return (
       <span>
-        <ConnectedIcon className="pf-u-mr-xs" /> Connected
+        <ConnectedIcon className="pf-v6-u-mr-xs" /> Connected
       </span>
     );
     //When execType === 'none' connection_status is no_rhc
@@ -74,7 +74,7 @@ export const ConnectionStatusCell = ({ connection_status, executor_type }) => {
         }
       >
         <Flex spaceItems={{ default: 'spaceItemsXs' }}>
-          <DisconnectedIcon className="pf-u-mr-xs" />
+          <DisconnectedIcon className="pf-v6-u-mr-xs" />
           <p style={{ maxWidth: 'fit-content' }}>Not configured</p>
         </Flex>
       </Tooltip>
@@ -89,7 +89,7 @@ export const ConnectionStatusCell = ({ connection_status, executor_type }) => {
           }
         >
           <Flex spaceItems={{ default: 'spaceItemsXs' }}>
-            <DisconnectedIcon className="pf-u-mr-xs" />
+            <DisconnectedIcon className="pf-v6-u-mr-xs" />
             <p style={{ maxWidth: 'fit-content' }}>Disconnected</p>
           </Flex>
         </Tooltip>
@@ -103,7 +103,7 @@ export const ConnectionStatusCell = ({ connection_status, executor_type }) => {
           }
         >
           <Flex spaceItems={{ default: 'spaceItemsXs' }}>
-            <DisconnectedIcon className="pf-u-mr-xs" />
+            <DisconnectedIcon className="pf-v6-u-mr-xs" />
             <p style={{ maxWidth: 'fit-content' }}>Disconnected</p>
           </Flex>
         </Tooltip>
@@ -113,7 +113,7 @@ export const ConnectionStatusCell = ({ connection_status, executor_type }) => {
     return (
       <Tooltip position="top" content={'Connection Status Unknown'}>
         <Flex spaceItems={{ default: 'spaceItemsXs' }}>
-          <UnknownIcon className="pf-u-mr-xs" />
+          <UnknownIcon className="pf-v6-u-mr-xs" />
           <p style={{ maxWidth: 'fit-content' }}>Unknown</p>
         </Flex>
       </Tooltip>

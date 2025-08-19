@@ -74,9 +74,7 @@ describe('NoDataModal', () => {
       render(<NoDataModal isOpen={true} setOpen={mockSetOpen} />);
 
       expect(screen.getByTestId('modal')).toBeInTheDocument();
-      expect(screen.getByTestId('modal-title')).toHaveTextContent(
-        'Remediate with Ansible',
-      );
+      expect(screen.getByText('Remediate with Ansible')).toBeInTheDocument();
     });
 
     it('should not render when isOpen is false', () => {
@@ -89,8 +87,11 @@ describe('NoDataModal', () => {
       render(<NoDataModal isOpen={true} setOpen={mockSetOpen} />);
 
       const modal = screen.getByTestId('modal');
-      expect(modal).toHaveAttribute('data-variant', 'small');
-      expect(modal).toHaveAttribute('data-title', 'Remediate with Ansible');
+      expect(modal).toBeInTheDocument();
+
+      // Check that the modal contains the expected content
+      expect(screen.getByText('Remediate with Ansible')).toBeInTheDocument();
+      expect(screen.getByTestId('modal-content')).toBeInTheDocument();
     });
 
     it('should render default text when patchNoAdvisoryText is not provided', () => {
@@ -129,7 +130,7 @@ describe('NoDataModal', () => {
     it('should render action button with correct props', () => {
       render(<NoDataModal isOpen={true} setOpen={mockSetOpen} />);
 
-      const button = screen.getByTestId('modal-button');
+      const button = screen.getByTestId('action-0');
       expect(button).toHaveTextContent('Back to Insights');
       expect(button).toHaveAttribute('data-variant', 'primary');
     });
@@ -137,7 +138,7 @@ describe('NoDataModal', () => {
     it('should call setOpen(false) when button is clicked', () => {
       render(<NoDataModal isOpen={true} setOpen={mockSetOpen} />);
 
-      fireEvent.click(screen.getByTestId('modal-button'));
+      fireEvent.click(screen.getByTestId('action-0'));
       expect(mockSetOpen).toHaveBeenCalledWith(false);
       expect(mockSetOpen).toHaveBeenCalledTimes(1);
     });
@@ -145,7 +146,7 @@ describe('NoDataModal', () => {
     it('should call setOpen(false) when modal is closed', () => {
       render(<NoDataModal isOpen={true} setOpen={mockSetOpen} />);
 
-      fireEvent.click(screen.getByTestId('modal-close'));
+      fireEvent.click(screen.getByLabelText('Close'));
       expect(mockSetOpen).toHaveBeenCalledWith(false);
       expect(mockSetOpen).toHaveBeenCalledTimes(1);
     });
@@ -160,9 +161,7 @@ describe('NoDataModal', () => {
       render(<NamedExport isOpen={true} setOpen={mockSetOpen} />);
 
       expect(screen.getByTestId('modal')).toBeInTheDocument();
-      expect(screen.getByTestId('modal-title')).toHaveTextContent(
-        'Remediate with Ansible',
-      );
+      expect(screen.getByText('Remediate with Ansible')).toBeInTheDocument();
     });
   });
 
@@ -230,7 +229,7 @@ describe('NoDataModal', () => {
     it('should handle rapid successive button clicks', () => {
       render(<NoDataModal isOpen={true} setOpen={mockSetOpen} />);
 
-      const button = screen.getByTestId('modal-button');
+      const button = screen.getByTestId('action-0');
       fireEvent.click(button);
       fireEvent.click(button);
       fireEvent.click(button);
@@ -243,11 +242,11 @@ describe('NoDataModal', () => {
       render(<NoDataModal isOpen={true} setOpen={mockSetOpen} />);
 
       // Click button first
-      fireEvent.click(screen.getByTestId('modal-button'));
+      fireEvent.click(screen.getByTestId('action-0'));
       expect(mockSetOpen).toHaveBeenCalledWith(false);
 
       // Then click modal close
-      fireEvent.click(screen.getByTestId('modal-close'));
+      fireEvent.click(screen.getByLabelText('Close'));
       expect(mockSetOpen).toHaveBeenCalledTimes(2);
       expect(mockSetOpen).toHaveBeenNthCalledWith(2, false);
     });
@@ -264,11 +263,9 @@ describe('NoDataModal', () => {
     it('should render action button inside actions container', () => {
       render(<NoDataModal isOpen={true} setOpen={mockSetOpen} />);
 
-      const actionsContainer = screen.getByTestId('modal-actions');
       const actionButton = screen.getByTestId('action-0');
-
-      expect(actionsContainer).toContainElement(actionButton);
-      expect(actionButton).toContainElement(screen.getByTestId('modal-button'));
+      expect(actionButton).toBeInTheDocument();
+      expect(actionButton).toHaveTextContent('Back to Insights');
     });
 
     it('should render content in correct container', () => {
@@ -318,9 +315,7 @@ describe('NoDataModal', () => {
     it('should render modal with proper title', () => {
       render(<NoDataModal isOpen={true} setOpen={mockSetOpen} />);
 
-      expect(screen.getByTestId('modal-title')).toHaveTextContent(
-        'Remediate with Ansible',
-      );
+      expect(screen.getByText('Remediate with Ansible')).toBeInTheDocument();
     });
 
     it('should render button with descriptive text', () => {

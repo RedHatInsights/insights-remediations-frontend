@@ -4,8 +4,6 @@ import PropTypes from 'prop-types';
 import {
   Button,
   Checkbox,
-  Modal,
-  ModalBoxFooter,
   Sidebar,
   SidebarContent,
   SidebarPanel,
@@ -17,6 +15,7 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core';
+import { Modal, ModalBoxFooter } from '@patternfly/react-core/deprecated';
 import { LogViewer, LogViewerSearch } from '@patternfly/react-log-viewer';
 
 import LogCards from './LogCards';
@@ -208,7 +207,7 @@ const ExecutionHistoryTab = ({
             />
             <LogViewer
               data={logLines}
-              style={{ ['--pf-v5-c-log-viewer__index--Width']: '10ch' }}
+              style={{ ['--pf-v6-c-log-viewer__index--Width']: '10ch' }}
               isTextWrapped={wrapText}
               toolbar={
                 <Toolbar>
@@ -230,7 +229,6 @@ const ExecutionHistoryTab = ({
             />
             <ModalBoxFooter>
               <Button
-                className="pf-u-mt-md"
                 key="cancelModal"
                 variant="primary"
                 onClick={() => setIsLogOpen(false)}

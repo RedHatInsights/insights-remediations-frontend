@@ -18,6 +18,7 @@ jest.mock('@patternfly/react-core', () => ({
     <span
       data-testid="label"
       data-color={props.color}
+      data-status={props.status}
       data-compact={props.isCompact}
     >
       {props.icon}
@@ -58,6 +59,7 @@ describe('routes/helpers', () => {
       expect(result).toEqual({
         text: 'Succeeded',
         color: 'green',
+        status: 'success',
         Icon: expect.any(Function),
       });
     });
@@ -68,6 +70,7 @@ describe('routes/helpers', () => {
       expect(result).toEqual({
         text: 'Succeeded',
         color: 'green',
+        status: 'success',
         Icon: expect.any(Function),
       });
     });
@@ -77,7 +80,8 @@ describe('routes/helpers', () => {
 
       expect(result).toEqual({
         text: 'In progress',
-        color: 'gold',
+        color: 'orange',
+        status: 'info',
         Icon: expect.any(Function),
       });
     });
@@ -87,7 +91,8 @@ describe('routes/helpers', () => {
 
       expect(result).toEqual({
         text: 'In progress',
-        color: 'gold',
+        color: 'orange',
+        status: 'info',
         Icon: expect.any(Function),
       });
     });
@@ -98,6 +103,7 @@ describe('routes/helpers', () => {
       expect(result).toEqual({
         text: 'Failed',
         color: 'red',
+        status: 'danger',
         Icon: expect.any(Function),
       });
     });
@@ -108,6 +114,7 @@ describe('routes/helpers', () => {
       expect(result).toEqual({
         text: 'Failed',
         color: 'red',
+        status: 'danger',
         Icon: expect.any(Function),
       });
     });
@@ -148,10 +155,9 @@ describe('routes/helpers', () => {
     });
 
     it('should return null for null status', () => {
-      // The function doesn't handle null properly, it will throw
-      expect(() => {
-        getStatusMeta(null);
-      }).toThrow();
+      // Now handles null gracefully
+      const result = getStatusMeta(null);
+      expect(result).toBeNull();
     });
 
     it('should handle mixed case status', () => {
@@ -160,6 +166,7 @@ describe('routes/helpers', () => {
       expect(result).toEqual({
         text: 'Succeeded',
         color: 'green',
+        status: 'success',
         Icon: expect.any(Function),
       });
     });
@@ -181,7 +188,7 @@ describe('routes/helpers', () => {
       render(<StatusLabel status="running" />);
 
       const label = screen.getByTestId('label');
-      expect(label).toHaveAttribute('data-color', 'gold');
+      expect(label).toHaveAttribute('data-color', 'orange');
       expect(screen.getByTestId('in-progress-icon')).toBeInTheDocument();
       expect(label).toHaveTextContent('In progress');
     });
@@ -220,10 +227,9 @@ describe('routes/helpers', () => {
     });
 
     it('should render nothing for null status', () => {
-      // This will throw because getStatusMeta doesn't handle null
-      expect(() => {
-        render(<StatusLabel status={null} />);
-      }).toThrow();
+      // Now handles null gracefully
+      const { container } = render(<StatusLabel status={null} />);
+      expect(container).toBeEmptyDOMElement();
     });
 
     it('should handle uppercase status', () => {
@@ -238,7 +244,7 @@ describe('routes/helpers', () => {
       render(<StatusLabel status="Running" />);
 
       const label = screen.getByTestId('label');
-      expect(label).toHaveAttribute('data-color', 'gold');
+      expect(label).toHaveAttribute('data-color', 'orange');
       expect(label).toHaveTextContent('In progress');
     });
 
@@ -311,6 +317,18 @@ describe('routes/helpers', () => {
         expect(typeof meta.text).toBe('string');
         expect(typeof meta.color).toBe('string');
         expect(typeof meta.Icon).toBe('function');
+
+        // Only success, failure, and running should have status property
+        if (
+          status === 'success' ||
+          status === 'failure' ||
+          status === 'running'
+        ) {
+          expect(meta).toHaveProperty('status');
+          expect(typeof meta.status).toBe('string');
+        } else {
+          expect(meta).not.toHaveProperty('status');
+        }
       });
     });
 

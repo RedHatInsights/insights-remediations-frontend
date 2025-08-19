@@ -33,7 +33,7 @@ const ProgressCard = ({
       </CardTitle>
 
       <CardBody>
-        <p className="pf-v5-u-font-size-sm pf-v5-u-mb-md">
+        <p className="pf-v6-u-font-size-sm pf-v6-u-mb-md">
           To pass the execution readiness check, ensure you have the required
           permissions and that the Remote Host Configuration Manager is enabled
           for the affected systems in Insights. The Remote Host Configuration
@@ -47,7 +47,7 @@ const ProgressCard = ({
           <ProgressStep
             variant={permissions?.execute ? 'success' : 'danger'}
             description={
-              <span className="pf-v5-u-color-100">
+              <span className="pf-v6-u-color-100">
                 {permissions?.execute ? (
                   'Authorized'
                 ) : (
@@ -70,7 +70,7 @@ const ProgressCard = ({
               remediationStatus?.detailsError !== 403 ? 'success' : 'danger'
             }
             description={
-              <span className="pf-v5-u-color-100">
+              <span className="pf-v6-u-color-100">
                 {remediationStatus?.detailsError !== 403 ? (
                   'Enabled'
                 ) : (
@@ -82,7 +82,7 @@ const ProgressCard = ({
                       rel="noopener noreferrer"
                       style={{
                         textDecoration: 'none',
-                        color: 'var(--pf-v5-global--link--Color)',
+                        color: 'var(--pf-v6-global--link--Color)',
                       }}
                     >
                       Remote Host Configuration&nbsp;(RHC)
@@ -96,7 +96,7 @@ const ProgressCard = ({
             titleId="RHCStep-title"
             aria-label="RHCStep2"
           >
-            <span className="pf-v5-u-color-100">
+            <span className="pf-v6-u-color-100">
               Remote Host Configuration Manager (RHC)
             </span>
           </ProgressStep>
@@ -105,7 +105,7 @@ const ProgressCard = ({
               remediationStatus?.connectedSystems !== 0 ? 'success' : 'danger'
             }
             description={
-              <div className="pf-v5-u-color-100">
+              <div className="pf-v6-u-color-100">
                 {`${remediationStatus?.connectedSystems} (of ${remediationStatus?.totalSystems}) connected systems`}{' '}
                 <Button
                   variant="link"
@@ -119,7 +119,7 @@ const ProgressCard = ({
             titleId="connectedSystemsStep-title"
             aria-label="connectedSystemsStep"
           >
-            <span className="pf-v5-u-color-100">Connected systems</span>
+            <span className="pf-v6-u-color-100">Connected systems</span>
           </ProgressStep>
           <ProgressStep
             variant={readyOrNot ? `success` : 'danger'}
@@ -127,22 +127,23 @@ const ProgressCard = ({
             titleId="readyStep-title"
             aria-label="Ready step"
           >
-            <span className="pf-v5-u-font-weight-bold pf-v5-u-color-100">
+            <span className="pf-v6-u-font-weight-bold pf-v6-u-color-100">
               {readyOrNot ? 'Ready for execution' : 'Not ready for execution'}
             </span>
           </ProgressStep>
         </ProgressStepper>
       </CardBody>
-      <CardFooter className="pf-v5-u-font-size-sm">
+      <CardFooter className="pf-v6-u-font-size-sm">
         Need help to pass the remediations execution readiness check?
         <Button
+          icon={<OpenDrawerRightIcon data-testid="open-drawer-icon" />}
           onClick={() =>
             quickStarts?.activateQuickstart('insights-remediate-plan-create')
           }
           variant="link"
-          className="pf-v5-u-font-size-sm"
+          className="pf-v6-u-font-size-sm"
         >
-          Learn more <OpenDrawerRightIcon className="pf-v5-u-ml-sm" />
+          Learn more
         </Button>
       </CardFooter>
     </Card>

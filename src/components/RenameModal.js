@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-// import { PermissionContext } from '../App';
 import TextInputDialog from './Dialogs/TextInputDialog';
-import { dispatchNotification } from '../Utilities/dispatcher';
+import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import { patchRemediation } from '../api';
 
 const EMPTY_NAME = 'Unnamed Playbook';
@@ -13,9 +11,35 @@ const RenameModal = ({
   setIsRenameModalOpen,
   remediationsList,
   fetch,
-  onRename,
   refetch,
 }) => {
+  const addNotification = useAddNotification();
+
+  const handleRename = async (id, name) => {
+    if (!name) {
+      name = EMPTY_NAME;
+    }
+    const trimmedName = name.trim();
+
+    try {
+      await patchRemediation(id, { name: trimmedName });
+      addNotification({
+        title: `Remediation plan renamed`,
+        variant: 'success',
+        dismissable: true,
+        autoDismiss: true,
+      });
+    } catch (error) {
+      console.error(error);
+      addNotification({
+        title: `Failed to update plan name`,
+        variant: 'danger',
+        dismissable: true,
+        autoDismiss: true,
+      });
+    }
+  };
+
   return (
     <TextInputDialog
       title="Rename remediation plan?"
@@ -24,7 +48,7 @@ const RenameModal = ({
       onCancel={() => setIsRenameModalOpen(false)}
       onSubmit={async (name) => {
         setIsRenameModalOpen(false);
-        await onRename(remediation.id, name);
+        await handleRename(remediation.id, name);
 
         fetch && fetch();
         refetch && refetch();
@@ -37,39 +61,10 @@ const RenameModal = ({
 
 RenameModal.propTypes = {
   remediation: PropTypes.object.isRequired,
-  onRename: PropTypes.func.isRequired,
   remediationsList: PropTypes.array,
   setIsRenameModalOpen: PropTypes.func,
   fetch: PropTypes.func,
   refetch: PropTypes.func,
 };
 
-const connected = connect(null, () => ({
-  onRename: (id, name) => {
-    if (!name) {
-      name = EMPTY_NAME;
-    }
-    const trimmedName = name.trim();
-
-    return patchRemediation(id, { name: trimmedName })
-      .then(() => {
-        dispatchNotification({
-          title: `Remediation plan renamed`,
-          variant: 'success',
-          dismissable: true,
-          autoDismiss: true,
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-        dispatchNotification({
-          title: `Failed to update playbook name`,
-          variant: 'danger',
-          dismissable: true,
-          autoDismiss: true,
-        });
-      });
-  },
-}))(RenameModal);
-
-export default connected;
+export default RenameModal;

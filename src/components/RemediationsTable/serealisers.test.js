@@ -219,12 +219,11 @@ describe('serealisers', () => {
 
     it('should skip filters not found in configuration', () => {
       const state = { nonexistent: ['value'] };
+      const result = filtersSerialiser(state, mockFilters);
 
-      // When no filter config is found, filterConfigItem is undefined
-      // This causes an error in findFilterSerialiser, so let's handle this case
-      expect(() => {
-        filtersSerialiser(state, mockFilters);
-      }).toThrow();
+      // When no filter config is found, the filter should be skipped gracefully
+      // and return an empty object since no valid filters were processed
+      expect(result).toEqual({});
     });
 
     it('should handle filter without filterAttribute', () => {
