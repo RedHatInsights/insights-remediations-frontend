@@ -15,6 +15,7 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: () => ({ id: '123' }),
   useSearchParams: () => [new URLSearchParams(), jest.fn()],
+  useNavigate: () => jest.fn(),
 }));
 
 import RemediationDetails from './RemediationDetails';
