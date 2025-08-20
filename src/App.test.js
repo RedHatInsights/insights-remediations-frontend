@@ -30,6 +30,10 @@ jest.mock(
   },
 );
 
+jest.mock('@redhat-cloud-services/frontend-components/NotAuthorized', () => ({
+  NotAuthorized: () => <div data-testid="not-authorized">Not Authorized</div>,
+}));
+
 const mockStore = createStore(() => ({}));
 
 describe('App Component', () => {
@@ -151,8 +155,10 @@ describe('App Component', () => {
       renderApp();
 
       await waitFor(() => {
-        expect(screen.getByTestId('routes')).toBeInTheDocument();
+        expect(screen.getByTestId('not-authorized')).toBeInTheDocument();
       });
+
+      expect(screen.queryByTestId('routes')).not.toBeInTheDocument();
     });
 
     it('should handle multiple specific permissions', async () => {
@@ -201,8 +207,10 @@ describe('App Component', () => {
       renderApp();
 
       await waitFor(() => {
-        expect(screen.getByTestId('routes')).toBeInTheDocument();
+        expect(screen.getByTestId('not-authorized')).toBeInTheDocument();
       });
+
+      expect(screen.queryByTestId('routes')).not.toBeInTheDocument();
     });
 
     it('should handle no permissions', async () => {
@@ -211,8 +219,10 @@ describe('App Component', () => {
       renderApp();
 
       await waitFor(() => {
-        expect(screen.getByTestId('routes')).toBeInTheDocument();
+        expect(screen.getByTestId('not-authorized')).toBeInTheDocument();
       });
+
+      expect(screen.queryByTestId('routes')).not.toBeInTheDocument();
     });
 
     it('should handle different permission formats', async () => {
@@ -223,8 +233,10 @@ describe('App Component', () => {
       renderApp();
 
       await waitFor(() => {
-        expect(screen.getByTestId('routes')).toBeInTheDocument();
+        expect(screen.getByTestId('not-authorized')).toBeInTheDocument();
       });
+
+      expect(screen.queryByTestId('routes')).not.toBeInTheDocument();
     });
 
     it('should handle getUserPermissions error', async () => {
@@ -243,6 +255,79 @@ describe('App Component', () => {
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
 
       consoleSpy.mockRestore();
+    });
+  });
+
+  describe('Authorization Handling', () => {
+    it('should show NotAuthorized when user has only execute permissions', async () => {
+      mockChrome.getUserPermissions.mockResolvedValue([
+        { permission: 'remediations:remediation:execute' },
+      ]);
+
+      renderApp();
+
+      await waitFor(() => {
+        expect(screen.getByTestId('not-authorized')).toBeInTheDocument();
+      });
+
+      expect(screen.getByText('Not Authorized')).toBeInTheDocument();
+      expect(screen.queryByTestId('routes')).not.toBeInTheDocument();
+    });
+
+    it('should show NotAuthorized when user has no permissions', async () => {
+      mockChrome.getUserPermissions.mockResolvedValue([]);
+
+      renderApp();
+
+      await waitFor(() => {
+        expect(screen.getByTestId('not-authorized')).toBeInTheDocument();
+      });
+
+      expect(screen.getByText('Not Authorized')).toBeInTheDocument();
+      expect(screen.queryByTestId('routes')).not.toBeInTheDocument();
+    });
+
+    it('should show Routes when user has read permission', async () => {
+      mockChrome.getUserPermissions.mockResolvedValue([
+        { permission: 'remediations:*:read' },
+      ]);
+
+      renderApp();
+
+      await waitFor(() => {
+        expect(screen.getByTestId('routes')).toBeInTheDocument();
+      });
+
+      expect(screen.queryByTestId('not-authorized')).not.toBeInTheDocument();
+    });
+
+    it('should show Routes when user has write permission', async () => {
+      mockChrome.getUserPermissions.mockResolvedValue([
+        { permission: 'remediations:*:write' },
+      ]);
+
+      renderApp();
+
+      await waitFor(() => {
+        expect(screen.getByTestId('routes')).toBeInTheDocument();
+      });
+
+      expect(screen.queryByTestId('not-authorized')).not.toBeInTheDocument();
+    });
+
+    it('should show Routes when user has both read and write permissions', async () => {
+      mockChrome.getUserPermissions.mockResolvedValue([
+        { permission: 'remediations:remediation:read' },
+        { permission: 'remediations:remediation:write' },
+      ]);
+
+      renderApp();
+
+      await waitFor(() => {
+        expect(screen.getByTestId('routes')).toBeInTheDocument();
+      });
+
+      expect(screen.queryByTestId('not-authorized')).not.toBeInTheDocument();
     });
   });
 

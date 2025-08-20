@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import useRemediationsQuery from '../api/useRemediationsQuery';
 import { Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import DetailsGeneralContent from './RemediationDetailsComponents/DetailsGeneralContent';
@@ -24,6 +24,7 @@ import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/fronten
 const RemediationDetails = () => {
   const chrome = useChrome();
   const { id } = useParams();
+  const navigate = useNavigate();
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const { isFedramp } = chrome;
@@ -40,6 +41,7 @@ const RemediationDetails = () => {
     result: remediationDetails,
     refetch: refetchRemediationDetails,
     loading: detailsLoading,
+    error: remediationDetailsError,
   } = useRemediationsQuery(getRemediationDetails, {
     params: { remId: id },
   });
@@ -65,6 +67,20 @@ const RemediationDetails = () => {
         `${remediationDetails.name} - Remediation Plans - Automation`,
       );
   }, [chrome, remediationDetails]);
+
+  useEffect(() => {
+    if (remediationDetailsError) {
+      const isNotFound =
+        remediationDetailsError?.status === 404 ||
+        remediationDetailsError?.status === 400;
+      remediationDetailsError?.errors?.[0]?.status === 404 ||
+        remediationDetailsError?.errors?.[0]?.status === 400;
+
+      if (isNotFound) {
+        navigate('/insights/remediations');
+      }
+    }
+  }, [remediationDetailsError, navigate]);
 
   const [
     connectedSystems,
