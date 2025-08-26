@@ -1,4 +1,5 @@
-apiVersion: v1
+# yaml-language-server: $schema=https://raw.githubusercontent.com/RedHatInsights/frontend-components/refs/heads/master/packages/config-utils/src/feo/spec/frontend-crd.schema.json
+apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   name: insights-remediations-frontend
@@ -18,18 +19,73 @@ objects:
         paths:
           - /apps/remediations
       image: ${IMAGE}:${IMAGE_TAG}
-      navItems:
-        - appId: "remediations"
-          title: "Remediations"
-          href: "/insights/remediations"
-          product: "Red Hat Insights"
+      feoConfigEnabled: true
+      serviceTiles:
+        - id: remediations
+          section: automation
+          group: rhel
+          title: Remediation Plans 
+          href: /insights/remediations
+          description: Use Ansible Playbooks to resolve configuration, security, and compliance issues identified on your RHEL systems.
+          icon: InsightsIcon
+        - id: remediations-ansible
+          section: automation
+          group: ansible
+          title: Remediation Plans 
+          href: /ansible/remediations
+          description: Use Ansible Playbooks to resolve issues identified across your Ansible-managed hosts.
+          icon: AnsibleIcon
+      searchEntries:
+        - id: RHEL.remediations
+          title: Remediation Plans
+          href: /insights/remediations
+          description: Use Ansible Playbooks to resolve configuration, security, and compliance issues identified on your RHEL systems.
+          alt_title:
+            - Remediate
+            - playbook
+            - fix
+            - solve
+            - find it fix it
+            - fifi
+            - cloud connector
+            - insights
+            - automation
+            - Ansible
+            - patch
+            - Remediation plans
+        - id: Ansible.remediations
+          title: Remediation Plans
+          href: /ansible/remediations
+          description: Use Ansible Playbooks to resolve issues identified across your Ansible-managed hosts.
+          alt_title:
+            - Remediate
+            - playbook
+            - fix
+            - automation
+            - tasks
+            - ansible remediations
+      bundleSegments:
+        - segmentId: remediations
+          bundleId: automation
+          position: 2200
+          navItems:
+            - id: remediations
+              title: Remediation Plans
+              href: /insights/remediations
       module:
-        manifestLocation: "/apps/remediations/fed-mods.json"
+        manifestLocation: /apps/remediations/fed-mods.json
+        analytics:
+          APIKey: "apRCg9V6oMXCcnTingqRYW6m1er4hkCW"
+        config:
+          supportCaseData:
+            product: Red Hat Insights
+            version: Remediations
         modules:
-          - id: "remediations"
-            module: "./RootApp"
+          - id: remediations
+            module: ./RootApp
             routes:
               - pathname: /insights/remediations
+              - pathname: /ansible/remediations
 
 parameters:
   - name: ENV_NAME
