@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Spinner } from '@patternfly/react-core';
 import AsyncComponent from '@redhat-cloud-services/frontend-components/AsyncComponent';
 import ErrorState from '@redhat-cloud-services/frontend-components/ErrorState';
@@ -64,6 +64,7 @@ const RemediationRoutes = () => {
               <Route key={key} path={path} element={<Component />} />
             ),
           )}
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Suspense>
     </AsyncComponent>

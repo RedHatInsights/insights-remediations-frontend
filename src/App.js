@@ -7,6 +7,7 @@ import { getIsReceptorConfigured } from './api';
 
 import NotificationsProvider from '@redhat-cloud-services/frontend-components-notifications/NotificationsProvider';
 import { Spinner } from '@patternfly/react-core';
+import { NotAuthorized } from '@redhat-cloud-services/frontend-components/NotAuthorized';
 
 export const PermissionContext = createContext();
 
@@ -51,23 +52,18 @@ const App = () => {
               (permissions) => permissions.permission,
             );
             if (
-              permissionList.includes(
-                'remediations:*:*' || 'remediations:remediation:*',
-              )
+              permissionList.includes('remediations:*:*') ||
+              permissionList.includes('remediations:remediation:*')
             ) {
               handlePermissionUpdate(true, true, true);
             } else {
               handlePermissionUpdate(
-                permissionList.includes(
-                  'remediations:remediation:read' || 'remediations:*:read',
-                ),
-                permissionList.includes(
-                  'remediations:remediation:write' || 'remediations:*:write',
-                ),
-                permissionList.includes(
-                  'remediations:remediation:execute' ||
-                    'remediations:*:execute',
-                ),
+                permissionList.includes('remediations:remediation:read') ||
+                  permissionList.includes('remediations:*:read'),
+                permissionList.includes('remediations:remediation:write') ||
+                  permissionList.includes('remediations:*:write'),
+                permissionList.includes('remediations:remediation:execute') ||
+                  permissionList.includes('remediations:*:execute'),
               );
             }
           })
@@ -80,21 +76,26 @@ const App = () => {
     }
   }, []);
 
+  const hasRequiredPermissions = readPermission || writePermission;
   return arePermissionLoaded ? (
-    <NotificationsProvider>
-      <PermissionContext.Provider
-        value={{
-          permissions: {
-            read: readPermission,
-            write: writePermission,
-            execute: executePermission,
-          },
-          isReceptorConfigured,
-        }}
-      >
-        <Routes />
-      </PermissionContext.Provider>
-    </NotificationsProvider>
+    hasRequiredPermissions ? (
+      <NotificationsProvider>
+        <PermissionContext.Provider
+          value={{
+            permissions: {
+              read: readPermission,
+              write: writePermission,
+              execute: executePermission,
+            },
+            isReceptorConfigured,
+          }}
+        >
+          <Routes />
+        </PermissionContext.Provider>
+      </NotificationsProvider>
+    ) : (
+      <NotAuthorized serviceName="Remediation Plans" />
+    )
   ) : (
     <Spinner />
   );
