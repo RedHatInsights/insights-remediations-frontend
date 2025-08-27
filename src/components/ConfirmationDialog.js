@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Button, Modal, ModalVariant } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 
 export default function ConfirmationDialog({
   isOpen = true,
@@ -20,6 +21,7 @@ export default function ConfirmationDialog({
       onClose={() => onClose(false)}
       isFooterLeftAligned
       titleIconVariant={'warning'}
+      data-testid="modal"
       actions={[
         <Button
           key="confirm"

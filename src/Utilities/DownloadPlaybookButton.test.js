@@ -1,29 +1,26 @@
 import { download } from './DownloadPlaybookButton';
-import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications';
 
 jest.mock('../api', () => ({
   downloadPlaybook: jest.fn(() => Promise.resolve()),
 }));
 
-jest.mock(
-  '@redhat-cloud-services/frontend-components-notifications/redux',
-  () => ({
-    addNotification: jest.fn((args) => args),
-  }),
-);
+jest.mock('@redhat-cloud-services/frontend-components-notifications', () => ({
+  addNotification: jest.fn((args) => args),
+}));
 
 describe('download notification logic', () => {
-  let dispatch;
+  let mockAddNotification;
   beforeEach(() => {
-    dispatch = jest.fn();
+    mockAddNotification = jest.fn();
     addNotification.mockClear();
   });
 
   it('notifies when nothing is eligible for download (single)', () => {
     const selectedIds = ['a'];
     const data = [{ id: 'a', issue_count: 0 }];
-    download(selectedIds, data, dispatch);
-    expect(dispatch).toHaveBeenCalledWith(
+    download(selectedIds, data, mockAddNotification);
+    expect(mockAddNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         title: 'Download failed',
         description:
@@ -39,8 +36,8 @@ describe('download notification logic', () => {
       { id: 'a', issue_count: 0 },
       { id: 'b', issue_count: 0 },
     ];
-    download(selectedIds, data, dispatch);
-    expect(dispatch).toHaveBeenCalledWith(
+    download(selectedIds, data, mockAddNotification);
+    expect(mockAddNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         title: 'Download failed',
         description:
@@ -56,8 +53,8 @@ describe('download notification logic', () => {
       { id: 'a', issue_count: 1 },
       { id: 'b', issue_count: 0 },
     ];
-    download(selectedIds, data, dispatch);
-    expect(dispatch).toHaveBeenCalledWith(
+    download(selectedIds, data, mockAddNotification);
+    expect(mockAddNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         variant: 'info',
         title: 'Downloading 1 remediation plan',
@@ -69,8 +66,8 @@ describe('download notification logic', () => {
   it('notifies when all are eligible for download (single)', () => {
     const selectedIds = ['a'];
     const data = [{ id: 'a', issue_count: 2 }];
-    download(selectedIds, data, dispatch);
-    expect(dispatch).toHaveBeenCalledWith(
+    download(selectedIds, data, mockAddNotification);
+    expect(mockAddNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         title: 'Download ready',
         description: 'Your playbook is downloading now.',
@@ -85,8 +82,8 @@ describe('download notification logic', () => {
       { id: 'a', issue_count: 1 },
       { id: 'b', issue_count: 2 },
     ];
-    download(selectedIds, data, dispatch);
-    expect(dispatch).toHaveBeenCalledWith(
+    download(selectedIds, data, mockAddNotification);
+    expect(mockAddNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         title: 'Download ready',
         description: 'Your playbooks are downloading now.',

@@ -83,7 +83,15 @@ jest.mock('@patternfly/react-core', () => ({
   TextVariants: {
     small: ({ children }) => <small data-testid="text-small">{children}</small>,
   },
-  Button: ({ children, onClick, isDisabled, isInline, variant, style }) => (
+  Button: ({
+    children,
+    onClick,
+    isDisabled,
+    isInline,
+    variant,
+    style,
+    icon,
+  }) => (
     <button
       data-testid="button"
       onClick={onClick}
@@ -92,6 +100,7 @@ jest.mock('@patternfly/react-core', () => ({
       data-variant={variant}
       style={style}
     >
+      {icon}
       {children}
     </button>
   ),

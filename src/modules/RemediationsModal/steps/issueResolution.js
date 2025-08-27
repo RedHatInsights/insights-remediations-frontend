@@ -3,16 +3,15 @@ import propTypes from 'prop-types';
 import useFormApi from '@data-driven-forms/react-form-renderer/use-form-api';
 import './issueResolution.scss';
 import {
-  Text,
-  TextContent,
+  Content,
   Stack,
   StackItem,
-  Tile,
   Title,
   Alert,
   Popover,
   Button,
 } from '@patternfly/react-core';
+import { Tile } from '@patternfly/react-core/deprecated';
 import {
   pluralize,
   shortenIssueId,
@@ -47,12 +46,12 @@ const IssueResolution = ({ issue }) => {
       </StackItem>
       <StackItem>
         {removedResolutions.length > 0 && (
-          <StackItem className="pf-u-mb-sm">
+          <StackItem className="pf-v6-u-mb-sm">
             <Alert
               variant="warning"
               isInline
               title={
-                <Text>
+                <Content component="p">
                   There {pluralize(removedResolutions.length, 'was', 'were')}{' '}
                   <Popover
                     aria-label="Resolution duplicates popover"
@@ -72,23 +71,29 @@ const IssueResolution = ({ issue }) => {
                     </b>
                   </Popover>{' '}
                   removed due to duplication
-                </Text>
+                </Content>
               }
             />
           </StackItem>
         )}
-        <TextContent>
-          <Text>
+        <Content>
+          <Content component="p">
             Review the possible resolution steps and select which to add to your
             playbook.
-          </Text>
-          <Text className="ins-c-remediations-action-description">
+          </Content>
+          <Content
+            component="p"
+            className="ins-c-remediations-action-description"
+          >
             {issue.action}
-          </Text>
-          <Text className="ins-c-remediations-action-description">
+          </Content>
+          <Content
+            component="p"
+            className="ins-c-remediations-action-description"
+          >
             {`Resolution affects ${pluralize(systems.length, 'system')}`}
-          </Text>
-        </TextContent>
+          </Content>
+        </Content>
       </StackItem>
       <StackItem>
         <div className="ins-c-resolution-container">
@@ -110,13 +115,16 @@ const IssueResolution = ({ issue }) => {
                 }
                 title={resolution.description}
               >
-                <TextContent className="pf-u-pt-sm">
-                  <Text className="pf-u-mb-sm ins-c-playbook-description">
+                <Content className="pf-v6-u-pt-sm">
+                  <Content
+                    component="p"
+                    className="pf-v6-u-mb-sm ins-c-playbook-description"
+                  >
                     Resolution from &quot;{issue.id.split(/:|\|/)[1]}&quot;
-                  </Text>
+                  </Content>
                   {
                     <div className="ins-c-reboot-required">
-                      <Text component="span">
+                      <Content component="span">
                         {resolution.needs_reboot ? (
                           'Reboot required'
                         ) : (
@@ -124,10 +132,10 @@ const IssueResolution = ({ issue }) => {
                             Reboot <b>not</b> required
                           </span>
                         )}
-                      </Text>
+                      </Content>
                     </div>
                   }
-                </TextContent>
+                </Content>
               </Tile>
             </div>
           ))}

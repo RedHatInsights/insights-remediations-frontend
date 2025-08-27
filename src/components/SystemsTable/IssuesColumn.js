@@ -1,6 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Modal, ModalVariant } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { cellWidth, sortable } from '@patternfly/react-table';
 import {
   Table,
@@ -30,6 +31,12 @@ const IssuesColumn = ({ issues, display_name }) => {
     direction: 'asc',
   });
   const [isOpen, setIsOpen] = useState();
+
+  // Handle undefined or null issues
+  if (!issues || !Array.isArray(issues)) {
+    throw new Error('Issues prop must be an array');
+  }
+
   const sortedIssues = sortBy(
     issues,
     (sortIssue) => sortByIndex(sortIssue)[sortByConfig.index],
@@ -44,6 +51,7 @@ const IssuesColumn = ({ issues, display_name }) => {
         title={`Planned remediation actions`}
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
+        data-testid="modal"
       >
         <Table
           variant="compact"

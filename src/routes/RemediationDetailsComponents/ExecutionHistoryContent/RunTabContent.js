@@ -1,13 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  Flex,
-  Title,
-  Text,
-  TextVariants,
-  Button,
-  TabContent,
-} from '@patternfly/react-core';
+import { Flex, Title, Button, TabContent } from '@patternfly/react-core';
 import { TableStateProvider } from 'bastilian-tabletools';
 
 import DetailsBanner from '../DetailsBanners';
@@ -51,7 +44,7 @@ const RunTabContent = ({
       hidden={!isActive}
     >
       <Flex
-        className="pf-v5-u-mb-lg pf-v5-u-mt-lg"
+        className="pf-v6-u-mb-lg pf-v6-u-mt-lg"
         justifyContent={{ default: 'justifyContentSpaceBetween' }}
       >
         <Flex direction={{ default: 'column' }}>
@@ -59,20 +52,19 @@ const RunTabContent = ({
             <Title headingLevel="h1">{formatUtc(run.updated_at)}</Title>
             <StatusLabel status={run.status} />
           </Flex>
-          <Text>
-            <TextVariants.small>
-              {`Initiated by: ${run?.created_by?.username ?? 'unknown'}`}
-            </TextVariants.small>
-          </Text>
+          <small data-testid="text-small">
+            {`Initiated by: ${run?.created_by?.username ?? 'unknown'}`}
+          </small>
         </Flex>
 
         <Button
+          icon={<RedoIcon className="pf-v6-u-mr-xs" data-testid="redo-icon" />}
           isDisabled={isLoading}
           isInline
           variant="link"
           onClick={handleClick}
         >
-          <RedoIcon className="pf-v5-u-mr-xs" /> Refresh
+          Refresh
         </Button>
       </Flex>
 

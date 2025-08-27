@@ -4,9 +4,7 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateVariant,
-  EmptyStateHeader,
   Button,
-  EmptyStateIcon,
   PageSection,
   Page,
   EmptyStateActions,
@@ -20,13 +18,13 @@ export const NoRemediationsPage = () => {
 
   return (
     <Page>
-      <PageSection isFilled>
-        <EmptyState variant={EmptyStateVariant.full}>
-          <EmptyStateHeader
-            titleText={<>No remediation plans</>}
-            headingLevel="h5"
-            icon={<EmptyStateIcon icon={CubesIcon} />}
-          />
+      <PageSection hasBodyWrapper={false} isFilled>
+        <EmptyState
+          headingLevel="h5"
+          icon={CubesIcon}
+          titleText={<>No remediation plans</>}
+          variant={EmptyStateVariant.full}
+        >
           <EmptyStateBody>
             Create remediation plans to address Advisor recommendations,
             Security CVEs, and
@@ -37,6 +35,7 @@ export const NoRemediationsPage = () => {
           <EmptyStateFooter>
             <EmptyStateActions>
               <Button
+                icon={<OpenDrawerRightIcon className="pf-v6-u-ml-sm" />}
                 onClick={() =>
                   quickStarts?.activateQuickstart(
                     'insights-remediate-plan-create',
@@ -44,7 +43,6 @@ export const NoRemediationsPage = () => {
                 }
               >
                 Launch Quick Start{' '}
-                <OpenDrawerRightIcon className="pf-v5-u-ml-sm" />
               </Button>
             </EmptyStateActions>
           </EmptyStateFooter>

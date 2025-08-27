@@ -15,20 +15,25 @@ const DetailsGeneralContent = ({
   permissions,
   remediationPlaybookRuns,
   refetchAllRemediations,
+  detailsLoading,
 }) => {
-  const readyOrNot =
-    !permissions?.exectute &&
+  const canExecute =
+    permissions?.execute &&
     remediationStatus?.detailsError !== 403 &&
     remediationStatus?.connectedSystems !== 0;
 
+  const isStillLoading =
+    detailsLoading || remediationStatus?.areDetailsLoading || !permissions;
+  const shouldShowAlert = !isStillLoading && !canExecute;
+
   return (
-    <section className="pf-v5-l-page__main-section pf-v5-c-page__main-section">
-      {!readyOrNot && (
+    <section className="pf-v6-l-page__main-section pf-v6-c-page__main-section">
+      {shouldShowAlert && (
         <Alert
           isInline
           variant="danger"
           title="Remediation plan cannot be executed"
-          className="pf-v5-u-mb-md"
+          className="pf-v6-u-mb-md"
         >
           <p>
             One or more prerequisites for executing this remediation plan were
@@ -56,7 +61,7 @@ const DetailsGeneralContent = ({
           <ProgressCard
             remediationStatus={remediationStatus}
             permissions={permissions}
-            readyOrNot={readyOrNot}
+            readyOrNot={canExecute}
             onNavigateToTab={onNavigateToTab}
           />
         </GridItem>
@@ -76,6 +81,7 @@ DetailsGeneralContent.propTypes = {
   permissions: PropTypes.object,
   remediationPlaybookRuns: PropTypes.any,
   refetchAllRemediations: PropTypes.func,
+  detailsLoading: PropTypes.bool,
 };
 
 export default DetailsGeneralContent;

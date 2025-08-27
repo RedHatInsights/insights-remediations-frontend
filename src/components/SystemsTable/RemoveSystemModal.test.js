@@ -91,16 +91,16 @@ describe('RemoveSystemModal', () => {
 
     const modal = screen.getByTestId('modal');
     expect(modal).toBeInTheDocument();
-    expect(modal).toHaveAttribute('data-variant', 'medium');
-    expect(modal).toHaveAttribute('data-title-icon', 'warning');
+
+    // Check that the modal contains the expected content
+    expect(screen.getByText('Remove selected systems?')).toBeInTheDocument();
+    expect(screen.getByTestId('modal-content')).toBeInTheDocument();
   });
 
   it('should render correct title for multiple systems', () => {
     render(<RemoveSystemModal {...defaultProps} />);
 
-    expect(screen.getByTestId('modal-title')).toHaveTextContent(
-      'Remove selected systems?',
-    );
+    expect(screen.getByText('Remove selected systems?')).toBeInTheDocument();
   });
 
   it('should render correct title for single system', () => {
@@ -111,9 +111,7 @@ describe('RemoveSystemModal', () => {
 
     render(<RemoveSystemModal {...props} />);
 
-    expect(screen.getByTestId('modal-title')).toHaveTextContent(
-      'Remove selected system?',
-    );
+    expect(screen.getByText('Remove selected system?')).toBeInTheDocument();
   });
 
   it('should render correct content for multiple systems', () => {
@@ -182,7 +180,7 @@ describe('RemoveSystemModal', () => {
   it('should call onClose when modal close is triggered', () => {
     render(<RemoveSystemModal {...defaultProps} />);
 
-    const closeButton = screen.getByTestId('modal-close');
+    const closeButton = screen.getByLabelText('Close');
     fireEvent.click(closeButton);
 
     expect(mockOnClose).toHaveBeenCalledTimes(1);
@@ -196,9 +194,7 @@ describe('RemoveSystemModal', () => {
 
     render(<RemoveSystemModal {...props} />);
 
-    expect(screen.getByTestId('modal-title')).toHaveTextContent(
-      'Remove selected system?',
-    );
+    expect(screen.getByText('Remove selected system?')).toBeInTheDocument();
     expect(screen.getByTestId('modal-content')).toHaveTextContent(
       'Are you sure you want to remove the 0 selected system for the remediation plan',
     );
@@ -303,9 +299,7 @@ describe('RemoveSystemModal', () => {
 
     render(<RemoveSystemModal {...props} />);
 
-    expect(screen.getByTestId('modal-title')).toHaveTextContent(
-      'Remove selected systems?',
-    );
+    expect(screen.getByText('Remove selected systems?')).toBeInTheDocument();
     expect(screen.getByTestId('modal-content')).toHaveTextContent(
       'Are you sure you want to remove the 3 selected systems',
     );
@@ -393,9 +387,7 @@ describe('RemoveSystemModal', () => {
 
     render(<RemoveSystemModal {...props} />);
 
-    expect(screen.getByTestId('modal-title')).toHaveTextContent(
-      'Remove selected system?',
-    );
+    expect(screen.getByText('Remove selected system?')).toBeInTheDocument();
     expect(screen.getByTestId('modal-content')).toHaveTextContent(
       'Are you sure you want to remove the 1 selected system for the remediation plan',
     );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, Icon, Text, Tooltip } from '@patternfly/react-core';
+import { Flex, Icon, Content, Tooltip } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import {
@@ -26,17 +26,17 @@ export const Name = ({ name, id }) => {
 
 export const LastExecutedCell = ({ playbook_runs }) => {
   return (
-    <Text>
+    <Content component="p">
       {playbook_runs && playbook_runs.length > 0
         ? formatDate(playbook_runs[0]?.created_at)
         : 'Never'}{' '}
-    </Text>
+    </Content>
   );
 };
 
 export const ExecutionStatusCell = ({ playbook_runs }) => {
   if (!playbook_runs?.length) {
-    return <Text>N/A</Text>;
+    return <Content component="p">N/A</Content>;
   }
   const status = playbook_runs[0].status;
   let icon;
@@ -51,7 +51,7 @@ export const ExecutionStatusCell = ({ playbook_runs }) => {
   } else if (status === 'running') {
     ((icon = (
       <Icon>
-        <InProgressIcon color="var(--pf-v5-global--icon--Color--light--dark)" />
+        <InProgressIcon color="var(--pf-v6-global--icon--Color--light--dark)" />
       </Icon>
     )),
       (displayValue = 'In progress'));
@@ -66,26 +66,30 @@ export const ExecutionStatusCell = ({ playbook_runs }) => {
   return (
     <Flex spaceItems={{ default: 'spaceItemsXs' }}>
       {icon}
-      <Text>{displayValue}</Text>
+      <Content component="p">{displayValue}</Content>
     </Flex>
   );
 };
 
 export const ActionsCell = ({ issue_count }) => (
-  <Text style={{ justifySelf: 'center' }}>{issue_count} </Text>
+  <Content component="p" style={{ justifySelf: 'center' }}>
+    {issue_count}{' '}
+  </Content>
 );
 
 export const SystemsCell = ({ system_count }) => (
-  <Text style={{ justifySelf: 'center' }}>{system_count} </Text>
+  <Content component="p" style={{ justifySelf: 'center' }}>
+    {system_count}{' '}
+  </Content>
 );
 
 export const CreatedCell = ({ created_at }) => (
-  <Text>{formatDate(created_at)} </Text>
+  <Content component="p">{formatDate(created_at)} </Content>
 );
 
 export const LastModifiedCell = ({ updated_at }) => {
   if (!updated_at) {
-    return <Text>0</Text>;
+    return <Content component="p">0</Content>;
   }
 
   const date = new Date(updated_at);
@@ -111,7 +115,7 @@ export const LastModifiedCell = ({ updated_at }) => {
 
   return (
     <Tooltip content={tooltipText}>
-      <Text>{timeAgo}</Text>
+      <Content component="p">{timeAgo}</Content>
     </Tooltip>
   );
 };
@@ -122,10 +126,10 @@ Name.propTypes = {
   archived: PropTypes.string,
 };
 LastExecutedCell.propTypes = {
-  playbook_runs: PropTypes.object,
+  playbook_runs: PropTypes.array,
 };
 ExecutionStatusCell.propTypes = {
-  playbook_runs: PropTypes.string,
+  playbook_runs: PropTypes.array,
 };
 ActionsCell.propTypes = {
   issue_count: PropTypes.number,

@@ -7,7 +7,7 @@ import { MemoryRouter } from 'react-router-dom';
 import ActionsContent from './ActionsContent';
 import * as useRemediationsQuery from '../../../api/useRemediationsQuery';
 import * as useRemediationFetchExtras from '../../../api/useRemediationFetchExtras';
-import * as dispatcher from '../../../Utilities/dispatcher';
+import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 
 jest.mock('../../../api', () => ({
   remediationsApi: {
@@ -26,7 +26,12 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('../../../api/useRemediationsQuery');
 jest.mock('../../../api/useRemediationFetchExtras');
-jest.mock('../../../Utilities/dispatcher');
+jest.mock(
+  '@redhat-cloud-services/frontend-components-notifications/hooks',
+  () => ({
+    useAddNotification: jest.fn(),
+  }),
+);
 jest.mock('../../../components/ConfirmationDialog', () => {
   return function MockConfirmationDialog({
     isOpen,
@@ -169,7 +174,7 @@ jest.mock('../../OverViewPage/TableEmptyState', () => {
 describe('ActionsContent', () => {
   let mockFetchBatched;
   let mockFetchQueue;
-  let mockDispatchNotification;
+  let mockAddNotification;
   let mockRefetch;
   let mockTableState;
 
@@ -198,7 +203,7 @@ describe('ActionsContent', () => {
   beforeEach(() => {
     mockFetchBatched = jest.fn();
     mockFetchQueue = jest.fn();
-    mockDispatchNotification = jest.fn();
+    mockAddNotification = jest.fn();
     mockRefetch = jest.fn();
 
     // Default table state with no selections
@@ -214,9 +219,7 @@ describe('ActionsContent', () => {
       fetchQueue: mockFetchQueue,
     });
 
-    dispatcher.dispatchNotification.mockImplementation(
-      mockDispatchNotification,
-    );
+    useAddNotification.mockReturnValue(mockAddNotification);
   });
 
   afterEach(() => {
@@ -414,7 +417,7 @@ describe('ActionsContent', () => {
       });
 
       await waitFor(() => {
-        expect(mockDispatchNotification).toHaveBeenCalledWith({
+        expect(mockAddNotification).toHaveBeenCalledWith({
           title: 'Successfully deleted actions',
           variant: 'success',
           dismissable: true,
@@ -436,7 +439,7 @@ describe('ActionsContent', () => {
       fireEvent.click(screen.getByTestId('confirm-button'));
 
       await waitFor(() => {
-        expect(mockDispatchNotification).toHaveBeenCalledWith({
+        expect(mockAddNotification).toHaveBeenCalledWith({
           title: 'Failed to delete actions',
           variant: 'danger',
           dismissable: true,

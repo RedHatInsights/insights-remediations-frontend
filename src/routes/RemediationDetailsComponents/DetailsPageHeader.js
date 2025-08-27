@@ -7,9 +7,10 @@ import React, { useCallback } from 'react';
 import RemediationDetailsDropdown from '../../components/RemediationDetailsDropdown';
 import PropTypes from 'prop-types';
 import ExecuteButton from '../../components/ExecuteButton';
-import { useDispatch } from 'react-redux';
+
 import { download } from '../../Utilities/DownloadPlaybookButton';
 import ButtonWithToolTip from '../../Utilities/ButtonWithToolTip';
+import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 
 const RemediationDetailsPageHeader = ({
   remediation,
@@ -23,10 +24,10 @@ const RemediationDetailsPageHeader = ({
   refetchRemediationPlaybookRuns,
   isExecutable,
 }) => {
-  const dispatch = useDispatch();
+  const addNotification = useAddNotification();
   const handleDownload = useCallback(() => {
-    download([remediation.id], [remediation], dispatch);
-  }, [remediation, dispatch]);
+    download([remediation.id], [remediation], addNotification);
+  }, [remediation, addNotification]);
 
   return (
     <PageHeader>
@@ -37,7 +38,7 @@ const RemediationDetailsPageHeader = ({
       >
         <FlexItem grow={{ default: 'grow' }} style={{ minWidth: 0 }}>
           <PageHeaderTitle
-            className="pf-v5-u-mb-sm"
+            className="pf-v6-u-mb-sm"
             title={
               <div
                 style={{
@@ -52,7 +53,7 @@ const RemediationDetailsPageHeader = ({
           />
           <p style={{ wordBreak: 'break-word' }}>{`ID: ${remediation.id}`}</p>
         </FlexItem>
-        <FlexItem style={{ marginTop: 'var(--pf-v5-global--spacer--sm)' }}>
+        <FlexItem style={{ marginTop: 'var(--pf-t--global--spacer--sm)' }}>
           {remediationStatus.areDetailsLoading ? (
             <Spinner />
           ) : (

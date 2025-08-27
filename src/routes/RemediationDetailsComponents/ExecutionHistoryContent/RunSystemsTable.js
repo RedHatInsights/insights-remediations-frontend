@@ -26,6 +26,7 @@ const RunSystemsTable = ({ run, loading, viewLogColumn }) => {
       columns={[...columns, viewLogColumn]}
       filters={{ filterConfig: [...systemFilter] }}
       options={{
+        manageColumns: true,
         itemIdsOnPage: filtered.map((s) => s.system_id),
         total: filtered.length,
         EmptyState: TableEmptyState,

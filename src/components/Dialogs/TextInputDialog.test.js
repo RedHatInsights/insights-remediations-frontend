@@ -196,7 +196,7 @@ describe('TextInputDialog', () => {
       const onCancel = jest.fn();
       render(<TextInputDialog {...defaultProps} onCancel={onCancel} />);
 
-      const closeButton = screen.getByTestId('modal-close');
+      const closeButton = screen.getByLabelText('Close');
       fireEvent.click(closeButton);
 
       expect(onCancel).toHaveBeenCalled();

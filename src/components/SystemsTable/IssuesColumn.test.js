@@ -226,10 +226,7 @@ describe('IssuesColumn', () => {
 
     const modal = screen.getByTestId('modal');
     expect(modal).toBeInTheDocument();
-    expect(modal).toHaveAttribute('data-variant', 'medium');
-    expect(screen.getByTestId('modal-title')).toHaveTextContent(
-      'Planned remediation actions',
-    );
+    expect(screen.getByText('Planned remediation actions')).toBeInTheDocument();
   });
 
   it('should close modal when close button is clicked', () => {
@@ -242,7 +239,7 @@ describe('IssuesColumn', () => {
     expect(screen.getByTestId('modal')).toBeInTheDocument();
 
     // Close modal
-    const closeButton = screen.getByTestId('modal-close');
+    const closeButton = screen.getByLabelText('Close');
     fireEvent.click(closeButton);
 
     expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
@@ -494,7 +491,7 @@ describe('IssuesColumn', () => {
     expect(screen.getByTestId('modal')).toBeInTheDocument();
 
     // Close modal
-    fireEvent.click(screen.getByTestId('modal-close'));
+    fireEvent.click(screen.getByLabelText('Close'));
     expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
 
     // Open modal again
@@ -502,7 +499,7 @@ describe('IssuesColumn', () => {
     expect(screen.getByTestId('modal')).toBeInTheDocument();
 
     // Close modal again
-    fireEvent.click(screen.getByTestId('modal-close'));
+    fireEvent.click(screen.getByLabelText('Close'));
     expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
   });
 

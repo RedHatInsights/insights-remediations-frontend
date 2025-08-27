@@ -6,20 +6,19 @@ import TableEmptyState from './TableEmptyState';
 
 // Mock PatternFly components
 jest.mock('@patternfly/react-core', () => ({
-  EmptyState: ({ children }) => <div data-testid="empty-state">{children}</div>,
+  EmptyState: ({ children, headingLevel, icon: IconComponent, titleText }) => (
+    <div data-testid="empty-state">
+      <div data-testid="empty-state-header" data-heading-level={headingLevel}>
+        <h4>{titleText}</h4>
+      </div>
+      <div data-testid="empty-state-icon">
+        <IconComponent data-testid="search-icon" />
+      </div>
+      {children}
+    </div>
+  ),
   EmptyStateBody: ({ children }) => (
     <div data-testid="empty-state-body">{children}</div>
-  ),
-  EmptyStateHeader: ({ titleText, headingLevel, icon }) => (
-    <div data-testid="empty-state-header" data-heading-level={headingLevel}>
-      <h4>{titleText}</h4>
-      {icon}
-    </div>
-  ),
-  EmptyStateIcon: ({ icon: IconComponent }) => (
-    <div data-testid="empty-state-icon">
-      <IconComponent />
-    </div>
   ),
 }));
 

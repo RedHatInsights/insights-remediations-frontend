@@ -27,11 +27,11 @@ const filterSerialisers = {
 };
 
 const findFilterSerialiser = (filterConfigItem) => {
-  if (filterConfigItem.filterSerialiser) {
+  if (filterConfigItem?.filterSerialiser) {
     return filterConfigItem.filterSerialiser;
   } else {
     return (
-      filterConfigItem.filterAttribute &&
+      filterConfigItem?.filterAttribute &&
       filterSerialisers[filterConfigItem?.type]
     );
   }
@@ -52,6 +52,12 @@ const findFilterSerialiser = (filterConfigItem) => {
 export const filtersSerialiser = (state, filters) =>
   Object.entries(state || {}).reduce((allFilters, [filterId, value]) => {
     const filterConfigItem = filters.find((filter) => filter.id === filterId);
+
+    // Skip if filter config item is not found
+    if (!filterConfigItem) {
+      return allFilters;
+    }
+
     const filterSerialiser = findFilterSerialiser(filterConfigItem);
     const serialiseValue = filterSerialiser
       ? filterSerialiser(filterConfigItem, value)

@@ -18,9 +18,15 @@ export default [
   },
   {
     key: 'tags',
+    props: {
+      screenReaderText: 'Tags',
+    },
   },
   {
     key: 'system_profile',
+    props: {
+      screenReaderText: 'System profile',
+    },
   },
   {
     key: 'issues',
