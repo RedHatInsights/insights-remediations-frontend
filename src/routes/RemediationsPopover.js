@@ -25,10 +25,10 @@ export const RemediationsPopover = () => {
             <Content component={ContentVariants.p}>
               Remediations allows you to resolve Advisor recommendations,
               content advisories, vulnerability CVEs, and failed compliance
-              rules that Red Hat Insights has identified on your connected RHEL
-              systems. Remediation plans use Ansible playbooks to enable plan
-              execution without the need for any additional subscriptions or
-              tools. After creating a remediation plan, you can download or
+              rules that Red Hat Lightspeed has identified on your connected
+              RHEL systems. Remediation plans use Ansible playbooks to enable
+              plan execution without the need for any additional subscriptions
+              or tools. After creating a remediation plan, you can download or
               execute remediation plans on connected RHEL systems or utilize
               integrations with Ansible Automation Platform and Satellite to
               enable issue resolution across your Red Hat portfolio.

@@ -64,6 +64,11 @@ jest.mock('@patternfly/react-core', () => ({
   },
 }));
 
+// Mock useFeatureFlag
+jest.mock('../../../Utilities/Hooks/useFeatureFlag', () => ({
+  useFeatureFlag: jest.fn(),
+}));
+
 // Mock PatternFly icons
 jest.mock('@patternfly/react-icons', () => ({
   CheckCircleIcon: function MockCheckCircleIcon({ color, ...props }) {
@@ -99,6 +104,8 @@ jest.mock('@patternfly/react-icons', () => ({
   },
 }));
 
+const { useFeatureFlag } = require('../../../Utilities/Hooks/useFeatureFlag');
+
 describe('LogCards', () => {
   const defaultProps = {
     systemName: 'test-system.example.com',
@@ -106,6 +113,11 @@ describe('LogCards', () => {
     connectionType: 'rhc',
     executedBy: 'test-user@example.com',
   };
+
+  beforeEach(() => {
+    // Default to feature flag disabled
+    useFeatureFlag.mockReturnValue(false);
+  });
 
   describe('Basic rendering', () => {
     it('should render without crashing', () => {
@@ -127,12 +139,25 @@ describe('LogCards', () => {
       });
     });
 
-    it('should render correct card titles', () => {
+    it('should render correct card titles with feature flag disabled', () => {
+      useFeatureFlag.mockReturnValue(false);
       render(<LogCards {...defaultProps} />);
 
       expect(screen.getByText('System')).toBeInTheDocument();
       expect(screen.getByText('System execution status')).toBeInTheDocument();
       expect(screen.getByText(/Insights connection type/)).toBeInTheDocument();
+      expect(screen.getByText('Executed by user')).toBeInTheDocument();
+    });
+
+    it('should render correct card titles with feature flag enabled', () => {
+      useFeatureFlag.mockReturnValue(true);
+      render(<LogCards {...defaultProps} />);
+
+      expect(screen.getByText('System')).toBeInTheDocument();
+      expect(screen.getByText('System execution status')).toBeInTheDocument();
+      expect(
+        screen.getByText(/Red Hat Lightspeed connection type/),
+      ).toBeInTheDocument();
       expect(screen.getByText('Executed by user')).toBeInTheDocument();
     });
   });
@@ -296,13 +321,28 @@ describe('LogCards', () => {
       expect(cardBodies[2]).toHaveTextContent('-');
     });
 
-    it('should display tooltip for connection type', () => {
+    it('should display tooltip for connection type with feature flag disabled', () => {
+      useFeatureFlag.mockReturnValue(false);
       render(<LogCards {...defaultProps} />);
 
       const tooltip = screen.getByTestId('tooltip');
       expect(tooltip).toHaveAttribute(
         'data-content',
         'Red Hat Enterprise Linux systems are connected to Insights directly via RHC, or through Satellite via Cloud Connector.',
+      );
+      expect(
+        screen.getByTestId('outlined-question-circle-icon'),
+      ).toBeInTheDocument();
+    });
+
+    it('should display tooltip for connection type with feature flag enabled', () => {
+      useFeatureFlag.mockReturnValue(true);
+      render(<LogCards {...defaultProps} />);
+
+      const tooltip = screen.getByTestId('tooltip');
+      expect(tooltip).toHaveAttribute(
+        'data-content',
+        'Red Hat Enterprise Linux systems are connected to Red Hat Lightspeed directly via RHC, or through Satellite via Cloud Connector.',
       );
       expect(
         screen.getByTestId('outlined-question-circle-icon'),

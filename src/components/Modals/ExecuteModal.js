@@ -159,8 +159,8 @@ export const ExecuteModal = ({
               Playbooks can be executed on systems which:
               <List>
                 <ListItem>
-                  Are connected to Insights via a Satellite instance which has
-                  Receptor/Cloud Connector enabled, or <br />
+                  Are connected to Red Hat Lightspeed via a Satellite instance
+                  which has Receptor/Cloud Connector enabled, or <br />
                   <Button
                     icon={<ExternalLinkAltIcon />}
                     className="pf-v6-u-p-0"
@@ -176,8 +176,8 @@ export const ExecuteModal = ({
                   </Button>
                 </ListItem>
                 <ListItem>
-                  Are directly connected to Insights via Red Hat connector, and
-                  Cloud Connector is enabled <br />
+                  Are directly connected to Red Hat Lightspeed via Red Hat
+                  connector, and Cloud Connector is enabled <br />
                   <Button
                     icon={<ExternalLinkAltIcon />}
                     className="pf-v6-u-p-0"

@@ -120,8 +120,8 @@ export const renderConnectionStatus = (status) => {
         <div data-testid="text-content">
           {plain('Cannot remediate ‒ Cloud Connector not defined')}
           <small>
-            Remediation from Insights requires Cloud Connector. Cloud Connector
-            can be enabled via Satellite, or through&nbsp;
+            Remediation from Red Hat Lightspeed requires Cloud Connector. Cloud
+            Connector can be enabled via Satellite, or through&nbsp;
             <InsightsLink app="connector" to="/">
               RHC
             </InsightsLink>

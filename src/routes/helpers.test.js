@@ -416,7 +416,7 @@ describe('routes/helpers', () => {
         'Cannot remediate ‒ Cloud Connector not defined',
       );
       expect(container).toHaveTextContent(
-        'Remediation from Insights requires Cloud Connector',
+        'Remediation from Red Hat Lightspeed requires Cloud Connector',
       );
       expect(container).toHaveTextContent('RHC');
       expect(screen.getByTestId('text-content')).toBeInTheDocument();
