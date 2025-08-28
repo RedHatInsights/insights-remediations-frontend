@@ -2,8 +2,13 @@ import React from 'react';
 import propTypes from 'prop-types';
 import { Button } from '@patternfly/react-core';
 import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
+import { useFeatureFlag } from '../../Utilities/Hooks/useFeatureFlag';
 
 export const NoDataModal = ({ isOpen, setOpen, patchNoAdvisoryText }) => {
+  const isLightspeedRebrandEnabled = useFeatureFlag(
+    'platform.lightspeed-rebrand',
+  );
+
   return (
     <Modal
       variant={ModalVariant.small}
@@ -17,7 +22,9 @@ export const NoDataModal = ({ isOpen, setOpen, patchNoAdvisoryText }) => {
           onClick={() => setOpen(false)}
           data-testid="action-0"
         >
-          Back to Insights
+          {isLightspeedRebrandEnabled
+            ? 'Back to Red Hat Lightspeed'
+            : 'Back to Insights'}
         </Button>,
       ]}
       data-testid="modal"

@@ -15,6 +15,11 @@ jest.mock('../Cells', () => ({
 jest.mock('./helpers', () => ({
   execStatus: jest.fn(),
 }));
+
+// Mock useFeatureFlag
+jest.mock('../../Utilities/Hooks/useFeatureFlag', () => ({
+  useFeatureFlag: jest.fn(),
+}));
 jest.mock('@redhat-cloud-services/frontend-components/InsightsLink', () => {
   return function MockInsightsLink({ to, target, children }) {
     return (
@@ -25,9 +30,17 @@ jest.mock('@redhat-cloud-services/frontend-components/InsightsLink', () => {
   };
 });
 
+const { useFeatureFlag } = require('../../Utilities/Hooks/useFeatureFlag');
+
 describe('DetailsCard', () => {
   let mockUpdateRemPlan;
   let mockOnNavigateToTab;
+
+  beforeEach(() => {
+    // Default to feature flag disabled
+    useFeatureFlag.mockReturnValue(false);
+    jest.clearAllMocks();
+  });
   let mockRefetch;
   let mockRefetchAllRemediations;
   let mockUseVerifyName;

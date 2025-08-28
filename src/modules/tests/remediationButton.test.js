@@ -12,6 +12,11 @@ jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
   default: jest.fn(),
 }));
 
+// Mock useFeatureFlag
+jest.mock('../../Utilities/Hooks/useFeatureFlag', () => ({
+  useFeatureFlag: jest.fn(),
+}));
+
 jest.mock('../../modules/RemediationsModal/RemediationsWizard', () => ({
   __esModule: true,
   default: jest.fn((props) => (
@@ -33,11 +38,15 @@ let initialProps = {
 };
 
 const user = userEvent.setup();
+const { useFeatureFlag } = require('../../Utilities/Hooks/useFeatureFlag');
 
 describe('RemediationButton', () => {
   let tmpInsights;
   beforeEach(() => {
     tmpInsights = global.insights;
+    // Default to feature flag disabled
+    useFeatureFlag.mockReturnValue(false);
+    jest.clearAllMocks();
   });
 
   afterEach(() => {

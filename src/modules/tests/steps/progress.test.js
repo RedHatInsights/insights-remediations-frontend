@@ -5,8 +5,21 @@ import { remediationWizardTestData } from '../testData';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
+// Mock useFeatureFlag
+jest.mock('../../../Utilities/Hooks/useFeatureFlag', () => ({
+  useFeatureFlag: jest.fn(),
+}));
+
+const { useFeatureFlag } = require('../../../Utilities/Hooks/useFeatureFlag');
+
 describe('Progress', () => {
   const user = userEvent.setup();
+
+  beforeEach(() => {
+    // Default to feature flag disabled
+    useFeatureFlag.mockReturnValue(false);
+    jest.clearAllMocks();
+  });
   it('should render loading progress correctly ', async () => {
     render(
       <Progress
