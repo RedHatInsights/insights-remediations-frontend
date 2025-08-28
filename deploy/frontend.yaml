@@ -65,13 +65,28 @@ objects:
             - tasks
             - ansible remediations
       bundleSegments:
-        - segmentId: remediations
-          bundleId: automation
+        - segmentId: automation
+          bundleId: insights
           position: 2200
           navItems:
             - id: remediations
+              title: Automation Toolkit
+              expandable: true
+              routes:
+                - id: remediations
+                  title: Remediation Plans
+                  href: /insights/remediations
+                  icon: InsightsIcon
+                  product: Red Hat Insights
+        - segmentId: remediations
+          bundleId: ansible
+          position: 2300
+          navItems:
+            - id: ansible-remediations
               title: Remediation Plans
-              href: /insights/remediations
+              href: /ansible/remediations
+              icon: AnsibleIcon
+              product: Ansible
       module:
         manifestLocation: /apps/remediations/fed-mods.json
         analytics:
@@ -86,7 +101,6 @@ objects:
             routes:
               - pathname: /insights/remediations
               - pathname: /ansible/remediations
-
 parameters:
   - name: ENV_NAME
     required: true
