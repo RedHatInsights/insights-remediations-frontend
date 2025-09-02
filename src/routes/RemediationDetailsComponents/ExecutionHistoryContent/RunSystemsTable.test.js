@@ -4,17 +4,14 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import RunSystemsTable from './RunSystemsTable';
 
-// Mock external dependencies
 jest.mock('bastilian-tabletools', () => ({
   useRawTableState: jest.fn(),
 }));
 
-// Mock useFeatureFlag
 jest.mock('../../../Utilities/Hooks/useFeatureFlag', () => ({
   useFeatureFlag: jest.fn(),
 }));
 
-// Mock the Columns module - it exports a default hook function
 jest.mock('./Columns', () => {
   const mockUseColumns = jest.fn(() => [
     {

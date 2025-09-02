@@ -49,11 +49,8 @@ export const OverViewPageHeader = ({ hasRemediations }) => {
             <StackItem>
               <p>
                 Remediation plans use Ansible playbooks to resolve issues
-                identified by{' '}
-                {isLightspeedRebrandEnabled
-                  ? 'Red Hat Lightspeed'
-                  : 'Red Hat Insights'}
-                .
+                identified by Red Hat{' '}
+                {isLightspeedRebrandEnabled ? 'Lightspeed' : 'Insights'}.
               </p>
             </StackItem>
           </Stack>

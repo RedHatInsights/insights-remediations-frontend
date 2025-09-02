@@ -4,7 +4,6 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ConnectionStatusColumn from './ConnectionStatusCol';
 
-// Mock PatternFly components
 jest.mock('@patternfly/react-icons', () => ({
   ConnectedIcon: function MockConnectedIcon({ className }) {
     return <span data-testid="connected-icon" className={className} />;
@@ -17,7 +16,6 @@ jest.mock('@patternfly/react-icons', () => ({
   },
 }));
 
-// Mock useFeatureFlag
 jest.mock('../../Utilities/Hooks/useFeatureFlag', () => ({
   useFeatureFlag: jest.fn(),
 }));

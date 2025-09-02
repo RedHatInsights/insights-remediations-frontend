@@ -5,7 +5,7 @@ import { remediationWizardTestData } from '../testData';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
-// Mock useFeatureFlag
+// Mock
 jest.mock('../../../Utilities/Hooks/useFeatureFlag', () => ({
   useFeatureFlag: jest.fn(),
 }));

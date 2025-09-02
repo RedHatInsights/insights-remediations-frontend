@@ -12,7 +12,6 @@ jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
   default: jest.fn(),
 }));
 
-// Mock useFeatureFlag
 jest.mock('../../Utilities/Hooks/useFeatureFlag', () => ({
   useFeatureFlag: jest.fn(),
 }));

@@ -4,7 +4,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import NoDataModal, { NoDataModal as NamedExport } from './NoDataModal';
 
-// Mock useFeatureFlag
 jest.mock('../../Utilities/Hooks/useFeatureFlag', () => ({
   useFeatureFlag: jest.fn(),
 }));

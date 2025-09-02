@@ -64,12 +64,10 @@ jest.mock('@patternfly/react-core', () => ({
   },
 }));
 
-// Mock useFeatureFlag
 jest.mock('../../../Utilities/Hooks/useFeatureFlag', () => ({
   useFeatureFlag: jest.fn(),
 }));
 
-// Mock PatternFly icons
 jest.mock('@patternfly/react-icons', () => ({
   CheckCircleIcon: function MockCheckCircleIcon({ color, ...props }) {
     return (

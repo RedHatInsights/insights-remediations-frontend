@@ -1,7 +1,6 @@
 import useColumns from './Columns';
 import { renderHook } from '@testing-library/react';
 
-// Mock the cell components
 jest.mock('./Cells', () => ({
   SystemNameCell: 'SystemNameCellComponent',
   InsightsConnectCell: 'InsightsConnectCellComponent',
@@ -9,19 +8,16 @@ jest.mock('./Cells', () => ({
   ExecutionStatusCell: 'ExecutionStatusCellComponent',
 }));
 
-// Mock useFeatureFlag
 jest.mock('../../../Utilities/Hooks/useFeatureFlag', () => ({
   useFeatureFlag: jest.fn(),
 }));
 
-// Mock PatternFly table utilities
 jest.mock('@patternfly/react-table', () => ({
   wrappable: 'wrappableTransform',
 }));
 
 const { useFeatureFlag } = require('../../../Utilities/Hooks/useFeatureFlag');
 
-// Helper to get columns with feature flag
 const getColumnsWithFlag = (flagEnabled = false) => {
   useFeatureFlag.mockReturnValue(flagEnabled);
   const { result } = renderHook(() => useColumns());

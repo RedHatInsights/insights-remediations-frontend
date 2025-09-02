@@ -67,7 +67,7 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
       return (
         <Tooltip
           position="left"
-          content={`The Red Hat Satellite instance that this system is registered to is disconnected from ${isLightspeedRebrandEnabled ? 'Red Hat Lightspeed' : 'Red Hat Insights'}.`}
+          content={`The Red Hat Satellite instance that this system is registered to is disconnected from Red Hat ${isLightspeedRebrandEnabled ? 'Lightspeed' : 'Insights'}.`}
         >
           <Flex spaceItems={{ default: 'spaceItemsXs' }}>
             <DisconnectedIcon className="pf-v6-u-mr-xs" />

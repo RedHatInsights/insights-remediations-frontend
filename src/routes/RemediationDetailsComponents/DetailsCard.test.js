@@ -16,7 +16,6 @@ jest.mock('./helpers', () => ({
   execStatus: jest.fn(),
 }));
 
-// Mock useFeatureFlag
 jest.mock('../../Utilities/Hooks/useFeatureFlag', () => ({
   useFeatureFlag: jest.fn(),
 }));

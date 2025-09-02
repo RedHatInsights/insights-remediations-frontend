@@ -27,7 +27,6 @@ const demoRows = [
   },
 ];
 
-// Mock useFeatureFlag
 jest.mock('../../Utilities/Hooks/useFeatureFlag', () => ({
   useFeatureFlag: jest.fn(),
 }));
