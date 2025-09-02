@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import useRemediationsQuery from '../api/useRemediationsQuery';
 import { Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import DetailsGeneralContent from './RemediationDetailsComponents/DetailsGeneralContent';
@@ -12,6 +12,7 @@ import ActionsContent from './RemediationDetailsComponents/ActionsContent/Action
 // import SystemsContent from './RemediationDetailsComponents/SystemsContent/SystemsContent';
 import SystemsTable from '../components/SystemsTable/SystemsTable';
 import ExecutionHistoryTab from './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent';
+import PlanNotFound from './RemediationDetailsComponents/PlanNotFound';
 import {
   checkExecutableStatus,
   getRemediationDetails,
@@ -24,9 +25,10 @@ import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/fronten
 const RemediationDetails = () => {
   const chrome = useChrome();
   const { id } = useParams();
-  const navigate = useNavigate();
+
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [showPlanNotFound, setShowPlanNotFound] = useState(false);
   const { isFedramp } = chrome;
   const context = useContext(PermissionContext);
   const axios = useAxiosWithPlatformInterceptors();
@@ -72,15 +74,15 @@ const RemediationDetails = () => {
     if (remediationDetailsError) {
       const isNotFound =
         remediationDetailsError?.status === 404 ||
-        remediationDetailsError?.status === 400;
-      remediationDetailsError?.errors?.[0]?.status === 404 ||
+        remediationDetailsError?.status === 400 ||
+        remediationDetailsError?.errors?.[0]?.status === 404 ||
         remediationDetailsError?.errors?.[0]?.status === 400;
 
       if (isNotFound) {
-        navigate('/insights/remediations');
+        setShowPlanNotFound(true);
       }
     }
-  }, [remediationDetailsError, navigate]);
+  }, [remediationDetailsError]);
 
   const [
     connectedSystems,
@@ -105,6 +107,11 @@ const RemediationDetails = () => {
     });
 
   const getIsExecutable = (item) => String(item).trim().toUpperCase() === 'OK';
+
+  if (showPlanNotFound) {
+    return <PlanNotFound planId={id} />;
+  }
+
   return (
     remediationDetails && (
       <>
