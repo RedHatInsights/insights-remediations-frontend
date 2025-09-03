@@ -6,6 +6,12 @@ import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter as Router } from 'react-router-dom';
 
+jest.mock('../../Utilities/Hooks/useFeatureFlag', () => ({
+  useFeatureFlag: jest.fn(),
+}));
+
+const { useFeatureFlag } = require('../../Utilities/Hooks/useFeatureFlag');
+
 api.downloadPlaybook = jest.fn();
 global.insights = {
   chrome: {
@@ -36,6 +42,10 @@ const data = [
 ];
 
 describe('Execute button', () => {
+  beforeEach(() => {
+    useFeatureFlag.mockReturnValue(false);
+  });
+
   test('Renders execute button as disabled', async () => {
     render(
       <ExecuteButton

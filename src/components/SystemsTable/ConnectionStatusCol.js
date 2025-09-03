@@ -6,8 +6,12 @@ import {
   UnknownIcon,
 } from '@patternfly/react-icons';
 import { Flex, Tooltip } from '@patternfly/react-core';
+import { useFeatureFlag } from '../../Utilities/Hooks/useFeatureFlag';
 
 const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
+  const isLightspeedRebrandEnabled = useFeatureFlag(
+    'platform.lightspeed-rebrand',
+  );
   let status = connection_status;
   let execType = executor_type;
   // Convert to lowercase if connection_status is a string
@@ -63,9 +67,7 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
       return (
         <Tooltip
           position="left"
-          content={
-            'The Red Hat Satellite instance that this system is registered to is disconnected from Red Hat Insights.'
-          }
+          content={`The Red Hat Satellite instance that this system is registered to is disconnected from Red Hat ${isLightspeedRebrandEnabled ? 'Lightspeed' : 'Insights'}.`}
         >
           <Flex spaceItems={{ default: 'spaceItemsXs' }}>
             <DisconnectedIcon className="pf-v6-u-mr-xs" />

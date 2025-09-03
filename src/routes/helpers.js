@@ -8,6 +8,7 @@ import {
   BanIcon,
 } from '@patternfly/react-icons';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
+import { useFeatureFlag } from '../Utilities/Hooks/useFeatureFlag';
 
 const STATUS_META = {
   success: {
@@ -73,13 +74,16 @@ StatusIcon.propTypes = {
   size: PropTypes.string,
 };
 
-export const renderConnectionStatus = (status) => {
+export const ConnectionStatus = ({ status }) => {
+  const isLightspeedRebrandEnabled = useFeatureFlag(
+    'platform.lightspeed-rebrand',
+  );
+
   const plain = (text) => (
     <p className="pf-v6-u-mb-0" data-testid="text">
       {text}
     </p>
   );
-
   switch (status) {
     case 'connected':
       return (
@@ -120,8 +124,10 @@ export const renderConnectionStatus = (status) => {
         <div data-testid="text-content">
           {plain('Cannot remediate ‒ Cloud Connector not defined')}
           <small>
-            Remediation from Insights requires Cloud Connector. Cloud Connector
-            can be enabled via Satellite, or through&nbsp;
+            Remediation from{' '}
+            {isLightspeedRebrandEnabled ? ' Red Hat Lightspeed' : 'Insights'}{' '}
+            requires Cloud Connector. Cloud Connector can be enabled via
+            Satellite, or through&nbsp;
             <InsightsLink app="connector" to="/">
               RHC
             </InsightsLink>
@@ -136,3 +142,12 @@ export const renderConnectionStatus = (status) => {
       return plain('Not available');
   }
 };
+
+ConnectionStatus.propTypes = {
+  status: PropTypes.string,
+};
+
+// Keep the old function for backward compatibility, but it will just render the component
+export const renderConnectionStatus = (status) => (
+  <ConnectionStatus status={status} />
+);

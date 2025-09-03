@@ -4,6 +4,10 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import NoDataModal, { NoDataModal as NamedExport } from './NoDataModal';
 
+jest.mock('../../Utilities/Hooks/useFeatureFlag', () => ({
+  useFeatureFlag: jest.fn(),
+}));
+
 // Mock PatternFly components
 jest.mock('@patternfly/react-core', () => ({
   Button: function MockButton({ children, variant, onClick, ...props }) {
@@ -58,7 +62,13 @@ jest.mock('@patternfly/react-core', () => ({
   },
 }));
 
+const { useFeatureFlag } = require('../../Utilities/Hooks/useFeatureFlag');
+
 describe('NoDataModal', () => {
+  beforeEach(() => {
+    // Default to feature flag disabled
+    useFeatureFlag.mockReturnValue(false);
+  });
   let mockSetOpen;
 
   beforeEach(() => {
@@ -323,6 +333,28 @@ describe('NoDataModal', () => {
 
       expect(
         screen.getByRole('button', { name: 'Back to Insights' }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe('With feature flag enabled', () => {
+    beforeEach(() => {
+      useFeatureFlag.mockReturnValue(true);
+    });
+
+    it('should render action button with Red Hat Lightspeed text', () => {
+      render(<NoDataModal isOpen={true} setOpen={mockSetOpen} />);
+
+      const button = screen.getByTestId('action-0');
+      expect(button).toHaveTextContent('Back to Red Hat Lightspeed');
+      expect(button).toHaveAttribute('data-variant', 'primary');
+    });
+
+    it('should render button with Red Hat Lightspeed descriptive text', () => {
+      render(<NoDataModal isOpen={true} setOpen={mockSetOpen} />);
+
+      expect(
+        screen.getByRole('button', { name: 'Back to Red Hat Lightspeed' }),
       ).toBeInTheDocument();
     });
   });

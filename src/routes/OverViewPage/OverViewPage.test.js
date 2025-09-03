@@ -27,6 +27,10 @@ const demoRows = [
   },
 ];
 
+jest.mock('../../Utilities/Hooks/useFeatureFlag', () => ({
+  useFeatureFlag: jest.fn(),
+}));
+
 jest.mock('../api', () => ({
   API_BASE: '',
   getRemediations: jest.fn(() =>
@@ -111,7 +115,14 @@ const renderPageWithList = (list) => {
   return renderPage();
 };
 
+const { useFeatureFlag } = require('../../Utilities/Hooks/useFeatureFlag');
+
 describe('OverViewPage', () => {
+  beforeEach(() => {
+    // Default to feature flag disabled
+    useFeatureFlag.mockReturnValue(false);
+    jest.clearAllMocks();
+  });
   it.skip('renders table rows and opens delete modal', async () => {
     const user = userEvent.setup();
     renderPage();

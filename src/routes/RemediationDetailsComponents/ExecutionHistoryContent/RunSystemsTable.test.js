@@ -4,10 +4,32 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import RunSystemsTable from './RunSystemsTable';
 
-// Mock external dependencies
 jest.mock('bastilian-tabletools', () => ({
   useRawTableState: jest.fn(),
 }));
+
+jest.mock('../../../Utilities/Hooks/useFeatureFlag', () => ({
+  useFeatureFlag: jest.fn(),
+}));
+
+jest.mock('./Columns', () => {
+  const mockUseColumns = jest.fn(() => [
+    {
+      title: 'System name',
+      key: 'system_name',
+      Component: ({ item }) => <div>{item.system_name}</div>,
+    },
+    {
+      title: 'Insights connection',
+      key: 'connection',
+      Component: ({ item }) => <div>{item.status}</div>,
+    },
+  ]);
+  return {
+    __esModule: true,
+    default: mockUseColumns,
+  };
+});
 
 jest.mock('../../../components/RemediationsTable/RemediationsTable', () => {
   const MockRemediationsTable = ({
@@ -42,11 +64,6 @@ jest.mock('../../../components/RemediationsTable/RemediationsTable', () => {
   return MockRemediationsTable;
 });
 
-jest.mock('./Columns', () => [
-  { title: 'System Name', key: 'system_name' },
-  { title: 'Status', key: 'status' },
-]);
-
 jest.mock('./Filter', () => ({
   systemFilter: [{ type: 'system', label: 'System Name' }],
 }));
@@ -59,8 +76,16 @@ jest.mock('../../OverViewPage/TableEmptyState', () => {
   return MockTableEmptyState;
 });
 
+const { useFeatureFlag } = require('../../../Utilities/Hooks/useFeatureFlag');
+
 describe('RunSystemsTable', () => {
   const mockUseRawTableState = require('bastilian-tabletools').useRawTableState;
+
+  beforeEach(() => {
+    // Default to feature flag disabled
+    useFeatureFlag.mockReturnValue(false);
+    jest.clearAllMocks();
+  });
 
   const mockRun = {
     id: 'run-123',
