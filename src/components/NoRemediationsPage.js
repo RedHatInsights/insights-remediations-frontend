@@ -5,8 +5,6 @@ import {
   EmptyStateBody,
   EmptyStateVariant,
   Button,
-  PageSection,
-  Page,
   EmptyStateActions,
   EmptyStateFooter,
 } from '@patternfly/react-core';
@@ -17,38 +15,32 @@ export const NoRemediationsPage = () => {
   const { quickStarts } = useChrome();
 
   return (
-    <Page>
-      <PageSection hasBodyWrapper={false} isFilled>
-        <EmptyState
-          headingLevel="h5"
-          icon={CubesIcon}
-          titleText={<>No remediation plans</>}
-          variant={EmptyStateVariant.full}
-        >
-          <EmptyStateBody>
-            Create remediation plans to address Advisor recommendations,
-            Security CVEs, and
-            <br />
-            Content advisories on your Red Hat Enterprise Linux (RHEL)
-            infrastructure.
-          </EmptyStateBody>
-          <EmptyStateFooter>
-            <EmptyStateActions>
-              <Button
-                icon={<OpenDrawerRightIcon className="pf-v6-u-ml-sm" />}
-                onClick={() =>
-                  quickStarts?.activateQuickstart(
-                    'insights-remediate-plan-create',
-                  )
-                }
-              >
-                Launch Quick Start{' '}
-              </Button>
-            </EmptyStateActions>
-          </EmptyStateFooter>
-        </EmptyState>
-      </PageSection>
-    </Page>
+    <EmptyState
+      headingLevel="h5"
+      icon={CubesIcon}
+      titleText={<>No remediation plans</>}
+      variant={EmptyStateVariant.full}
+    >
+      <EmptyStateBody>
+        Create remediation plans to address Advisor recommendations, Security
+        CVEs, and
+        <br />
+        Content advisories on your Red Hat Enterprise Linux (RHEL)
+        infrastructure.
+      </EmptyStateBody>
+      <EmptyStateFooter>
+        <EmptyStateActions>
+          <Button
+            icon={<OpenDrawerRightIcon className="pf-v6-u-ml-sm" />}
+            onClick={() =>
+              quickStarts?.activateQuickstart('insights-remediate-plan-create')
+            }
+          >
+            Launch Quick Start{' '}
+          </Button>
+        </EmptyStateActions>
+      </EmptyStateFooter>
+    </EmptyState>
   );
 };
 

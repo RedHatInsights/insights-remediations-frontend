@@ -12,6 +12,7 @@ import ActionsContent from './RemediationDetailsComponents/ActionsContent/Action
 // import SystemsContent from './RemediationDetailsComponents/SystemsContent/SystemsContent';
 import SystemsTable from '../components/SystemsTable/SystemsTable';
 import ExecutionHistoryTab from './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent';
+import PlanNotFound from './RemediationDetailsComponents/PlanNotFound';
 import {
   checkExecutableStatus,
   getRemediationDetails,
@@ -24,8 +25,10 @@ import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/fronten
 const RemediationDetails = () => {
   const chrome = useChrome();
   const { id } = useParams();
+
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [showPlanNotFound, setShowPlanNotFound] = useState(false);
   const { isFedramp } = chrome;
   const context = useContext(PermissionContext);
   const axios = useAxiosWithPlatformInterceptors();
@@ -40,6 +43,7 @@ const RemediationDetails = () => {
     result: remediationDetails,
     refetch: refetchRemediationDetails,
     loading: detailsLoading,
+    error: remediationDetailsError,
   } = useRemediationsQuery(getRemediationDetails, {
     params: { remId: id },
   });
@@ -66,6 +70,20 @@ const RemediationDetails = () => {
       );
   }, [chrome, remediationDetails]);
 
+  useEffect(() => {
+    if (remediationDetailsError) {
+      const isNotFound =
+        remediationDetailsError?.status === 404 ||
+        remediationDetailsError?.status === 400 ||
+        remediationDetailsError?.errors?.[0]?.status === 404 ||
+        remediationDetailsError?.errors?.[0]?.status === 400;
+
+      if (isNotFound) {
+        setShowPlanNotFound(true);
+      }
+    }
+  }, [remediationDetailsError]);
+
   const [
     connectedSystems,
     totalSystems,
@@ -89,6 +107,11 @@ const RemediationDetails = () => {
     });
 
   const getIsExecutable = (item) => String(item).trim().toUpperCase() === 'OK';
+
+  if (showPlanNotFound) {
+    return <PlanNotFound planId={id} />;
+  }
+
   return (
     remediationDetails && (
       <>
