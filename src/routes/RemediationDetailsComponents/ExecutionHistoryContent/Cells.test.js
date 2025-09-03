@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import {
   SystemNameCell,
-  InsightsConnectCell,
+  RedHatLightSpeedCell,
   ExecutionStatusCell,
 } from './Cells';
 
@@ -111,9 +111,9 @@ describe('ExecutionHistoryContent Cells', () => {
     });
   });
 
-  describe('InsightsConnectCell', () => {
+  describe('RedHatLightSpeedCell', () => {
     it('should render executor name', () => {
-      render(<InsightsConnectCell executor_name="rhc" />);
+      render(<RedHatLightSpeedCell executor_name="rhc" />);
 
       const text = screen.getByTestId('text');
       expect(text).toBeInTheDocument();
@@ -121,25 +121,25 @@ describe('ExecutionHistoryContent Cells', () => {
     });
 
     it('should handle different executor names', () => {
-      render(<InsightsConnectCell executor_name="ansible" />);
+      render(<RedHatLightSpeedCell executor_name="ansible" />);
 
       expect(screen.getByTestId('text')).toHaveTextContent('ansible');
     });
 
     it('should handle null executor name', () => {
-      render(<InsightsConnectCell executor_name={null} />);
+      render(<RedHatLightSpeedCell executor_name={null} />);
 
       expect(screen.getByTestId('text')).toHaveTextContent('');
     });
 
     it('should handle undefined executor name', () => {
-      render(<InsightsConnectCell executor_name={undefined} />);
+      render(<RedHatLightSpeedCell executor_name={undefined} />);
 
       expect(screen.getByTestId('text')).toHaveTextContent('');
     });
 
     it('should handle empty string executor name', () => {
-      render(<InsightsConnectCell executor_name="" />);
+      render(<RedHatLightSpeedCell executor_name="" />);
 
       expect(screen.getByTestId('text')).toHaveTextContent('');
     });
@@ -149,7 +149,7 @@ describe('ExecutionHistoryContent Cells', () => {
 
       executorTypes.forEach((executor) => {
         const { unmount } = render(
-          <InsightsConnectCell executor_name={executor} />,
+          <RedHatLightSpeedCell executor_name={executor} />,
         );
         expect(screen.getByTestId('text')).toHaveTextContent(executor);
         unmount();
@@ -157,7 +157,7 @@ describe('ExecutionHistoryContent Cells', () => {
     });
 
     it('should handle executor names with special characters', () => {
-      render(<InsightsConnectCell executor_name="rhc-satellite-v2" />);
+      render(<RedHatLightSpeedCell executor_name="rhc-satellite-v2" />);
 
       expect(screen.getByTestId('text')).toHaveTextContent('rhc-satellite-v2');
     });

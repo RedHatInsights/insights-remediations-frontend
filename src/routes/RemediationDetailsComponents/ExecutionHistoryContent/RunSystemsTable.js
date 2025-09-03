@@ -1,13 +1,14 @@
 import React from 'react';
 import { useRawTableState } from 'bastilian-tabletools';
 import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
-import columns from './Columns';
+import useColumns from './Columns';
 import { systemFilter } from './Filter';
 import PropTypes from 'prop-types';
 import TableEmptyState from '../../OverViewPage/TableEmptyState';
 
 const RunSystemsTable = ({ run, loading, viewLogColumn }) => {
   const tableState = useRawTableState();
+  const columns = useColumns();
   const nameFilter = tableState?.filters?.system?.[0]?.toLowerCase() ?? '';
 
   const filtered = nameFilter

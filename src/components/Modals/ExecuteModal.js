@@ -20,6 +20,7 @@ import RemediationsTable from '../RemediationsTable/RemediationsTable';
 import { TableStateProvider } from 'bastilian-tabletools';
 import columns from './Columns';
 import { pluralize } from '../../Utilities/utils';
+import { useFeatureFlag } from '../../Utilities/Hooks/useFeatureFlag';
 
 export const ExecuteModal = ({
   isOpen,
@@ -32,7 +33,9 @@ export const ExecuteModal = ({
   const [connected, setConnected] = useState([]);
   const [disconnected, setDisconnected] = useState([]);
   const addNotification = useAddNotification();
-
+  const isLightspeedRebrandEnabled = useFeatureFlag(
+    'platform.lightspeed-rebrand',
+  );
   useEffect(() => {
     if (!remediationStatus?.connectedData?.length) {
       setConnected([]);
@@ -159,8 +162,12 @@ export const ExecuteModal = ({
               Playbooks can be executed on systems which:
               <List>
                 <ListItem>
-                  Are connected to Insights via a Satellite instance which has
-                  Receptor/Cloud Connector enabled, or <br />
+                  Are connected to{' '}
+                  {isLightspeedRebrandEnabled
+                    ? ' Red Hat Lightspeed'
+                    : ' Insights'}{' '}
+                  via a Satellite instance which has Receptor/Cloud Connector
+                  enabled, or <br />
                   <Button
                     icon={<ExternalLinkAltIcon />}
                     className="pf-v6-u-p-0"
@@ -176,8 +183,11 @@ export const ExecuteModal = ({
                   </Button>
                 </ListItem>
                 <ListItem>
-                  Are directly connected to Insights via Red Hat connector, and
-                  Cloud Connector is enabled <br />
+                  Are directly connected to{' '}
+                  {isLightspeedRebrandEnabled
+                    ? ' Red Hat Lightspeed'
+                    : ' Insights'}{' '}
+                  via Red Hat connector, and Cloud Connector is enabled <br />
                   <Button
                     icon={<ExternalLinkAltIcon />}
                     className="pf-v6-u-p-0"

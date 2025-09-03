@@ -13,6 +13,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { OpenDrawerRightIcon } from '@patternfly/react-icons';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
+import { useFeatureFlag } from '../../Utilities/Hooks/useFeatureFlag';
 
 const ProgressCard = ({
   remediationStatus,
@@ -20,6 +21,9 @@ const ProgressCard = ({
   readyOrNot,
   onNavigateToTab,
 }) => {
+  const isLightspeedRebrandEnabled = useFeatureFlag(
+    'platform.lightspeed-rebrand',
+  );
   const { quickStarts } = useChrome();
 
   return permissions === undefined || remediationStatus.areDetailsLoading ? (
@@ -36,9 +40,11 @@ const ProgressCard = ({
         <p className="pf-v6-u-font-size-sm pf-v6-u-mb-md">
           To pass the execution readiness check, ensure you have the required
           permissions and that the Remote Host Configuration Manager is enabled
-          for the affected systems in Insights. The Remote Host Configuration
-          (RHC) client must also be active on every system. If the readiness
-          check fails, the <b>Execute</b> button is inactive.
+          for the affected systems in{' '}
+          {isLightspeedRebrandEnabled ? 'Red Hat Lightspeed' : 'Insights'}. The
+          Remote Host Configuration (RHC) client must also be active on every
+          system. If the readiness check fails, the <b>Execute</b> button is
+          inactive.
         </p>
         <ProgressStepper
           isVertical={true}

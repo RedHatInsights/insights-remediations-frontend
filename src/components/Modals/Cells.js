@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Content, Tooltip } from '@patternfly/react-core';
-import { renderConnectionStatus } from '../../routes/helpers';
+import { ConnectionStatus } from '../../routes/helpers';
 
 export const SystemsCell = ({ system_count }) => (
   <Content component="p">{system_count}</Content>
@@ -43,6 +43,6 @@ ConnectionTypeCell.propTypes = {
 };
 
 export const ConnectionStatusCell = ({ connection_status }) => (
-  <>{renderConnectionStatus(connection_status)}</>
+  <ConnectionStatus status={connection_status} />
 );
 ConnectionStatusCell.propTypes = { connection_status: PropTypes.string };

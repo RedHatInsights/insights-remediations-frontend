@@ -23,9 +23,13 @@ import {
   SELECT_PLAYBOOK,
   SYSTEMS,
 } from '../../../Utilities/utils';
+import { useFeatureFlag } from '../../../Utilities/Hooks/useFeatureFlag';
 import './progress.scss';
 
 const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
+  const isLightspeedRebrandEnabled = useFeatureFlag(
+    'platform.lightspeed-rebrand',
+  );
   const { percent, failed, systems, issues, playbook } = {
     percent: state.percent,
     failed: state.failed,
@@ -82,7 +86,9 @@ const Progress = ({ onClose, setOpen, submitRemediation, setState, state }) => {
         )}
         {percent === 100 && (
           <EmptyStateBody className="pf-c-progress-message-description pf-v6-u-mb-md">
-            You can remediate these systems directly from Insights by enabling
+            You can remediate these systems directly from{' '}
+            {isLightspeedRebrandEnabled ? 'Red Hat Lightspeed' : 'Insights'} by
+            enabling
             <Button
               className="pf-v6-u-py-0 pf-v6-u-px-xs"
               variant="link"

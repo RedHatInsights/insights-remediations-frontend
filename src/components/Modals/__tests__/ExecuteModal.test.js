@@ -5,7 +5,17 @@ import '@testing-library/jest-dom';
 import { withTableState } from '../../../__testUtils__/withTableState';
 import { mockRemediationStatus } from '../../../__mocks__/remediationStatus';
 
+jest.mock('../../../Utilities/Hooks/useFeatureFlag', () => ({
+  useFeatureFlag: jest.fn(),
+}));
+
+const { useFeatureFlag } = require('../../../Utilities/Hooks/useFeatureFlag');
+
 describe('Execute modal', () => {
+  beforeEach(() => {
+    useFeatureFlag.mockReturnValue(false);
+  });
+
   it('renders ExecuteModal component with correct connection type when given data', () => {
     render(
       withTableState(
