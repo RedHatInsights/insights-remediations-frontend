@@ -21,6 +21,10 @@ export const SystemNameCell = ({ system_name, system_id }) => (
 export const InsightsConnectCell = ({ executor_name }) => {
   return <p data-testid="text">{executor_name ?? ''}</p>;
 };
+
+export const RedHatLightSpeedCell = ({ executor_name }) => {
+  return <p data-testid="text">{executor_name ?? ''}</p>;
+};
 export const ExecutionStatusCell = ({ status }) => {
   let icon;
   let displayValue;
@@ -59,6 +63,9 @@ SystemNameCell.propTypes = {
   system_name: PropTypes.string.isRequired,
 };
 InsightsConnectCell.propTypes = {
+  executor_name: PropTypes.string,
+};
+RedHatLightSpeedCell.propTypes = {
   executor_name: PropTypes.string,
 };
 ExecutionStatusCell.propTypes = {

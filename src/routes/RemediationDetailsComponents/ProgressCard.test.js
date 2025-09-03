@@ -13,6 +13,10 @@ jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => {
   }));
 });
 
+jest.mock('../../Utilities/Hooks/useFeatureFlag', () => ({
+  useFeatureFlag: jest.fn(),
+}));
+
 // Mock PatternFly components
 jest.mock('@patternfly/react-core', () => ({
   Button: function MockButton({
@@ -131,8 +135,16 @@ jest.mock('@patternfly/react-icons', () => ({
   },
 }));
 
+const { useFeatureFlag } = require('../../Utilities/Hooks/useFeatureFlag');
+
 describe('ProgressCard', () => {
   const mockOnNavigateToTab = jest.fn();
+
+  beforeEach(() => {
+    // Default to feature flag disabled
+    useFeatureFlag.mockReturnValue(false);
+    jest.clearAllMocks();
+  });
 
   const defaultProps = {
     remediationStatus: {
