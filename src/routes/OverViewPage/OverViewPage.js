@@ -49,7 +49,7 @@ export const OverViewPage = () => {
   const callbacks = useStateCallbacks();
   const tableState = useRawTableState();
 
-  const currentlySelected = tableState?.selected;
+  const currentlySelected = tableState?.selected || [];
   const {
     result,
     fetchAllIds,

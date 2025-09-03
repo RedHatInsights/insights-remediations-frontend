@@ -21,6 +21,12 @@ describe('CalendarFilterType', () => {
     it('returns empty array when value is undefined', () => {
       expect(CalendarFilterType.chips(undefined)).toEqual([]);
     });
+    it('returns empty array when value is empty string', () => {
+      expect(CalendarFilterType.chips([''])).toEqual([]);
+    });
+    it('returns empty array when value is whitespace only', () => {
+      expect(CalendarFilterType.chips(['   '])).toEqual([]);
+    });
   });
 
   describe('selectValue', () => {
@@ -30,8 +36,11 @@ describe('CalendarFilterType', () => {
         true,
       ]);
     });
-    it('works with empty string', () => {
-      expect(CalendarFilterType.selectValue('')).toEqual([[''], true]);
+    it('treats empty string as deselected', () => {
+      expect(CalendarFilterType.selectValue('')).toEqual([undefined, true]);
+    });
+    it('treats whitespace-only string as deselected', () => {
+      expect(CalendarFilterType.selectValue('   ')).toEqual([undefined, true]);
     });
   });
 
