@@ -68,7 +68,7 @@ SystemsModal.propTypes = {
 
 const SystemsModalContentProvider = (props) => {
   return (
-    <TableStateProvider>
+    <TableStateProvider isNewContext>
       <SystemsModal {...props} />
     </TableStateProvider>
   );
