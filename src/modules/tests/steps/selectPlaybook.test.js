@@ -14,7 +14,6 @@ import componentTypes from '@data-driven-forms/react-form-renderer/component-typ
 import SelectPlaybook from '../../RemediationsModal/steps/selectPlaybook';
 import { selectPlaybookFields } from '../../RemediationsModal/schema';
 import { remediationWizardTestData } from '../testData';
-import { getRemediation } from '../../../api';
 import { withTableState } from '../../../__testUtils__/withTableState';
 
 jest.mock('../../../api', () => ({
@@ -45,6 +44,27 @@ const RendererWrapper = (props) => (
         issues: remediationWizardTestData.issues,
         systems: remediationWizardTestData.systems,
         allSystems: remediationWizardTestData.systems,
+        remediationsList: remediationsList,
+      },
+      ['review-step']: TextField,
+    }}
+    schema={{ fields: [] }}
+    {...props}
+  />
+);
+
+const RendererWrapperWithoutRemediations = (props) => (
+  <FormRenderer
+    onSubmit={() => {}}
+    FormTemplate={FormTemplate}
+    componentMapper={{
+      [componentTypes.TEXT_FIELD]: TextField,
+      'select-playbook': {
+        component: SelectPlaybook,
+        issues: remediationWizardTestData.issues,
+        systems: remediationWizardTestData.systems,
+        allSystems: remediationWizardTestData.systems,
+        remediationsList: undefined,
       },
       ['review-step']: TextField,
     }}
@@ -54,11 +74,8 @@ const RendererWrapper = (props) => (
 );
 
 const remediationsList = [
-  { name: 'aaaa' },
-  { name: 'aaaaaaa' },
-  { name: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' },
-  { name: 'asddfgd' },
-  { name: 'asdf' },
+  { id: 'remediationId', name: 'test-remediation-1' },
+  { id: '1234', name: 'bretheren' },
 ];
 
 const createSchema = () => ({
@@ -92,7 +109,10 @@ describe('SelectPlaybook', () => {
 
   it('renders correctly without remediations and shows Skeleton loader', async () => {
     const store = mockStore(initialState);
-    renderWithProviders(<RendererWrapper schema={createSchema()} />, store);
+    renderWithProviders(
+      <RendererWrapperWithoutRemediations schema={createSchema()} />,
+      store,
+    );
 
     expect(screen.getByLabelText('Add to existing playbook')).toBeVisible();
     expect(screen.getByLabelText('Create new playbook')).toBeVisible();
@@ -145,14 +165,21 @@ describe('SelectPlaybook', () => {
     const store = mockStore(initialState);
     renderWithProviders(<RendererWrapper schema={createSchema()} />, store);
 
+    // Wait for skeleton loader to disappear
     await waitFor(() => {
       expect(screen.queryByTestId('skeleton-loader')).not.toBeInTheDocument();
     });
 
+    // First, click the radio button to select "Add to existing playbook"
+    const radioButton = screen.getByRole('radio', {
+      name: /Add to existing playbook/i,
+    });
+    await userEvent.click(radioButton);
+
+    // Then find and type into the combobox
     const typeaheadBox = screen.getByRole('combobox', {
       name: /type to filter/i,
     });
-    await userEvent.click(typeaheadBox);
     await userEvent.type(typeaheadBox, 'tooted');
 
     expect(
@@ -162,24 +189,6 @@ describe('SelectPlaybook', () => {
     ).toBeVisible();
   });
 
-  it('calls getRemediation on select', async () => {
-    const store = mockStore(initialState);
-    renderWithProviders(<RendererWrapper schema={createSchema()} />, store);
-
-    await waitFor(() => {
-      expect(screen.queryByTestId('skeleton-loader')).not.toBeInTheDocument();
-    });
-
-    await userEvent.click(
-      screen.getByRole('combobox', { name: /type to filter/i }),
-    );
-    await userEvent.click(
-      screen.getByRole('option', { name: /test-remediation-1/i }),
-    );
-
-    expect(getRemediation).toHaveBeenCalled();
-  });
-
   it('creates a new playbook', async () => {
     const store = mockStore(initialState);
     renderWithProviders(
@@ -187,7 +196,7 @@ describe('SelectPlaybook', () => {
       store,
     );
 
-    await userEvent.click(screen.getByLabelText('Add to existing playbook'));
+    await userEvent.click(screen.getByLabelText('Create new playbook'));
     await userEvent.type(
       screen.getByLabelText('Name your playbook'),
       'new-playbook',

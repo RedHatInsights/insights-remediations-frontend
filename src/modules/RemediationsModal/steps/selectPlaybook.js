@@ -6,7 +6,6 @@ import {
   Skeleton,
   SkeletonSize,
 } from '@redhat-cloud-services/frontend-components/Skeleton';
-import * as api from '../../../api';
 import { Fragment } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import FetchError from './fetchError';
@@ -43,8 +42,8 @@ const SelectPlaybook = (props) => {
   const formOptions = useFormApi();
   const values = formOptions.getState().values;
   const [isDisabled, setIsDisabled] = useState(false);
-
-  const [existingRemediations, setExistingRemediations] = useState();
+  const existingRemediations = remediationsList;
+  // const [existingRemediations, setExistingRemediations] = useState();
   const [existingPlaybookSelected, setExistingPlaybookSelected] = useState(
     values[EXISTING_PLAYBOOK_SELECTED],
   );
@@ -71,15 +70,6 @@ const SelectPlaybook = (props) => {
   const isLoading = useSelector(
     ({ resolutionsReducer }) => resolutionsReducer?.isLoading,
   );
-
-  useEffect(() => {
-    async function fetchData() {
-      const { data: existingRemediations } = await api.getRemediations();
-      setExistingRemediations(existingRemediations);
-    }
-
-    fetchData();
-  }, []);
 
   useEffect(() => {
     if (differenceWith(resolutions, values[RESOLUTIONS], isEqual)?.length > 0) {
