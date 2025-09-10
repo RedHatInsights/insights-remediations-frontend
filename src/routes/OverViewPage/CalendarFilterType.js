@@ -7,7 +7,7 @@ export const CalendarFilterType = {
   },
 
   selectValue: (selectedValue) => {
-    return selectedValue?.trim() ? [[selectedValue], true] : [undefined, true];
+    return selectedValue?.trim() ? [selectedValue] : [];
   },
-  deselectValue: () => [undefined, true],
+  deselectValue: () => [],
 };
