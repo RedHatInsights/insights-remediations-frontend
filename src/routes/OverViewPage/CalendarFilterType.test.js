@@ -30,23 +30,22 @@ describe('CalendarFilterType', () => {
   });
 
   describe('selectValue', () => {
-    it('returns array with selected value and true', () => {
+    it('returns array with selected value', () => {
       expect(CalendarFilterType.selectValue('2024-07-01')).toEqual([
-        ['2024-07-01'],
-        true,
+        '2024-07-01',
       ]);
     });
     it('treats empty string as deselected', () => {
-      expect(CalendarFilterType.selectValue('')).toEqual([undefined, true]);
+      expect(CalendarFilterType.selectValue('')).toEqual([]);
     });
     it('treats whitespace-only string as deselected', () => {
-      expect(CalendarFilterType.selectValue('   ')).toEqual([undefined, true]);
+      expect(CalendarFilterType.selectValue('   ')).toEqual([]);
     });
   });
 
   describe('deselectValue', () => {
-    it('returns [undefined, true]', () => {
-      expect(CalendarFilterType.deselectValue()).toEqual([undefined, true]);
+    it('returns empty array []', () => {
+      expect(CalendarFilterType.deselectValue()).toEqual([]);
     });
   });
 
