@@ -32,6 +32,13 @@ spec:
   - name: build-args
     value:
     - ENABLE_SENTRY=true
+    - SENTRY_RELEASE={{revision}}
+    - SENTRY_AUTH_TOKEN=$(params.sentry-auth-token)
+  - name: sentry-auth-token
+    valueFrom:
+        secretKeyRef:
+          name: sentry-auth
+          key: remediations
   pipelineRef:
     name: docker-build-oci-ta
   taskRunTemplate:
