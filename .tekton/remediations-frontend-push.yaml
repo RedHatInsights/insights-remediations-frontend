@@ -33,8 +33,6 @@ spec:
     value:
       - ENABLE_SENTRY=true
       - SENTRY_RELEASE={{revision}}
-  - name: ADDITIONAL_SECRET
-    value: sentry-auth
   pipelineRef:
     name: docker-build-oci-ta
   taskRunTemplate:
