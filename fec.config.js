@@ -1,9 +1,27 @@
 const { resolve } = require('path');
 const packageJson = require('./package.json');
 const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
+const fs = require('fs');
 
 const bundle = 'insights';
 const appName = packageJson[bundle].appname;
+
+function getSentryToken() {
+  if (process.env.SENTRY_AUTH_TOKEN) {
+    console.log('Sentry: using token from environment variable.');
+    return process.env.SENTRY_AUTH_TOKEN;
+  }
+  const tokenPath = `/run/secrets/sentry-auth/${appName}`;
+  if (fs.existsSync(tokenPath)) {
+    console.log(`Sentry: using token from mounted secret at ${tokenPath}.`);
+    return fs.readFileSync(tokenPath, 'utf8').trim();
+  }
+  console.log(
+    'Sentry: no token found (env or secret). Sourcemap upload will be skipped.',
+  );
+  return null;
+}
+const sentryAuthToken = getSentryToken();
 
 module.exports = {
   appName,
@@ -15,9 +33,7 @@ module.exports = {
     ...(process.env.ENABLE_SENTRY
       ? [
           sentryWebpackPlugin({
-            ...(process.env.SENTRY_AUTH_TOKEN && {
-              authToken: process.env.SENTRY_AUTH_TOKEN,
-            }),
+            ...(sentryAuthToken && { authToken: sentryAuthToken }),
             org: 'red-hat-it',
             project: 'remediations-rhel',
             release: process.env.SENTRY_RELEASE,
