@@ -31,7 +31,8 @@ spec:
     value: .
   - name: build-args
     value:
-    - ENABLE_SENTRY=true
+      - ENABLE_SENTRY=true
+      - SENTRY_RELEASE={{revision}}
   pipelineRef:
     name: docker-build-oci-ta
   taskRunTemplate:
