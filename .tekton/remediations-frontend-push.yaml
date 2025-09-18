@@ -29,6 +29,8 @@ spec:
     value: build-tools/Dockerfile
   - name: path-context
     value: .
+  - name: build-container-additional-secret
+    value: sentry-auth
   - name: build-args
     value:
       - ENABLE_SENTRY=true
