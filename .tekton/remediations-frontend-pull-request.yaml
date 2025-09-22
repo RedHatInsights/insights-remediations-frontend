@@ -29,12 +29,14 @@ spec:
   - name: image-expires-after
     value: 5d
   - name: dockerfile
-    value: build-tools/Dockerfile
+    value: Dockerfile
   - name: path-context
     value: .
   - name: build-args
     value:
     - ENABLE_SENTRY=false
+  - name: build-container-additional-secret
+    value: sentry-auth
   pipelineRef:
     name: docker-build-oci-ta
   taskRunTemplate:
