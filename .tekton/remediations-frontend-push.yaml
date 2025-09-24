@@ -26,7 +26,7 @@ spec:
   - name: output-image
     value: quay.io/redhat-user-workloads/insights-management-tenant/insights-remediations/remediations-frontend:{{revision}}
   - name: dockerfile
-    value: build-tools/Dockerfile
+    value: Dockerfile.remediations
   - name: path-context
     value: .
   - name: build-container-additional-secret
