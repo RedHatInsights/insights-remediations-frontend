@@ -182,7 +182,69 @@ export function createNotification(id, name, isNewSwitch) {
   };
 }
 
-export const submitRemediation = (formValues, data, basePath, setState) => {
+// Helper function to create batches of issues and systems with limits
+export const createRemediationBatches = (
+  issues,
+  maxIssuesPerBatch = 50,
+  maxSystemsPerIssue = 50,
+) => {
+  if (!issues || issues.length === 0) {
+    return [];
+  }
+
+  const batches = [];
+  let currentBatch = [];
+
+  issues.forEach((issue) => {
+    if (issue?.systems.length <= maxSystemsPerIssue) {
+      // Issue has acceptable number of systems, add as-is
+      currentBatch.push(issue);
+
+      // If current batch is full, start a new one
+      if (currentBatch.length >= maxIssuesPerBatch) {
+        batches.push(currentBatch);
+        currentBatch = [];
+      }
+    } else {
+      // Issue has too many systems, split into multiple entries
+      const systemBatches = splitArray(issue?.systems, maxSystemsPerIssue);
+
+      systemBatches.forEach((systemBatch) => {
+        const splitIssue = {
+          ...issue,
+          systems: systemBatch,
+        };
+
+        // For system-split issues, each split should start a new batch
+        // to ensure we don't exceed limits when combining with other issues
+        if (currentBatch.length > 0) {
+          batches.push(currentBatch);
+          currentBatch = [];
+        }
+
+        currentBatch.push(splitIssue);
+
+        // Each system-split issue gets its own batch
+        batches.push(currentBatch);
+        currentBatch = [];
+      });
+    }
+  });
+
+  // Add any remaining issues in the current batch
+  if (currentBatch.length > 0) {
+    batches.push(currentBatch);
+  }
+
+  return batches;
+};
+
+export const submitRemediation = async (
+  formValues,
+  data,
+  basePath,
+  setState,
+) => {
   let percent = 1;
   setState({ percent });
 
@@ -203,51 +265,104 @@ export const submitRemediation = (formValues, data, basePath, setState) => {
     })
     .filter((issue) => issue.systems.length > 0);
 
+  // Create batches of issues and systems (max 50 each) per BE saftey measures
+  const batches = createRemediationBatches(issues);
+  const totalBatches = Math.max(batches.length, 1); // Ensure at least 1 to avoid division by zero
+
   const interval = setInterval(
     () => {
       percent < 99 && setState({ percent: ++percent });
     },
-    (issues.length + Object.keys(formValues[SYSTEMS]).length) / 10,
+    (issues.length + Object.keys(formValues[SYSTEMS]).length) /
+      (10 * totalBatches),
   );
-
-  const add = { issues, systems: [] };
 
   const { id: existing_id } = formValues[EXISTING_PLAYBOOK] || {};
   const isUpdate = formValues[EXISTING_PLAYBOOK_SELECTED];
 
-  (
-    (isUpdate &&
-      api.patchRemediation(existing_id, {
-        add,
-        auto_reboot: formValues[AUTO_REBOOT],
-      })) ||
-    api.createRemediation(
-      {
-        name: formValues[SELECT_PLAYBOOK].trim(),
-        add,
-        auto_reboot: formValues[AUTO_REBOOT],
-      },
-      basePath,
-    )
-  )
-    // watch out, id is only returned from createRemediation endpoint,
-    // not patchRemediation, thus we use existing_id as well
-    .then(({ id }) => {
-      setState({ id: id ?? existing_id, percent: 100 });
-      data?.onRemediationCreated?.({
-        remediation: { id, name },
-        getNotification: () =>
-          createNotification(
-            id ?? existing_id,
-            formValues[SELECT_PLAYBOOK],
-            !isUpdate,
-          ),
-      });
-    })
-    .catch(() => {
-      setState({ failed: true });
-    })
-    .finally(() => clearInterval(interval));
+  try {
+    let remediationId = existing_id;
+
+    // If no batches (no issues with systems), still need to create/update with empty data - super edge case
+    if (batches.length === 0) {
+      const add = { issues: [], systems: [] };
+
+      const response = await ((isUpdate &&
+        api.patchRemediation(existing_id, {
+          add,
+          auto_reboot: formValues[AUTO_REBOOT],
+        })) ||
+        api.createRemediation(
+          {
+            name: formValues[SELECT_PLAYBOOK].trim(),
+            add,
+            auto_reboot: formValues[AUTO_REBOOT],
+          },
+          basePath,
+        ));
+
+      remediationId = response?.id ?? existing_id;
+    } else {
+      // Process first batch - create or update remediation
+      const firstBatch = batches[0];
+      const add = { issues: firstBatch, systems: [] };
+
+      const response = await ((isUpdate &&
+        api.patchRemediation(existing_id, {
+          add,
+          auto_reboot: formValues[AUTO_REBOOT],
+        })) ||
+        api.createRemediation(
+          {
+            name: formValues[SELECT_PLAYBOOK].trim(),
+            add,
+            auto_reboot: formValues[AUTO_REBOOT],
+          },
+          basePath,
+        ));
+
+      // Get the remediation ID (only returned from createRemediation)
+      remediationId = response?.id ?? existing_id;
+
+      // Update progress
+      const progressIncrement = Math.floor(98 / totalBatches);
+      setState({ percent: Math.min(percent + progressIncrement, 98) });
+
+      // Process remaining batches - update remediation
+      for (let i = 1; i < batches.length; i++) {
+        const batch = batches[i];
+        const add = { issues: batch, systems: [] };
+
+        await api.patchRemediation(remediationId, {
+          add,
+          auto_reboot: formValues[AUTO_REBOOT],
+        });
+
+        // Update progress
+        const progressIncrement = Math.floor(98 / totalBatches);
+        setState({
+          percent: Math.min(percent + progressIncrement * (i + 1), 98),
+        });
+      }
+    }
+
+    // Final success state
+    setState({ id: remediationId, percent: 100 });
+    data?.onRemediationCreated?.({
+      remediation: { id: remediationId, name: formValues[SELECT_PLAYBOOK] },
+      getNotification: () =>
+        createNotification(
+          remediationId,
+          formValues[SELECT_PLAYBOOK],
+          !isUpdate,
+        ),
+    });
+  } catch (error) {
+    console.error('Error submitting remediation:', error);
+    setState({ failed: true });
+  } finally {
+    clearInterval(interval);
+  }
 };
 
 export const entitySelected = (state, { payload }) => {

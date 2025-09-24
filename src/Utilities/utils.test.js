@@ -334,6 +334,88 @@ describe('utils', () => {
       });
     });
 
+    describe('createRemediationBatches', () => {
+      it('should create single batch for small datasets', () => {
+        const issues = [
+          { id: 'issue1', systems: ['sys1', 'sys2'] },
+          { id: 'issue2', systems: ['sys3'] },
+        ];
+
+        const result = utils.createRemediationBatches(issues);
+
+        expect(result).toEqual([issues]);
+      });
+
+      it('should split issues into multiple batches when exceeding limit', () => {
+        const issues = Array.from({ length: 75 }, (_, i) => ({
+          id: `issue${i + 1}`,
+          systems: [`sys${i + 1}`],
+        }));
+
+        const result = utils.createRemediationBatches(issues, 50);
+
+        expect(result).toHaveLength(2);
+        expect(result[0]).toHaveLength(50);
+        expect(result[1]).toHaveLength(25);
+      });
+
+      it('should split systems within issues when exceeding system limit', () => {
+        const issues = [
+          {
+            id: 'issue1',
+            systems: Array.from({ length: 75 }, (_, i) => `sys${i + 1}`),
+          },
+        ];
+
+        const result = utils.createRemediationBatches(issues, 50, 50);
+
+        expect(result).toHaveLength(2);
+        expect(result[0][0].systems).toHaveLength(50);
+        expect(result[1][0].systems).toHaveLength(25);
+        expect(result[0][0].id).toBe('issue1');
+        expect(result[1][0].id).toBe('issue1');
+      });
+
+      it('should handle complex batching with both issue and system limits', () => {
+        const issues = [
+          {
+            id: 'issue1',
+            systems: Array.from({ length: 75 }, (_, i) => `sys${i + 1}`),
+          },
+          {
+            id: 'issue2',
+            systems: Array.from({ length: 30 }, (_, i) => `sys${i + 76}`),
+          },
+        ];
+
+        const result = utils.createRemediationBatches(issues, 50, 50);
+
+        // issue1 should be split into 2 batches (75 systems)
+        // issue2 should fit in one batch (30 systems)
+        // Total: 3 batches
+        expect(result).toHaveLength(3);
+        expect(result[0][0].id).toBe('issue1');
+        expect(result[0][0].systems).toHaveLength(50);
+        expect(result[1][0].id).toBe('issue1');
+        expect(result[1][0].systems).toHaveLength(25);
+        expect(result[2][0].id).toBe('issue2');
+        expect(result[2][0].systems).toHaveLength(30);
+      });
+
+      it('should use custom batch sizes', () => {
+        const issues = Array.from({ length: 15 }, (_, i) => ({
+          id: `issue${i + 1}`,
+          systems: [`sys${i + 1}`],
+        }));
+
+        const result = utils.createRemediationBatches(issues, 10, 5);
+
+        expect(result).toHaveLength(2);
+        expect(result[0]).toHaveLength(10);
+        expect(result[1]).toHaveLength(5);
+      });
+    });
+
     describe('buildRows', () => {
       const mockRecords = [
         {
@@ -803,6 +885,184 @@ describe('utils', () => {
         );
 
         await promise;
+      });
+
+      it('handles large datasets with batching for new remediation', async () => {
+        // Create mock data with 75 issues (exceeds 50 limit)
+        const largeIssues = Array.from({ length: 75 }, (_, i) => ({
+          id: `issue${i + 1}`,
+        }));
+
+        const largeSystems = {};
+        largeIssues.forEach((issue, i) => {
+          largeSystems[issue.id] = [`sys${i + 1}`];
+        });
+
+        const largeResolutions = largeIssues.map((issue) => ({
+          id: issue.id,
+          resolutions: [{ id: `res${issue.id}` }],
+        }));
+
+        const largeFormValues = {
+          ...mockFormValues,
+          [utils.SYSTEMS]: largeSystems,
+          [utils.RESOLUTIONS]: largeResolutions,
+        };
+
+        const largeData = {
+          ...mockData,
+          issues: largeIssues,
+        };
+
+        api.createRemediation.mockResolvedValue({ id: '123' });
+        api.patchRemediation.mockResolvedValue({});
+
+        await utils.submitRemediation(
+          largeFormValues,
+          largeData,
+          '/api',
+          mockSetState,
+        );
+
+        // Should call createRemediation once (first batch)
+        expect(api.createRemediation).toHaveBeenCalledTimes(1);
+        expect(api.createRemediation).toHaveBeenCalledWith(
+          expect.objectContaining({
+            add: {
+              issues: expect.arrayContaining([
+                expect.objectContaining({ id: 'issue1' }),
+              ]),
+              systems: [],
+            },
+          }),
+          '/api',
+        );
+
+        // Should call patchRemediation once (second batch)
+        expect(api.patchRemediation).toHaveBeenCalledTimes(1);
+        expect(api.patchRemediation).toHaveBeenCalledWith(
+          '123',
+          expect.objectContaining({
+            add: {
+              issues: expect.arrayContaining([
+                expect.objectContaining({ id: 'issue51' }),
+              ]),
+              systems: [],
+            },
+          }),
+        );
+
+        // Verify final state
+        expect(mockSetState).toHaveBeenCalledWith({ id: '123', percent: 100 });
+      });
+
+      it('handles large datasets with batching for existing remediation update', async () => {
+        // Create mock data with many systems for one issue
+        const issueWithManySystems = Array.from(
+          { length: 75 },
+          (_, i) => `sys${i + 1}`,
+        );
+
+        const largeFormValues = {
+          ...mockFormValues,
+          [utils.EXISTING_PLAYBOOK_SELECTED]: true,
+          [utils.EXISTING_PLAYBOOK]: { id: '456' },
+          [utils.SYSTEMS]: { issue1: issueWithManySystems },
+        };
+
+        api.patchRemediation.mockResolvedValue({});
+
+        await utils.submitRemediation(
+          largeFormValues,
+          mockData,
+          '/api',
+          mockSetState,
+        );
+
+        // Should call patchRemediation twice (issue split into 2 batches due to system count)
+        expect(api.patchRemediation).toHaveBeenCalledTimes(2);
+
+        // First call should have first 50 systems
+        expect(api.patchRemediation).toHaveBeenNthCalledWith(
+          1,
+          '456',
+          expect.objectContaining({
+            add: {
+              issues: [
+                expect.objectContaining({
+                  id: 'issue1',
+                  systems: expect.arrayContaining(['sys1', 'sys50']),
+                }),
+              ],
+              systems: [],
+            },
+          }),
+        );
+
+        // Second call should have remaining 25 systems
+        expect(api.patchRemediation).toHaveBeenNthCalledWith(
+          2,
+          '456',
+          expect.objectContaining({
+            add: {
+              issues: [
+                expect.objectContaining({
+                  id: 'issue1',
+                  systems: expect.arrayContaining(['sys51', 'sys75']),
+                }),
+              ],
+              systems: [],
+            },
+          }),
+        );
+
+        expect(mockSetState).toHaveBeenCalledWith({ id: '456', percent: 100 });
+      });
+
+      it('handles batching error gracefully', async () => {
+        const largeIssues = Array.from({ length: 60 }, (_, i) => ({
+          id: `issue${i + 1}`,
+        }));
+
+        const largeSystems = {};
+        largeIssues.forEach((issue, i) => {
+          largeSystems[issue.id] = [`sys${i + 1}`];
+        });
+
+        const largeResolutions = largeIssues.map((issue) => ({
+          id: issue.id,
+          resolutions: [{ id: `res${issue.id}` }],
+        }));
+
+        const largeFormValues = {
+          ...mockFormValues,
+          [utils.SYSTEMS]: largeSystems,
+          [utils.RESOLUTIONS]: largeResolutions,
+        };
+
+        const largeData = {
+          ...mockData,
+          issues: largeIssues,
+        };
+
+        // First call succeeds, second call fails
+        api.createRemediation.mockResolvedValue({ id: '123' });
+        api.patchRemediation.mockRejectedValue(new Error('Batch failed'));
+
+        await utils.submitRemediation(
+          largeFormValues,
+          largeData,
+          '/api',
+          mockSetState,
+        );
+
+        // Should have tried both calls
+        expect(api.createRemediation).toHaveBeenCalledTimes(1);
+        expect(api.patchRemediation).toHaveBeenCalledTimes(1);
+
+        // Should set failed state
+        expect(mockSetState).toHaveBeenCalledWith({ failed: true });
+        expect(mockClearInterval).toHaveBeenCalled();
       });
     });
 
