@@ -432,6 +432,8 @@ describe('DetailsCard', () => {
       const toggle = screen.getByRole('switch');
       expect(toggle).toBeInTheDocument();
       expect(toggle).toBeChecked(); // auto_reboot is true in mockDetails
+      expect(screen.queryByText('Off')).not.toBeInTheDocument();
+      expect(screen.getByText('On')).toBeInTheDocument();
     });
 
     it('displays switch as unchecked when auto_reboot is false', () => {
@@ -440,6 +442,8 @@ describe('DetailsCard', () => {
 
       const toggle = screen.getByRole('switch');
       expect(toggle).not.toBeChecked();
+      expect(screen.getByText('Off')).toBeInTheDocument();
+      expect(screen.queryByText('On')).not.toBeInTheDocument();
     });
 
     it('calls updateRemPlan when toggle is changed', () => {

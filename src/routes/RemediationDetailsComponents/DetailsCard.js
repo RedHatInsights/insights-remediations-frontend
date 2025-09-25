@@ -289,7 +289,7 @@ const DetailsCard = ({
                 id="autoreboot-switch"
                 isChecked={rebootToggle}
                 onChange={onToggleAutoreboot}
-                label="On"
+                label={rebootToggle ? 'On' : 'Off'}
               />
             </DescriptionListDescription>
           </DescriptionListGroup>
