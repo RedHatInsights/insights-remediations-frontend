@@ -85,7 +85,7 @@
     "babel-plugin-istanbul": "^6.1.1",
     "eslint": "^9.35.0",
     "eslint-plugin-jest-dom": "^5.5.0",
-    "eslint-plugin-jsdoc": "^55.0.0",
+    "eslint-plugin-jsdoc": "^61.0.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-testing-library": "^7.6.8",
     "identity-obj-proxy": "^3.0.0",
