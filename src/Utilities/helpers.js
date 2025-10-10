@@ -25,7 +25,7 @@ export function downloadFile(
   link.download = `${filename}.${format}`;
   link.style.visibility = 'hidden';
   document.body.appendChild(link);
-  // eslint-disable-next-line testing-library/no-node-access
+
   link.click();
   document.body.removeChild(link);
 }
