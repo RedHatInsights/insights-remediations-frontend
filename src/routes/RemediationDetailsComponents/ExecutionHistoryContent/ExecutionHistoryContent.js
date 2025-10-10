@@ -130,7 +130,7 @@ const ExecutionHistoryTab = ({
       systemId: system.system_id,
       systemName: system.system_name,
       status: system.status,
-      executor_name: system.executor_name,
+      executor_type: system.executor_type,
     });
     setIsLogOpen(true);
   };
@@ -199,7 +199,7 @@ const ExecutionHistoryTab = ({
             <LogCards
               systemName={meta?.systemName}
               status={meta?.status}
-              connectionType={meta?.executor_name}
+              connectionType={meta?.executor_type}
               executedBy={
                 runsState?.find((r) => r.id === meta?.runId)?.created_by
                   ?.username ?? '-'

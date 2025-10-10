@@ -15,10 +15,6 @@ describe('useRunSystems Hook', () => {
   const createMockRun = (overrides = {}) => ({
     id: 'run-123',
     status: 'success',
-    executors: [
-      { executor_id: 'run-123', executor_name: 'rhc' },
-      { executor_id: 'other-run', executor_name: 'ansible' },
-    ],
     ...overrides,
   });
 
@@ -26,20 +22,23 @@ describe('useRunSystems Hook', () => {
     {
       system_id: 'sys1',
       system_name: 'System 1',
-      playbook_run_executor_id: 'run-123',
+      playbook_run_executor_id: 'run-123', // Those are not run ids but run_executor_ids - runs are already filtered by API
       status: 'success',
+      executor_type: 'satellite',
     },
     {
       system_id: 'sys2',
       system_name: 'System 2',
       playbook_run_executor_id: 'run-123',
       status: 'failure',
+      executor_type: 'satellite',
     },
     {
       system_id: 'sys3',
       system_name: 'System 3',
-      playbook_run_executor_id: 'other-run', // Different executor
+      playbook_run_executor_id: 'other-run',
       status: 'success',
+      executor_type: 'direct',
     },
   ];
 
@@ -102,13 +101,13 @@ describe('useRunSystems Hook', () => {
       });
 
       expect(result.current.loading).toBe(false);
-      expect(result.current.systems).toHaveLength(2); // Only systems matching run.id
+      expect(result.current.systems).toHaveLength(3);
       expect(result.current.systems[0]).toEqual({
         system_id: 'sys1',
         system_name: 'System 1',
         playbook_run_executor_id: 'run-123',
         status: 'success',
-        executor_name: 'rhc',
+        executor_type: 'satellite',
       });
     });
 
@@ -189,7 +188,7 @@ describe('useRunSystems Hook', () => {
   });
 
   describe('Data filtering and mapping', () => {
-    it('should filter systems by playbook_run_executor_id', async () => {
+    it('should return systems provided by API without additional mapping', async () => {
       const run = createMockRun();
       const mockData = createMockSystemsData();
 
@@ -203,16 +202,21 @@ describe('useRunSystems Hook', () => {
         await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
-      // Should only include systems with matching playbook_run_executor_id
-      expect(result.current.systems).toHaveLength(2);
-      expect(
-        result.current.systems.every(
-          (s) => s.playbook_run_executor_id === 'run-123',
-        ),
-      ).toBe(true);
+      // Should include all systems provided by the endpoint
+      expect(result.current.systems).toHaveLength(mockData.length);
+      expect(result.current.systems[0].system_name).toBe(
+        mockData[0].system_name,
+      );
+      expect(result.current.systems[0].playbook_run_executor_id).toBe(
+        mockData[0].playbook_run_executor_id,
+      );
+      expect(result.current.systems[0].status).toBe(mockData[0].status);
+      expect(result.current.systems[0].executor_type).toBe(
+        mockData[0].executor_type,
+      );
     });
 
-    it('should add executor_name from run.executors', async () => {
+    it('should handle missing executor type', async () => {
       const run = createMockRun();
       const mockData = createMockSystemsData();
 
@@ -226,44 +230,8 @@ describe('useRunSystems Hook', () => {
         await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
-      expect(result.current.systems[0].executor_name).toBe('rhc');
-      expect(result.current.systems[1].executor_name).toBe('rhc');
-    });
-
-    it('should handle missing executor gracefully', async () => {
-      const run = createMockRun({
-        executors: [{ executor_id: 'different-id', executor_name: 'other' }],
-      });
-      const mockData = createMockSystemsData();
-
-      mockFetchSystems.mockResolvedValue({ data: mockData });
-
-      const { result } = renderHook(() =>
-        useRunSystems(run, true, 'rem-123', mockFetchSystems),
-      );
-
-      await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 0));
-      });
-
-      expect(result.current.systems[0].executor_name).toBeUndefined();
-    });
-
-    it('should handle empty executors array', async () => {
-      const run = createMockRun({ executors: [] });
-      const mockData = createMockSystemsData();
-
-      mockFetchSystems.mockResolvedValue({ data: mockData });
-
-      const { result } = renderHook(() =>
-        useRunSystems(run, true, 'rem-123', mockFetchSystems),
-      );
-
-      await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 0));
-      });
-
-      expect(result.current.systems[0].executor_name).toBeUndefined();
+      // executor_type comes from API and is preserved
+      expect(result.current.systems[0].executor_type).toBe('satellite');
     });
   });
 
