@@ -1,5 +1,6 @@
 import React, {
   Fragment,
+  useCallback,
   useEffect,
   useReducer,
   useRef,
@@ -83,13 +84,17 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
 
   const issuesById = keyBy(data.issues, (issue) => issue.id);
 
-  const fetchHostNames = (systems = []) => {
-    const perChunk = 50;
-    const chunks = splitArray(systems, perChunk);
-    chunks.forEach((chunk) => {
-      dispatch(fetchHostsById(chunk, { page: 1, perPage: perChunk }));
-    });
-  };
+  const fetchHostNames = useCallback(
+    (systems = []) => {
+      const perChunk = 25;
+      const uniqueSystems = dedupeArray(systems);
+      const chunks = splitArray(uniqueSystems, perChunk);
+      chunks.forEach((chunk) => {
+        dispatch(fetchHostsById(chunk, { page: 1, perPage: perChunk }));
+      });
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     remediationsList &&
@@ -106,7 +111,7 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
     });
     dispatch(fetchResolutions(data.issues));
     fetchHostNames(allSystems.current);
-  }, [remediationsList]);
+  }, [remediationsList, fetchHostNames, data.issues, dispatch, registry]);
 
   const mapperExtension = {
     'select-playbook': {
