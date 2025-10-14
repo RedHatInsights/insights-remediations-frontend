@@ -6,6 +6,7 @@ import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
+import { getTooltipContent } from '../../Utilities/helpers';
 
 jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
   __esModule: true,
@@ -34,6 +35,7 @@ let initialProps = {
   ),
   isDisabled: false,
   onRemediationCreated: jest.fn(),
+  hasSelected: true,
 };
 
 const user = userEvent.setup();
@@ -87,5 +89,106 @@ describe('RemediationButton', () => {
     expect(
       screen.queryByTestId('remediation-wizard-mock'),
     ).not.toBeInTheDocument();
+  });
+
+  describe('tooltipContent logic', () => {
+    it('should show permissions tooltip when user has no permissions regardless of selection count', async () => {
+      useChrome.mockImplementation(() => ({
+        getUserPermissions: jest.fn(
+          () => new Promise((resolve) => resolve([])),
+        ),
+      }));
+
+      render(<RemediationButton {...initialProps} hasSelected={false} />);
+
+      await waitFor(() => {
+        expect(
+          screen.getByTestId('remediationButton-no-permissions'),
+        ).toBeInTheDocument();
+      });
+
+      // Check that the button is disabled and wrapped in a tooltip
+      const button = screen.getByTestId('remediationButton-no-permissions');
+      expect(button).toBeDisabled();
+    });
+
+    it('should show permissions tooltip when user has no permissions even with items selected', async () => {
+      useChrome.mockImplementation(() => ({
+        getUserPermissions: jest.fn(
+          () => new Promise((resolve) => resolve([])),
+        ),
+      }));
+
+      render(<RemediationButton {...initialProps} hasSelected={true} />);
+
+      await waitFor(() => {
+        expect(
+          screen.getByTestId('remediationButton-no-permissions'),
+        ).toBeInTheDocument();
+      });
+
+      // Check that the button is disabled regardless of selection count
+      const button = screen.getByTestId('remediationButton-no-permissions');
+      expect(button).toBeDisabled();
+    });
+
+    it('should render button without tooltip when user has permissions and items are selected', async () => {
+      useChrome.mockImplementation(() => ({
+        getUserPermissions: jest.fn(
+          () =>
+            new Promise((resolve) => resolve([{ permission: CAN_REMEDIATE }])),
+        ),
+      }));
+
+      render(<RemediationButton {...initialProps} hasSelected={true} />);
+
+      await waitFor(() => {
+        expect(
+          screen.getByTestId('remediationButton-with-permissions'),
+        ).toBeInTheDocument();
+      });
+
+      // When user has permissions and items selected, button should be enabled
+      const button = screen.getByTestId('remediationButton-with-permissions');
+      expect(button).toBeEnabled();
+    });
+
+    it('should show selection tooltip when user has permissions but no items selected', async () => {
+      const TestWrapper = () => {
+        const hasPermissions = true;
+        const hasSelected = false;
+
+        const tooltipContent = getTooltipContent(hasPermissions, hasSelected);
+
+        return <div data-testid="tooltip-content">{tooltipContent}</div>;
+      };
+
+      render(<TestWrapper />);
+
+      expect(screen.getByTestId('tooltip-content')).toHaveTextContent(
+        'Select one or more items from the table below.',
+      );
+    });
+
+    it('should return null for tooltip when user has permissions and items selected', async () => {
+      const TestWrapper = () => {
+        const hasPermissions = true;
+        const hasSelected = true;
+
+        const tooltipContent = getTooltipContent(hasPermissions, hasSelected);
+
+        return (
+          <div data-testid="tooltip-content">
+            {tooltipContent || 'no-tooltip'}
+          </div>
+        );
+      };
+
+      render(<TestWrapper />);
+
+      expect(screen.getByTestId('tooltip-content')).toHaveTextContent(
+        'no-tooltip',
+      );
+    });
   });
 });

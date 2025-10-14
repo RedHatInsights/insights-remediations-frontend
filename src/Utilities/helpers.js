@@ -3,6 +3,18 @@ export const JSON_TYPE = 'data:text/json;charset=utf-8,';
 export const YAML_TYPE = 'text/yaml;charset=utf-8;';
 export const ZIP_TYPE = 'application/zip';
 
+export const getTooltipContent = (hasPermissions, hasSelected) => {
+  if (!hasPermissions) {
+    return 'You do not have correct permissions to remediate this entity.';
+  }
+
+  if (!hasSelected) {
+    return 'Select one or more items from the table below.';
+  }
+
+  return null; // No tooltip needed when user has permissions and has selected items
+};
+
 export function downloadFile(
   data,
   filename = `${new Date().toISOString()}`,

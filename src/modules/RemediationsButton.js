@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import propTypes from 'prop-types';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
@@ -8,6 +8,7 @@ import { CAN_REMEDIATE, matchPermissions } from '../Utilities/utils';
 import { Button, Tooltip } from '@patternfly/react-core';
 import RemediationWizard from './RemediationsModal';
 import NoDataModal from './RemediationsModal/NoDataModal';
+import { getTooltipContent } from '../Utilities/helpers';
 
 const RemediationButton = ({
   isDisabled,
@@ -16,12 +17,15 @@ const RemediationButton = ({
   onRemediationCreated,
   buttonProps,
   patchNoAdvisoryText,
+  hasSelected,
 }) => {
   const [hasPermissions, setHasPermissions] = useState(false);
   const [remediationsData, setRemediationsData] = useState();
   const [isNoDataModalOpen, setNoDataModalOpen] = useState(false);
+  const tooltipContent = useMemo(() => {
+    return getTooltipContent(hasPermissions, hasSelected);
+  }, [hasSelected, hasPermissions]);
   const chrome = useChrome();
-
   useEffect(() => {
     chrome.getUserPermissions('remediations').then((permissions) => {
       setHasPermissions(
@@ -34,7 +38,7 @@ const RemediationButton = ({
 
   if (!hasPermissions) {
     return (
-      <Tooltip content="You do not have correct permissions to remediate this entity.">
+      <Tooltip content={tooltipContent}>
         <span>
           <Button
             isDisabled
@@ -68,6 +72,7 @@ const RemediationButton = ({
       >
         {children}
       </Button>
+
       <NoDataModal
         isOpen={isNoDataModalOpen}
         setOpen={setNoDataModalOpen}
@@ -99,6 +104,7 @@ RemediationButton.propTypes = {
     [propTypes.string]: propTypes.any,
   }),
   patchNoAdvisoryText: propTypes.string,
+  hasSelected: propTypes.bool.isRequired,
 };
 
 RemediationButton.defaultProps = {
