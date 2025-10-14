@@ -451,15 +451,19 @@ export const fetchSystemsInfo = async (
     : undefined;
   allSystemsNamed = sortByAttr(allSystemsNamed, 'name', config.orderDirection);
   const hostnameOrId = config?.filters?.hostnameOrId?.toLowerCase();
-  const systems = hostnameOrId
-    ? allSystemsNamed.reduce(
-        (acc, curr) => [
-          ...acc,
-          ...(curr.name.toLowerCase().includes(hostnameOrId) ? [curr.id] : []),
-        ],
-        [],
-      )
-    : allSystemsNamed.map((system) => system.id);
+  const systems = dedupeArray(
+    hostnameOrId
+      ? allSystemsNamed.reduce(
+          (acc, curr) => [
+            ...acc,
+            ...(curr.name.toLowerCase().includes(hostnameOrId)
+              ? [curr.id]
+              : []),
+          ],
+          [],
+        )
+      : allSystemsNamed.map((system) => system.id),
+  );
   const sliced = systems.slice(
     (config.page - 1) * config.per_page,
     config.page * config.per_page,
@@ -479,6 +483,7 @@ export const fetchSystemsInfo = async (
       : {};
   return {
     ...data,
+    total: systems.length,
     results: sortByAttr(data.results, 'display_name', config.orderDirection),
     page: config.page,
     per_page: config.per_page,
