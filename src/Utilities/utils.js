@@ -182,11 +182,12 @@ export function createNotification(id, name, isNewSwitch) {
   };
 }
 
-// Helper function to create batches of issues and systems with limits
+// Helper function to create batches of issues and systems with limits to help BE handle large remediations
 export const createRemediationBatches = (
   issues,
   maxIssuesPerBatch = 50,
   maxSystemsPerIssue = 50,
+  maxTotalSystemsPerBatch = 50,
 ) => {
   if (!issues || issues.length === 0) {
     return [];
@@ -194,16 +195,35 @@ export const createRemediationBatches = (
 
   const batches = [];
   let currentBatch = [];
+  let currentBatchSystemCount = 0;
 
   issues.forEach((issue) => {
     if (issue?.systems.length <= maxSystemsPerIssue) {
-      // Issue has acceptable number of systems, add as-is
-      currentBatch.push(issue);
+      // Issue has acceptable number of systems per issue
+      const issueSystemCount = issue?.systems?.length || 0;
 
-      // If current batch is full, start a new one
+      // Check if adding this issue would exceed total systems limit
+      if (
+        currentBatchSystemCount + issueSystemCount >
+        maxTotalSystemsPerBatch
+      ) {
+        // Start a new batch if current one would exceed total systems limit
+        if (currentBatch.length > 0) {
+          batches.push(currentBatch);
+          currentBatch = [];
+          currentBatchSystemCount = 0;
+        }
+      }
+
+      // Add issue to current batch
+      currentBatch.push(issue);
+      currentBatchSystemCount += issueSystemCount;
+
+      // If current batch is full by issue count, start a new one
       if (currentBatch.length >= maxIssuesPerBatch) {
         batches.push(currentBatch);
         currentBatch = [];
+        currentBatchSystemCount = 0;
       }
     } else {
       // Issue has too many systems, split into multiple entries
@@ -215,18 +235,26 @@ export const createRemediationBatches = (
           systems: systemBatch,
         };
 
-        // For system-split issues, each split should start a new batch
-        // to ensure we don't exceed limits when combining with other issues
-        if (currentBatch.length > 0) {
+        const splitIssueSystemCount = systemBatch.length;
+
+        // For system-split issues, check if we need to start a new batch
+        if (
+          currentBatch.length > 0 &&
+          currentBatchSystemCount + splitIssueSystemCount >
+            maxTotalSystemsPerBatch
+        ) {
           batches.push(currentBatch);
           currentBatch = [];
+          currentBatchSystemCount = 0;
         }
 
         currentBatch.push(splitIssue);
+        currentBatchSystemCount += splitIssueSystemCount;
 
-        // Each system-split issue gets its own batch
+        // Each system-split issue gets its own batch to maintain safety
         batches.push(currentBatch);
         currentBatch = [];
+        currentBatchSystemCount = 0;
       });
     }
   });
@@ -265,17 +293,9 @@ export const submitRemediation = async (
     })
     .filter((issue) => issue.systems.length > 0);
 
-  // Create batches of issues and systems (max 50 each) per BE saftey measures
+  // Create batches of issues and systems (max 50 each) per BE safety measures
   const batches = createRemediationBatches(issues);
   const totalBatches = Math.max(batches.length, 1); // Ensure at least 1 to avoid division by zero
-
-  const interval = setInterval(
-    () => {
-      percent < 99 && setState({ percent: ++percent });
-    },
-    (issues.length + Object.keys(formValues[SYSTEMS]).length) /
-      (10 * totalBatches),
-  );
 
   const { id: existing_id } = formValues[EXISTING_PLAYBOOK] || {};
   const isUpdate = formValues[EXISTING_PLAYBOOK_SELECTED];
@@ -285,6 +305,8 @@ export const submitRemediation = async (
 
     // If no batches (no issues with systems), still need to create/update with empty data - super edge case
     if (batches.length === 0) {
+      setState({ percent: 50 }); // Mid-progress for the single operation
+
       const add = { issues: [], systems: [] };
 
       const response = await ((isUpdate &&
@@ -307,6 +329,11 @@ export const submitRemediation = async (
       const firstBatch = batches[0];
       const add = { issues: firstBatch, systems: [] };
 
+      // Update progress for first batch (takes more time as it creates/updates the remediation)
+      const firstBatchProgress =
+        totalBatches === 1 ? 90 : Math.floor(60 / totalBatches);
+      setState({ percent: Math.min(percent + firstBatchProgress, 90) });
+
       const response = await ((isUpdate &&
         api.patchRemediation(existing_id, {
           add,
@@ -324,9 +351,10 @@ export const submitRemediation = async (
       // Get the remediation ID (only returned from createRemediation)
       remediationId = response?.id ?? existing_id;
 
-      // Update progress
-      const progressIncrement = Math.floor(98 / totalBatches);
-      setState({ percent: Math.min(percent + progressIncrement, 98) });
+      // Update progress after first batch completion
+      const progressAfterFirst =
+        totalBatches === 1 ? 95 : Math.floor(70 / totalBatches);
+      setState({ percent: Math.min(progressAfterFirst, 95) });
 
       // Process remaining batches - update remediation
       for (let i = 1; i < batches.length; i++) {
@@ -338,11 +366,10 @@ export const submitRemediation = async (
           auto_reboot: formValues[AUTO_REBOOT],
         });
 
-        // Update progress
-        const progressIncrement = Math.floor(98 / totalBatches);
-        setState({
-          percent: Math.min(percent + progressIncrement * (i + 1), 98),
-        });
+        // Update progress for each additional batch
+        const progressPerBatch = Math.floor(25 / (totalBatches - 1));
+        const currentProgress = progressAfterFirst + progressPerBatch * i;
+        setState({ percent: Math.min(currentProgress, 95) });
       }
     }
 
@@ -360,8 +387,6 @@ export const submitRemediation = async (
   } catch (error) {
     console.error('Error submitting remediation:', error);
     setState({ failed: true });
-  } finally {
-    clearInterval(interval);
   }
 };
 
