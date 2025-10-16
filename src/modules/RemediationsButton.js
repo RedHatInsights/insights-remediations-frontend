@@ -36,14 +36,14 @@ const RemediationButton = ({
     });
   }, []);
 
-  if (!hasPermissions) {
+  if (!hasPermissions || !hasSelected) {
     return (
       <Tooltip content={tooltipContent}>
         <span>
           <Button
             isDisabled
             {...buttonProps}
-            data-testid="remediationButton-no-permissions"
+            data-testid="remediationButton-no-permissions-or-selected"
           >
             {children}
           </Button>
@@ -56,7 +56,7 @@ const RemediationButton = ({
     <React.Fragment>
       <Button
         isDisabled={isDisabled}
-        data-testid="remediationButton-with-permissions"
+        data-testid="remediationButton-with-permissions-and-selected"
         onClick={() => {
           Promise.resolve(dataProvider()).then((data) => {
             if (!data) {
