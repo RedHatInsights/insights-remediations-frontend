@@ -34,6 +34,7 @@ let initialProps = {
   ),
   isDisabled: false,
   onRemediationCreated: jest.fn(),
+  hasSelected: true,
 };
 
 const user = userEvent.setup();
@@ -52,7 +53,7 @@ describe('RemediationButton', () => {
     global.insights = tmpInsights;
   });
 
-  it('should open remediation wizard with permissions', async () => {
+  it('should open remediation wizard with permissions and items selected', async () => {
     useChrome.mockImplementation(() => ({
       getUserPermissions: jest.fn(
         () =>
@@ -64,11 +65,13 @@ describe('RemediationButton', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByTestId('remediationButton-with-permissions'),
+        screen.getByTestId('remediationButton-with-permissions-and-selected'),
       ).toBeInTheDocument();
     });
 
-    await user.click(screen.getByTestId('remediationButton-with-permissions'));
+    await user.click(
+      screen.getByTestId('remediationButton-with-permissions-and-selected'),
+    );
 
     expect(screen.getByTestId('remediation-wizard-mock')).toBeVisible();
   });
@@ -81,11 +84,96 @@ describe('RemediationButton', () => {
     render(<RemediationButton {...initialProps} />);
 
     expect(
-      screen.getByTestId('remediationButton-no-permissions'),
+      screen.getByTestId('remediationButton-no-permissions-or-selected'),
     ).toBeInTheDocument();
 
     expect(
       screen.queryByTestId('remediation-wizard-mock'),
     ).not.toBeInTheDocument();
+  });
+
+  describe('tooltipContent and disabled button logic', () => {
+    it('should show permissions tooltip when user has no permissions even with items selected', async () => {
+      useChrome.mockImplementation(() => ({
+        getUserPermissions: jest.fn(
+          () => new Promise((resolve) => resolve([])),
+        ),
+      }));
+
+      render(<RemediationButton {...initialProps} hasSelected={true} />);
+
+      await waitFor(() => {
+        expect(
+          screen.getByTestId('remediationButton-no-permissions-or-selected'),
+        ).toBeInTheDocument();
+      });
+
+      const button = screen.getByTestId(
+        'remediationButton-no-permissions-or-selected',
+      );
+      expect(button).toBeDisabled();
+
+      await user.hover(button);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            'You do not have correct permissions to remediate this entity.',
+          ),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should render button without tooltip when user has permissions and items are selected', async () => {
+      useChrome.mockImplementation(() => ({
+        getUserPermissions: jest.fn(
+          () =>
+            new Promise((resolve) => resolve([{ permission: CAN_REMEDIATE }])),
+        ),
+      }));
+
+      render(<RemediationButton {...initialProps} hasSelected={true} />);
+
+      await waitFor(() => {
+        expect(
+          screen.getByTestId('remediationButton-with-permissions-and-selected'),
+        ).toBeInTheDocument();
+      });
+
+      const button = screen.getByTestId(
+        'remediationButton-with-permissions-and-selected',
+      );
+      expect(button).toBeEnabled();
+    });
+
+    it('should show btn with selection tooltip when user has permissions but no items selected', async () => {
+      useChrome.mockImplementation(() => ({
+        getUserPermissions: jest.fn(
+          () =>
+            new Promise((resolve) => resolve([{ permission: CAN_REMEDIATE }])),
+        ),
+      }));
+
+      render(<RemediationButton {...initialProps} hasSelected={false} />);
+
+      await waitFor(() => {
+        expect(
+          screen.getByTestId('remediationButton-no-permissions-or-selected'),
+        ).toBeInTheDocument();
+      });
+
+      const button = screen.getByTestId(
+        'remediationButton-no-permissions-or-selected',
+      );
+      expect(button).toBeDisabled();
+
+      await user.hover(button);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Select one or more items from the table below.'),
+        ).toBeInTheDocument();
+      });
+    });
   });
 });
