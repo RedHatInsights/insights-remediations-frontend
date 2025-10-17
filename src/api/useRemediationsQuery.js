@@ -48,7 +48,6 @@ const useRemediationsQuery = (
     ...options
   } = {},
 ) => {
-  // const apiEndpoint = useRemediationsAPI(endpoint);
   const { params, hasState } = useRemediationTableState(
     useTableState,
     paramsOption,
