@@ -48,7 +48,6 @@ const RemediationDetails = () => {
   } = useRemediations('getRemediation', {
     params: { id, format: 'summary' },
   });
-
   const {
     result: remediationPlaybookRuns,
     loading: isPlaybookRunsLoading,
@@ -57,12 +56,9 @@ const RemediationDetails = () => {
     params: { id },
   });
 
-  const { fetch: updateRemPlan } = useRemediations(
-    updateRemediationWrapper,
-    {
-      skip: true,
-    },
-  );
+  const { fetch: updateRemPlan } = useRemediations(updateRemediationWrapper, {
+    skip: true,
+  });
 
   useEffect(() => {
     remediationDetailsSummary &&
