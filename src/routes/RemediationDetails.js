@@ -48,7 +48,6 @@ const RemediationDetails = () => {
   } = useRemediations('getRemediation', {
     params: { id, format: 'summary' },
   });
-
   const {
     result: remediationPlaybookRuns,
     loading: isPlaybookRunsLoading,
