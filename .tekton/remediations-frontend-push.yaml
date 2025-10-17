@@ -30,7 +30,7 @@ spec:
   - name: path-context
     value: .
   - name: build-container-additional-secret
-    value: sentry-auth
+    value: build-container-additional-secret
   - name: build-args
     value:
       - ENABLE_SENTRY=true

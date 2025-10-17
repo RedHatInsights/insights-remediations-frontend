@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/nodejs-22:9.6-1759119998 as builder
+FROM registry.access.redhat.com/ubi9/nodejs-22:9.5-1746535891 as builder
 
 USER root
 
@@ -23,22 +23,35 @@ ENV ENABLE_SENTRY=${ENABLE_SENTRY} \
     SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN} \
     SENTRY_RELEASE=${SENTRY_RELEASE}
 ARG NPM_BUILD_SCRIPT=""
+
+# Persist yarn build script at runtime.
+ARG YARN_BUILD_SCRIPT=""
+ARG USES_YARN=false
+ENV YARN_BUILD_SCRIPT=${YARN_BUILD_SCRIPT} \
+    USES_YARN=${USES_YARN}
+
 COPY build-tools/universal_build.sh build-tools/build_app_info.sh build-tools/server_config_gen.sh /opt/app-root/bin/
 COPY --chown=default . .
 
+RUN chmod +x build-tools/parse-secrets.sh
+
 # 👉 Mount one secret with many keys; export token only if key exists
-RUN --mount=type=secret,id=sentry-auth/remediations,required=false,mode=0444  \
+USER root
+RUN --mount=type=secret,id=build-container-additional-secret/secrets,required=false \
     set -euo pipefail; \
-    APP_NAME="$(jq -r '.insights.appname' < package.json)"; \
-    TOKEN_FILE="/run/secrets/sentry-auth/remediations"; \
-    if [ -f "${TOKEN_FILE}" ]; then \
+    source ./build-tools/parse-secrets.sh; \
+    # Get the app name and define the secrets variable name within the same RUN layer
+    APP_NAME="$(jq -r '.insights.appname' < package.json | tr '[:lower:]-' '[:upper:]_')"; \
+    SECRET_VAR_NAME="${APP_NAME}_SECRET"; \
+    if [ -n "${!SECRET_VAR_NAME:-}" ]; then \
     export ENABLE_SENTRY=true; \
-    export SENTRY_AUTH_TOKEN="$(tr -d '\r' < "${TOKEN_FILE}" | tr -d '\n')"; \
+    export SENTRY_AUTH_TOKEN="${!SECRET_VAR_NAME}"; \
     echo "Sentry: token found for ${APP_NAME} – enabling sourcemap upload."; \
     else \
     echo "Sentry: no token for ${APP_NAME} – using any pre-set token (if provided) or skipping upload."; \
     fi; \
     universal_build.sh
+USER default
 
 
 FROM quay.io/redhat-services-prod/hcm-eng-prod-tenant/caddy-ubi:latest
