@@ -75,7 +75,7 @@ const SystemsTable = ({
   );
 };
 
-SystemsTable.defaultProps = {
+SystemsTable.defaultParameters = {
   disabledColumns: [],
   hasCheckbox: false,
 };

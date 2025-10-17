@@ -56,8 +56,8 @@ const ExecuteButton = ({
 };
 
 ExecuteButton.propTypes = {
-  remediation: PropTypes.string,
-  remediationStatus: PropTypes.string,
+  remediation: PropTypes.object,
+  remediationStatus: PropTypes.object,
   issueCount: PropTypes.number,
   isDisabled: PropTypes.bool,
   refetchRemediationPlaybookRuns: PropTypes.func,

@@ -71,7 +71,7 @@ const DetailsGeneralContent = ({
 };
 
 DetailsGeneralContent.propTypes = {
-  details: PropTypes.func.isRequired,
+  details: PropTypes.object.isRequired,
   onRename: PropTypes.func.isRequired,
   refetch: PropTypes.func.isRequired,
   remediationStatus: PropTypes.object.isRequired,

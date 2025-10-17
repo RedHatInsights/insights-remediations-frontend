@@ -2,11 +2,26 @@ import { remediationsApi } from '../api';
 
 export const API_BASE = '/api/remediations/v1';
 
-export const getRemediationDetails = ({ remId }) =>
-  remediationsApi.getRemediation(remId);
-
 export const getRemediations = (params) =>
   remediationsApi.getRemediations(params);
+
+export const getRemediationDetails = (params) =>
+  remediationsApi.getRemediation(params.id, params.format);
+
+export const getRemediationIssues = (params) =>
+  remediationsApi.getRemediationIssues(params.id);
+
+export const getRemediationIssueSystems = (params) =>
+  remediationsApi.getRemediationIssueSystems(params.id, params.issue_id);
+
+export const getRemediationSystems = (params) =>
+  remediationsApi.getRemediationSystems(
+    params.id,
+    params.limit,
+    params.offset,
+    params.filter,
+    params.sort,
+  );
 
 export const getRemediationPlaybook = ({ remId }) =>
   remediationsApi.listPlaybookRuns(remId);
