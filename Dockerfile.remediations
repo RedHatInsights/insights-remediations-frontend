@@ -39,11 +39,17 @@ RUN chmod +x build-tools/parse-secrets.sh
 USER root
 RUN --mount=type=secret,id=build-container-additional-secret/secrets,required=false \
     set -euo pipefail; \
-    source ./build-tools/parse-secrets.sh; \
+    # Source parse-secrets.sh with error handling - continue if it fails
+    if [ -f "./build-tools/parse-secrets.sh" ]; then \
+    source ./build-tools/parse-secrets.sh || echo "Warning: Failed to parse secrets, continuing without them..."; \
+    else \
+    echo "Warning: parse-secrets.sh not found, continuing without secrets..."; \
+    fi; \
     # Get the app name and define the secrets variable name within the same RUN layer
-    APP_NAME="$(jq -r '.insights.appname' < package.json | tr '[:lower:]-' '[:upper:]_')"; \
+    APP_NAME="$(jq -r '.insights.appname' < package.json | tr '[:lower:]-' '[:upper:]_')" || { echo "Warning: Could not read app name from package.json"; APP_NAME="unknown"; }; \
     SECRET_VAR_NAME="${APP_NAME}_SECRET"; \
-    if [ -n "${!SECRET_VAR_NAME:-}" ]; then \
+    # Use safer variable expansion to avoid errors when variable doesn't exist
+    if [ -n "${!SECRET_VAR_NAME+x}" ] && [ -n "${!SECRET_VAR_NAME:-}" ]; then \
     export ENABLE_SENTRY=true; \
     export SENTRY_AUTH_TOKEN="${!SECRET_VAR_NAME}"; \
     echo "Sentry: token found for ${APP_NAME} – enabling sourcemap upload."; \
