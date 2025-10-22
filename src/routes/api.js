@@ -14,14 +14,11 @@ export const getRemediationIssues = (params) =>
 export const getRemediationIssueSystems = (params) =>
   remediationsApi.getRemediationIssueSystems(params.id, params.issue_id);
 
-export const getRemediationSystems = (params) =>
-  remediationsApi.getRemediationSystems(
-    params.id,
-    params.limit,
-    params.offset,
-    params.filter,
-    params.sort,
-  );
+export const getRemediationSystems = ({ id }) =>
+  remediationsApi.getRemediationSystems(id);
+
+export const getRemediationSystemIssues = ({ id, system }) =>
+  remediationsApi.getRemediationSystemIssues(id, system);
 
 export const getRemediationPlaybook = ({ remId }) =>
   remediationsApi.listPlaybookRuns(remId);

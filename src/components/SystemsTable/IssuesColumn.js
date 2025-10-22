@@ -1,116 +1,48 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from '@patternfly/react-core';
-import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
-import { cellWidth, sortable } from '@patternfly/react-table';
-import {
-  Table,
-  TableBody,
-  TableHeader,
-} from '@patternfly/react-table/deprecated';
-import RebootColumn from './RebootColumn';
-import { buildIssueUrl } from '../../Utilities/urls';
-import sortBy from 'lodash/sortBy';
+import SystemIssuesModal from './SystemIssuesModal/SystemIssuesModal';
 
-const issueType = {
-  advisor: 'Advisor recommendation',
-  vulnerabilities: 'Vulnerability',
-  'patch-advisory': 'Patch advisory',
-};
+const IssuesColumn = ({ issues, display_name, systemId, remediationId }) => {
+  const [isOpen, setIsOpen] = useState(false);
 
-const sortByIndex = (issue) => [
-  issue.description,
-  issue.resolution.needs_reboot,
-  issueType?.[issue.id.split(':')[0]],
-  issue.resolved,
-];
-
-const IssuesColumn = ({ issues, display_name }) => {
-  const [sortByConfig, setSortByConfig] = useState({
-    index: 0,
-    direction: 'asc',
-  });
-  const [isOpen, setIsOpen] = useState();
-
-  // Handle undefined or null issues
-  if (!issues || !Array.isArray(issues)) {
-    throw new Error('Issues prop must be an array');
+  if (typeof issues === 'number') {
+    return (
+      <>
+        <Button
+          size="sm"
+          style={{ padding: '0', textDecoration: 'underline' }}
+          variant="link"
+          onClick={() => setIsOpen(true)}
+        >
+          {`${issues} action${issues !== 1 ? 's' : ''}`}
+        </Button>
+        {isOpen && (
+          <SystemIssuesModal
+            remediationId={remediationId}
+            systemId={systemId}
+            isOpen={isOpen}
+            onClose={() => setIsOpen(false)}
+            systemName={display_name}
+          />
+        )}
+      </>
+    );
   }
 
-  const sortedIssues = sortBy(
-    issues,
-    (sortIssue) => sortByIndex(sortIssue)[sortByConfig.index],
-  );
   return (
-    <Fragment>
-      <Button variant="link" isInline onClick={() => setIsOpen(true)}>
-        {`${issues.length} action${issues.length > 1 ? 's' : ''}`}
-      </Button>
-      <Modal
-        variant={ModalVariant.medium}
-        title={`Planned remediation actions`}
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        data-testid="modal"
-      >
-        <Table
-          variant="compact"
-          aria-label={`Issues table for ${display_name}`}
-          rows={(sortByConfig.direction === 'asc'
-            ? sortedIssues
-            : sortedIssues.reverse()
-          ).map((issue) => [
-            {
-              title: (
-                <Fragment>
-                  <div>
-                    <a href={buildIssueUrl(issue.id)}>{issue.description}</a>
-                  </div>
-                  <div>{issue.resolution.description}</div>
-                </Fragment>
-              ),
-            },
-            {
-              title: (
-                <Fragment>
-                  <RebootColumn
-                    rebootRequired={issue.resolution.needs_reboot}
-                  />
-                </Fragment>
-              ),
-            },
-            issueType?.[issue.id.split(':')[0]] || 'Unknown',
-          ])}
-          cells={[
-            {
-              title: 'Action',
-              transforms: [sortable],
-            },
-            {
-              title: 'Reboot required',
-              transforms: [sortable, cellWidth(20)],
-            },
-            {
-              title: 'Type',
-              transforms: [sortable, cellWidth(15)],
-            },
-          ]}
-          sortBy={sortByConfig}
-          onSort={(_e, index, direction) =>
-            setSortByConfig({ index, direction })
-          }
-        >
-          <TableHeader />
-          <TableBody />
-        </Table>
-      </Modal>
-    </Fragment>
+    <span>{`${issues.length} action${issues.length > 1 ? 's' : ''}`}</span>
   );
 };
 
 IssuesColumn.propTypes = {
-  issues: PropTypes.arrayOf(PropTypes.shape()),
+  issues: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.arrayOf(PropTypes.shape()),
+  ]),
   display_name: PropTypes.string,
+  systemId: PropTypes.string,
+  remediationId: PropTypes.string,
 };
 
 export default IssuesColumn;

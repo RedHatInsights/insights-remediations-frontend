@@ -1,10 +1,9 @@
 import React from 'react';
 import IssuesColumn from './IssuesColumn';
-import RebootColumn from './RebootColumn';
 import ConnectionStatusColumn from './ConnectionStatusCol';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 
-export default [
+const createColumns = (remediationId) => [
   {
     key: 'display_name',
     title: 'Name',
@@ -29,23 +28,16 @@ export default [
     },
   },
   {
-    key: 'issues',
+    key: 'issue_count',
     title: 'Actions',
 
-    renderFunc: (issues, _, { display_name }) => (
-      <IssuesColumn issues={issues} display_name={display_name} />
-    ),
-    props: {
-      width: 15,
-      isStatic: true,
-    },
-  },
-  {
-    key: 'rebootRequired',
-    title: 'Reboot required',
-
-    renderFunc: (rebootRequired) => (
-      <RebootColumn rebootRequired={rebootRequired} />
+    renderFunc: (issue_count, _, entity) => (
+      <IssuesColumn
+        issues={issue_count}
+        display_name={entity.display_name}
+        systemId={entity.id}
+        remediationId={remediationId}
+      />
     ),
     props: {
       width: 15,
@@ -68,3 +60,5 @@ export default [
     },
   },
 ];
+
+export default createColumns;
