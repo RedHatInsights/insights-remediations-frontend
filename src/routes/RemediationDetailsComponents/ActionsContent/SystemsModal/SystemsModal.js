@@ -31,7 +31,6 @@ const SystemsModal = ({
       },
     },
   );
-  console.log(systems, 'systems here in the modal');
   const filteredSystems = useMemo(() => {
     const systemsData = systems?.data || [];
     const filterState = serialisedTableState?.filters;

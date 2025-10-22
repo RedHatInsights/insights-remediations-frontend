@@ -19,6 +19,8 @@ import systemsColumns from './Columns';
 import useBulkSelect from './useBulkSelect';
 import useOnConfirm from './useOnConfirm';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
+import useRemediationsQuery from '../../api/useRemediationsQuery';
+import { getRemediationSystems } from '../../routes/api';
 
 const SystemsTableWrapper = ({
   remediation,
@@ -38,11 +40,14 @@ const SystemsTableWrapper = ({
   );
   const loaded = useSelector(({ entities }) => entities?.loaded);
   const rows = useSelector(({ entities }) => entities?.rows);
+  const { result: systems } = useRemediationsQuery(getRemediationSystems, {
+    params: { id: remediation.id },
+  });
 
   useEffect(() => {
-    systemsRef.current = calculateSystems(remediation);
+    systemsRef.current = calculateSystems(systems?.data);
     setRefreshKey((prev) => prev + 1);
-  }, [remediation]);
+  }, [systems]);
 
   const onConfirm = useOnConfirm({
     selected,
@@ -72,20 +77,18 @@ const SystemsTableWrapper = ({
           activeSystem.current = {
             id,
             display_name,
-            issues: remediation.issues.filter((issue) =>
-              issue.systems.find(({ id: systemId }) => systemId === id),
-            ),
           };
           setIsOpen(true);
         },
       },
     ],
-    [remediation.issues],
+    [],
   );
 
   const columns = useMemo(
-    () => (defaultColumns) => mergedColumns(defaultColumns, systemsColumns),
-    [],
+    () => (defaultColumns) =>
+      mergedColumns(defaultColumns, systemsColumns(remediation.id)),
+    [remediation.id],
   );
 
   return (
@@ -174,17 +177,7 @@ const SystemsTable = (props) => {
 SystemsTable.propTypes = {
   remediation: PropTypes.shape({
     id: PropTypes.string,
-    issues: PropTypes.arrayOf(
-      PropTypes.shape({
-        systems: PropTypes.arrayOf(
-          PropTypes.shape({
-            id: PropTypes.string,
-            display_name: PropTypes.string,
-            resolved: PropTypes.bool,
-          }),
-        ),
-      }),
-    ),
+    name: PropTypes.string,
   }),
 };
 
@@ -194,6 +187,11 @@ SystemsTableWrapper.propTypes = {
     register: PropTypes.func,
   }),
   refreshRemediation: PropTypes.func,
+  connectedData: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.shape()),
+    PropTypes.number,
+  ]),
+  areDetailsLoading: PropTypes.bool,
 };
 
 export default SystemsTable;

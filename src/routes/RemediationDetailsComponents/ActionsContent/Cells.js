@@ -2,29 +2,7 @@ import React from 'react';
 import { Content } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
-
-const APP_CONFIG = {
-  advisor: { app: 'advisor', label: 'Advisor', route: 'recommendations' },
-  vulnerabilities: {
-    app: 'vulnerability',
-    label: 'Vulnerability',
-    route: 'cves',
-  },
-  ssg: { app: 'compliance', label: 'Compliance', route: 'reports' },
-  'patch-advisory': { app: 'patch', label: 'Patch', route: 'advisories' },
-  'patch-package': { app: 'patch', label: 'Patch', route: 'packages' },
-};
-
-function getAppInfo(key) {
-  const [prefix] = key.split(':');
-  return (
-    APP_CONFIG[prefix] || {
-      app: prefix,
-      label: prefix[0].toUpperCase() + prefix.slice(1),
-      route: '',
-    }
-  );
-}
+import { getAppInfo } from '../../../Utilities/model';
 
 function buildToPath(key, description) {
   const { app, route } = getAppInfo(key);

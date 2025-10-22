@@ -3,33 +3,13 @@ export const calculateChecked = (rows = [], selected) =>
     ? rows.length > 0
     : rows.some(({ id }) => selected?.has(id)) && null;
 
-export const calculateSystems = (remediation) =>
-  remediation?.issues?.reduce((acc, curr) => {
-    curr?.systems?.forEach((host) => {
-      const found = acc.find(({ id }) => host.id === id);
-      const issue = {
-        id: curr.id,
-        resolution: curr.resolution,
-        description: curr.description,
-      };
-      if (found) {
-        found.issues = [
-          ...found.issues,
-          { ...issue, resolved: found.resolved },
-        ];
-        found.rebootRequired = found.issues.some(
-          ({ resolution }) => resolution?.needs_reboot,
-        );
-      } else {
-        acc.push({
-          ...host,
-          issues: [{ ...issue, resolved: host.resolved }],
-          rebootRequired: curr?.resolution?.needs_reboot,
-        });
-      }
-    });
-    return acc;
-  }, []) || [];
+export const calculateSystems = (systemsData) =>
+  systemsData?.map((system) => ({
+    id: system.id,
+    hostname: system.hostname,
+    display_name: system.display_name,
+    issue_count: system.issue_count,
+  })) || [];
 
 // Helper function to normalize connectedData for easier mapping
 export const normalizeConnectedData = (connectedData) => {
