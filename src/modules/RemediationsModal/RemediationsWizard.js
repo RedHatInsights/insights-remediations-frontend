@@ -77,7 +77,8 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
     ),
   );
   const remediationsList = useRemediationsList();
-
+  console.log(data, '  data here');
+  console.log(allSystems.current, ' allSystems here');
   const dispatch = useDispatch();
 
   const [state, setState] = useReducer(reducer, initialState);
