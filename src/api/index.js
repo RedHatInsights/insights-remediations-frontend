@@ -53,17 +53,10 @@ export function getIsReceptorConfigured() {
 }
 
 export function deleteSystemsFromRemediation(systems, remediation) {
-  return Promise.all(
-    systems.flatMap((system) =>
-      system.issues.map((issue) =>
-        remediationsApi.deleteRemediationIssueSystem(
-          remediation.id,
-          issue.id,
-          system.id,
-        ),
-      ),
-    ),
-  );
+  const systemIds = systems.map((system) => system.id);
+  return remediationsApi.deleteRemediationSystems(remediation.id, {
+    system_ids: systemIds,
+  });
 }
 
 export const createRemediation = async (data) =>
