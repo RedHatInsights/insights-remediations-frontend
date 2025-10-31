@@ -45,12 +45,9 @@ const SystemsTableWrapper = ({
   const loaded = useSelector(({ entities }) => entities?.loaded);
   const rows = useSelector(({ entities }) => entities?.rows);
 
-  const { fetch: fetchSystems } = useRemediations(
-    'getRemediationSystems',
-    {
-      skip: true,
-    },
-  );
+  const { fetch: fetchSystems } = useRemediations('getRemediationSystems', {
+    skip: true,
+  });
 
   const clearSelection = useCallback(() => {
     if (selected && selected.size > 0) {
