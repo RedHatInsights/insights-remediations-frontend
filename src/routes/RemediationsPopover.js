@@ -59,7 +59,9 @@ export const RemediationsPopover = () => {
                 target="_blank"
                 rel="noreferrer"
               >
-                Setting up Insights for AAP remediations
+                Setting up{' '}
+                {isLightspeedRebrandEnabled ? 'Red Hat Lightspeed' : 'Insights'}{' '}
+                for AAP remediations
                 <ExternalLinkAltIcon className="pf-v6-u-ml-xs" />
               </a>
             </span>
@@ -71,7 +73,11 @@ export const RemediationsPopover = () => {
                 target="_blank"
                 rel="noreferrer"
               >
-                Creating an Insights remediation plan for hosts in Satellite
+                Creating{' '}
+                {isLightspeedRebrandEnabled
+                  ? 'a Red Hat Lightspeed'
+                  : 'an Insights'}{' '}
+                remediation plan for hosts in Satellite
                 <ExternalLinkAltIcon className="pf-v6-u-ml-xs" />
               </a>
             </span>
