@@ -1,16 +1,13 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import PropTypes from 'prop-types';
 import columns from './Columns';
 import { issueNameFilter } from './Filters';
-import {
-  TableStateProvider,
-  useSerialisedTableState,
-} from 'bastilian-tabletools';
 import TableEmptyState from '../../../routes/OverViewPage/TableEmptyState';
 import RemediationsTable from '../../RemediationsTable/RemediationsTable';
 import useRemediationsQuery from '../../../api/useRemediationsQuery';
 import { getRemediationSystemIssues } from '../../../routes/api';
+import { TableStateProvider } from 'bastilian-tabletools';
 
 const SystemIssuesModal = ({
   remediationId,
@@ -19,12 +16,11 @@ const SystemIssuesModal = ({
   onClose,
   systemName,
 }) => {
-  const serialisedTableState = useSerialisedTableState();
-
   const { result: issues, loading: issuesLoading } = useRemediationsQuery(
     getRemediationSystemIssues,
     {
       skip: !isOpen || !remediationId || !systemId,
+      useTableState: true,
       params: {
         id: remediationId,
         system: systemId,
@@ -32,30 +28,12 @@ const SystemIssuesModal = ({
     },
   );
 
-  const filteredIssues = useMemo(() => {
-    const issuesData = issues?.data || [];
-    const filterState = serialisedTableState?.filters;
-
-    if (!filterState || Object.keys(filterState).length === 0) {
-      return issuesData;
-    }
-
-    const searchTerm = filterState?.filter?.description;
-    if (!searchTerm) {
-      return issuesData;
-    }
-
-    const lowerSearchTerm = searchTerm.toLowerCase();
-
-    return issuesData.filter((item) =>
-      item.description?.toLowerCase().includes(lowerSearchTerm),
-    );
-  }, [issues, serialisedTableState]);
+  const issuesData = issues?.data || [];
 
   return (
     <Modal
       variant={ModalVariant.large}
-      title={`Action${filteredIssues?.length !== 1 ? 's' : ''}`}
+      title={`Action${issuesData?.length !== 1 ? 's' : ''}`}
       isOpen={isOpen}
       onClose={onClose}
     >
@@ -65,15 +43,15 @@ const SystemIssuesModal = ({
         ouiaId="SystemIssuesModalTable"
         variant="compact"
         loading={issuesLoading}
-        items={filteredIssues}
-        total={filteredIssues?.length}
+        items={issuesData}
+        total={issuesData?.length}
         columns={[...columns]}
         filters={{ filterConfig: [...issueNameFilter] }}
         options={{
           EmptyState: TableEmptyState,
-          itemIdsInTable: () => filteredIssues?.map(({ id }) => id) || [],
-          itemIdsOnPage: () => filteredIssues?.map(({ id }) => id) || [],
-          total: filteredIssues?.length || 0,
+          itemIdsInTable: () => issuesData?.map(({ id }) => id) || [],
+          itemIdsOnPage: () => issuesData?.map(({ id }) => id) || [],
+          total: issuesData?.length || 0,
         }}
       />
     </Modal>
@@ -88,12 +66,10 @@ SystemIssuesModal.propTypes = {
   systemName: PropTypes.string,
 };
 
-const SystemIssuesModalContentProvider = (props) => {
-  return (
-    <TableStateProvider isNewContext>
-      <SystemIssuesModal {...props} />
-    </TableStateProvider>
-  );
-};
+const SystemIssuesModalProvider = (props) => (
+  <TableStateProvider>
+    <SystemIssuesModal {...props} />
+  </TableStateProvider>
+);
 
-export default SystemIssuesModalContentProvider;
+export default SystemIssuesModalProvider;

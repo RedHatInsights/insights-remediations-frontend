@@ -12,15 +12,15 @@ import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
 import {
   useRawTableState,
-  TableStateProvider,
-  StaticTableToolsTable,
   useStateCallbacks,
+  TableStateProvider,
 } from 'bastilian-tabletools';
 import TableEmptyState from '../../OverViewPage/TableEmptyState';
+import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
 
-import { deleteIssues } from '../../api';
+import { deleteIssues, getRemediationIssues } from '../../api';
 
-const ActionsContent = ({ refetch, loading, issues }) => {
+const ActionsContent = ({ refetch }) => {
   const { id } = useParams();
   const tableState = useRawTableState();
   const currentlySelected = tableState?.selected;
@@ -30,6 +30,17 @@ const ActionsContent = ({ refetch, loading, issues }) => {
   const [isSystemsModalOpen, setIsSystemsModalOpen] = useState(false);
   const [actionToShow, setActionToShow] = useState('');
   const [selectedIssueId, setSelectedIssueId] = useState('');
+
+  const {
+    result: issuesResult,
+    loading: issuesLoading,
+    refetch: refetchIssues,
+    fetchAllIds,
+  } = useRemediationsQuery(getRemediationIssues, {
+    useTableState: true,
+    params: { id },
+  });
+
   const { fetchBatched: deleteActions } = useRemediationsQuery(deleteIssues, {
     skip: true,
     batched: true,
@@ -76,8 +87,9 @@ const ActionsContent = ({ refetch, loading, issues }) => {
     return await fetchQueue(queue);
   };
 
-  //Back end is currently working on filtering - This filter acts as a placegholder
-  const allIssues = issues ?? [];
+  const allIssues = issuesResult?.data ?? [];
+  const totalIssues = issuesResult?.meta?.total ?? allIssues?.length ?? 0;
+
   const columnsWithSystemsButton = useMemo(() => {
     return columns.map((col) => {
       if (col.exportKey === 'system_count') {
@@ -139,6 +151,7 @@ const ActionsContent = ({ refetch, loading, issues }) => {
             }
             try {
               await handleDelete(chopped);
+              refetchIssues();
               addNotification({
                 title: 'Successfully deleted actions',
                 variant: 'success',
@@ -162,12 +175,13 @@ const ActionsContent = ({ refetch, loading, issues }) => {
           }}
         />
       )}
-      <StaticTableToolsTable
+      <RemediationsTable
         aria-label="ActionsTable"
         ouiaId="ActionsTable"
         variant="compact"
-        loading={loading}
-        items={!loading ? allIssues : undefined}
+        loading={issuesLoading}
+        items={allIssues}
+        total={totalIssues}
         columns={[...columnsWithSystemsButton]}
         filters={{
           filterConfig: [...actionNameFilter],
@@ -175,8 +189,9 @@ const ActionsContent = ({ refetch, loading, issues }) => {
         options={{
           manageColumns: true,
           onSelect: true,
-          itemIdsInTable: () => allIssues.map(({ id }) => id),
-          itemIdsOnPage: () => allIssues.map(({ id }) => id),
+          itemIdsInTable: fetchAllIds,
+          itemIdsOnPage: allIssues?.map(({ id }) => id),
+          total: totalIssues,
           tableProps: {
             variant: 'compact',
           },
@@ -212,10 +227,7 @@ const ActionsContent = ({ refetch, loading, issues }) => {
 };
 
 ActionsContent.propTypes = {
-  remediationDetails: PropTypes.object,
   refetch: PropTypes.func,
-  loading: PropTypes.bool,
-  issues: PropTypes.array,
 };
 
 const ActionsContentProvider = (props) => (

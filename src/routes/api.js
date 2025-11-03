@@ -8,8 +8,20 @@ export const getRemediations = (params) =>
 export const getRemediationDetails = (params) =>
   remediationsApi.getRemediation(params.id, params.format);
 
-export const getRemediationIssues = (params) =>
-  remediationsApi.getRemediationIssues(params.id);
+export const getRemediationIssues = (params) => {
+  const { id, limit, offset, sort, filter, ...rest } = params;
+  // API only supports sorting by 'id' or '-id'
+  // If sort is by another field, omit it (client-side sorting will handle it)
+  const validSort = sort === 'id' || sort === '-id' ? sort : undefined;
+
+  return remediationsApi.getRemediationIssues({
+    id,
+    limit,
+    offset,
+    sort: validSort,
+    filter,
+  });
+};
 
 export const getRemediationIssueSystems = (params) =>
   remediationsApi.getRemediationIssueSystems(params.id, params.issue_id);
