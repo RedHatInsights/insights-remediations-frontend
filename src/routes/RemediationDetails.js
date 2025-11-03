@@ -16,7 +16,6 @@ import PlanNotFound from './RemediationDetailsComponents/PlanNotFound';
 import {
   checkExecutableStatus,
   getRemediationDetails,
-  getRemediationIssues,
   getRemediationPlaybook,
   getRemediationsList,
   updateRemediationPlans,
@@ -48,13 +47,6 @@ const RemediationDetails = () => {
   } = useRemediationsQuery(getRemediationDetails, {
     params: { id: id, format: 'summary' },
   });
-
-  const { result: issues, loading: issuesLoading } = useRemediationsQuery(
-    getRemediationIssues,
-    {
-      params: { id: id },
-    },
-  );
 
   const {
     result: remediationPlaybookRuns,
@@ -125,7 +117,6 @@ const RemediationDetails = () => {
       <>
         <RemediationDetailsPageHeader
           remediation={remediationDetailsSummary}
-          issues={issues}
           remediationStatus={remediationStatus}
           isFedramp={isFedramp}
           allRemediations={allRemediations?.data}
@@ -176,12 +167,7 @@ const RemediationDetails = () => {
             aria-label="ActionTab"
             title={<TabTitleText>Actions</TabTitleText>}
           >
-            <ActionsContent
-              remediationDetails={remediationDetailsSummary}
-              issues={issues?.data}
-              refetch={refetchRemediationDetails}
-              loading={issuesLoading}
-            />
+            <ActionsContent refetch={refetchRemediationDetails} />
           </Tab>
           <Tab
             eventKey={'systems'}
@@ -195,7 +181,6 @@ const RemediationDetails = () => {
             >
               <SystemsTable
                 remediation={remediationDetailsSummary}
-                issues={issues?.data}
                 connectedData={remediationStatus?.connectedData}
                 areDetailsLoading={remediationStatus?.areDetailsLoading}
                 refreshRemediation={refetchRemediationDetails}
