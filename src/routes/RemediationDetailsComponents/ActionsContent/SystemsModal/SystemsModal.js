@@ -45,7 +45,11 @@ const SystemsModal = ({
         variant="compact"
         loading={systemsLoading}
         items={systemsData}
+<<<<<<< HEAD
         total={totalSystems}
+=======
+        total={systemsData?.length}
+>>>>>>> 26c832f (feat(tables): move tables from static to async)
         columns={[...columns]}
         // filters={{ filterConfig: [...actionsSystemFilter] }}
         options={{
