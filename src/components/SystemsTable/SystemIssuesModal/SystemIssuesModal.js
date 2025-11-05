@@ -2,18 +2,10 @@ import React from 'react';
 import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import PropTypes from 'prop-types';
 import columns from './Columns';
-<<<<<<< HEAD
 // import { issueNameFilter } from './Filters';
 import TableEmptyState from '../../../routes/OverViewPage/TableEmptyState';
 import RemediationsTable from '../../RemediationsTable/RemediationsTable';
-import useRemediations from '../../../Utilities/Hooks/api/useRemediations';
-=======
-import { issueNameFilter } from './Filters';
-import TableEmptyState from '../../../routes/OverViewPage/TableEmptyState';
-import RemediationsTable from '../../RemediationsTable/RemediationsTable';
 import useRemediationsQuery from '../../../api/useRemediationsQuery';
-import { getRemediationSystemIssues } from '../../../routes/api';
->>>>>>> 26c832f (feat(tables): move tables from static to async)
 import { TableStateProvider } from 'bastilian-tabletools';
 
 const SystemIssuesModal = ({
@@ -27,7 +19,7 @@ const SystemIssuesModal = ({
     result: issues,
     loading: issuesLoading,
     fetchAllIds,
-  } = useRemediations('getRemediationSystemIssues', {
+  } = useRemediationsQuery('getRemediationSystemIssues', {
     skip: !isOpen || !remediationId || !systemId,
     useTableState: true,
     params: {
@@ -72,7 +64,7 @@ SystemIssuesModal.propTypes = {
   systemId: PropTypes.string.isRequired,
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
-  systemName: PropTypes.string.isRequired,
+  systemName: PropTypes.string,
 };
 
 const SystemIssuesModalProvider = (props) => (

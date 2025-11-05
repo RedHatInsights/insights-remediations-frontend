@@ -1,6 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
 import columns from '../Columns';
-import useRemediations from '../../Utilities/Hooks/api/useRemediations';
+import useRemediationsQuery from '../../api/useRemediationsQuery';
 import RemediationsTable from '../../components/RemediationsTable/RemediationsTable';
 import {
   CreatedByFilter,
@@ -45,27 +45,26 @@ export const OverViewPage = () => {
   const tableState = useRawTableState();
 
   const currentlySelected = tableState?.selected || [];
-  //TODO: Ongoing discussion with team on only fetching fieldsData on plans we're downloading
   const {
     result,
     fetchAllIds,
     loading,
     refetch: fetchRemediations,
-  } = useRemediations('getRemediations', {
+  } = useRemediationsQuery('getRemediations', {
     useTableState: true,
-    params: { hideArchived: false, fieldsData: ['last_playbook_run'] },
+    params: { hideArchived: false, fieldsData: ['playbook_runs'] },
   });
 
   const { result: allRemediations, refetch: refetchAllRemediations } =
-    useRemediations('getRemediations', {
+    useRemediationsQuery('getRemediations', {
       params: { fieldsData: ['name'] },
     });
 
-  const { fetch: deleteRem } = useRemediations('deleteRemediation', {
+  const { fetch: deleteRem } = useRemediationsQuery('deleteRemediation', {
     skip: true,
   });
 
-  const { fetchBatched: deleteRelList } = useRemediations(
+  const { fetchBatched: deleteRelList } = useRemediationsQuery(
     'deleteRemediations',
     {
       skip: true,

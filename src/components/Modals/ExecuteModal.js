@@ -14,7 +14,7 @@ import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import EmptyExecutePlaybookState from '../EmptyExecutePlaybookState';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
-import useRemediations from '../../Utilities/Hooks/api/useRemediations';
+import useRemediationsQuery from '../../api/useRemediationsQuery';
 import RemediationsTable from '../RemediationsTable/RemediationsTable';
 import { TableStateProvider } from 'bastilian-tabletools';
 import columns from './Columns';
@@ -60,7 +60,7 @@ export const ExecuteModal = ({
     0,
   );
 
-  const { fetch: executeRun } = useRemediations('runRemediation', {
+  const { fetch: executeRun } = useRemediationsQuery('runRemediation', {
     skip: true,
   });
 
