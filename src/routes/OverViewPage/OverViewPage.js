@@ -28,12 +28,7 @@ import useRemediationFetchExtras from '../../api/useRemediationFetchExtras';
 import { OverViewPageHeader } from './OverViewPageHeader';
 import { PermissionContext } from '../../App';
 import chunk from 'lodash/chunk';
-import {
-  deleteRemediation,
-  deleteRemediationList,
-  getRemediations,
-  getRemediationsList,
-} from '../api';
+
 import TableEmptyState from './TableEmptyState';
 import { CalendarFilterType } from './CalendarFilterType';
 
@@ -55,20 +50,22 @@ export const OverViewPage = () => {
     fetchAllIds,
     loading,
     refetch: fetchRemediations,
-  } = useRemediationsQuery(getRemediations, {
+  } = useRemediationsQuery('getRemediations', {
     useTableState: true,
     params: { hideArchived: false, fieldsData: ['playbook_runs'] },
   });
 
   const { result: allRemediations, refetch: refetchAllRemediations } =
-    useRemediationsQuery(getRemediationsList);
+    useRemediationsQuery('getRemediations', {
+      params: { fieldsData: ['name'] },
+    });
 
-  const { fetch: deleteRem } = useRemediationsQuery(deleteRemediation, {
+  const { fetch: deleteRem } = useRemediationsQuery('deleteRemediation', {
     skip: true,
   });
 
   const { fetchBatched: deleteRelList } = useRemediationsQuery(
-    deleteRemediationList,
+    'deleteRemediations',
     {
       skip: true,
       batched: true,

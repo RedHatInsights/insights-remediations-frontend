@@ -2,11 +2,10 @@ import React from 'react';
 import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import PropTypes from 'prop-types';
 import columns from './Columns';
-import { issueNameFilter } from './Filters';
+// import { issueNameFilter } from './Filters';
 import TableEmptyState from '../../../routes/OverViewPage/TableEmptyState';
 import RemediationsTable from '../../RemediationsTable/RemediationsTable';
 import useRemediationsQuery from '../../../api/useRemediationsQuery';
-import { getRemediationSystemIssues } from '../../../routes/api';
 import { TableStateProvider } from 'bastilian-tabletools';
 
 const SystemIssuesModal = ({
@@ -16,24 +15,26 @@ const SystemIssuesModal = ({
   onClose,
   systemName,
 }) => {
-  const { result: issues, loading: issuesLoading } = useRemediationsQuery(
-    getRemediationSystemIssues,
-    {
-      skip: !isOpen || !remediationId || !systemId,
-      useTableState: true,
-      params: {
-        id: remediationId,
-        system: systemId,
-      },
+  const {
+    result: issues,
+    loading: issuesLoading,
+    fetchAllIds,
+  } = useRemediationsQuery('getRemediationSystemIssues', {
+    skip: !isOpen || !remediationId || !systemId,
+    useTableState: true,
+    params: {
+      id: remediationId,
+      system: systemId,
     },
-  );
+  });
 
   const issuesData = issues?.data || [];
+  const totalIssues = issues?.meta?.total ?? issuesData?.length ?? 0;
 
   return (
     <Modal
       variant={ModalVariant.large}
-      title={`Action${issuesData?.length !== 1 ? 's' : ''}`}
+      title={`Action${totalIssues !== 1 ? 's' : ''}`}
       isOpen={isOpen}
       onClose={onClose}
     >
@@ -44,14 +45,14 @@ const SystemIssuesModal = ({
         variant="compact"
         loading={issuesLoading}
         items={issuesData}
-        total={issuesData?.length}
+        total={totalIssues}
         columns={[...columns]}
-        filters={{ filterConfig: [...issueNameFilter] }}
+        // filters={{ filterConfig: [...issueNameFilter] }}
         options={{
           EmptyState: TableEmptyState,
-          itemIdsInTable: () => issuesData?.map(({ id }) => id) || [],
+          itemIdsInTable: fetchAllIds,
           itemIdsOnPage: () => issuesData?.map(({ id }) => id) || [],
-          total: issuesData?.length || 0,
+          total: totalIssues,
         }}
       />
     </Modal>
@@ -67,7 +68,7 @@ SystemIssuesModal.propTypes = {
 };
 
 const SystemIssuesModalProvider = (props) => (
-  <TableStateProvider>
+  <TableStateProvider isNewContext>
     <SystemIssuesModal {...props} />
   </TableStateProvider>
 );

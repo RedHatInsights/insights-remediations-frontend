@@ -37,24 +37,91 @@ export const normalizeConnectedData = (connectedData) => {
 };
 
 export const fetchInventoryData = async (
-  { page = 0, ...config } = {},
-  systems,
+  { page = 1, per_page = 50, ...config } = {},
+  fetchSystems,
+  remediationId,
   getEntities,
   connectedData,
 ) => {
-  const currSystems = systems.filter(({ display_name }) =>
-    config.filters?.hostnameOrId
-      ? display_name.includes(config.filters.hostnameOrId)
-      : true,
+  console.log('fetchInventoryData - page:', page, 'per_page:', per_page);
+  console.log('fetchInventoryData - config:', config);
+
+  // Calculate offset from page and per_page
+  const offset = (page - 1) * per_page;
+
+  console.log(
+    'fetchInventoryData - calculated offset:',
+    offset,
+    'limit:',
+    per_page,
   );
 
-  const data = await getEntities(
-    currSystems
-      .slice((page - 1) * config.per_page, page * config.per_page)
-      .map(({ id }) => id),
-    { ...config, hasItems: true },
-    true,
+  // Build filter object for remediation systems API
+  const filter = {};
+  if (config.filters?.hostnameOrId) {
+    // Use display_name filter to search across all systems
+    filter.display_name = config.filters.hostnameOrId;
+  }
+
+  console.log('fetchInventoryData - filter for remediation API:', filter);
+
+  // Fetch systems from API with pagination and filtering
+  const systemsResponse = await fetchSystems({
+    id: remediationId,
+    limit: per_page,
+    offset: offset,
+    sort: 'display_name', // Default sort
+    ...(Object.keys(filter).length > 0 && { filter }), // Only add filter if not empty
+  });
+
+  console.log('fetchInventoryData - API response meta:', systemsResponse?.meta);
+
+  const systems = calculateSystems(systemsResponse?.data);
+  const total = systemsResponse?.meta?.total || 0;
+
+  // Don't filter client-side - let the Inventory API handle filtering
+  // Just use all systems from our API response
+  const currSystems = systems;
+
+  console.log('currSystems from API:', currSystems);
+
+  const systemIds = currSystems.map(({ id }) => id);
+  console.log(
+    'Fetching inventory data for system IDs:',
+    systemIds.length,
+    'IDs',
+    systemIds,
   );
+
+  // Fetch detailed data from Inventory API
+  // Note: getEntities expects the IDs array, the config, and showTags boolean
+  let data;
+  try {
+    data = await getEntities(
+      systemIds,
+      { ...config, hasItems: true, per_page, page },
+      true,
+    );
+    console.log('inventorydata here', data);
+  } catch (error) {
+    console.error('Error fetching inventory data:', error);
+    // If inventory fetch fails (404, systems don't exist), return basic system data
+    // This allows pagination to continue even if some systems are stale
+    const connectionMap = normalizeConnectedData(connectedData);
+
+    const resultsWithConnection = currSystems.map((system) => {
+      const connectionInfo = connectionMap.get(system.id);
+      return connectionInfo ? { ...system, ...connectionInfo } : system;
+    });
+
+    return {
+      page,
+      per_page,
+      results: resultsWithConnection,
+      total: total,
+      count: currSystems.length,
+    };
+  }
 
   const connectionMap = normalizeConnectedData(connectedData);
 
@@ -75,11 +142,13 @@ export const fetchInventoryData = async (
   return {
     ...data,
     page,
+    per_page,
     results: updatedResults.map((host) => ({
       ...currSystems.find(({ id }) => id === host.id),
       ...host,
     })),
-    total: currSystems.length,
+    // Use the total from the API response
+    total: total,
   };
 };
 

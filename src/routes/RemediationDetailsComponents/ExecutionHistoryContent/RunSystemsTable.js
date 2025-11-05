@@ -16,6 +16,7 @@ const RunSystemsTable = ({ run, loading, viewLogColumn }) => {
         s.system_name.toLowerCase().includes(nameFilter),
       )
     : run.systems;
+
   return (
     <RemediationsTable
       aria-label="ExecutionHistoryTable"

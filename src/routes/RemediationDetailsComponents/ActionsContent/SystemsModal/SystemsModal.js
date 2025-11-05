@@ -2,11 +2,10 @@ import React from 'react';
 import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import PropTypes from 'prop-types';
 import columns from './Columns';
-import { actionsSystemFilter } from '../../Filters';
+// import { actionsSystemFilter } from '../../Filters';
 import TableEmptyState from '../../../OverViewPage/TableEmptyState';
 import RemediationsTable from '../../../../components/RemediationsTable/RemediationsTable';
 import useRemediationsQuery from '../../../../api/useRemediationsQuery';
-import { getRemediationIssueSystems } from '../../../api';
 import { TableStateProvider } from 'bastilian-tabletools';
 
 const SystemsModal = ({
@@ -16,24 +15,26 @@ const SystemsModal = ({
   onClose,
   actionName,
 }) => {
-  const { result: systems, loading: systemsLoading } = useRemediationsQuery(
-    getRemediationIssueSystems,
-    {
-      skip: !isOpen || !remediationId || !issueId,
-      useTableState: true,
-      params: {
-        id: remediationId,
-        issue_id: issueId,
-      },
+  const {
+    result: systems,
+    loading: systemsLoading,
+    fetchAllIds,
+  } = useRemediationsQuery('getRemediationIssueSystems', {
+    skip: !isOpen || !remediationId || !issueId,
+    useTableState: true,
+    params: {
+      id: remediationId,
+      issue: issueId,
     },
-  );
+  });
 
   const systemsData = systems?.data || [];
+  const totalSystems = systems?.meta?.total ?? systemsData?.length ?? 0;
 
   return (
     <Modal
       variant={ModalVariant.large}
-      title={`Affected system${systemsData?.length !== 1 ? 's' : ''}`}
+      title={`Affected system${totalSystems !== 1 ? 's' : ''}`}
       isOpen={isOpen}
       onClose={onClose}
     >
@@ -44,14 +45,14 @@ const SystemsModal = ({
         variant="compact"
         loading={systemsLoading}
         items={systemsData}
-        total={systemsData?.length}
+        total={totalSystems}
         columns={[...columns]}
-        filters={{ filterConfig: [...actionsSystemFilter] }}
+        // filters={{ filterConfig: [...actionsSystemFilter] }}
         options={{
           EmptyState: TableEmptyState,
-          itemIdsInTable: () => systemsData?.map(({ id }) => id) || [],
+          itemIdsInTable: fetchAllIds,
           itemIdsOnPage: () => systemsData?.map(({ id }) => id) || [],
-          total: systemsData?.length || 0,
+          total: totalSystems,
         }}
       />
     </Modal>
@@ -67,7 +68,7 @@ SystemsModal.propTypes = {
 };
 
 const SystemsModalProvider = (props) => (
-  <TableStateProvider>
+  <TableStateProvider isNewContext>
     <SystemsModal {...props} />
   </TableStateProvider>
 );

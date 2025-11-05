@@ -21,6 +21,7 @@ jest.mock('@redhat-cloud-services/javascript-clients-shared', () => ({
     getRemediation: jest.fn(),
     getResolutionsForIssues: jest.fn(),
     deleteRemediationIssueSystem: jest.fn(),
+    deleteRemediationSystems: jest.fn(),
     downloadPlaybooks: jest.fn(),
     getRemediationPlaybook: jest.fn(),
   })),

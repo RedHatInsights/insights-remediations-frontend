@@ -13,13 +13,6 @@ import ActionsContent from './RemediationDetailsComponents/ActionsContent/Action
 import SystemsTable from '../components/SystemsTable/SystemsTable';
 import ExecutionHistoryTab from './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent';
 import PlanNotFound from './RemediationDetailsComponents/PlanNotFound';
-import {
-  checkExecutableStatus,
-  getRemediationDetails,
-  getRemediationPlaybook,
-  getRemediationsList,
-  updateRemediationPlans,
-} from './api';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 
 const RemediationDetails = () => {
@@ -33,10 +26,12 @@ const RemediationDetails = () => {
   const context = useContext(PermissionContext);
   const axios = useAxiosWithPlatformInterceptors();
   const { result: allRemediations, refetch: refetchAllRemediations } =
-    useRemediationsQuery(getRemediationsList);
+    useRemediationsQuery('getRemediations', {
+      params: { fieldsData: ['name'] },
+    });
 
-  const { result: isExecutable } = useRemediationsQuery(checkExecutableStatus, {
-    params: { remId: id },
+  const { result: isExecutable } = useRemediationsQuery('checkExecutable', {
+    params: { id },
   });
 
   const {
@@ -44,24 +39,21 @@ const RemediationDetails = () => {
     refetch: refetchRemediationDetails,
     loading: detailsLoading,
     error: remediationDetailsError,
-  } = useRemediationsQuery(getRemediationDetails, {
-    params: { id: id, format: 'summary' },
+  } = useRemediationsQuery('getRemediation', {
+    params: { id, format: 'summary' },
   });
 
   const {
     result: remediationPlaybookRuns,
     loading: isPlaybookRunsLoading,
     refetch: refetchRemediationPlaybookRuns,
-  } = useRemediationsQuery(getRemediationPlaybook, {
-    params: { remId: id },
+  } = useRemediationsQuery('listPlaybookRuns', {
+    params: { id },
   });
 
-  const { fetch: updateRemPlan } = useRemediationsQuery(
-    updateRemediationPlans,
-    {
-      skip: true,
-    },
-  );
+  const { fetch: updateRemPlan } = useRemediationsQuery('updateRemediation', {
+    skip: true,
+  });
 
   useEffect(() => {
     remediationDetailsSummary &&
