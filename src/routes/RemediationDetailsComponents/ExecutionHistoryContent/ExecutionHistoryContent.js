@@ -21,11 +21,10 @@ import { LogViewer, LogViewerSearch } from '@patternfly/react-log-viewer';
 import LogCards from './LogCards';
 import RunTabContent from './RunTabContent';
 import { formatUtc } from './helpers';
-import { getPlaybookLogs, getRemediationPlaybookSystemsList } from '../../api';
-
 import useRemediationsQuery from '../../../api/useRemediationsQuery';
 import { StatusIcon } from '../../helpers';
 import NoExecutions from './NoExections';
+import { getRemediationPlaybookSystemsList, getPlaybookLogs } from '../../api';
 
 const ExecutionHistoryTab = ({
   remediationPlaybookRuns,
@@ -41,7 +40,6 @@ const ExecutionHistoryTab = ({
   const [manualRefreshClicked, setManualRefreshClicked] = useState(false);
 
   const { id: remId } = useParams();
-
   //Whenever runs is altered, copy that array to local state -> Execute button wont require a refresh down the line
   useEffect(() => setRunsState(runs), [runs]);
 
@@ -62,7 +60,9 @@ const ExecutionHistoryTab = ({
 
   const { fetch: fetchSystems } = useRemediationsQuery(
     getRemediationPlaybookSystemsList,
-    { skip: true },
+    {
+      skip: true,
+    },
   );
 
   const logParams =

@@ -1,43 +1,38 @@
+import axiosInstance from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import { remediationsApi } from '../api';
 
 export const API_BASE = '/api/remediations/v1';
 
-export const getRemediations = (params) =>
-  remediationsApi.getRemediations(params);
+/**
+ * Delete systems from a remediation.
+ * IMPORTANT: This wrapper exists to work around a bug in the API client.
+ * The API client's deleteRemediationSystems has the wrong URL path:
+ * - API client uses: /remediations/{id}/systems/{system}/issues (WRONG)
+ * - We need: /remediations/{id}/systems (bulk delete endpoint)
+ *
+ *  @param   {Array}   systems     - Array of system objects with id property
+ *  @param   {object}  remediation - Remediation object with id property
+ *  @returns {Promise}             Axios delete promise
+ */
+export const deleteRemediationSystems = (systems, remediation) => {
+  const systemIds = systems.map((system) => system.id);
 
-export const getRemediationDetails = (params) =>
-  remediationsApi.getRemediation(params.id, params.format);
-
-export const getRemediationIssues = (params) => {
-  const { id, limit, offset, sort, filter, ...rest } = params;
-  // API only supports sorting by 'id' or '-id'
-  // If sort is by another field, omit it (client-side sorting will handle it)
-  const validSort = sort === 'id' || sort === '-id' ? sort : undefined;
-
-  return remediationsApi.getRemediationIssues({
-    id,
-    limit,
-    offset,
-    sort: validSort,
-    filter,
-  });
+  return axiosInstance.delete(
+    `${API_BASE}/remediations/${remediation.id}/systems`,
+    {
+      data: { system_ids: systemIds },
+    },
+  );
 };
 
-export const getRemediationIssueSystems = (params) =>
-  remediationsApi.getRemediationIssueSystems(params.id, params.issue_id);
-
-export const getRemediationSystems = ({ id }) =>
-  remediationsApi.getRemediationSystems(id);
-
-export const getRemediationSystemIssues = ({ id, system }) =>
-  remediationsApi.getRemediationSystemIssues(id, system);
-
-export const getRemediationPlaybook = ({ remId }) =>
-  remediationsApi.listPlaybookRuns(remId);
-
-export const checkExecutableStatus = ({ remId }) =>
-  remediationsApi.checkExecutable(remId);
-
+/**
+ * Used by ExecutionHistoryContent for fetching playbook run systems.
+ *
+ *  @param   {object}  params                 - Parameters object
+ *  @param   {string}  params.remId           - Remediation ID
+ *  @param   {string}  params.playbook_run_id - Playbook run ID
+ *  @returns {Promise}                        API response promise
+ */
 export const getRemediationPlaybookSystemsList = ({
   remId,
   playbook_run_id,
@@ -45,37 +40,18 @@ export const getRemediationPlaybookSystemsList = ({
   return remediationsApi.getPlaybookRunSystems(remId, playbook_run_id);
 };
 
+/**
+ * Used by ExecutionHistoryContent for fetching playbook logs.
+ *
+ *  @param   {object}  params                 - Parameters object
+ *  @param   {string}  params.remId           - Remediation ID
+ *  @param   {string}  params.playbook_run_id - Playbook run ID
+ *  @param   {string}  params.system_id       - System ID
+ *  @returns {Promise}                        API response promise
+ */
 export const getPlaybookLogs = (params) =>
   remediationsApi.getPlaybookRunSystemDetails(
     params.remId,
     params.playbook_run_id,
     params.system_id,
   );
-
-export const getRemediationsList = () =>
-  remediationsApi.getRemediations({ fieldsData: ['name'] });
-
-export const updateRemediationPlans = (params) => {
-  const { id, ...updateData } = params;
-  return remediationsApi.updateRemediation(id, updateData);
-};
-
-export const deleteRemediation = ({ id }) =>
-  remediationsApi.deleteRemediation(id);
-
-export const deleteRemediationList = ({ remediation_ids }) =>
-  remediationsApi.deleteRemediations({
-    remediation_ids,
-  });
-
-export const executeRemediation = ({ id, etag, exclude }) =>
-  remediationsApi.runRemediation(
-    id,
-    { exclude },
-    {
-      headers: { 'If-Match': etag },
-    },
-  );
-
-export const deleteIssues = ({ id, issue_ids }) =>
-  remediationsApi.deleteRemediationIssues(id, { issue_ids });

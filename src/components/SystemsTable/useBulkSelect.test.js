@@ -276,8 +276,8 @@ describe('useBulkSelect', () => {
 
     expect(result.current.checked).toBe(true);
     expect(mockCalculateChecked).toHaveBeenCalledWith(
-      mockSystemsRef.current,
-      getDefaultProps().selected,
+      props.rows,
+      props.selected,
     );
   });
 

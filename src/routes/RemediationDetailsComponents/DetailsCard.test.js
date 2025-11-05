@@ -63,6 +63,8 @@ describe('DetailsCard', () => {
     },
     updated_at: '2024-01-20T15:45:00Z',
     resolved_count: 5,
+    issue_count: 2,
+    system_count: 10,
     issues: [
       {
         id: 'issue-1',
@@ -205,7 +207,9 @@ describe('DetailsCard', () => {
     it('displays singular form for single action/system', () => {
       const singleDetails = {
         ...mockDetails,
-        issues: [mockDetails.issues[0]], // Only one issue
+        issue_count: 1,
+        system_count: 1,
+        issues: [mockDetails.issues[0]],
       };
       const singleStatus = { totalSystems: 1 };
 
@@ -585,7 +589,12 @@ describe('DetailsCard', () => {
 
   describe('Edge Cases', () => {
     it('handles details with empty issues array', () => {
-      const emptyDetails = { ...mockDetails, issues: [] };
+      const emptyDetails = {
+        ...mockDetails,
+        issues: [],
+        issue_count: 0,
+        system_count: 0,
+      };
       renderComponent({ details: emptyDetails });
 
       expect(screen.getByText('0 actions')).toBeInTheDocument();

@@ -8,7 +8,7 @@ import { useParams } from 'react-router-dom';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import chunk from 'lodash/chunk';
 import ConfirmationDialog from '../../../components/ConfirmationDialog';
-import { actionNameFilter } from '../Filters';
+// import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
 import {
   useRawTableState,
@@ -17,8 +17,6 @@ import {
 } from 'bastilian-tabletools';
 import TableEmptyState from '../../OverViewPage/TableEmptyState';
 import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
-
-import { deleteIssues, getRemediationIssues } from '../../api';
 
 const ActionsContent = ({ refetch }) => {
   const { id } = useParams();
@@ -36,15 +34,18 @@ const ActionsContent = ({ refetch }) => {
     loading: issuesLoading,
     refetch: refetchIssues,
     fetchAllIds,
-  } = useRemediationsQuery(getRemediationIssues, {
+  } = useRemediationsQuery('getRemediationIssues', {
     useTableState: true,
     params: { id },
   });
 
-  const { fetchBatched: deleteActions } = useRemediationsQuery(deleteIssues, {
-    skip: true,
-    batched: true,
-  });
+  const { fetchBatched: deleteActions } = useRemediationsQuery(
+    'deleteRemediationIssues',
+    {
+      skip: true,
+      batched: true,
+    },
+  );
   const callbacks = useStateCallbacks();
   const { fetchQueue } = useRemediationFetchExtras({ fetch: deleteActions });
   const addNotification = useAddNotification();
@@ -82,7 +83,9 @@ const ActionsContent = ({ refetch }) => {
     const chunks = chunk(selected, 100);
     const queue = chunks.map((chunk) => ({
       id,
-      issue_ids: chunk,
+      issuesList: {
+        issue_ids: chunk,
+      },
     }));
     return await fetchQueue(queue);
   };
@@ -99,7 +102,7 @@ const ActionsContent = ({ refetch }) => {
             const rowData = props;
             return (
               <SystemsButton
-                systemCount={rowData.system_count || []}
+                systemCount={rowData?.system_count}
                 setActionToShow={setActionToShow}
                 setSelectedIssueId={setSelectedIssueId}
                 setIsSystemsModalOpen={setIsSystemsModalOpen}
@@ -183,9 +186,9 @@ const ActionsContent = ({ refetch }) => {
         items={allIssues}
         total={totalIssues}
         columns={[...columnsWithSystemsButton]}
-        filters={{
-          filterConfig: [...actionNameFilter],
-        }}
+        // filters={{
+        //   filterConfig: [...actionNameFilter],
+        // }}
         options={{
           manageColumns: true,
           onSelect: true,

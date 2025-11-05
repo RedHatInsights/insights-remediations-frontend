@@ -41,6 +41,34 @@ jest.mock('../api', () => ({
   deleteRemediationList: jest.fn(() => Promise.resolve({})),
 }));
 
+let mockRemediationsData = { data: demoRows, meta: { total: 2 } };
+
+jest.mock('../../api/useRemediationsQuery', () => ({
+  __esModule: true,
+  default: jest.fn((endpoint) => {
+    if (endpoint === 'getRemediations') {
+      return {
+        result: mockRemediationsData,
+        loading: false,
+        refetch: jest.fn(),
+        fetchAllIds: jest
+          .fn()
+          .mockResolvedValue(mockRemediationsData.data.map((r) => r.id)),
+      };
+    }
+    if (endpoint === 'deleteRemediations') {
+      return {
+        fetchBatched: jest.fn().mockResolvedValue({}),
+      };
+    }
+    return {
+      result: null,
+      loading: false,
+      refetch: jest.fn(),
+    };
+  }),
+}));
+
 jest.mock(
   '../../Utilities/DownloadPlaybookButton',
   () => ({
@@ -61,7 +89,14 @@ jest.mock(
 jest.mock(
   '@redhat-cloud-services/frontend-components-utilities/interceptors',
   () => ({
-    useAxiosWithPlatformInterceptors: () => ({}),
+    useAxiosWithPlatformInterceptors: () => ({
+      request: jest.fn(() => Promise.resolve({ data: {}, status: 200 })),
+      get: jest.fn(() => Promise.resolve({ data: {}, status: 200 })),
+      post: jest.fn(() => Promise.resolve({ data: {}, status: 200 })),
+      put: jest.fn(() => Promise.resolve({ data: {}, status: 200 })),
+      delete: jest.fn(() => Promise.resolve({ data: {}, status: 200 })),
+      patch: jest.fn(() => Promise.resolve({ data: {}, status: 200 })),
+    }),
   }),
 );
 
@@ -108,6 +143,7 @@ const renderPage = () =>
 
 const renderPageWithList = (list) => {
   // Override the default mock implementations for this specific test
+  mockRemediationsData = { data: list, meta: { total: list.length } };
   getRemediations.mockImplementation(() =>
     Promise.resolve({ data: list, meta: { total: list.length } }),
   );
@@ -123,7 +159,7 @@ describe('OverViewPage', () => {
     useFeatureFlag.mockReturnValue(false);
     jest.clearAllMocks();
   });
-  it.skip('renders table rows and opens delete modal', async () => {
+  it('renders table rows and opens delete modal', async () => {
     const user = userEvent.setup();
     renderPage();
     const row = await screen.findByRole('row', { name: /patch stuff/i });
@@ -138,7 +174,7 @@ describe('OverViewPage', () => {
     ).toBeVisible();
   });
 
-  it.skip('calls download helper for single row', async () => {
+  it('calls download helper for single row', async () => {
     const user = userEvent.setup();
     renderPage();
     const row = await screen.findByRole('row', { name: /patch stuff/i });

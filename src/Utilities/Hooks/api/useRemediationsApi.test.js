@@ -43,9 +43,9 @@ describe('useRemediationsApi', () => {
 
       expect(useAxiosWithPlatformInterceptors).toHaveBeenCalled();
       expect(APIFactory).toHaveBeenCalledWith(
-        '/api/remediations',
+        '/api/remediations/v1',
         remediationsApi,
-        mockAxios,
+        { axios: mockAxios },
       );
       expect(result.current).toBe(mockApiInstance);
     });
@@ -56,9 +56,9 @@ describe('useRemediationsApi', () => {
       );
 
       expect(APIFactory).toHaveBeenCalledWith(
-        '/api/remediations',
+        '/api/remediations/v1',
         remediationsApi,
-        mockAxios,
+        { axios: mockAxios },
       );
       expect(result.current).toBe(mockApiInstance.getRemediations);
     });
@@ -67,7 +67,7 @@ describe('useRemediationsApi', () => {
       renderHook(() => useRemediationsApi());
 
       expect(APIFactory).toHaveBeenCalledWith(
-        '/api/remediations',
+        '/api/remediations/v1',
         expect.any(Object),
         expect.any(Object),
       );
@@ -80,7 +80,7 @@ describe('useRemediationsApi', () => {
       expect(APIFactory).toHaveBeenCalledWith(
         expect.any(String),
         expect.any(Object),
-        mockAxios,
+        { axios: mockAxios },
       );
     });
   });
@@ -92,8 +92,9 @@ describe('useRemediationsApi', () => {
       expect(result.current).toBe(mockApiInstance.getRemediation);
     });
 
-    it('should warn and throw for invalid endpoints', () => {
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+    it('should warn and return undefined for invalid endpoints', () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
 
       // Mock APIFactory to return an instance without the invalid endpoint
       const incompleteApiInstance = {
@@ -102,11 +103,12 @@ describe('useRemediationsApi', () => {
       };
       APIFactory.mockReturnValue(incompleteApiInstance);
 
-      expect(() => {
-        renderHook(() => useRemediationsApi('invalidEndpoint'));
-      }).toThrow('Endpoint invalidEndpoint does not exist!');
+      const { result } = renderHook(() =>
+        useRemediationsApi('invalidEndpoint'),
+      );
 
-      expect(consoleSpy).toHaveBeenCalledWith(
+      expect(result.current).toBeUndefined();
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
         'Available endpoints:',
         expect.arrayContaining([
           'getRemediations',
@@ -115,8 +117,12 @@ describe('useRemediationsApi', () => {
           'updateRemediation',
         ]),
       );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Endpoint "invalidEndpoint" does not exist!',
+      );
 
-      consoleSpy.mockRestore();
+      consoleWarnSpy.mockRestore();
+      consoleErrorSpy.mockRestore();
     });
 
     it('should not throw when endpoint exists', () => {
@@ -167,9 +173,9 @@ describe('useRemediationsApi', () => {
       rerender();
       expect(result.current).toBe(mockApiInstance); // Should be same reference since APIFactory returns same mock
       expect(APIFactory).toHaveBeenCalledWith(
-        '/api/remediations',
+        '/api/remediations/v1',
         remediationsApi,
-        newMockAxios,
+        { axios: newMockAxios },
       );
     });
   });
@@ -248,13 +254,18 @@ describe('useRemediationsApi', () => {
       };
       APIFactory.mockReturnValue(mockApiWithMissingEndpoint);
 
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      expect(() => {
-        renderHook(() => useRemediationsApi('nonExistentEndpoint'));
-      }).toThrow('Endpoint nonExistentEndpoint does not exist!');
+      const { result } = renderHook(() =>
+        useRemediationsApi('nonExistentEndpoint'),
+      );
 
-      consoleSpy.mockRestore();
+      expect(result.current).toBeUndefined();
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Endpoint "nonExistentEndpoint" does not exist!',
+      );
+
+      consoleErrorSpy.mockRestore();
     });
 
     it('should provide available endpoints in warning', () => {
