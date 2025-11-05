@@ -4,7 +4,6 @@ import {
   deleteRemediationSystems,
   getRemediationPlaybookSystemsList,
   getPlaybookLogs,
-  updateRemediationWrapper,
 } from './api';
 import axiosInstance from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 
@@ -13,7 +12,6 @@ jest.mock('../api', () => ({
   remediationsApi: {
     getPlaybookRunSystems: jest.fn(),
     getPlaybookRunSystemDetails: jest.fn(),
-    updateRemediation: jest.fn(),
   },
 }));
 
@@ -130,68 +128,6 @@ describe('Routes API', () => {
         'rem-1',
         'run-1',
         'sys-1',
-      );
-    });
-  });
-
-  describe('updateRemediationWrapper', () => {
-    it('should call updateRemediation with extracted id and data', async () => {
-      const mockResponse = { success: true };
-      remediationsApi.updateRemediation.mockResolvedValue(mockResponse);
-
-      const params = {
-        id: 'remediation-1',
-        name: 'Updated Name',
-        auto_reboot: true,
-      };
-
-      const result = await updateRemediationWrapper(params);
-
-      expect(remediationsApi.updateRemediation).toHaveBeenCalledWith(
-        'remediation-1',
-        {
-          name: 'Updated Name',
-          auto_reboot: true,
-        },
-      );
-      expect(result).toBe(mockResponse);
-    });
-
-    it('should handle only name update', async () => {
-      const mockResponse = { success: true };
-      remediationsApi.updateRemediation.mockResolvedValue(mockResponse);
-
-      const params = {
-        id: 'remediation-2',
-        name: 'New Name Only',
-      };
-
-      await updateRemediationWrapper(params);
-
-      expect(remediationsApi.updateRemediation).toHaveBeenCalledWith(
-        'remediation-2',
-        {
-          name: 'New Name Only',
-        },
-      );
-    });
-
-    it('should handle only auto_reboot update', async () => {
-      const mockResponse = { success: true };
-      remediationsApi.updateRemediation.mockResolvedValue(mockResponse);
-
-      const params = {
-        id: 'remediation-3',
-        auto_reboot: false,
-      };
-
-      await updateRemediationWrapper(params);
-
-      expect(remediationsApi.updateRemediation).toHaveBeenCalledWith(
-        'remediation-3',
-        {
-          auto_reboot: false,
-        },
       );
     });
   });

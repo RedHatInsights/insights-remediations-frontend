@@ -21,7 +21,7 @@ import { LogViewer, LogViewerSearch } from '@patternfly/react-log-viewer';
 import LogCards from './LogCards';
 import RunTabContent from './RunTabContent';
 import { formatUtc } from './helpers';
-import useRemediations from '../../../Utilities/Hooks/api/useRemediations';
+import useRemediationsQuery from '../../../api/useRemediationsQuery';
 import { StatusIcon } from '../../helpers';
 import NoExecutions from './NoExections';
 import { getRemediationPlaybookSystemsList, getPlaybookLogs } from '../../api';
@@ -58,7 +58,7 @@ const ExecutionHistoryTab = ({
     );
   }, []);
 
-  const { fetch: fetchSystems } = useRemediations(
+  const { fetch: fetchSystems } = useRemediationsQuery(
     getRemediationPlaybookSystemsList,
     {
       skip: true,
@@ -78,7 +78,7 @@ const ExecutionHistoryTab = ({
     result: logData,
     loading: logsLoading,
     refetch: refetchLogs,
-  } = useRemediations(getPlaybookLogs, {
+  } = useRemediationsQuery(getPlaybookLogs, {
     params: logParams,
     skip: !logParams,
   });

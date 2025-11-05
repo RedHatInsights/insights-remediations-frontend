@@ -43,7 +43,7 @@ jest.mock('../api', () => ({
 
 let mockRemediationsData = { data: demoRows, meta: { total: 2 } };
 
-jest.mock('../../Utilities/Hooks/api/useRemediations', () => ({
+jest.mock('../../api/useRemediationsQuery', () => ({
   __esModule: true,
   default: jest.fn((endpoint) => {
     if (endpoint === 'getRemediations') {

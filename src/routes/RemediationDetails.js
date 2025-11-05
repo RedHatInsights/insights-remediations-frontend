@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState, useMemo } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import useRemediations from '../Utilities/Hooks/api/useRemediations';
-import { updateRemediationWrapper } from './api';
+import useRemediationsQuery from '../api/useRemediationsQuery';
 import { Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import DetailsGeneralContent from './RemediationDetailsComponents/DetailsGeneralContent';
 import RenameModal from '../components/RenameModal';
@@ -27,16 +26,11 @@ const RemediationDetails = () => {
   const context = useContext(PermissionContext);
   const axios = useAxiosWithPlatformInterceptors();
   const { result: allRemediations, refetch: refetchAllRemediations } =
-    useRemediations('getRemediations', {
+    useRemediationsQuery('getRemediations', {
       params: { fieldsData: ['name'] },
     });
 
-  const allRemediationsData = useMemo(
-    () => allRemediations?.data,
-    [allRemediations?.data],
-  );
-
-  const { result: isExecutable } = useRemediations('checkExecutable', {
+  const { result: isExecutable } = useRemediationsQuery('checkExecutable', {
     params: { id },
   });
 
@@ -45,18 +39,19 @@ const RemediationDetails = () => {
     refetch: refetchRemediationDetails,
     loading: detailsLoading,
     error: remediationDetailsError,
-  } = useRemediations('getRemediation', {
+  } = useRemediationsQuery('getRemediation', {
     params: { id, format: 'summary' },
   });
+
   const {
     result: remediationPlaybookRuns,
     loading: isPlaybookRunsLoading,
     refetch: refetchRemediationPlaybookRuns,
-  } = useRemediations('listPlaybookRuns', {
+  } = useRemediationsQuery('listPlaybookRuns', {
     params: { id },
   });
 
-  const { fetch: updateRemPlan } = useRemediations(updateRemediationWrapper, {
+  const { fetch: updateRemPlan } = useRemediationsQuery('updateRemediation', {
     skip: true,
   });
 
@@ -117,7 +112,7 @@ const RemediationDetails = () => {
           remediation={remediationDetailsSummary}
           remediationStatus={remediationStatus}
           isFedramp={isFedramp}
-          allRemediations={allRemediationsData}
+          allRemediations={allRemediations?.data}
           refetchAllRemediations={refetchAllRemediations}
           updateRemPlan={updateRemPlan}
           refetchRemediationDetails={refetchRemediationDetails}
@@ -137,7 +132,7 @@ const RemediationDetails = () => {
               remediation={remediationDetailsSummary}
               isRenameModalOpen={isRenameModalOpen}
               setIsRenameModalOpen={setIsRenameModalOpen}
-              remediationsList={allRemediationsData}
+              remediationsList={allRemediations?.data}
               fetch={refetchRemediationDetails}
             />
           )}
@@ -155,7 +150,7 @@ const RemediationDetails = () => {
               remediationStatus={remediationStatus}
               updateRemPlan={updateRemPlan}
               onNavigateToTab={handleTabClick}
-              allRemediations={allRemediationsData}
+              allRemediations={allRemediations?.data}
               permissions={context.permissions}
               remediationPlaybookRuns={remediationPlaybookRuns?.data[0]}
               detailsLoading={detailsLoading}
