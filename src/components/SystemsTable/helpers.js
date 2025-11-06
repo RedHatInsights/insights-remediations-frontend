@@ -43,18 +43,8 @@ export const fetchInventoryData = async (
   getEntities,
   connectedData,
 ) => {
-  console.log('fetchInventoryData - page:', page, 'per_page:', per_page);
-  console.log('fetchInventoryData - config:', config);
-
   // Calculate offset from page and per_page
   const offset = (page - 1) * per_page;
-
-  console.log(
-    'fetchInventoryData - calculated offset:',
-    offset,
-    'limit:',
-    per_page,
-  );
 
   // Build filter object for remediation systems API
   const filter = {};
@@ -62,8 +52,6 @@ export const fetchInventoryData = async (
     // Use display_name filter to search across all systems
     filter.display_name = config.filters.hostnameOrId;
   }
-
-  console.log('fetchInventoryData - filter for remediation API:', filter);
 
   // Fetch systems from API with pagination and filtering
   const systemsResponse = await fetchSystems({
@@ -74,8 +62,6 @@ export const fetchInventoryData = async (
     ...(Object.keys(filter).length > 0 && { filter }), // Only add filter if not empty
   });
 
-  console.log('fetchInventoryData - API response meta:', systemsResponse?.meta);
-
   const systems = calculateSystems(systemsResponse?.data);
   const total = systemsResponse?.meta?.total || 0;
 
@@ -83,15 +69,7 @@ export const fetchInventoryData = async (
   // Just use all systems from our API response
   const currSystems = systems;
 
-  console.log('currSystems from API:', currSystems);
-
   const systemIds = currSystems.map(({ id }) => id);
-  console.log(
-    'Fetching inventory data for system IDs:',
-    systemIds.length,
-    'IDs',
-    systemIds,
-  );
 
   // Fetch detailed data from Inventory API
   // Note: getEntities expects the IDs array, the config, and showTags boolean
@@ -102,7 +80,6 @@ export const fetchInventoryData = async (
       { ...config, hasItems: true, per_page, page },
       true,
     );
-    console.log('inventorydata here', data);
   } catch (error) {
     console.error('Error fetching inventory data:', error);
     // If inventory fetch fails (404, systems don't exist), return basic system data
