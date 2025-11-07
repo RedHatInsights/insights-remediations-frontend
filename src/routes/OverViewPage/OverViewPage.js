@@ -53,7 +53,7 @@ export const OverViewPage = () => {
     refetch: fetchRemediations,
   } = useRemediationsQuery('getRemediations', {
     useTableState: true,
-    params: { hideArchived: false, fieldsData: ['playbook_runs'] },
+    params: { hideArchived: false, fieldsData: ['last_playbook_run'] },
   });
 
   const { result: allRemediations, refetch: refetchAllRemediations } =
