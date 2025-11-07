@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 
+const playbookNamePattern = /^(?!\s).+(?<!\s)$/;
+
 export const useVerifyName = (name, remediationsList = []) => {
   const [isVerifying, setIsVerifying] = useState(false);
   const [dupInfo, setDupInfo] = useState({ checked: '', dup: false }); // {name we checked, isDuplicate}
 
   const firstRun = useRef(true);
   const timerRef = useRef(null);
-  const playbookNamePattern = /^(?!\s).+(?<!\s)$/;
 
   useEffect(() => {
     // skip the initial mount

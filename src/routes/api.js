@@ -55,3 +55,22 @@ export const getPlaybookLogs = (params) =>
     params.playbook_run_id,
     params.system_id,
   );
+
+/**
+ * Update a remediation. Wrapper to handle the two-parameter API signature.
+ * Used by RenameModal, DetailsCard, and other components that need to update remediation properties.
+ *
+ * The API client's updateRemediation expects (id, data) as two separate parameters,
+ * but useRemediationsQuery passes a single params object. This wrapper converts
+ * { id, name, auto_reboot, ... } into (id, { name, auto_reboot, ... }).
+ *
+ *  @param   {object}  params               - Parameters object
+ *  @param   {string}  params.id            - Remediation ID
+ *  @param   {string}  [params.name]        - New name for the remediation
+ *  @param   {boolean} [params.auto_reboot] - Auto reboot setting
+ *  @returns {Promise}                      API response promise
+ */
+export const updateRemediationWrapper = (params) => {
+  const { id, ...data } = params;
+  return remediationsApi.updateRemediation(id, data);
+};

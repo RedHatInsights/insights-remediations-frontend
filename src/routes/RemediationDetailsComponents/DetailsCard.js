@@ -57,10 +57,7 @@ const DetailsCard = ({
     setValue(details?.name || '');
   }, [details?.name]);
 
-  const [isVerifyingName, isDuplicate] = useVerifyName(
-    value,
-    allRemediations?.data,
-  );
+  const [isVerifyingName, isDuplicate] = useVerifyName(value, allRemediations);
 
   const nameStatus = (() => {
     if (isVerifyingName) return 'checking';
