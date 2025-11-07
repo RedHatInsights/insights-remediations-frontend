@@ -117,9 +117,10 @@ describe('DetailsCard', () => {
     updated_at: '2024-01-20T16:00:00Z',
   };
 
-  const mockAllRemediations = {
-    data: [{ name: 'Existing Plan 1' }, { name: 'Existing Plan 2' }],
-  };
+  const mockAllRemediations = [
+    { id: 'rem-1', name: 'Existing Plan 1' },
+    { id: 'rem-2', name: 'Existing Plan 2' },
+  ];
 
   beforeEach(() => {
     mockUpdateRemPlan = jest.fn().mockResolvedValue();
@@ -154,7 +155,7 @@ describe('DetailsCard', () => {
       remediationStatus: mockRemediationStatus,
       updateRemPlan: mockUpdateRemPlan,
       onNavigateToTab: mockOnNavigateToTab,
-      allRemediations: mockAllRemediations, // Keep as object with data property as component expects
+      allRemediations: mockAllRemediations, // Now an array as component expects
       refetch: mockRefetch,
       remediationPlaybookRuns: mockRemediationPlaybookRuns,
       refetchAllRemediations: mockRefetchAllRemediations,
@@ -654,9 +655,10 @@ describe('DetailsCard', () => {
     it('calls useVerifyName with correct parameters', () => {
       renderComponent();
 
+      // Should be called with filtered list (excluding current remediation)
       expect(useVerifyName.useVerifyName).toHaveBeenCalledWith(
         'Test Remediation Plan',
-        mockAllRemediations.data,
+        mockAllRemediations,
       );
     });
 
@@ -672,7 +674,7 @@ describe('DetailsCard', () => {
       // useVerifyName should be called with the new value
       expect(useVerifyName.useVerifyName).toHaveBeenCalledWith(
         'New Name',
-        mockAllRemediations.data,
+        mockAllRemediations,
       );
     });
 
