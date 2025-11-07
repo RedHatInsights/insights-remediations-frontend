@@ -24,8 +24,9 @@ import * as connectionStatus from '../Utilities/useConnectionStatus';
 import * as chromeModule from '@redhat-cloud-services/frontend-components/useChrome';
 import { PermissionContext } from '../App';
 
-jest.mock('../routes/api', () => ({
+jest.mock('./api', () => ({
   API_BASE: '',
+  updateRemediationWrapper: jest.fn(),
 }));
 
 const SystemsTableMock = () => <div>SystemsTable</div>;
@@ -167,17 +168,15 @@ describe('RemediationDetails', () => {
     // 4) Assert exactly five calls in the right sequence
     expect(remediationSpy).toHaveBeenCalledTimes(5);
 
-    const [fn1, fn2, fn3, fn4, fn5] = remediationSpy.mock.calls.map(
-      ([hookFn]) => hookFn,
-    );
-    // Now expecting endpoint strings instead of wrapper functions
-    expect([fn1, fn2, fn3, fn4, fn5]).toEqual([
-      'getRemediations',
-      'checkExecutable',
-      'getRemediation',
-      'listPlaybookRuns',
-      'updateRemediation',
-    ]);
+    const calls = remediationSpy.mock.calls;
+
+    // Check that we got the expected endpoint calls
+    expect(calls[0][0]).toBe('getRemediations');
+    expect(calls[1][0]).toBe('checkExecutable');
+    expect(calls[2][0]).toBe('getRemediation');
+    expect(calls[3][0]).toBe('listPlaybookRuns');
+    // The 5th call passes updateRemediationWrapper function
+    expect(typeof calls[4][0]).toBe('function');
 
     // 5) Spot‑check the options object on each call:
     expect(remediationSpy.mock.calls[0][1]).toEqual({

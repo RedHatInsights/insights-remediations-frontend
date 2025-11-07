@@ -45,6 +45,7 @@ export const OverViewPage = () => {
   const tableState = useRawTableState();
 
   const currentlySelected = tableState?.selected || [];
+  //TODO: Ongoing discussion with team on only fetching fieldsData on plans we're downloading
   const {
     result,
     fetchAllIds,

@@ -12,9 +12,9 @@ import { EllipsisVIcon } from '@patternfly/react-icons';
 import RenameModal from './RenameModal';
 import ConfirmationDialog from './ConfirmationDialog';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
-import useRemediations from '../Utilities/Hooks/api/useRemediations';
 
 import { PermissionContext } from '../App';
+import useRemediations from '../Utilities/Hooks/api/useRemediations';
 
 function RemediationDetailsDropdown({
   remediation,
@@ -29,12 +29,9 @@ function RemediationDetailsDropdown({
   const navigate = useNavigate();
   const addNotification = useAddNotification();
 
-  const { fetch: deleteRemediation } = useRemediations(
-    'deleteRemediation',
-    {
-      skip: true,
-    },
-  );
+  const { fetch: deleteRemediation } = useRemediations('deleteRemediation', {
+    skip: true,
+  });
 
   const handleDelete = async (id) => {
     try {
