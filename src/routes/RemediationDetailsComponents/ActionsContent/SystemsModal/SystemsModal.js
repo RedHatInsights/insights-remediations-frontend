@@ -5,7 +5,7 @@ import columns from './Columns';
 // import { actionsSystemFilter } from '../../Filters';
 import TableEmptyState from '../../../OverViewPage/TableEmptyState';
 import RemediationsTable from '../../../../components/RemediationsTable/RemediationsTable';
-import useRemediationsQuery from '../../../../api/useRemediationsQuery';
+import useRemediations from '../../../../Utilities/Hooks/api/useRemediations';
 import { TableStateProvider } from 'bastilian-tabletools';
 
 const SystemsModal = ({
@@ -19,7 +19,7 @@ const SystemsModal = ({
     result: systems,
     loading: systemsLoading,
     fetchAllIds,
-  } = useRemediationsQuery('getRemediationIssueSystems', {
+  } = useRemediations('getRemediationIssueSystems', {
     skip: !isOpen || !remediationId || !issueId,
     useTableState: true,
     params: {

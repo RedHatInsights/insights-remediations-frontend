@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import columns from './Columns';
 import { Button } from '@patternfly/react-core';
-import useRemediationsQuery from '../../../api/useRemediationsQuery';
+import useRemediations from '../../../Utilities/Hooks/api/useRemediations';
 import useRemediationFetchExtras from '../../../api/useRemediationFetchExtras';
 import { useParams } from 'react-router-dom';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
@@ -34,12 +34,12 @@ const ActionsContent = ({ refetch }) => {
     loading: issuesLoading,
     refetch: refetchIssues,
     fetchAllIds,
-  } = useRemediationsQuery('getRemediationIssues', {
+  } = useRemediations('getRemediationIssues', {
     useTableState: true,
     params: { id },
   });
 
-  const { fetchBatched: deleteActions } = useRemediationsQuery(
+  const { fetchBatched: deleteActions } = useRemediations(
     'deleteRemediationIssues',
     {
       skip: true,
