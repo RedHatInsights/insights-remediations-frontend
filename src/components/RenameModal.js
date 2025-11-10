@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import TextInputDialog from './Dialogs/TextInputDialog';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
-import useRemediationsQuery from '../api/useRemediationsQuery';
+import useRemediations from '../Utilities/Hooks/api/useRemediations';
 import { updateRemediationWrapper } from '../routes/api';
 
 const EMPTY_NAME = 'Unnamed Playbook';
@@ -15,7 +15,7 @@ const RenameModal = ({
   refetch,
 }) => {
   const addNotification = useAddNotification();
-  const { fetch: updateRemediation } = useRemediationsQuery(
+  const { fetch: updateRemediation } = useRemediations(
     updateRemediationWrapper,
     {
       skip: true,

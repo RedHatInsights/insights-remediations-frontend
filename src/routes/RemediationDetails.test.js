@@ -19,7 +19,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 import RemediationDetails from './RemediationDetails';
-import * as remediationsQuery from '../api/useRemediationsQuery';
+import * as useRemediations from '../Utilities/Hooks/api/useRemediations';
 import * as connectionStatus from '../Utilities/useConnectionStatus';
 import * as chromeModule from '@redhat-cloud-services/frontend-components/useChrome';
 import { PermissionContext } from '../App';
@@ -76,7 +76,7 @@ describe('RemediationDetails', () => {
 
     let callCount = 0;
     remediationSpy = jest
-      .spyOn(remediationsQuery, 'default')
+      .spyOn(useRemediations, 'default')
       .mockImplementation(() => {
         callCount++;
         switch (callCount) {
