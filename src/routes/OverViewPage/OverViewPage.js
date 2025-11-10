@@ -1,6 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
 import columns from '../Columns';
-import useRemediationsQuery from '../../api/useRemediationsQuery';
+import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import RemediationsTable from '../../components/RemediationsTable/RemediationsTable';
 import {
   CreatedByFilter,
@@ -51,21 +51,21 @@ export const OverViewPage = () => {
     fetchAllIds,
     loading,
     refetch: fetchRemediations,
-  } = useRemediationsQuery('getRemediations', {
+  } = useRemediations('getRemediations', {
     useTableState: true,
     params: { hideArchived: false, fieldsData: ['last_playbook_run'] },
   });
 
   const { result: allRemediations, refetch: refetchAllRemediations } =
-    useRemediationsQuery('getRemediations', {
+    useRemediations('getRemediations', {
       params: { fieldsData: ['name'] },
     });
 
-  const { fetch: deleteRem } = useRemediationsQuery('deleteRemediation', {
+  const { fetch: deleteRem } = useRemediations('deleteRemediation', {
     skip: true,
   });
 
-  const { fetchBatched: deleteRelList } = useRemediationsQuery(
+  const { fetchBatched: deleteRelList } = useRemediations(
     'deleteRemediations',
     {
       skip: true,

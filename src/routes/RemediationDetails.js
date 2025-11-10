@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useMemo } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import useRemediationsQuery from '../api/useRemediationsQuery';
+import useRemediations from '../Utilities/Hooks/api/useRemediations';
 import { updateRemediationWrapper } from './api';
 import { Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import DetailsGeneralContent from './RemediationDetailsComponents/DetailsGeneralContent';
@@ -27,7 +27,7 @@ const RemediationDetails = () => {
   const context = useContext(PermissionContext);
   const axios = useAxiosWithPlatformInterceptors();
   const { result: allRemediations, refetch: refetchAllRemediations } =
-    useRemediationsQuery('getRemediations', {
+    useRemediations('getRemediations', {
       params: { fieldsData: ['name'] },
     });
 
@@ -36,7 +36,7 @@ const RemediationDetails = () => {
     [allRemediations?.data],
   );
 
-  const { result: isExecutable } = useRemediationsQuery('checkExecutable', {
+  const { result: isExecutable } = useRemediations('checkExecutable', {
     params: { id },
   });
 
@@ -45,7 +45,7 @@ const RemediationDetails = () => {
     refetch: refetchRemediationDetails,
     loading: detailsLoading,
     error: remediationDetailsError,
-  } = useRemediationsQuery('getRemediation', {
+  } = useRemediations('getRemediation', {
     params: { id, format: 'summary' },
   });
 
@@ -53,11 +53,11 @@ const RemediationDetails = () => {
     result: remediationPlaybookRuns,
     loading: isPlaybookRunsLoading,
     refetch: refetchRemediationPlaybookRuns,
-  } = useRemediationsQuery('listPlaybookRuns', {
+  } = useRemediations('listPlaybookRuns', {
     params: { id },
   });
 
-  const { fetch: updateRemPlan } = useRemediationsQuery(
+  const { fetch: updateRemPlan } = useRemediations(
     updateRemediationWrapper,
     {
       skip: true,

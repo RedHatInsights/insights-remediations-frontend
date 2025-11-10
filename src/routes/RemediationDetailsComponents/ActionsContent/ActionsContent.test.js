@@ -5,7 +5,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import ActionsContent from './ActionsContent';
-import * as useRemediationsQuery from '../../../api/useRemediationsQuery';
+import * as useRemediations from '../../../Utilities/Hooks/api/useRemediations';
 import * as useRemediationFetchExtras from '../../../api/useRemediationFetchExtras';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 
@@ -24,7 +24,7 @@ jest.mock('react-router-dom', () => ({
   useParams: () => ({ id: 'test-remediation-id' }),
 }));
 
-jest.mock('../../../api/useRemediationsQuery');
+jest.mock('../../../Utilities/Hooks/api/useRemediations');
 jest.mock('../../../api/useRemediationFetchExtras');
 jest.mock(
   '@redhat-cloud-services/frontend-components-notifications/hooks',
@@ -297,8 +297,8 @@ describe('ActionsContent', () => {
       selected: [],
     };
 
-    // Mock useRemediationsQuery to return different values based on endpoint
-    useRemediationsQuery.default.mockImplementation((endpoint) => {
+    // Mock useRemediations to return different values based on endpoint
+    useRemediations.default.mockImplementation((endpoint) => {
       if (endpoint === 'getRemediationIssues') {
         return {
           result: {
@@ -335,7 +335,7 @@ describe('ActionsContent', () => {
     } = testConfig;
 
     // Reconfigure mock based on test config
-    useRemediationsQuery.default.mockImplementation((endpoint) => {
+    useRemediations.default.mockImplementation((endpoint) => {
       if (endpoint === 'getRemediationIssues') {
         return {
           result: {
@@ -625,11 +625,11 @@ describe('ActionsContent', () => {
   });
 
   describe('Hook Integration', () => {
-    it('calls useRemediationsQuery with correct parameters', () => {
+    it('calls useRemediations with correct parameters', () => {
       renderComponent();
 
       // Should be called twice: once for getRemediationIssues, once for deleteRemediationIssues
-      expect(useRemediationsQuery.default).toHaveBeenCalledWith(
+      expect(useRemediations.default).toHaveBeenCalledWith(
         'getRemediationIssues',
         expect.objectContaining({
           useTableState: true,
@@ -637,7 +637,7 @@ describe('ActionsContent', () => {
         }),
       );
 
-      expect(useRemediationsQuery.default).toHaveBeenCalledWith(
+      expect(useRemediations.default).toHaveBeenCalledWith(
         'deleteRemediationIssues',
         {
           skip: true,
