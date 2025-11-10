@@ -5,7 +5,7 @@ import columns from './Columns';
 // import { issueNameFilter } from './Filters';
 import TableEmptyState from '../../../routes/OverViewPage/TableEmptyState';
 import RemediationsTable from '../../RemediationsTable/RemediationsTable';
-import useRemediationsQuery from '../../../api/useRemediationsQuery';
+import useRemediations from '../../../Utilities/Hooks/api/useRemediations';
 import { TableStateProvider } from 'bastilian-tabletools';
 
 const SystemIssuesModal = ({
@@ -19,7 +19,7 @@ const SystemIssuesModal = ({
     result: issues,
     loading: issuesLoading,
     fetchAllIds,
-  } = useRemediationsQuery('getRemediationSystemIssues', {
+  } = useRemediations('getRemediationSystemIssues', {
     skip: !isOpen || !remediationId || !systemId,
     useTableState: true,
     params: {
@@ -64,7 +64,7 @@ SystemIssuesModal.propTypes = {
   systemId: PropTypes.string.isRequired,
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
-  systemName: PropTypes.string,
+  systemName: PropTypes.string.isRequired,
 };
 
 const SystemIssuesModalProvider = (props) => (
