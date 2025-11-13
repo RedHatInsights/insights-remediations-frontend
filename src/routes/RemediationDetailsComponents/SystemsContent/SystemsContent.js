@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
 import { emptyRows } from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableView/views/helpers';
 import baseColumns from './Columns';
-import useRemediationsQuery from '../../../api/useRemediationsQuery';
+import useRemediations from '../../../Utilities/Hooks/api/useRemediations';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import { useRawTableState } from '../../../Frameworks/AsyncTableTools/AsyncTableTools/hooks/useTableState';
 import ConfirmationDialog from '../../../components/ConfirmationDialog';
@@ -56,13 +56,13 @@ const SystemsContent = ({ remediationDetails, remediationStatus, refetch }) => {
   );
   const systemIds = allSystems.map((s) => s.id);
 
-  const { result: hostTags, isLoading: tagsLoading } = useRemediationsQuery(
+  const { result: hostTags, isLoading: tagsLoading } = useRemediations(
     getHostTags(axios),
     {
       params: { host_id_list: systemIds },
     },
   );
-  const { result: hostOs, isLoading: hostLoading } = useRemediationsQuery(
+  const { result: hostOs, isLoading: hostLoading } = useRemediations(
     getHostOS(axios),
     {
       params: { host_id_list: systemIds },
@@ -70,7 +70,7 @@ const SystemsContent = ({ remediationDetails, remediationStatus, refetch }) => {
   );
   const loadingProfile = tagsLoading || hostLoading;
 
-  const { fetchBatched: deleteSystems } = useRemediationsQuery(
+  const { fetchBatched: deleteSystems } = useRemediations(
     deleteIssues(axios),
     {
       skip: true,

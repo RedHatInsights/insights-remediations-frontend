@@ -1,5 +1,4 @@
 import { ACTION_TYPES } from './constants';
-import { deleteSystemsFromRemediation, remediationsApi } from './api';
 import {
   loadRemediation,
   patchRemediation,
@@ -8,7 +7,11 @@ import {
   deleteSystems,
 } from './actions';
 
-// Mock the API module
+jest.mock('@redhat-cloud-services/remediations-client', () => ({
+  __esModule: true,
+  ...jest.requireActual('@redhat-cloud-services/remediations-client'),
+}));
+
 jest.mock('./api', () => ({
   remediationsApi: {
     getRemediation: jest.fn(),
@@ -17,6 +20,13 @@ jest.mock('./api', () => ({
   },
   deleteSystemsFromRemediation: jest.fn(),
 }));
+
+jest.mock('./routes/api', () => ({
+  deleteRemediationSystems: jest.fn(),
+}));
+
+import { remediationsApi } from './api';
+import { deleteRemediationSystems as deleteSystemsFromRemediation } from './routes/api';
 
 describe('Actions', () => {
   beforeEach(() => {

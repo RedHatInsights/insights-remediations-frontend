@@ -107,7 +107,7 @@ RemediationButton.propTypes = {
   hasSelected: propTypes.bool.isRequired,
 };
 
-RemediationButton.defaultProps = {
+RemediationButton.defaultParameters = {
   isDisabled: false,
   onRemediationCreated: (f) => f,
   children: 'Remediate with Ansible',

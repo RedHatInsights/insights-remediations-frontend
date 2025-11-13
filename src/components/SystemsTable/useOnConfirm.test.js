@@ -17,12 +17,17 @@ describe('useOnConfirm Hook', () => {
   let mockRemediation;
   let mockAddNotification;
 
+  let mockClearSelection;
+  let mockReloadTable;
+
   beforeEach(() => {
     mockDispatch = jest.fn();
-    mockDeleteSystems = jest.fn();
-    mockRefreshRemediation = jest.fn();
+    mockDeleteSystems = jest.fn().mockResolvedValue({});
+    mockRefreshRemediation = jest.fn().mockResolvedValue({});
     mockSetIsOpen = jest.fn();
     mockAddNotification = jest.fn();
+    mockClearSelection = jest.fn();
+    mockReloadTable = jest.fn();
     mockActiveSystem = {
       current: { id: 'active-system-1', name: 'Active System' },
     };
@@ -35,6 +40,8 @@ describe('useOnConfirm Hook', () => {
     mockSetIsOpen.mockClear();
     mockAddNotification.mockClear();
     mockDispatch.mockClear();
+    mockClearSelection.mockClear();
+    mockReloadTable.mockClear();
   });
 
   const createMockAction = (payload = Promise.resolve()) => ({
@@ -49,7 +56,9 @@ describe('useOnConfirm Hook', () => {
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteSystems: mockDeleteSystems,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
@@ -66,7 +75,9 @@ describe('useOnConfirm Hook', () => {
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteSystems: mockDeleteSystems,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
@@ -88,7 +99,9 @@ describe('useOnConfirm Hook', () => {
           useOnConfirm({
             selected,
             activeSystem: mockActiveSystem,
-            deleteSystems: mockDeleteSystems,
+            deleteRemediationSystems: mockDeleteSystems,
+            clearSelection: mockClearSelection,
+            reloadTable: mockReloadTable,
             remediation: mockRemediation,
             refreshRemediation: mockRefreshRemediation,
             setIsOpen: mockSetIsOpen,
@@ -119,7 +132,9 @@ describe('useOnConfirm Hook', () => {
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteSystems: mockDeleteSystems,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
@@ -137,16 +152,17 @@ describe('useOnConfirm Hook', () => {
       );
     });
 
-    it('should dispatch the delete action', async () => {
-      const mockAction = createMockAction();
-      mockDeleteSystems.mockReturnValue(mockAction);
+    it('should call deleteRemediationSystems with correct arguments', async () => {
+      mockDeleteSystems.mockResolvedValue({});
       mockRefreshRemediation.mockResolvedValue();
 
       const { result } = renderHook(() =>
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteSystems: mockDeleteSystems,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
@@ -155,10 +171,13 @@ describe('useOnConfirm Hook', () => {
       );
 
       await act(async () => {
-        result.current();
+        await result.current();
       });
 
-      expect(mockDispatch).toHaveBeenCalledWith(mockAction);
+      expect(mockDeleteSystems).toHaveBeenCalledWith(
+        [{ id: 'active-system-1', name: 'Active System' }],
+        mockRemediation,
+      );
     });
 
     it('should clear active system reference', async () => {
@@ -169,7 +188,9 @@ describe('useOnConfirm Hook', () => {
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteSystems: mockDeleteSystems,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
@@ -192,7 +213,9 @@ describe('useOnConfirm Hook', () => {
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteSystems: mockDeleteSystems,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
@@ -221,7 +244,9 @@ describe('useOnConfirm Hook', () => {
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteSystems: mockDeleteSystems,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
@@ -254,7 +279,9 @@ describe('useOnConfirm Hook', () => {
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteSystems: mockDeleteSystems,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
@@ -284,7 +311,9 @@ describe('useOnConfirm Hook', () => {
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteSystems: mockDeleteSystems,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
@@ -314,7 +343,9 @@ describe('useOnConfirm Hook', () => {
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteSystems: mockDeleteSystems,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
@@ -337,19 +368,18 @@ describe('useOnConfirm Hook', () => {
   });
 
   describe('Async operations', () => {
-    it('should call deleteSystems and dispatch action', async () => {
+    it('should call deleteSystems and refreshRemediation', async () => {
       mockSelected = new Map();
-      const mockPayload = Promise.resolve('success');
-      const mockAction = createMockAction(mockPayload);
-
-      mockDeleteSystems.mockReturnValue(mockAction);
+      mockDeleteSystems.mockResolvedValue({});
       mockRefreshRemediation.mockResolvedValue();
 
       const { result } = renderHook(() =>
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteSystems: mockDeleteSystems,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
@@ -358,13 +388,11 @@ describe('useOnConfirm Hook', () => {
       );
 
       await act(async () => {
-        result.current();
-        // Give the async IIFE time to complete
-        await Promise.resolve();
+        await result.current();
       });
 
       expect(mockDeleteSystems).toHaveBeenCalled();
-      expect(mockDispatch).toHaveBeenCalledWith(mockAction);
+      expect(mockRefreshRemediation).toHaveBeenCalled();
     });
 
     it('should call refreshRemediation after delete action', async () => {
@@ -376,7 +404,9 @@ describe('useOnConfirm Hook', () => {
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteSystems: mockDeleteSystems,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
@@ -405,7 +435,9 @@ describe('useOnConfirm Hook', () => {
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteSystems: mockDeleteSystems,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
@@ -433,7 +465,9 @@ describe('useOnConfirm Hook', () => {
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteSystems: mockDeleteSystems,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
@@ -462,7 +496,9 @@ describe('useOnConfirm Hook', () => {
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteSystems: mockDeleteSystems,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
           remediation: mockRemediation,
           refreshRemediation: mockRefreshRemediation,
           setIsOpen: mockSetIsOpen,
