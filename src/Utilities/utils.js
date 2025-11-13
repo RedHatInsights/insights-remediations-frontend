@@ -277,7 +277,7 @@ export const submitRemediation = async (
   setState({ percent });
 
   const issues = data.issues
-    .map(({ id }) => {
+    .map(({ id, precedence }) => {
       const playbookSystems =
         formValues[EXISTING_PLAYBOOK]?.issues
           ?.find((i) => i.id === id)
@@ -289,6 +289,7 @@ export const submitRemediation = async (
           ...(formValues[EXISTING_PLAYBOOK_SELECTED] ? [] : playbookSystems),
           ...(formValues[SYSTEMS][id] || []),
         ]),
+        precedence,
       };
     })
     .filter((issue) => issue.systems.length > 0);

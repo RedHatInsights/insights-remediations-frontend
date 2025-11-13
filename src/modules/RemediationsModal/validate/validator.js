@@ -42,7 +42,7 @@ export default function validate(data) {
       typeof issue === 'object' && issue !== null,
       'Issue must be an object',
     );
-    checkAllowedKeys(issue, 'id', 'description', 'systems');
+    checkAllowedKeys(issue, 'id', 'description', 'precedence', 'systems');
     checkRequiredKeys(issue, 'id', 'description');
     Object.prototype.hasOwnProperty.call(issue, 'systems') &&
       checkSystems(issue.systems);
