@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import { RemediationWizardV2 } from './RemediationWizardV2';
+import { RemediationWizardV2 } from './RemediationWizardV2/RemediationWizardV2';
 
-// Mock only API calls and external dependencies
 jest.mock('../api/useRemediationsQuery', () => ({
   __esModule: true,
   default: jest.fn(() => ({
@@ -23,27 +23,6 @@ jest.mock('../Utilities/Hooks/api/useRemediations', () => ({
 
 jest.mock('../Utilities/Hooks/useFeatureFlag', () => ({
   useFeatureFlag: jest.fn(() => false),
-}));
-
-jest.mock('./RemediationWizardV2/usePlaybookSelect', () => ({
-  usePlaybookSelect: jest.fn(() => ({
-    selected: '',
-    inputValue: '',
-    isExistingPlanSelected: false,
-    isSelectOpen: false,
-    selectOptions: [],
-    focusedItemIndex: null,
-    activeItemId: null,
-    textInputRef: { current: null },
-    onToggleClick: jest.fn(),
-    onInputClick: jest.fn(),
-    onSelect: jest.fn(),
-    onTextInputChange: jest.fn(),
-    onInputKeyDown: jest.fn(),
-    handleClear: jest.fn(),
-    closeMenu: jest.fn(),
-    createItemId: jest.fn((id) => `item-${id}`),
-  })),
 }));
 
 jest.mock('../Utilities/DownloadPlaybookButton', () => ({
@@ -67,9 +46,6 @@ jest.mock(
   }),
 );
 
-const {
-  usePlaybookSelect,
-} = require('./RemediationWizardV2/usePlaybookSelect');
 const { download } = require('../Utilities/DownloadPlaybookButton');
 const useRemediationsQuery = require('../api/useRemediationsQuery').default;
 const useRemediations =
@@ -154,24 +130,6 @@ describe('RemediationWizardV2', () => {
         fetch: jest.fn(),
       };
     });
-    usePlaybookSelect.mockReturnValue({
-      selected: '',
-      inputValue: '',
-      isExistingPlanSelected: false,
-      isSelectOpen: false,
-      selectOptions: [],
-      focusedItemIndex: null,
-      activeItemId: null,
-      textInputRef: { current: null },
-      onToggleClick: jest.fn(),
-      onInputClick: jest.fn(),
-      onSelect: jest.fn(),
-      onTextInputChange: jest.fn(),
-      onInputKeyDown: jest.fn(),
-      handleClear: jest.fn(),
-      closeMenu: jest.fn(),
-      createItemId: jest.fn((id) => `item-${id}`),
-    });
     // Reset spies
     handleRemediationSubmitSpy.mockResolvedValue({
       success: true,
@@ -188,22 +146,18 @@ describe('RemediationWizardV2', () => {
   });
 
   describe('Basic rendering', () => {
-    it('should render modal with correct title', () => {
+    it('should render all modal components correctly', () => {
       render(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
+      // Modal title
       expect(screen.getByText('Plan a remediation')).toBeInTheDocument();
       expect(
         screen.getByRole('button', { name: /Open Remediations popover/i }),
       ).toBeInTheDocument();
-    });
 
-    it('should render modal body content', () => {
-      render(
-        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
-      );
-
+      // Modal body content
       expect(
         screen.getByText(
           /Create or update a plan to remediate issues identified by Red Hat Lightspeed/i,
@@ -212,13 +166,8 @@ describe('RemediationWizardV2', () => {
       expect(
         screen.getByText('Select or create a playbook'),
       ).toBeInTheDocument();
-    });
 
-    it('should render plan summary header', () => {
-      render(
-        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
-      );
-
+      // Plan summary header
       expect(screen.getByText('Plan summary')).toBeInTheDocument();
       expect(
         screen.getByText(
@@ -228,34 +177,19 @@ describe('RemediationWizardV2', () => {
       expect(
         screen.getByRole('switch', { name: /Auto-reboot/i }),
       ).toBeChecked();
-    });
 
-    it('should render plan summary charts', () => {
-      render(
-        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
-      );
-
+      // Plan summary charts
       expect(screen.getAllByText('Actions').length).toBeGreaterThan(0);
       expect(screen.getAllByText('Systems').length).toBeGreaterThan(0);
-    });
 
-    it('should render action points helper text', () => {
-      render(
-        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
-      );
-
+      // Action points helper text
       expect(
         screen.getByText(
           /Action points \(pts\) per issue type: Advisor: 20 pts, Vulnerability: 20 pts, Patch: 2 pts, and Compliance: 5 pts/i,
         ),
       ).toBeInTheDocument();
-    });
 
-    it('should render footer buttons', () => {
-      render(
-        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
-      );
-
+      // Footer buttons
       expect(
         screen.getByRole('button', { name: /Create plan/i }),
       ).toBeInTheDocument();
@@ -364,7 +298,8 @@ describe('RemediationWizardV2', () => {
       expect(screen.getAllByText(/42 points/i).length).toBeGreaterThan(0);
     });
 
-    it('should update counts when existing plan is selected', () => {
+    it('should update counts when existing plan is selected', async () => {
+      const user = userEvent.setup();
       const remediationDetailsSummary = {
         issues: [
           { id: 'patch-advisory:RHSA-2021:5678', description: 'Plan Issue 1' },
@@ -387,33 +322,32 @@ describe('RemediationWizardV2', () => {
         };
       });
 
-      usePlaybookSelect.mockReturnValue({
-        selected: 'existing-plan-id',
-        inputValue: 'Existing Plan',
-        isExistingPlanSelected: true,
-        isSelectOpen: false,
-        selectOptions: [],
-        focusedItemIndex: null,
-        activeItemId: null,
-        textInputRef: { current: null },
-        onToggleClick: jest.fn(),
-        onInputClick: jest.fn(),
-        onSelect: jest.fn(),
-        onTextInputChange: jest.fn(),
-        onInputKeyDown: jest.fn(),
-        handleClear: jest.fn(),
-        closeMenu: jest.fn(),
-        createItemId: jest.fn((id) => `item-${id}`),
+      useRemediationsQuery.mockReturnValue({
+        result: {
+          data: [{ id: 'existing-plan-id', name: 'Existing Plan' }],
+        },
+        loading: false,
       });
 
       render(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
+      // Select the existing plan
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.click(input);
+      await waitFor(() => {
+        expect(screen.getByText('Existing Plan')).toBeInTheDocument();
+      });
+      const option = screen.getByText('Existing Plan');
+      await user.click(option);
+
       // Base: 2 issues, 3 systems, ~22 action points (1 patch + 1 vulnerability)
       // Plan: 1 issue, 5 systems, 2 action points
       // Total: 3 issues, 8 systems, 24 action points
-      expect(screen.getAllByText(/3 actions/i).length).toBeGreaterThan(0);
+      await waitFor(() => {
+        expect(screen.getAllByText(/3 actions/i).length).toBeGreaterThan(0);
+      });
       expect(screen.getAllByText(/8 systems/i).length).toBeGreaterThan(0);
     });
   });
@@ -515,25 +449,6 @@ describe('RemediationWizardV2', () => {
 
   describe('Form interactions', () => {
     it('should disable submit button when no plan is selected and input is empty', () => {
-      usePlaybookSelect.mockReturnValue({
-        selected: '',
-        inputValue: '',
-        isExistingPlanSelected: false,
-        isSelectOpen: false,
-        selectOptions: [],
-        focusedItemIndex: null,
-        activeItemId: null,
-        textInputRef: { current: null },
-        onToggleClick: jest.fn(),
-        onInputClick: jest.fn(),
-        onSelect: jest.fn(),
-        onTextInputChange: jest.fn(),
-        onInputKeyDown: jest.fn(),
-        handleClear: jest.fn(),
-        closeMenu: jest.fn(),
-        createItemId: jest.fn((id) => `item-${id}`),
-      });
-
       render(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
@@ -542,58 +457,50 @@ describe('RemediationWizardV2', () => {
       expect(submitButton).toBeDisabled();
     });
 
-    it('should enable submit button when existing plan is selected', () => {
-      usePlaybookSelect.mockReturnValue({
-        selected: 'existing-plan-id',
-        inputValue: 'Existing Plan',
-        isExistingPlanSelected: true,
-        isSelectOpen: false,
-        selectOptions: [],
-        focusedItemIndex: null,
-        activeItemId: null,
-        textInputRef: { current: null },
-        onToggleClick: jest.fn(),
-        onInputClick: jest.fn(),
-        onSelect: jest.fn(),
-        onTextInputChange: jest.fn(),
-        onInputKeyDown: jest.fn(),
-        handleClear: jest.fn(),
-        closeMenu: jest.fn(),
-        createItemId: jest.fn((id) => `item-${id}`),
+    it('should enable submit button when existing plan is selected', async () => {
+      const user = userEvent.setup();
+      useRemediationsQuery.mockReturnValue({
+        result: {
+          data: [{ id: 'existing-plan-id', name: 'Existing Plan' }],
+        },
+        loading: false,
       });
 
       render(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
-      const submitButton = screen.getByRole('button', { name: /Update plan/i });
-      expect(submitButton).toBeEnabled();
+      // Click the input to open dropdown
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.click(input);
+
+      // Wait for and select the existing plan
+      await waitFor(() => {
+        expect(screen.getByText('Existing Plan')).toBeInTheDocument();
+      });
+      const option = screen.getByText('Existing Plan');
+      await user.click(option);
+
+      // Wait for button to update
+      await waitFor(() => {
+        const submitButton = screen.getByRole('button', {
+          name: /Update plan/i,
+        });
+        expect(submitButton).toBeEnabled();
+      });
     });
 
-    it('should disable submit button when dropdown is open', () => {
-      usePlaybookSelect.mockReturnValue({
-        selected: '',
-        inputValue: 'New Plan',
-        isExistingPlanSelected: false,
-        isSelectOpen: true,
-        selectOptions: [],
-        focusedItemIndex: null,
-        activeItemId: null,
-        textInputRef: { current: null },
-        onToggleClick: jest.fn(),
-        onInputClick: jest.fn(),
-        onSelect: jest.fn(),
-        onTextInputChange: jest.fn(),
-        onInputKeyDown: jest.fn(),
-        handleClear: jest.fn(),
-        closeMenu: jest.fn(),
-        createItemId: jest.fn((id) => `item-${id}`),
-      });
-
+    it('should disable submit button when dropdown is open', async () => {
+      const user = userEvent.setup();
       render(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
+      // Find the input and type to open the dropdown
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.type(input, 'New Plan');
+
+      // When typing, dropdown opens and button should be disabled
       const submitButton = screen.getByRole('button', { name: /Create plan/i });
       expect(submitButton).toBeDisabled();
     });
@@ -616,31 +523,34 @@ describe('RemediationWizardV2', () => {
 
   describe('Submit functionality', () => {
     it('should call handleRemediationSubmit when creating new plan', async () => {
-      usePlaybookSelect.mockReturnValue({
-        selected: '',
-        inputValue: 'New Remediation Plan',
-        isExistingPlanSelected: false,
-        isSelectOpen: false,
-        selectOptions: [],
-        focusedItemIndex: null,
-        activeItemId: null,
-        textInputRef: { current: null },
-        onToggleClick: jest.fn(),
-        onInputClick: jest.fn(),
-        onSelect: jest.fn(),
-        onTextInputChange: jest.fn(),
-        onInputKeyDown: jest.fn(),
-        handleClear: jest.fn(),
-        closeMenu: jest.fn(),
-        createItemId: jest.fn((id) => `item-${id}`),
-      });
-
+      const user = userEvent.setup();
       render(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
+      // Type a plan name to enable the submit button
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.type(input, 'New Remediation Plan');
+      // Wait for "Create new" option to appear and select it to close dropdown
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Create new playbook "New Remediation Plan"/i),
+        ).toBeInTheDocument();
+      });
+      const createOption = screen.getByText(
+        /Create new playbook "New Remediation Plan"/i,
+      );
+      await user.click(createOption);
+
+      await waitFor(() => {
+        const submitButton = screen.getByRole('button', {
+          name: /Create plan/i,
+        });
+        expect(submitButton).toBeEnabled();
+      });
+
       const submitButton = screen.getByRole('button', { name: /Create plan/i });
-      fireEvent.click(submitButton);
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(handleRemediationSubmitSpy).toHaveBeenCalled();
@@ -654,31 +564,37 @@ describe('RemediationWizardV2', () => {
     });
 
     it('should call handleRemediationSubmit when updating existing plan', async () => {
-      usePlaybookSelect.mockReturnValue({
-        selected: 'existing-plan-id',
-        inputValue: 'Updated Plan',
-        isExistingPlanSelected: true,
-        isSelectOpen: false,
-        selectOptions: [],
-        focusedItemIndex: null,
-        activeItemId: null,
-        textInputRef: { current: null },
-        onToggleClick: jest.fn(),
-        onInputClick: jest.fn(),
-        onSelect: jest.fn(),
-        onTextInputChange: jest.fn(),
-        onInputKeyDown: jest.fn(),
-        handleClear: jest.fn(),
-        closeMenu: jest.fn(),
-        createItemId: jest.fn((id) => `item-${id}`),
+      const user = userEvent.setup();
+      useRemediationsQuery.mockReturnValue({
+        result: {
+          data: [{ id: 'existing-plan-id', name: 'Updated Plan' }],
+        },
+        loading: false,
       });
 
       render(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
+      // Select an existing plan from the dropdown
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.click(input);
+      // Wait for options to appear and select one
+      await waitFor(() => {
+        expect(screen.getByText('Updated Plan')).toBeInTheDocument();
+      });
+      const option = screen.getByText('Updated Plan');
+      await user.click(option);
+
+      await waitFor(() => {
+        const submitButton = screen.getByRole('button', {
+          name: /Update plan/i,
+        });
+        expect(submitButton).toBeEnabled();
+      });
+
       const submitButton = screen.getByRole('button', { name: /Update plan/i });
-      fireEvent.click(submitButton);
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(handleRemediationSubmitSpy).toHaveBeenCalled();
@@ -692,31 +608,32 @@ describe('RemediationWizardV2', () => {
     });
 
     it('should navigate to remediation details page after successful submission', async () => {
-      usePlaybookSelect.mockReturnValue({
-        selected: '',
-        inputValue: 'New Plan',
-        isExistingPlanSelected: false,
-        isSelectOpen: false,
-        selectOptions: [],
-        focusedItemIndex: null,
-        activeItemId: null,
-        textInputRef: { current: null },
-        onToggleClick: jest.fn(),
-        onInputClick: jest.fn(),
-        onSelect: jest.fn(),
-        onTextInputChange: jest.fn(),
-        onInputKeyDown: jest.fn(),
-        handleClear: jest.fn(),
-        closeMenu: jest.fn(),
-        createItemId: jest.fn((id) => `item-${id}`),
-      });
-
+      const user = userEvent.setup();
       render(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
+      // Type a plan name to enable the submit button
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.type(input, 'New Plan');
+      // Wait for "Create new" option to appear and select it to close dropdown
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Create new playbook "New Plan"/i),
+        ).toBeInTheDocument();
+      });
+      const createOption = screen.getByText(/Create new playbook "New Plan"/i);
+      await user.click(createOption);
+
+      await waitFor(() => {
+        const submitButton = screen.getByRole('button', {
+          name: /Create plan/i,
+        });
+        expect(submitButton).toBeEnabled();
+      });
+
       const submitButton = screen.getByRole('button', { name: /Create plan/i });
-      fireEvent.click(submitButton);
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(handleRemediationSubmitSpy).toHaveBeenCalled();
@@ -735,36 +652,37 @@ describe('RemediationWizardV2', () => {
     });
 
     it('should close modal if navigation fails (no remediationId)', async () => {
+      const user = userEvent.setup();
       handleRemediationSubmitSpy.mockResolvedValueOnce({
         success: true,
         // No remediationId
-      });
-
-      usePlaybookSelect.mockReturnValue({
-        selected: '',
-        inputValue: 'New Plan',
-        isExistingPlanSelected: false,
-        isSelectOpen: false,
-        selectOptions: [],
-        focusedItemIndex: null,
-        activeItemId: null,
-        textInputRef: { current: null },
-        onToggleClick: jest.fn(),
-        onInputClick: jest.fn(),
-        onSelect: jest.fn(),
-        onTextInputChange: jest.fn(),
-        onInputKeyDown: jest.fn(),
-        handleClear: jest.fn(),
-        closeMenu: jest.fn(),
-        createItemId: jest.fn((id) => `item-${id}`),
       });
 
       render(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
+      // Type a plan name to enable the submit button
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.type(input, 'New Plan');
+      // Wait for "Create new" option to appear and select it to close dropdown
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Create new playbook "New Plan"/i),
+        ).toBeInTheDocument();
+      });
+      const createOption = screen.getByText(/Create new playbook "New Plan"/i);
+      await user.click(createOption);
+
+      await waitFor(() => {
+        const submitButton = screen.getByRole('button', {
+          name: /Create plan/i,
+        });
+        expect(submitButton).toBeEnabled();
+      });
+
       const submitButton = screen.getByRole('button', { name: /Create plan/i });
-      fireEvent.click(submitButton);
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(handleRemediationSubmitSpy).toHaveBeenCalled();
@@ -777,6 +695,7 @@ describe('RemediationWizardV2', () => {
     });
 
     it('should handle submission errors gracefully', async () => {
+      const user = userEvent.setup();
       const consoleSpy = jest
         .spyOn(console, 'error')
         .mockImplementation(() => {});
@@ -784,31 +703,31 @@ describe('RemediationWizardV2', () => {
         new Error('Submission failed'),
       );
 
-      usePlaybookSelect.mockReturnValue({
-        selected: '',
-        inputValue: 'New Plan',
-        isExistingPlanSelected: false,
-        isSelectOpen: false,
-        selectOptions: [],
-        focusedItemIndex: null,
-        activeItemId: null,
-        textInputRef: { current: null },
-        onToggleClick: jest.fn(),
-        onInputClick: jest.fn(),
-        onSelect: jest.fn(),
-        onTextInputChange: jest.fn(),
-        onInputKeyDown: jest.fn(),
-        handleClear: jest.fn(),
-        closeMenu: jest.fn(),
-        createItemId: jest.fn((id) => `item-${id}`),
-      });
-
       render(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
+      // Type a plan name to enable the submit button
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.type(input, 'New Plan');
+      // Wait for "Create new" option to appear and select it to close dropdown
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Create new playbook "New Plan"/i),
+        ).toBeInTheDocument();
+      });
+      const createOption = screen.getByText(/Create new playbook "New Plan"/i);
+      await user.click(createOption);
+
+      await waitFor(() => {
+        const submitButton = screen.getByRole('button', {
+          name: /Create plan/i,
+        });
+        expect(submitButton).toBeEnabled();
+      });
+
       const submitButton = screen.getByRole('button', { name: /Create plan/i });
-      fireEvent.click(submitButton);
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalled();
@@ -821,31 +740,32 @@ describe('RemediationWizardV2', () => {
     });
 
     it('should pass original data (not normalized) to handleRemediationSubmit', async () => {
-      usePlaybookSelect.mockReturnValue({
-        selected: '',
-        inputValue: 'New Plan',
-        isExistingPlanSelected: false,
-        isSelectOpen: false,
-        selectOptions: [],
-        focusedItemIndex: null,
-        activeItemId: null,
-        textInputRef: { current: null },
-        onToggleClick: jest.fn(),
-        onInputClick: jest.fn(),
-        onSelect: jest.fn(),
-        onTextInputChange: jest.fn(),
-        onInputKeyDown: jest.fn(),
-        handleClear: jest.fn(),
-        closeMenu: jest.fn(),
-        createItemId: jest.fn((id) => `item-${id}`),
-      });
-
+      const user = userEvent.setup();
       render(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataNested} />,
       );
 
+      // Type a plan name to enable the submit button
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.type(input, 'New Plan');
+      // Wait for "Create new" option to appear and select it to close dropdown
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Create new playbook "New Plan"/i),
+        ).toBeInTheDocument();
+      });
+      const createOption = screen.getByText(/Create new playbook "New Plan"/i);
+      await user.click(createOption);
+
+      await waitFor(() => {
+        const submitButton = screen.getByRole('button', {
+          name: /Create plan/i,
+        });
+        expect(submitButton).toBeEnabled();
+      });
+
       const submitButton = screen.getByRole('button', { name: /Create plan/i });
-      fireEvent.click(submitButton);
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(handleRemediationSubmitSpy).toHaveBeenCalled();
@@ -857,7 +777,8 @@ describe('RemediationWizardV2', () => {
   });
 
   describe('Preview functionality', () => {
-    it('should call handleRemediationPreview when preview button is clicked', () => {
+    it('should call handleRemediationPreview when preview button is clicked', async () => {
+      const user = userEvent.setup();
       useRemediationsQuery.mockReturnValue({
         result: {
           data: [
@@ -866,25 +787,6 @@ describe('RemediationWizardV2', () => {
           ],
         },
         loading: false,
-      });
-
-      usePlaybookSelect.mockReturnValue({
-        selected: 'plan-1',
-        inputValue: 'Plan 1',
-        isExistingPlanSelected: true,
-        isSelectOpen: false,
-        selectOptions: [],
-        focusedItemIndex: null,
-        activeItemId: null,
-        textInputRef: { current: null },
-        onToggleClick: jest.fn(),
-        onInputClick: jest.fn(),
-        onSelect: jest.fn(),
-        onTextInputChange: jest.fn(),
-        onInputKeyDown: jest.fn(),
-        handleClear: jest.fn(),
-        closeMenu: jest.fn(),
-        createItemId: jest.fn((id) => `item-${id}`),
       });
 
       const remediationDetailsSummary = {
@@ -912,8 +814,23 @@ describe('RemediationWizardV2', () => {
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
+      // Select an existing plan from the dropdown
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.click(input);
+      // Wait for options to appear and select one
+      await waitFor(() => {
+        expect(screen.getByText('Plan 1')).toBeInTheDocument();
+      });
+      const option = screen.getByText('Plan 1');
+      await user.click(option);
+
+      await waitFor(() => {
+        const previewButton = screen.getByRole('button', { name: /Preview/i });
+        expect(previewButton).toBeInTheDocument();
+      });
+
       const previewButton = screen.getByRole('button', { name: /Preview/i });
-      fireEvent.click(previewButton);
+      await user.click(previewButton);
 
       expect(handleRemediationPreviewSpy).toHaveBeenCalled();
       const callArgs = handleRemediationPreviewSpy.mock.calls[0][0];
@@ -970,7 +887,15 @@ describe('RemediationWizardV2', () => {
       expect(screen.getAllByText(/1 system/i).length).toBeGreaterThan(0);
     });
 
-    it('should handle loading state for remediation details', () => {
+    it('should handle loading state for remediation details', async () => {
+      const user = userEvent.setup();
+      useRemediationsQuery.mockReturnValue({
+        result: {
+          data: [{ id: 'plan-id', name: 'Plan' }],
+        },
+        loading: false,
+      });
+
       useRemediations.mockImplementation((method) => {
         if (method === 'getRemediation') {
           return {
@@ -986,28 +911,19 @@ describe('RemediationWizardV2', () => {
         };
       });
 
-      usePlaybookSelect.mockReturnValue({
-        selected: 'plan-id',
-        inputValue: 'Plan',
-        isExistingPlanSelected: true,
-        isSelectOpen: false,
-        selectOptions: [],
-        focusedItemIndex: null,
-        activeItemId: null,
-        textInputRef: { current: null },
-        onToggleClick: jest.fn(),
-        onInputClick: jest.fn(),
-        onSelect: jest.fn(),
-        onTextInputChange: jest.fn(),
-        onInputKeyDown: jest.fn(),
-        handleClear: jest.fn(),
-        closeMenu: jest.fn(),
-        createItemId: jest.fn((id) => `item-${id}`),
-      });
-
       render(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
+
+      // Select an existing plan from the dropdown
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.click(input);
+      // Wait for options to appear and select one
+      await waitFor(() => {
+        expect(screen.getByText('Plan')).toBeInTheDocument();
+      });
+      const option = screen.getByText('Plan');
+      await user.click(option);
 
       // When loading, skeleton should be shown instead of charts
       expect(screen.queryByText('Actions')).not.toBeInTheDocument();
