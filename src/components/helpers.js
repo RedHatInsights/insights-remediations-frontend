@@ -30,8 +30,11 @@ export const wizardHelperText = (exceedsLimits) => {
 
 export const renderChartSkeleton = () => {
   return (
-    <Flex>
-      <Skeleton size="lg" style={{ height: '120px', width: '400px' }} />
+    <Flex direction={{ default: 'column' }}>
+      <Skeleton
+        size="lg"
+        style={{ height: '120px', width: '100%', maxWidth: '400px' }}
+      />
       <div className="pf-v6-u-text-align-center pf-v6-u-mt-sm">
         <Skeleton size="sm" style={{ width: '100px', margin: '0 auto' }} />
       </div>

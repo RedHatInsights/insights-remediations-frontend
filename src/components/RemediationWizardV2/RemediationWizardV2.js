@@ -12,6 +12,8 @@ import {
   Divider,
   HelperText,
   HelperTextItem,
+  Tooltip,
+  Flex,
 } from '@patternfly/react-core';
 import { DownloadIcon } from '@patternfly/react-icons';
 import useRemediationsQuery from '../../api/useRemediationsQuery';
@@ -36,6 +38,7 @@ import { useAddNotification } from '@redhat-cloud-services/frontend-components-n
 export const RemediationWizardV2 = ({ setOpen, data }) => {
   const addNotification = useAddNotification();
   const [isOpen, setIsOpen] = useState(true);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [autoReboot, setAutoReboot] = useState(true);
   const [actionsCount, setActionsCount] = useState(0);
   const [systemsCount, setSystemsCount] = useState(0);
@@ -144,12 +147,24 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
   }, [isExistingPlanSelected, inputValue, isSelectOpen]);
 
   const handleClose = () => {
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmCancel = () => {
+    setShowConfirmation(false);
     setIsOpen(false);
     setOpen(false);
   };
 
+  const handleGoBack = () => {
+    setShowConfirmation(false);
+  };
+
   //TODO: implement error state and success states once implementted by UX
   const handleSubmit = async () => {
+    if (!hasPlanSelection) {
+      return;
+    }
     try {
       // Pass original data to preserve nested systems structure for payload
       const result = await handleRemediationSubmit({
@@ -180,8 +195,8 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     });
   };
 
-  return (
-    <Modal isOpen={isOpen} variant={ModalVariant.medium} onClose={handleClose}>
+  const renderMainContent = () => (
+    <>
       <ModalHeader
         title={
           <>
@@ -240,18 +255,73 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
           })}
       </ModalBody>
       <ModalFooter>
-        <Button
-          key="confirm"
-          variant="primary"
-          onClick={handleSubmit}
-          isDisabled={!hasPlanSelection}
-        >
-          {isExistingPlanSelected ? 'Update' : 'Create'} plan
-        </Button>
-        <Button key="cancel" variant="secondary" onClick={handlePreview}>
-          Preview <DownloadIcon size="md" />
-        </Button>
+        <Flex gap={{ default: 'gapMd' }}>
+          {!hasPlanSelection ? (
+            <Tooltip content="Enter or select a name">
+              <Button
+                key="confirm"
+                variant="primary"
+                onClick={handleSubmit}
+                isAriaDisabled={!hasPlanSelection}
+              >
+                {isExistingPlanSelected ? 'Update' : 'Create'} plan
+              </Button>
+            </Tooltip>
+          ) : (
+            <Button
+              key="confirm"
+              variant="primary"
+              onClick={handleSubmit}
+              isDisabled={!hasPlanSelection}
+            >
+              {isExistingPlanSelected ? 'Update' : 'Create'} plan
+            </Button>
+          )}
+          <Button
+            key="preview"
+            variant="secondary"
+            onClick={handlePreview}
+            isDisabled={!hasPlanSelection}
+          >
+            Preview <DownloadIcon size="md" />
+          </Button>
+          <Button key="cancel" variant="link" onClick={handleClose}>
+            Cancel
+          </Button>
+        </Flex>
       </ModalFooter>
+    </>
+  );
+
+  const renderConfirmationContent = () => (
+    <>
+      <ModalHeader
+        title={'Are you sure you want to cancel?'}
+        labelId="cancel-confirmation-title"
+        titleIconVariant={'warning'}
+      />
+      <ModalBody>
+        <span>
+          The systems and actions you selected are not added to this remediation
+          plan.
+        </span>
+      </ModalBody>
+      <ModalFooter>
+        <Flex gap={{ default: 'gapMd' }}>
+          <Button key="yes" variant="primary" onClick={handleConfirmCancel}>
+            Yes
+          </Button>
+          <Button key="no" variant="link" onClick={handleGoBack}>
+            No, go back
+          </Button>
+        </Flex>
+      </ModalFooter>
+    </>
+  );
+
+  return (
+    <Modal isOpen={isOpen} variant={ModalVariant.medium} onClose={handleClose}>
+      {showConfirmation ? renderConfirmationContent() : renderMainContent()}
     </Modal>
   );
 };
