@@ -55,14 +55,22 @@ jest.mock(
   }),
 );
 
-jest.mock('../api', () => ({
-  patchRemediation: jest.fn(),
+const mockUpdateRemediationWrapper = jest.fn();
+
+jest.mock('../routes/api', () => ({
+  updateRemediationWrapper: mockUpdateRemediationWrapper,
+}));
+
+jest.mock('../api/useRemediationsQuery', () => ({
+  __esModule: true,
+  default: jest.fn(() => ({
+    fetch: mockUpdateRemediationWrapper,
+  })),
 }));
 
 const {
   useAddNotification,
 } = require('@redhat-cloud-services/frontend-components-notifications/hooks');
-const { patchRemediation } = require('../api');
 
 // Create a simple mock store
 const mockStore = createStore(() => ({}));
@@ -87,7 +95,7 @@ describe('RenameModal', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     useAddNotification.mockReturnValue(mockAddNotification);
-    patchRemediation.mockResolvedValue({});
+    mockUpdateRemediationWrapper.mockResolvedValue({});
   });
 
   const renderWithStore = (props = {}) => {
@@ -187,7 +195,8 @@ describe('RenameModal', () => {
 
       // Wait for async operations
       await waitFor(() => {
-        expect(patchRemediation).toHaveBeenCalledWith('remediation-1', {
+        expect(mockUpdateRemediationWrapper).toHaveBeenCalledWith({
+          id: 'remediation-1',
           name: 'New Remediation Name',
         });
       });
@@ -211,7 +220,8 @@ describe('RenameModal', () => {
       fireEvent.click(screen.getByTestId('submit-empty-button'));
 
       await waitFor(() => {
-        expect(patchRemediation).toHaveBeenCalledWith('remediation-1', {
+        expect(mockUpdateRemediationWrapper).toHaveBeenCalledWith({
+          id: 'remediation-1',
           name: 'Unnamed Playbook',
         });
       });
@@ -223,7 +233,8 @@ describe('RenameModal', () => {
       fireEvent.click(screen.getByTestId('submit-whitespace-button'));
 
       await waitFor(() => {
-        expect(patchRemediation).toHaveBeenCalledWith('remediation-1', {
+        expect(mockUpdateRemediationWrapper).toHaveBeenCalledWith({
+          id: 'remediation-1',
           name: 'Whitespace Name',
         });
       });
@@ -231,7 +242,7 @@ describe('RenameModal', () => {
 
     it('should handle failed rename submission', async () => {
       const error = new Error('API Error');
-      patchRemediation.mockRejectedValue(error);
+      mockUpdateRemediationWrapper.mockRejectedValue(error);
 
       const consoleSpy = jest
         .spyOn(console, 'error')
@@ -242,7 +253,8 @@ describe('RenameModal', () => {
       fireEvent.click(screen.getByTestId('submit-button'));
 
       await waitFor(() => {
-        expect(patchRemediation).toHaveBeenCalledWith('remediation-1', {
+        expect(mockUpdateRemediationWrapper).toHaveBeenCalledWith({
+          id: 'remediation-1',
           name: 'New Remediation Name',
         });
       });
@@ -269,7 +281,7 @@ describe('RenameModal', () => {
       fireEvent.click(screen.getByTestId('submit-button'));
 
       await waitFor(() => {
-        expect(patchRemediation).toHaveBeenCalled();
+        expect(mockUpdateRemediationWrapper).toHaveBeenCalled();
       });
 
       // No error should be thrown for missing fetch
@@ -281,7 +293,7 @@ describe('RenameModal', () => {
       fireEvent.click(screen.getByTestId('submit-button'));
 
       await waitFor(() => {
-        expect(patchRemediation).toHaveBeenCalled();
+        expect(mockUpdateRemediationWrapper).toHaveBeenCalled();
       });
 
       // No error should be thrown for missing refetch
@@ -365,7 +377,7 @@ describe('RenameModal', () => {
     it('should handle network timeout errors', async () => {
       const timeoutError = new Error('Network timeout');
       timeoutError.code = 'NETWORK_TIMEOUT';
-      patchRemediation.mockRejectedValue(timeoutError);
+      mockUpdateRemediationWrapper.mockRejectedValue(timeoutError);
 
       const consoleSpy = jest
         .spyOn(console, 'error')
@@ -398,7 +410,7 @@ describe('RenameModal', () => {
           data: { message: 'Invalid name' },
         },
       };
-      patchRemediation.mockRejectedValue(apiError);
+      mockUpdateRemediationWrapper.mockRejectedValue(apiError);
 
       const consoleSpy = jest
         .spyOn(console, 'error')
@@ -437,7 +449,7 @@ describe('RenameModal', () => {
 
       // Should still work correctly
       await waitFor(() => {
-        expect(patchRemediation).toHaveBeenCalled();
+        expect(mockUpdateRemediationWrapper).toHaveBeenCalled();
       });
     });
   });

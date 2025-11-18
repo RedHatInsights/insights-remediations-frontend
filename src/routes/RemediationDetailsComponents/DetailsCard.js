@@ -57,10 +57,7 @@ const DetailsCard = ({
     setValue(details?.name || '');
   }, [details?.name]);
 
-  const [isVerifyingName, isDuplicate] = useVerifyName(
-    value,
-    allRemediations?.data,
-  );
+  const [isVerifyingName, isDuplicate] = useVerifyName(value, allRemediations);
 
   const nameStatus = (() => {
     if (isVerifyingName) return 'checking';
@@ -260,8 +257,8 @@ const DetailsCard = ({
                 onClick={() => onNavigateToTab(null, 'actions')}
                 isInline
               >
-                {`${details?.issues.length} action${
-                  details?.issues.length !== 1 ? 's' : ''
+                {`${details?.issue_count} action${
+                  details?.issue_count !== 1 ? 's' : ''
                 }`}
               </Button>
             </DescriptionListDescription>
@@ -321,7 +318,6 @@ DetailsCard.propTypes = {
   details: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    needs_reboot: PropTypes.bool.isRequired,
     auto_reboot: PropTypes.bool.isRequired,
     archived: PropTypes.bool.isRequired,
     created_by: PropTypes.shape({
@@ -336,38 +332,12 @@ DetailsCard.propTypes = {
       last_name: PropTypes.string.isRequired,
     }).isRequired,
     updated_at: PropTypes.string.isRequired,
-    resolved_count: PropTypes.number.isRequired,
-    issues: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        description: PropTypes.string.isRequired,
-        resolution: PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          description: PropTypes.string.isRequired,
-          resolution_risk: PropTypes.number.isRequired,
-          needs_reboot: PropTypes.bool.isRequired,
-        }).isRequired,
-        resolutions_available: PropTypes.number.isRequired,
-        systems: PropTypes.arrayOf(
-          PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            hostname: PropTypes.string.isRequired,
-            display_name: PropTypes.string.isRequired,
-            resolved: PropTypes.bool.isRequired,
-          }),
-        ).isRequired,
-      }),
-    ).isRequired,
-    autoreboot: PropTypes.bool.isRequired,
+    issue_count: PropTypes.number.isRequired,
+    system_count: PropTypes.number.isRequired,
   }).isRequired,
-  onRename: PropTypes.func.isRequired,
-  onToggleAutoreboot: PropTypes.func.isRequired,
-  onViewActions: PropTypes.func.isRequired,
   remediationStatus: PropTypes.any,
   onNavigateToTab: PropTypes.func,
-  allRemediations: PropTypes.shape({
-    data: PropTypes.array,
-  }),
+  allRemediations: PropTypes.array,
   updateRemPlan: PropTypes.func,
   refetch: PropTypes.func,
   remediationPlaybookRuns: PropTypes.object,

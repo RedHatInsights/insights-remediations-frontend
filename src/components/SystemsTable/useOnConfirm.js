@@ -1,18 +1,18 @@
 import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 
 const useOnConfirm = ({
   selected,
   activeSystem,
-  deleteSystems,
+  deleteRemediationSystems,
   remediation,
   refreshRemediation,
   setIsOpen,
   addNotification,
+  clearSelection,
+  reloadTable,
 }) => {
-  const dispatch = useDispatch();
-  return useCallback(() => {
-    (async () => {
+  return useCallback(async () => {
+    try {
       const selectedSystems =
         selected.size > 0
           ? Array.from(selected, ([, value]) => value)
@@ -21,32 +21,45 @@ const useOnConfirm = ({
                 ...activeSystem.current,
               },
             ];
-      const action = deleteSystems(selectedSystems, remediation);
-      dispatch(action);
-      await action.payload;
+      await deleteRemediationSystems(selectedSystems, remediation);
       await refreshRemediation();
-    })();
-    activeSystem.current = undefined;
-    const itemsToDelete = selected.size > 0 ? selected.size : 1;
-    addNotification({
-      title: `Removed ${itemsToDelete} ${
-        itemsToDelete > 1 ? 'systems' : 'system'
-      } from playbook`,
-      description: '',
-      variant: 'success',
-      dismissable: true,
-      autoDismiss: true,
-    });
-    setIsOpen(false);
+
+      activeSystem.current = undefined;
+
+      clearSelection();
+      reloadTable();
+
+      const itemsToDelete = selected.size > 0 ? selected.size : 1;
+      addNotification({
+        title: `Removed ${itemsToDelete} ${
+          itemsToDelete > 1 ? 'systems' : 'system'
+        } from playbook`,
+        description: '',
+        variant: 'success',
+        dismissable: true,
+        autoDismiss: true,
+      });
+
+      setIsOpen(false);
+    } catch (error) {
+      addNotification({
+        title: 'Failed to remove systems',
+        description: error?.message || 'An error occurred',
+        variant: 'danger',
+        dismissable: true,
+      });
+      setIsOpen(false);
+    }
   }, [
     selected,
     activeSystem,
-    deleteSystems,
+    deleteRemediationSystems,
     remediation,
     refreshRemediation,
     setIsOpen,
     addNotification,
-    dispatch,
+    clearSelection,
+    reloadTable,
   ]);
 };
 

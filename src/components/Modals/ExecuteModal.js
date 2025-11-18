@@ -14,8 +14,7 @@ import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import EmptyExecutePlaybookState from '../EmptyExecutePlaybookState';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
-import useRemediationsQuery from '../../api/useRemediationsQuery';
-import { executeRemediation } from '../../routes/api';
+import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import RemediationsTable from '../RemediationsTable/RemediationsTable';
 import { TableStateProvider } from 'bastilian-tabletools';
 import columns from './Columns';
@@ -61,13 +60,16 @@ export const ExecuteModal = ({
     0,
   );
 
-  const { fetch: executeRun } = useRemediationsQuery(executeRemediation, {
+  const { fetch: executeRun } = useRemediations('runRemediation', {
     skip: true,
   });
 
   const handleExecute = () => {
     const exclude = disconnected.map((e) => e.executor_id).filter(Boolean);
-    executeRun({ id: remediation.id, exclude })
+    executeRun({
+      id: remediation.id,
+      playbookRunsInput: { exclude },
+    })
       .then(() => {
         refetchRemediationPlaybookRuns();
         addNotification({

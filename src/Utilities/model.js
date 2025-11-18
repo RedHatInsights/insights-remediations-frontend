@@ -1,5 +1,36 @@
+const APP_CONFIG = {
+  advisor: {
+    app: 'advisor',
+    label: 'Advisor recommendation',
+    route: 'recommendations',
+  },
+  vulnerabilities: {
+    app: 'vulnerability',
+    label: 'Vulnerability',
+    route: 'cves',
+  },
+  ssg: { app: 'compliance', label: 'Compliance', route: 'reports' },
+  'patch-advisory': {
+    app: 'patch',
+    label: 'Patch advisory',
+    route: 'advisories',
+  },
+  'patch-package': { app: 'patch', label: 'Patch package', route: 'packages' },
+};
+
 export function getIssuePrefix(id) {
   return id.split(':')[0];
+}
+
+export function getAppInfo(id) {
+  const prefix = getIssuePrefix(id);
+  return (
+    APP_CONFIG[prefix] || {
+      app: prefix,
+      label: prefix ? prefix[0].toUpperCase() + prefix.slice(1) : 'Unknown',
+      route: '',
+    }
+  );
 }
 
 export function getIssueApplication({ id }) {

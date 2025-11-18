@@ -1,6 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
 import columns from '../Columns';
-import useRemediationsQuery from '../../api/useRemediationsQuery';
+import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import RemediationsTable from '../../components/RemediationsTable/RemediationsTable';
 import {
   CreatedByFilter,
@@ -28,12 +28,7 @@ import useRemediationFetchExtras from '../../api/useRemediationFetchExtras';
 import { OverViewPageHeader } from './OverViewPageHeader';
 import { PermissionContext } from '../../App';
 import chunk from 'lodash/chunk';
-import {
-  deleteRemediation,
-  deleteRemediationList,
-  getRemediations,
-  getRemediationsList,
-} from '../api';
+
 import TableEmptyState from './TableEmptyState';
 import { CalendarFilterType } from './CalendarFilterType';
 
@@ -50,25 +45,28 @@ export const OverViewPage = () => {
   const tableState = useRawTableState();
 
   const currentlySelected = tableState?.selected || [];
+  //TODO: Ongoing discussion with team on only fetching fieldsData on plans we're downloading
   const {
     result,
     fetchAllIds,
     loading,
     refetch: fetchRemediations,
-  } = useRemediationsQuery(getRemediations, {
+  } = useRemediations('getRemediations', {
     useTableState: true,
-    params: { hideArchived: false, fieldsData: ['playbook_runs'] },
+    params: { hideArchived: false, fieldsData: ['last_playbook_run'] },
   });
 
   const { result: allRemediations, refetch: refetchAllRemediations } =
-    useRemediationsQuery(getRemediationsList);
+    useRemediations('getRemediations', {
+      params: { fieldsData: ['name'] },
+    });
 
-  const { fetch: deleteRem } = useRemediationsQuery(deleteRemediation, {
+  const { fetch: deleteRem } = useRemediations('deleteRemediation', {
     skip: true,
   });
 
-  const { fetchBatched: deleteRelList } = useRemediationsQuery(
-    deleteRemediationList,
+  const { fetchBatched: deleteRelList } = useRemediations(
+    'deleteRemediations',
     {
       skip: true,
       batched: true,

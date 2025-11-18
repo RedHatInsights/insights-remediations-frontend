@@ -2,25 +2,23 @@ import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import columns from './Columns';
 import { Button } from '@patternfly/react-core';
-import useRemediationsQuery from '../../../api/useRemediationsQuery';
+import useRemediations from '../../../Utilities/Hooks/api/useRemediations';
 import useRemediationFetchExtras from '../../../api/useRemediationFetchExtras';
 import { useParams } from 'react-router-dom';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import chunk from 'lodash/chunk';
 import ConfirmationDialog from '../../../components/ConfirmationDialog';
-import { actionNameFilter } from '../Filters';
+// import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
 import {
   useRawTableState,
-  TableStateProvider,
-  StaticTableToolsTable,
   useStateCallbacks,
+  TableStateProvider,
 } from 'bastilian-tabletools';
 import TableEmptyState from '../../OverViewPage/TableEmptyState';
+import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
 
-import { deleteIssues } from '../../api';
-
-const ActionsContent = ({ remediationDetails, refetch, loading }) => {
+const ActionsContent = ({ refetch }) => {
   const { id } = useParams();
   const tableState = useRawTableState();
   const currentlySelected = tableState?.selected;
@@ -28,21 +26,35 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
   const [isBulkDelete, setIsBulkDelete] = useState(false);
   const [action, setAction] = useState();
   const [isSystemsModalOpen, setIsSystemsModalOpen] = useState(false);
-  const [systemsToShow, setSystemsToShow] = useState([]);
   const [actionToShow, setActionToShow] = useState('');
-  const { fetchBatched: deleteActions } = useRemediationsQuery(deleteIssues, {
-    skip: true,
-    batched: true,
+  const [selectedIssueId, setSelectedIssueId] = useState('');
+
+  const {
+    result: issuesResult,
+    loading: issuesLoading,
+    refetch: refetchIssues,
+    fetchAllIds,
+  } = useRemediations('getRemediationIssues', {
+    useTableState: true,
+    params: { id },
   });
+
+  const { fetchBatched: deleteActions } = useRemediations(
+    'deleteRemediationIssues',
+    {
+      skip: true,
+      batched: true,
+    },
+  );
   const callbacks = useStateCallbacks();
   const { fetchQueue } = useRemediationFetchExtras({ fetch: deleteActions });
   const addNotification = useAddNotification();
-
   const SystemsButton = ({
-    systems = [],
+    systemCount,
     description,
+    issueId,
     setActionToShow,
-    setSystemsToShow,
+    setSelectedIssueId,
     setIsSystemsModalOpen,
   }) => (
     <Button
@@ -51,18 +63,19 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
       variant="link"
       onClick={() => {
         setActionToShow(description);
-        setSystemsToShow(systems);
+        setSelectedIssueId(issueId);
         setIsSystemsModalOpen(true);
       }}
     >
-      {`${systems.length} system${systems.length !== 1 ? 's' : ''}`}
+      {`${systemCount} system${systemCount > 1 ? 's' : ''}`}
     </Button>
   );
   SystemsButton.propTypes = {
-    systems: PropTypes.array.isRequired,
+    systemCount: PropTypes.number.isRequired,
     description: PropTypes.string,
+    issueId: PropTypes.string.isRequired,
     setActionToShow: PropTypes.func.isRequired,
-    setSystemsToShow: PropTypes.func.isRequired,
+    setSelectedIssueId: PropTypes.func.isRequired,
     setIsSystemsModalOpen: PropTypes.func.isRequired,
   };
 
@@ -70,13 +83,16 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
     const chunks = chunk(selected, 100);
     const queue = chunks.map((chunk) => ({
       id,
-      issue_ids: chunk,
+      issuesList: {
+        issue_ids: chunk,
+      },
     }));
     return await fetchQueue(queue);
   };
 
-  //Back end is currently working on filtering - This filter acts as a placegholder
-  const allIssues = remediationDetails?.issues ?? [];
+  const allIssues = issuesResult?.data ?? [];
+  const totalIssues = issuesResult?.meta?.total ?? allIssues?.length ?? 0;
+
   const columnsWithSystemsButton = useMemo(() => {
     return columns.map((col) => {
       if (col.exportKey === 'system_count') {
@@ -86,11 +102,12 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
             const rowData = props;
             return (
               <SystemsButton
-                systems={rowData.systems || []}
+                systemCount={rowData?.system_count}
                 setActionToShow={setActionToShow}
-                setSystemsToShow={setSystemsToShow}
+                setSelectedIssueId={setSelectedIssueId}
                 setIsSystemsModalOpen={setIsSystemsModalOpen}
                 description={rowData.description}
+                issueId={rowData.id}
               />
             );
           },
@@ -104,9 +121,10 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
     <section className="pf-v6-l-page__main-section pf-v6-c-page__main-section">
       {isSystemsModalOpen && (
         <SystemsModal
+          remediationId={id}
+          issueId={selectedIssueId}
           isOpen={isSystemsModalOpen}
           onClose={() => setIsSystemsModalOpen(false)}
-          systems={systemsToShow}
           actionName={actionToShow}
         />
       )}
@@ -136,6 +154,7 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
             }
             try {
               await handleDelete(chopped);
+              refetchIssues();
               addNotification({
                 title: 'Successfully deleted actions',
                 variant: 'success',
@@ -159,21 +178,23 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
           }}
         />
       )}
-      <StaticTableToolsTable
+      <RemediationsTable
         aria-label="ActionsTable"
         ouiaId="ActionsTable"
         variant="compact"
-        loading={loading}
-        items={!loading ? allIssues : undefined}
+        loading={issuesLoading}
+        items={allIssues}
+        total={totalIssues}
         columns={[...columnsWithSystemsButton]}
-        filters={{
-          filterConfig: [...actionNameFilter],
-        }}
+        // filters={{
+        //   filterConfig: [...actionNameFilter],
+        // }}
         options={{
           manageColumns: true,
           onSelect: true,
-          itemIdsInTable: () => allIssues.map(({ id }) => id),
-          itemIdsOnPage: () => allIssues.map(({ id }) => id),
+          itemIdsInTable: fetchAllIds,
+          itemIdsOnPage: allIssues?.map(({ id }) => id),
+          total: totalIssues,
           tableProps: {
             variant: 'compact',
           },
@@ -209,9 +230,7 @@ const ActionsContent = ({ remediationDetails, refetch, loading }) => {
 };
 
 ActionsContent.propTypes = {
-  remediationDetails: PropTypes.object,
   refetch: PropTypes.func,
-  loading: PropTypes.bool,
 };
 
 const ActionsContentProvider = (props) => (

@@ -1,6 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import useRemediationsQuery from '../api/useRemediationsQuery';
+import useRemediations from '../Utilities/Hooks/api/useRemediations';
+import { updateRemediationWrapper } from './api';
 import { Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import DetailsGeneralContent from './RemediationDetailsComponents/DetailsGeneralContent';
 import RenameModal from '../components/RenameModal';
@@ -13,13 +14,6 @@ import ActionsContent from './RemediationDetailsComponents/ActionsContent/Action
 import SystemsTable from '../components/SystemsTable/SystemsTable';
 import ExecutionHistoryTab from './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent';
 import PlanNotFound from './RemediationDetailsComponents/PlanNotFound';
-import {
-  checkExecutableStatus,
-  getRemediationDetails,
-  getRemediationPlaybook,
-  getRemediationsList,
-  updateRemediationPlans,
-} from './api';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 
 const RemediationDetails = () => {
@@ -33,42 +27,49 @@ const RemediationDetails = () => {
   const context = useContext(PermissionContext);
   const axios = useAxiosWithPlatformInterceptors();
   const { result: allRemediations, refetch: refetchAllRemediations } =
-    useRemediationsQuery(getRemediationsList);
+    useRemediations('getRemediations', {
+      params: { fieldsData: ['name'] },
+    });
 
-  const { result: isExecutable } = useRemediationsQuery(checkExecutableStatus, {
-    params: { remId: id },
+  const allRemediationsData = useMemo(
+    () => allRemediations?.data,
+    [allRemediations?.data],
+  );
+
+  const { result: isExecutable } = useRemediations('checkExecutable', {
+    params: { id },
   });
 
   const {
-    result: remediationDetails,
+    result: remediationDetailsSummary,
     refetch: refetchRemediationDetails,
     loading: detailsLoading,
     error: remediationDetailsError,
-  } = useRemediationsQuery(getRemediationDetails, {
-    params: { remId: id },
+  } = useRemediations('getRemediation', {
+    params: { id, format: 'summary' },
   });
 
   const {
     result: remediationPlaybookRuns,
     loading: isPlaybookRunsLoading,
     refetch: refetchRemediationPlaybookRuns,
-  } = useRemediationsQuery(getRemediationPlaybook, {
-    params: { remId: id },
+  } = useRemediations('listPlaybookRuns', {
+    params: { id },
   });
 
-  const { fetch: updateRemPlan } = useRemediationsQuery(
-    updateRemediationPlans,
+  const { fetch: updateRemPlan } = useRemediations(
+    updateRemediationWrapper,
     {
       skip: true,
     },
   );
 
   useEffect(() => {
-    remediationDetails &&
+    remediationDetailsSummary &&
       chrome.updateDocumentTitle(
-        `${remediationDetails.name} - Remediation Plans - Automation`,
+        `${remediationDetailsSummary.name} - Remediation Plans - Automation`,
       );
-  }, [chrome, remediationDetails]);
+  }, [chrome, remediationDetailsSummary]);
 
   useEffect(() => {
     if (remediationDetailsError) {
@@ -90,7 +91,7 @@ const RemediationDetails = () => {
     areDetailsLoading,
     detailsError,
     connectedData,
-  ] = useConnectionStatus(remediationDetails?.id, axios);
+  ] = useConnectionStatus(remediationDetailsSummary?.id, axios);
 
   const remediationStatus = {
     connectedSystems,
@@ -113,13 +114,13 @@ const RemediationDetails = () => {
   }
 
   return (
-    remediationDetails && (
+    remediationDetailsSummary && (
       <>
         <RemediationDetailsPageHeader
-          remediation={remediationDetails}
+          remediation={remediationDetailsSummary}
           remediationStatus={remediationStatus}
           isFedramp={isFedramp}
-          allRemediations={allRemediations?.data}
+          allRemediations={allRemediationsData}
           refetchAllRemediations={refetchAllRemediations}
           updateRemPlan={updateRemPlan}
           refetch={refetchRemediationDetails}
@@ -135,10 +136,10 @@ const RemediationDetails = () => {
         >
           {isRenameModalOpen && (
             <RenameModal
-              remediation={remediationDetails}
+              remediation={remediationDetailsSummary}
               isRenameModalOpen={isRenameModalOpen}
               setIsRenameModalOpen={setIsRenameModalOpen}
-              remediationsList={allRemediations?.data}
+              remediationsList={allRemediationsData}
               fetch={refetchRemediationDetails}
             />
           )}
@@ -149,14 +150,14 @@ const RemediationDetails = () => {
             aria-label="GeneralTab"
           >
             <DetailsGeneralContent
-              details={remediationDetails}
+              details={remediationDetailsSummary}
               refetchAllRemediations={refetchAllRemediations}
               onRename={setIsRenameModalOpen}
               refetch={refetchRemediationDetails}
               remediationStatus={remediationStatus}
               updateRemPlan={updateRemPlan}
               onNavigateToTab={handleTabClick}
-              allRemediations={allRemediations}
+              allRemediations={allRemediationsData}
               permissions={context.permissions}
               remediationPlaybookRuns={remediationPlaybookRuns?.data[0]}
               detailsLoading={detailsLoading}
@@ -167,11 +168,7 @@ const RemediationDetails = () => {
             aria-label="ActionTab"
             title={<TabTitleText>Actions</TabTitleText>}
           >
-            <ActionsContent
-              remediationDetails={remediationDetails}
-              refetch={refetchRemediationDetails}
-              loading={detailsLoading}
-            />
+            <ActionsContent refetch={refetchRemediationDetails} />
           </Tab>
           <Tab
             eventKey={'systems'}
@@ -184,7 +181,7 @@ const RemediationDetails = () => {
               }
             >
               <SystemsTable
-                remediation={remediationDetails}
+                remediation={remediationDetailsSummary}
                 connectedData={remediationStatus?.connectedData}
                 areDetailsLoading={remediationStatus?.areDetailsLoading}
                 refreshRemediation={refetchRemediationDetails}

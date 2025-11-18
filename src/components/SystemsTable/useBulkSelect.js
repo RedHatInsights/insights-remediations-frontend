@@ -83,7 +83,7 @@ const useBulkSelect = ({
             ]
           : []),
       ],
-      checked: calculateChecked(systemsRef.current, selected),
+      checked: calculateChecked(rows, selected),
       onSelect: () => {
         bulkSelectCheck(rows).length === rows.length
           ? bulkSelectorSwitch('deselect page')

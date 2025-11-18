@@ -4,6 +4,40 @@ import '@testing-library/jest-dom';
 import SystemsTable from './SystemsTable';
 
 // Mock external dependencies to avoid complex integration issues
+const mockRemediationsClient = {
+  __esModule: true,
+  getRemediations: jest.fn(),
+  getRemediation: jest.fn(),
+  updateRemediation: jest.fn(),
+  deleteRemediation: jest.fn(),
+  getRemediationSystems: jest.fn(),
+  deleteRemediationSystems: jest.fn(),
+  getRemediationIssues: jest.fn(),
+  deleteRemediationIssues: jest.fn(),
+  getPlaybookRunSystems: jest.fn(),
+  getPlaybookRunSystemDetails: jest.fn(),
+  runRemediation: jest.fn(),
+  checkExecutable: jest.fn(),
+  listPlaybookRuns: jest.fn(),
+  getRemediationIssueSystems: jest.fn(),
+  getRemediationSystemIssues: jest.fn(),
+  createRemediation: jest.fn(),
+  updateRemediationIssue: jest.fn(),
+  getResolutionsForIssues: jest.fn(),
+  downloadPlaybooks: jest.fn(),
+  getRemediationPlaybook: jest.fn(),
+  deleteRemediations: jest.fn(),
+};
+
+jest.mock(
+  '@redhat-cloud-services/remediations-client',
+  () => mockRemediationsClient,
+);
+
+jest.mock('@redhat-cloud-services/javascript-clients-shared', () => ({
+  APIFactory: jest.fn(() => mockRemediationsClient),
+}));
+
 jest.mock('@redhat-cloud-services/frontend-components/Inventory', () => ({
   InventoryTable: () => <div data-testid="inventory-table" />,
 }));

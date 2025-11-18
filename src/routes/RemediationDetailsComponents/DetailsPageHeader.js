@@ -69,7 +69,7 @@ const RemediationDetailsPageHeader = ({
                     isFedramp ||
                     !isExecutable
                   }
-                  issueCount={remediation?.issues.length}
+                  issueCount={remediation?.issue_count}
                   remediationStatus={remediationStatus}
                   remediation={remediation}
                   refetchRemediationPlaybookRuns={
@@ -79,7 +79,7 @@ const RemediationDetailsPageHeader = ({
               </FlexItem>
               <FlexItem>
                 <ButtonWithToolTip
-                  isDisabled={!remediation?.issues.length}
+                  isDisabled={!remediation?.issue_count}
                   onClick={handleDownload}
                   tooltipContent={
                     <div>
@@ -111,8 +111,23 @@ RemediationDetailsPageHeader.propTypes = {
   remediation: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    issues: PropTypes.array,
-  }).isRequired,
+    auto_reboot: PropTypes.bool,
+    archived: PropTypes.bool,
+    created_by: PropTypes.shape({
+      username: PropTypes.string,
+      first_name: PropTypes.string,
+      last_name: PropTypes.string,
+    }),
+    created_at: PropTypes.string,
+    updated_by: PropTypes.shape({
+      username: PropTypes.string,
+      first_name: PropTypes.string,
+      last_name: PropTypes.string,
+    }),
+    updated_at: PropTypes.string,
+    issue_count: PropTypes.number,
+    system_count: PropTypes.number,
+  }),
   remediationStatus: PropTypes.shape({
     connectedSystems: PropTypes.number.isRequired,
     totalSystems: PropTypes.number.isRequired,
@@ -120,15 +135,13 @@ RemediationDetailsPageHeader.propTypes = {
     detailsError: PropTypes.any,
   }).isRequired,
   isFedramp: PropTypes.bool,
-  allRemediations: PropTypes.shape({
-    data: PropTypes.array.isRequired,
-  }).isRequired,
+  allRemediations: PropTypes.array,
   updateRemPlan: PropTypes.func,
   refetch: PropTypes.func,
-  permissions: PropTypes.obj,
   isExecutable: PropTypes.any,
   refetchAllRemediations: PropTypes.func,
   refetchRemediationPlaybookRuns: PropTypes.func,
+  permissions: PropTypes.object.isRequired,
 };
 
 export default RemediationDetailsPageHeader;

@@ -1,58 +1,58 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import PropTypes from 'prop-types';
 import columns from './Columns';
-import { actionsSystemFilter } from '../../Filters';
-import {
-  TableStateProvider,
-  useSerialisedTableState,
-} from 'bastilian-tabletools';
+// import { actionsSystemFilter } from '../../Filters';
 import TableEmptyState from '../../../OverViewPage/TableEmptyState';
 import RemediationsTable from '../../../../components/RemediationsTable/RemediationsTable';
+import useRemediations from '../../../../Utilities/Hooks/api/useRemediations';
+import { TableStateProvider } from 'bastilian-tabletools';
 
-const SystemsModal = ({ systems, isOpen, onClose, actionName }) => {
-  const serialisedTableState = useSerialisedTableState();
+const SystemsModal = ({
+  remediationId,
+  issueId,
+  isOpen,
+  onClose,
+  actionName,
+}) => {
+  const {
+    result: systems,
+    loading: systemsLoading,
+    fetchAllIds,
+  } = useRemediations('getRemediationIssueSystems', {
+    skip: !isOpen || !remediationId || !issueId,
+    useTableState: true,
+    params: {
+      id: remediationId,
+      issue: issueId,
+    },
+  });
 
-  const filteredSystems = useMemo(() => {
-    const filterState = serialisedTableState?.filters;
-    if (!filterState || Object.keys(filterState).length === 0) {
-      return systems;
-    }
-
-    const searchTerm = filterState?.filter?.display_name;
-    if (!searchTerm) {
-      return systems;
-    }
-
-    const lowerSearchTerm = searchTerm.toLowerCase();
-
-    return systems.filter((item) =>
-      item.display_name?.toLowerCase().includes(lowerSearchTerm),
-    );
-  }, [systems, serialisedTableState]);
+  const systemsData = systems?.data || [];
+  const totalSystems = systems?.meta?.total ?? systemsData?.length ?? 0;
 
   return (
     <Modal
       variant={ModalVariant.large}
-      title={`Affected system${systems.length !== 1 ? 's' : ''}`}
+      title={`Affected system${totalSystems !== 1 ? 's' : ''}`}
       isOpen={isOpen}
       onClose={onClose}
-      isFooterLeftAligned
     >
       <b>Action:</b> {actionName}
       <RemediationsTable
         aria-label="SystemsModalTable"
         ouiaId="SystemsModalTable"
         variant="compact"
-        items={filteredSystems}
-        total={filteredSystems?.length}
+        loading={systemsLoading}
+        items={systemsData}
+        total={totalSystems}
         columns={[...columns]}
-        filters={{ filterConfig: [...actionsSystemFilter] }}
+        // filters={{ filterConfig: [...actionsSystemFilter] }}
         options={{
           EmptyState: TableEmptyState,
-          itemIdsInTable: () => filteredSystems.map(({ id }) => id),
-          itemIdsOnPage: () => filteredSystems.map(({ id }) => id),
-          total: filteredSystems?.length,
+          itemIdsInTable: fetchAllIds,
+          itemIdsOnPage: () => systemsData?.map(({ id }) => id) || [],
+          total: totalSystems,
         }}
       />
     </Modal>
@@ -60,17 +60,17 @@ const SystemsModal = ({ systems, isOpen, onClose, actionName }) => {
 };
 
 SystemsModal.propTypes = {
-  systems: PropTypes.array,
+  remediationId: PropTypes.string.isRequired,
+  issueId: PropTypes.string.isRequired,
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
   actionName: PropTypes.string,
 };
 
-const SystemsModalContentProvider = (props) => {
-  return (
-    <TableStateProvider isNewContext>
-      <SystemsModal {...props} />
-    </TableStateProvider>
-  );
-};
-export default SystemsModalContentProvider;
+const SystemsModalProvider = (props) => (
+  <TableStateProvider isNewContext>
+    <SystemsModal {...props} />
+  </TableStateProvider>
+);
+
+export default SystemsModalProvider;
