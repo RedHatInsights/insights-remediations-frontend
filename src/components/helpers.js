@@ -104,11 +104,47 @@ export const calculateActionPoints = (issues) => {
   }, 0);
 };
 
+// Normalize data because different apps send data differently
+export const normalizeRemediationData = (data) => {
+  if (!data) {
+    return data;
+  }
+
+  // If systems array already exists, return data as-is
+  if (data.systems && Array.isArray(data.systems)) {
+    return data;
+  }
+
+  // Extract unique systems from issues[].systems
+  const systemsSet = new Set();
+  if (data.issues && Array.isArray(data.issues)) {
+    data.issues.forEach((issue) => {
+      if (issue.systems && Array.isArray(issue.systems)) {
+        issue.systems.forEach((system) => {
+          systemsSet.add(system);
+        });
+      }
+    });
+  }
+
+  // Return normalized data with systems array
+  return {
+    ...data,
+    systems: Array.from(systemsSet),
+  };
+};
+
 // Prepares remediation payload for create/update
 export const prepareRemediationPayload = (data, autoReboot) => {
+  // Check if systems are nested within issues (new structure)
+  const hasNestedSystems = data?.issues?.some(
+    (issue) => issue.systems && Array.isArray(issue.systems),
+  );
+
   const issues = (data?.issues || []).map((issue) => ({
     id: issue.id,
-    systems: data?.systems || [],
+    // Use issue's systems if nested, otherwise use flat systems array
+    systems: hasNestedSystems ? issue.systems || [] : data?.systems || [],
   }));
 
   return {

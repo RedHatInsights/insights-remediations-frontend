@@ -23,6 +23,7 @@ import {
   handleRemediationSubmit,
   renderExceedsLimitsAlert,
   wizardHelperText,
+  normalizeRemediationData,
 } from './helpers';
 import { PlanSummaryHeader } from './RemediationWizardV2/PlanSummaryHeader';
 import { PlanSummaryCharts } from './RemediationWizardV2/PlanSummaryCharts';
@@ -39,6 +40,9 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
   const [systemsCount, setSystemsCount] = useState(0);
   const [issuesCount, setIssuesCount] = useState(0);
 
+  // Normalize data structure to ensure systems array exists
+  const normalizedData = useMemo(() => normalizeRemediationData(data), [data]);
+  console.log('data', data);
   const { result: allRemediations, loading: isLoadingRemediationsList } =
     useRemediationsQuery('getRemediations', {
       params: {
@@ -82,10 +86,10 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
   // Update counts when remediation details are fetched for an existing plan
   // or when creating a new plan with data prop
   useEffect(() => {
-    // Calculate action points from data prop issues
-    const baseActionsPoints = calculateActionPoints(data?.issues);
-    const baseSystemsCount = data?.systems?.length ?? 0;
-    const baseIssuesCount = data?.issues?.length ?? 0;
+    // Calculate action points from normalized data issues
+    const baseActionsPoints = calculateActionPoints(normalizedData?.issues);
+    const baseSystemsCount = normalizedData?.systems?.length ?? 0;
+    const baseIssuesCount = normalizedData?.issues?.length ?? 0;
 
     if (isExistingPlanSelected) {
       // Existing plan selected: add plan's counts to data prop counts
@@ -110,7 +114,12 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
       setSystemsCount(baseSystemsCount);
       setIssuesCount(baseIssuesCount);
     }
-  }, [remediationDetailsSummary, isExistingPlanSelected, data, selected]);
+  }, [
+    remediationDetailsSummary,
+    isExistingPlanSelected,
+    normalizedData,
+    selected,
+  ]);
 
   const exceedsLimits = useMemo(() => {
     return actionsCount > 1000 || systemsCount > 100;
@@ -141,7 +150,8 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
 
   const handleSubmit = async () => {
     try {
-      const result = await handleRemediationSubmit({
+      // Pass original data to preserve nested systems structure for payload
+      await handleRemediationSubmit({
         isExistingPlanSelected,
         selected,
         inputValue,
