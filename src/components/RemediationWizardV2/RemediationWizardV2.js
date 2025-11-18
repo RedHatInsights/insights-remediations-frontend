@@ -14,9 +14,9 @@ import {
   HelperTextItem,
 } from '@patternfly/react-core';
 import { DownloadIcon } from '@patternfly/react-icons';
-import useRemediationsQuery from '../api/useRemediationsQuery';
-import useRemediations from '../Utilities/Hooks/api/useRemediations';
-import { RemediationsPopover } from '../routes/RemediationsPopover';
+import useRemediationsQuery from '../../api/useRemediationsQuery';
+import useRemediations from '../../Utilities/Hooks/api/useRemediations';
+import { RemediationsPopover } from '../../routes/RemediationsPopover';
 import {
   calculateActionPoints,
   handleRemediationPreview,
@@ -24,12 +24,13 @@ import {
   renderExceedsLimitsAlert,
   wizardHelperText,
   normalizeRemediationData,
-} from './helpers';
-import { PlanSummaryHeader } from './RemediationWizardV2/PlanSummaryHeader';
-import { PlanSummaryCharts } from './RemediationWizardV2/PlanSummaryCharts';
-import { PlaybookSelect } from './RemediationWizardV2/PlaybookSelect';
-import { usePlaybookSelect } from './RemediationWizardV2/usePlaybookSelect';
-import { download } from '../Utilities/DownloadPlaybookButton';
+} from '../helpers';
+import { remediationUrl } from '../../Utilities/utils';
+import { PlanSummaryHeader } from './PlanSummaryHeader';
+import { PlanSummaryCharts } from './PlanSummaryCharts';
+import { PlaybookSelect } from './PlaybookSelect';
+import { usePlaybookSelect } from './usePlaybookSelect';
+import { download } from '../../Utilities/DownloadPlaybookButton';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 
 export const RemediationWizardV2 = ({ setOpen, data }) => {
@@ -42,7 +43,6 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
 
   // Normalize data structure to ensure systems array exists
   const normalizedData = useMemo(() => normalizeRemediationData(data), [data]);
-  console.log('data', data);
   const { result: allRemediations, loading: isLoadingRemediationsList } =
     useRemediationsQuery('getRemediations', {
       params: {
@@ -148,10 +148,11 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     setOpen(false);
   };
 
+  //TODO: implement error state and success states once implementted by UX
   const handleSubmit = async () => {
     try {
       // Pass original data to preserve nested systems structure for payload
-      await handleRemediationSubmit({
+      const result = await handleRemediationSubmit({
         isExistingPlanSelected,
         selected,
         inputValue,
@@ -160,8 +161,10 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
         createRemediationFetch,
         updateRemediationFetch,
       });
-      //TODO: implement error state and success states once implementted by UX
-      handleClose();
+      if (result?.success && result?.remediationId) {
+        const url = remediationUrl(result.remediationId);
+        window.location.href = url;
+      }
     } catch (error) {
       console.error(error);
     }
@@ -188,11 +191,11 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
         labelId="plan-a-remediation-title"
       />
       <ModalBody id="create-a-remediation-body">
-        <spa>
+        <span>
           Create or update a plan to remediate issues identified by Red Hat
           Lightspeed using Ansible playbooks. Once you generate a plan, you can
           review, download, or execute the plan.
-        </spa>
+        </span>
         <Form>
           <FormGroup
             label="Select or create a playbook"

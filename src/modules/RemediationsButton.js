@@ -7,8 +7,8 @@ import validate from './RemediationsModal/validate';
 import { CAN_REMEDIATE, matchPermissions } from '../Utilities/utils';
 import { Button, Tooltip } from '@patternfly/react-core';
 import RemediationWizard from './RemediationsModal';
-import RemediationWizardV2 from '../components/RemediationWizardV2';
-// import NoDataModal from './RemediationsModal/NoDataModal';
+import RemediationWizardV2 from '../components/RemediationWizardV2/RemediationWizardV2';
+import NoDataModal from './RemediationsModal/NoDataModal';
 import { getTooltipContent } from '../Utilities/helpers';
 import { useFeatureFlag } from '../Utilities/Hooks/useFeatureFlag';
 
@@ -76,11 +76,11 @@ const RemediationButton = ({
         {children}
       </Button>
 
-      {/* <NoDataModal
+      <NoDataModal
         isOpen={isNoDataModalOpen}
         setOpen={setNoDataModalOpen}
         patchNoAdvisoryText={patchNoAdvisoryText}
-      /> */}
+      />
       {remediationsData && !isNewModalEnabled && (
         <RemediationWizard
           setOpen={(isOpen) =>
