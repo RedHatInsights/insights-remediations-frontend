@@ -12,13 +12,19 @@ export const PlanSummaryCharts = ({
   detailsLoading,
   isExistingPlanSelected,
 }) => {
+  const flexDirection =
+    detailsLoading && isExistingPlanSelected
+      ? { default: 'row' }
+      : { default: 'column', md: 'row' };
+
   return (
     <Flex
       className="pf-v6-u-mt-lg"
       gap={{ default: 'gapMd' }}
-      direction={{ default: 'column', md: 'row' }}
+      direction={flexDirection}
+      flexWrap={{ default: 'nowrap' }}
     >
-      <FlexItem flex={{ default: 'flex_1' }}>
+      <FlexItem flex={{ default: 'flex_1' }} style={{ minWidth: 0 }}>
         <Flex direction={{ default: 'column' }}>
           <FlexItem>
             {detailsLoading && isExistingPlanSelected ? (
@@ -76,7 +82,7 @@ export const PlanSummaryCharts = ({
           </FlexItem>
         </Flex>
       </FlexItem>
-      <FlexItem flex={{ default: 'flex_1' }}>
+      <FlexItem flex={{ default: 'flex_1' }} style={{ minWidth: 0 }}>
         <Flex direction={{ default: 'column' }}>
           <FlexItem>
             {detailsLoading && isExistingPlanSelected ? (

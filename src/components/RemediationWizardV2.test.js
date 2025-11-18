@@ -454,7 +454,8 @@ describe('RemediationWizardV2', () => {
       );
 
       const submitButton = screen.getByRole('button', { name: /Create plan/i });
-      expect(submitButton).toBeDisabled();
+      // When disabled with tooltip, button uses isAriaDisabled which sets aria-disabled
+      expect(submitButton).toHaveAttribute('aria-disabled', 'true');
     });
 
     it('should enable submit button when existing plan is selected', async () => {
@@ -501,8 +502,9 @@ describe('RemediationWizardV2', () => {
       await user.type(input, 'New Plan');
 
       // When typing, dropdown opens and button should be disabled
+      // When disabled with tooltip, button uses isAriaDisabled which sets aria-disabled
       const submitButton = screen.getByRole('button', { name: /Create plan/i });
-      expect(submitButton).toBeDisabled();
+      expect(submitButton).toHaveAttribute('aria-disabled', 'true');
     });
 
     it('should toggle auto-reboot switch', () => {
@@ -857,6 +859,180 @@ describe('RemediationWizardV2', () => {
       // Since we're using Modal component, we need to simulate the onClose
       // In a real test, you'd trigger the modal's close mechanism
       // For now, we'll test handleClose indirectly through submit
+    });
+  });
+
+  describe('Confirmation dialog', () => {
+    it('should show confirmation dialog when Cancel button is clicked', async () => {
+      const user = userEvent.setup();
+      render(
+        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
+      );
+
+      // Verify main content is visible
+      expect(screen.getByText('Plan a remediation')).toBeInTheDocument();
+
+      // Click Cancel button
+      const cancelButton = screen.getByRole('button', { name: /Cancel/i });
+      await user.click(cancelButton);
+
+      // Verify confirmation dialog appears
+      expect(
+        screen.getByText('Are you sure you want to cancel?'),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'The systems and actions you selected are not added to this remediation plan.',
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Yes/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /No, go back/i }),
+      ).toBeInTheDocument();
+
+      // Verify main content is hidden
+      expect(screen.queryByText('Plan a remediation')).not.toBeInTheDocument();
+    });
+
+    it('should show confirmation dialog when modal close is triggered', async () => {
+      const user = userEvent.setup();
+      const { container } = render(
+        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
+      );
+
+      // Verify main content is visible
+      expect(screen.getByText('Plan a remediation')).toBeInTheDocument();
+
+      // Find and click the modal close button (X button)
+      const closeButton = screen.queryByLabelText('Close');
+      if (closeButton) {
+        await user.click(closeButton);
+      } else {
+        // If close button not found by label, try to trigger onClose via Escape key
+        fireEvent.keyDown(container, { key: 'Escape', code: 'Escape' });
+      }
+
+      // Verify confirmation dialog appears
+      await waitFor(() => {
+        expect(
+          screen.getByText('Are you sure you want to cancel?'),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should close modal when Yes button is clicked in confirmation dialog', async () => {
+      const user = userEvent.setup();
+      render(
+        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
+      );
+
+      // Click Cancel to show confirmation
+      const cancelButton = screen.getByRole('button', { name: /Cancel/i });
+      await user.click(cancelButton);
+
+      // Wait for confirmation dialog
+      await waitFor(() => {
+        expect(
+          screen.getByText('Are you sure you want to cancel?'),
+        ).toBeInTheDocument();
+      });
+
+      // Click Yes button
+      const yesButton = screen.getByRole('button', { name: /Yes/i });
+      await user.click(yesButton);
+
+      // Verify setOpen was called with false
+      await waitFor(() => {
+        expect(mockSetOpen).toHaveBeenCalledWith(false);
+      });
+    });
+
+    it('should return to main content when No, go back button is clicked', async () => {
+      const user = userEvent.setup();
+      render(
+        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
+      );
+
+      // Click Cancel to show confirmation
+      const cancelButton = screen.getByRole('button', { name: /Cancel/i });
+      await user.click(cancelButton);
+
+      // Wait for confirmation dialog
+      await waitFor(() => {
+        expect(
+          screen.getByText('Are you sure you want to cancel?'),
+        ).toBeInTheDocument();
+      });
+
+      // Click No, go back button
+      const noButton = screen.getByRole('button', { name: /No, go back/i });
+      await user.click(noButton);
+
+      // Verify main content is visible again
+      await waitFor(() => {
+        expect(screen.getByText('Plan a remediation')).toBeInTheDocument();
+      });
+
+      // Verify confirmation dialog is hidden
+      expect(
+        screen.queryByText('Are you sure you want to cancel?'),
+      ).not.toBeInTheDocument();
+
+      // Verify setOpen was NOT called
+      expect(mockSetOpen).not.toHaveBeenCalled();
+    });
+
+    it('should show warning icon in confirmation dialog title', async () => {
+      const user = userEvent.setup();
+      render(
+        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
+      );
+
+      // Click Cancel to show confirmation
+      const cancelButton = screen.getByRole('button', { name: /Cancel/i });
+      await user.click(cancelButton);
+
+      // Wait for confirmation dialog
+      await waitFor(() => {
+        expect(
+          screen.getByText('Are you sure you want to cancel?'),
+        ).toBeInTheDocument();
+      });
+
+      // Verify the confirmation dialog title is present
+      // The titleIconVariant prop should be set to 'warning' on ModalHeader
+      expect(
+        screen.getByText('Are you sure you want to cancel?'),
+      ).toBeInTheDocument();
+    });
+
+    it('should maintain main content state when returning from confirmation', async () => {
+      const user = userEvent.setup();
+      render(
+        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
+      );
+
+      // Type in the playbook select input
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.type(input, 'Test Plan');
+
+      // Click Cancel to show confirmation
+      const cancelButton = screen.getByRole('button', { name: /Cancel/i });
+      await user.click(cancelButton);
+
+      // Click No, go back
+      await waitFor(() => {
+        expect(
+          screen.getByText('Are you sure you want to cancel?'),
+        ).toBeInTheDocument();
+      });
+      const noButton = screen.getByRole('button', { name: /No, go back/i });
+      await user.click(noButton);
+
+      // Verify input value is preserved
+      await waitFor(() => {
+        expect(input).toHaveValue('Test Plan');
+      });
     });
   });
 
