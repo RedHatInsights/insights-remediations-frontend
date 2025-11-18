@@ -15,7 +15,7 @@ import {
   Tooltip,
   Flex,
 } from '@patternfly/react-core';
-import { DownloadIcon } from '@patternfly/react-icons';
+import { DownloadIcon, ExternalLinkAltIcon } from '@patternfly/react-icons';
 import useRemediationsQuery from '../../api/useRemediationsQuery';
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import { RemediationsPopover } from '../../routes/RemediationsPopover';
@@ -34,6 +34,7 @@ import { PlaybookSelect } from './PlaybookSelect';
 import { usePlaybookSelect } from './usePlaybookSelect';
 import { download } from '../../Utilities/DownloadPlaybookButton';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
+import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 
 export const RemediationWizardV2 = ({ setOpen, data }) => {
   const addNotification = useAddNotification();
@@ -211,6 +212,20 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
           Lightspeed using Ansible playbooks. Once you generate a plan, you can
           review, download, or execute the plan.
         </span>
+        <InsightsLink
+          to={
+            'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-managing-playbooks_red-hat-lightspeed-remediation-guide'
+          }
+          target="_blank"
+        >
+          <Button
+            icon={<ExternalLinkAltIcon />}
+            variant="link"
+            className="pf-v6-u-font-size-sm"
+          >
+            Learn More
+          </Button>{' '}
+        </InsightsLink>
         <Form>
           <FormGroup
             label="Select or create a playbook"
