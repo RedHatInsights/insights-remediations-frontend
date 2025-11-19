@@ -162,6 +162,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
   };
 
   //TODO: implement error state and success states once implementted by UX
+  //TODO: implement throttling
   const handleSubmit = async () => {
     if (!hasPlanSelection) {
       return;
@@ -185,7 +186,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
       console.error(error);
     }
   };
-
+  //TODO: implement payload end point request
   const handlePreview = () => {
     handleRemediationPreview({
       selected,

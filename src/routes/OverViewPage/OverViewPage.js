@@ -65,13 +65,11 @@ export const OverViewPage = () => {
     skip: true,
   });
 
-  const { fetchBatched: deleteRelList } = useRemediations(
-    'deleteRemediations',
-    {
-      skip: true,
-      batched: true,
-    },
-  );
+  const { fetch: deleteRelList } = useRemediations('deleteRemediations', {
+    skip: true,
+    useTableState: false,
+    params: {},
+  });
 
   const { fetchQueue } = useRemediationFetchExtras({
     fetch: deleteRelList,
