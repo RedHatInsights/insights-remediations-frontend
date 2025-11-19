@@ -176,7 +176,7 @@ export const ExecuteModal = ({
                     variant="link"
                     isInline
                     component="a"
-                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide/index"
+                    href="https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/red_hat_lightspeed_remediations_guide/index"
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -196,7 +196,7 @@ export const ExecuteModal = ({
                     variant="link"
                     isInline
                     component="a"
-                    href="https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide/index"
+                    href="https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/red_hat_lightspeed_remediations_guide/index"
                     target="_blank"
                     rel="noreferrer"
                   >
