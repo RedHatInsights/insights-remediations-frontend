@@ -12,6 +12,17 @@ export const PlanSummaryCharts = ({
   detailsLoading,
   isExistingPlanSelected,
 }) => {
+  const ACTIONS_MAX = 1000;
+  const SYSTEMS_MAX = 100;
+
+  const clampedActionsCount = Math.min(actionsCount, ACTIONS_MAX);
+  const clampedSystemsCount = Math.min(systemsCount, SYSTEMS_MAX);
+
+  // Calculate total for the bar
+  const totalPoints = Math.min(issuesCount + clampedActionsCount, ACTIONS_MAX);
+
+  const totalSystems = clampedSystemsCount;
+
   const flexDirection =
     detailsLoading && isExistingPlanSelected
       ? { default: 'row' }
@@ -24,6 +35,7 @@ export const PlanSummaryCharts = ({
       direction={flexDirection}
       flexWrap={{ default: 'nowrap' }}
     >
+      {/* Actions / Points chart */}
       <FlexItem flex={{ default: 'flex_1' }} style={{ minWidth: 0 }}>
         <Flex direction={{ default: 'column' }}>
           <FlexItem>
@@ -37,10 +49,10 @@ export const PlanSummaryCharts = ({
                     ariaTitle="Action points"
                     name="actions-chart"
                     comparativeWarningMeasureData={[
-                      { name: 'Warning', y: 1000 },
+                      { name: 'Warning', y: ACTIONS_MAX },
                     ]}
                     comparativeWarningMeasureLegendData={[
-                      { name: 'Warning at 1000' },
+                      { name: `Warning at ${ACTIONS_MAX}` },
                     ]}
                     title="Actions"
                     subTitle={pluralize(actionsCount, 'point')}
@@ -52,20 +64,24 @@ export const PlanSummaryCharts = ({
                       top: 50,
                     }}
                     labels={({ datum }) => {
-                      // Show both actions and points in the tooltip
-                      if (datum.name === 'actions' || datum.name === 'points') {
-                        return `${pluralize(issuesCount, 'action')}, ${pluralize(actionsCount, 'point')}`;
+                      if (datum.name === 'total') {
+                        return `${pluralize(
+                          issuesCount,
+                          'action',
+                        )}, ${pluralize(actionsCount, 'point')}`;
                       }
                       return `${datum.name}: ${datum.y}`;
                     }}
-                    maxDomain={{ y: 1000 }}
+                    maxDomain={{ y: ACTIONS_MAX }}
                     primarySegmentedMeasureData={[
-                      { name: 'actions', y: issuesCount },
-                      { name: 'points', y: actionsCount },
+                      { name: 'total', y: totalPoints },
                     ]}
                     primarySegmentedMeasureLegendData={[
                       {
-                        name: `${pluralize(issuesCount, 'action')}, ${pluralize(actionsCount, 'point')}`,
+                        name: `${pluralize(
+                          issuesCount,
+                          'action',
+                        )}, ${pluralize(actionsCount, 'point')}`,
                       },
                     ]}
                   />
@@ -73,7 +89,7 @@ export const PlanSummaryCharts = ({
                 <FlexItem alignSelf={{ default: 'alignSelfFlexEnd' }}>
                   <Flex justifyContent={{ default: 'justifyContentFlexEnd' }}>
                     <FlexItem style={{ paddingRight: '50px' }}>
-                      1000 points maximum
+                      {ACTIONS_MAX} points maximum
                     </FlexItem>
                   </Flex>
                 </FlexItem>
@@ -82,6 +98,8 @@ export const PlanSummaryCharts = ({
           </FlexItem>
         </Flex>
       </FlexItem>
+
+      {/* Systems chart */}
       <FlexItem flex={{ default: 'flex_1' }} style={{ minWidth: 0 }}>
         <Flex direction={{ default: 'column' }}>
           <FlexItem>
@@ -93,9 +111,11 @@ export const PlanSummaryCharts = ({
                   ariaDesc="Systems bullet chart"
                   ariaTitle="Systems"
                   name="systems-chart"
-                  comparativeWarningMeasureData={[{ name: 'Warning', y: 100 }]}
+                  comparativeWarningMeasureData={[
+                    { name: 'Warning', y: SYSTEMS_MAX },
+                  ]}
                   comparativeWarningMeasureLegendData={[
-                    { name: 'Warning at 100' },
+                    { name: `Warning at ${SYSTEMS_MAX}` },
                   ]}
                   title="Systems"
                   subTitle={pluralize(systemsCount, 'system')}
@@ -107,19 +127,21 @@ export const PlanSummaryCharts = ({
                     top: 50,
                   }}
                   labels={({ datum }) => {
-                    // Show systems count in "# systems" format
-                    if (datum.name === 'systems') {
-                      return ` ${pluralize(datum.y, 'system')}`;
+                    if (datum.name === 'total') {
+                      return pluralize(systemsCount, 'system');
                     }
                     return `${datum.name}: ${datum.y}`;
                   }}
-                  maxDomain={{ y: 100 }}
+                  maxDomain={{ y: SYSTEMS_MAX }}
                   primarySegmentedMeasureData={[
-                    { name: 'systems', y: systemsCount },
+                    { name: 'total', y: totalSystems },
                   ]}
                   primarySegmentedMeasureLegendData={[
                     {
-                      name: `${systemsCount} ${pluralize(systemsCount, 'system')}`,
+                      name: `${systemsCount} ${pluralize(
+                        systemsCount,
+                        'system',
+                      )}`,
                     },
                   ]}
                 />
@@ -129,7 +151,7 @@ export const PlanSummaryCharts = ({
           <FlexItem alignSelf={{ default: 'alignSelfFlexEnd' }}>
             <Flex justifyContent={{ default: 'justifyContentFlexEnd' }}>
               <FlexItem style={{ paddingRight: '50px' }}>
-                100 systems maximum
+                {SYSTEMS_MAX} systems maximum
               </FlexItem>
             </Flex>
           </FlexItem>

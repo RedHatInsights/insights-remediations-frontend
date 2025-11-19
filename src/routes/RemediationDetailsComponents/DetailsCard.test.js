@@ -518,7 +518,7 @@ describe('DetailsCard', () => {
       const learnMoreLink = screen.getByTestId('insights-link');
       expect(learnMoreLink).toHaveAttribute(
         'href',
-        'https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index#creating-managing-playbooks_red-hat-insights-remediation-guide',
+        'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-managing-playbooks_red-hat-lightspeed-remediation-guide',
       );
       expect(learnMoreLink).toHaveAttribute('target', '_blank');
     });

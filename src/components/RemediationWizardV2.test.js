@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { RemediationWizardV2 } from './RemediationWizardV2/RemediationWizardV2';
 
 jest.mock('../api/useRemediationsQuery', () => ({
@@ -52,6 +53,10 @@ const useRemediations =
   require('../Utilities/Hooks/api/useRemediations').default;
 const helpers = require('./helpers');
 const utils = require('../Utilities/utils');
+
+const renderWithRouter = (component) => {
+  return render(<BrowserRouter>{component}</BrowserRouter>);
+};
 
 describe('RemediationWizardV2', () => {
   const mockSetOpen = jest.fn();
@@ -147,7 +152,7 @@ describe('RemediationWizardV2', () => {
 
   describe('Basic rendering', () => {
     it('should render all modal components correctly', () => {
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -201,7 +206,7 @@ describe('RemediationWizardV2', () => {
 
   describe('Data normalization', () => {
     it('should handle flat data structure (with systems array)', () => {
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -211,7 +216,7 @@ describe('RemediationWizardV2', () => {
     });
 
     it('should normalize nested data structure (systems within issues)', () => {
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataNested} />,
       );
 
@@ -222,7 +227,7 @@ describe('RemediationWizardV2', () => {
     });
 
     it('should handle empty data', () => {
-      render(
+      renderWithRouter(
         <RemediationWizardV2
           setOpen={mockSetOpen}
           data={{ issues: [], systems: [] }}
@@ -243,7 +248,7 @@ describe('RemediationWizardV2', () => {
         ],
       };
 
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={dataNoSystems} />,
       );
 
@@ -267,7 +272,7 @@ describe('RemediationWizardV2', () => {
         ],
       };
 
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={dataWithDuplicates} />,
       );
 
@@ -287,7 +292,7 @@ describe('RemediationWizardV2', () => {
         systems: ['system-1'],
       };
 
-      render(
+      renderWithRouter(
         <RemediationWizardV2
           setOpen={mockSetOpen}
           data={dataWithMultipleTypes}
@@ -329,7 +334,7 @@ describe('RemediationWizardV2', () => {
         loading: false,
       });
 
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -366,7 +371,7 @@ describe('RemediationWizardV2', () => {
           .map((_, i) => `system-${i}`),
       };
 
-      render(
+      renderWithRouter(
         <RemediationWizardV2
           setOpen={mockSetOpen}
           data={dataExceedingSystems}
@@ -392,7 +397,7 @@ describe('RemediationWizardV2', () => {
         systems: ['system-1'],
       };
 
-      render(
+      renderWithRouter(
         <RemediationWizardV2
           setOpen={mockSetOpen}
           data={dataExceedingActions}
@@ -407,7 +412,7 @@ describe('RemediationWizardV2', () => {
     });
 
     it('should not show exceeds limits when within bounds', () => {
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -426,7 +431,7 @@ describe('RemediationWizardV2', () => {
           .map((_, i) => `system-${i}`),
       };
 
-      render(
+      renderWithRouter(
         <RemediationWizardV2
           setOpen={mockSetOpen}
           data={dataExceedingSystems}
@@ -449,7 +454,7 @@ describe('RemediationWizardV2', () => {
 
   describe('Form interactions', () => {
     it('should disable submit button when no plan is selected and input is empty', () => {
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -467,7 +472,7 @@ describe('RemediationWizardV2', () => {
         loading: false,
       });
 
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -493,7 +498,7 @@ describe('RemediationWizardV2', () => {
 
     it('should disable submit button when dropdown is open', async () => {
       const user = userEvent.setup();
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -508,7 +513,7 @@ describe('RemediationWizardV2', () => {
     });
 
     it('should toggle auto-reboot switch', () => {
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -526,7 +531,7 @@ describe('RemediationWizardV2', () => {
   describe('Submit functionality', () => {
     it('should call handleRemediationSubmit when creating new plan', async () => {
       const user = userEvent.setup();
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -574,7 +579,7 @@ describe('RemediationWizardV2', () => {
         loading: false,
       });
 
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -611,7 +616,7 @@ describe('RemediationWizardV2', () => {
 
     it('should navigate to remediation details page after successful submission', async () => {
       const user = userEvent.setup();
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -660,7 +665,7 @@ describe('RemediationWizardV2', () => {
         // No remediationId
       });
 
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -705,7 +710,7 @@ describe('RemediationWizardV2', () => {
         new Error('Submission failed'),
       );
 
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -743,7 +748,7 @@ describe('RemediationWizardV2', () => {
 
     it('should pass original data (not normalized) to handleRemediationSubmit', async () => {
       const user = userEvent.setup();
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataNested} />,
       );
 
@@ -812,7 +817,7 @@ describe('RemediationWizardV2', () => {
         };
       });
 
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -851,7 +856,7 @@ describe('RemediationWizardV2', () => {
 
   describe('Modal close functionality', () => {
     it('should call setOpen(false) when modal is closed', () => {
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -865,7 +870,7 @@ describe('RemediationWizardV2', () => {
   describe('Confirmation dialog', () => {
     it('should show confirmation dialog when Cancel button is clicked', async () => {
       const user = userEvent.setup();
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -896,7 +901,7 @@ describe('RemediationWizardV2', () => {
 
     it('should show confirmation dialog when modal close is triggered', async () => {
       const user = userEvent.setup();
-      const { container } = render(
+      const { container } = renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -922,7 +927,7 @@ describe('RemediationWizardV2', () => {
 
     it('should close modal when Yes button is clicked in confirmation dialog', async () => {
       const user = userEvent.setup();
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -949,7 +954,7 @@ describe('RemediationWizardV2', () => {
 
     it('should return to main content when No, go back button is clicked', async () => {
       const user = userEvent.setup();
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -984,7 +989,7 @@ describe('RemediationWizardV2', () => {
 
     it('should show warning icon in confirmation dialog title', async () => {
       const user = userEvent.setup();
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -1008,7 +1013,7 @@ describe('RemediationWizardV2', () => {
 
     it('should maintain main content state when returning from confirmation', async () => {
       const user = userEvent.setup();
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
@@ -1038,21 +1043,25 @@ describe('RemediationWizardV2', () => {
 
   describe('Edge cases', () => {
     it('should handle null data gracefully', () => {
-      render(<RemediationWizardV2 setOpen={mockSetOpen} data={null} />);
+      renderWithRouter(
+        <RemediationWizardV2 setOpen={mockSetOpen} data={null} />,
+      );
 
       expect(screen.getAllByText(/0 systems/i).length).toBeGreaterThan(0);
       expect(screen.getAllByText(/0 actions/i).length).toBeGreaterThan(0);
     });
 
     it('should handle undefined data gracefully', () => {
-      render(<RemediationWizardV2 setOpen={mockSetOpen} data={undefined} />);
+      renderWithRouter(
+        <RemediationWizardV2 setOpen={mockSetOpen} data={undefined} />,
+      );
 
       expect(screen.getAllByText(/0 systems/i).length).toBeGreaterThan(0);
       expect(screen.getAllByText(/0 actions/i).length).toBeGreaterThan(0);
     });
 
     it('should handle data with missing issues array', () => {
-      render(
+      renderWithRouter(
         <RemediationWizardV2
           setOpen={mockSetOpen}
           data={{ systems: ['system-1'] }}
@@ -1087,7 +1096,7 @@ describe('RemediationWizardV2', () => {
         };
       });
 
-      render(
+      renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
 
