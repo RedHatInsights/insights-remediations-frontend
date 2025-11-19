@@ -5,6 +5,8 @@ import { Flex } from '@patternfly/react-core';
 import { ExecuteModal } from './Modals/ExecuteModal';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import ButtonWithToolTip from '../Utilities/ButtonWithToolTip';
+import { useFeatureFlag } from '../Utilities/Hooks/useFeatureFlag';
+import { ExecuteModalV2 } from './Modals/ExecuteModalV2';
 
 const ExecuteButton = ({
   isDisabled,
@@ -14,6 +16,7 @@ const ExecuteButton = ({
   refetchRemediationPlaybookRuns,
 }) => {
   const [open, setOpen] = useState(false);
+  const isNewModalEnabled = useFeatureFlag('newModal');
 
   return (
     <React.Fragment>
@@ -39,7 +42,7 @@ const ExecuteButton = ({
       >
         {isDisabled && <ExclamationTriangleIcon />} Execute
       </ButtonWithToolTip>
-      {open && (
+      {open && !isNewModalEnabled && (
         <ExecuteModal
           isOpen={open}
           onClose={() => {
@@ -48,6 +51,15 @@ const ExecuteButton = ({
           remediation={remediation}
           remediationStatus={remediationStatus}
           issueCount={issueCount}
+          refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
+        />
+      )}
+      {open && isNewModalEnabled && (
+        <ExecuteModalV2
+          isOpen={open}
+          onClose={() => setOpen(false)}
+          remediation={remediation}
+          remediationStatus={remediationStatus}
           refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
         />
       )}
