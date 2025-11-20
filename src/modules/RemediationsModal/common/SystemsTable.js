@@ -14,8 +14,8 @@ const SystemsTable = ({
   registry,
   allSystemsNamed,
   allSystems,
-  hasCheckbox,
-  disabledColumns,
+  hasCheckbox = false,
+  disabledColumns = [],
   bulkSelect,
 }) => {
   const inventory = useRef(null);
@@ -47,7 +47,6 @@ const SystemsTable = ({
           [],
         )
       }
-      noDetail
       variant="compact"
       hasCheckbox={hasCheckbox}
       showTags
@@ -73,11 +72,6 @@ const SystemsTable = ({
       }}
     ></InventoryTable>
   );
-};
-
-SystemsTable.defaultParameters = {
-  disabledColumns: [],
-  hasCheckbox: false,
 };
 
 SystemsTable.propTypes = {
