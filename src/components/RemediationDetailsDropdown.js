@@ -19,7 +19,7 @@ import { PermissionContext } from '../App';
 function RemediationDetailsDropdown({
   remediation,
   remediationsList,
-  refetch,
+  refetchRemediationDetails,
   refetchAllRemediations,
 }) {
   const [open, setOpen] = useState(false);
@@ -29,12 +29,9 @@ function RemediationDetailsDropdown({
   const navigate = useNavigate();
   const addNotification = useAddNotification();
 
-  const { fetch: deleteRemediation } = useRemediations(
-    'deleteRemediation',
-    {
-      skip: true,
-    },
-  );
+  const { fetch: deleteRemediation } = useRemediations('deleteRemediation', {
+    skip: true,
+  });
 
   const handleDelete = async (id) => {
     try {
@@ -64,7 +61,7 @@ function RemediationDetailsDropdown({
           remediation={remediation}
           setIsRenameModalOpen={setRenameDialogOpen}
           remediationsList={remediationsList}
-          fetch={refetch}
+          fetch={refetchRemediationDetails}
           refetch={refetchAllRemediations}
         />
       )}
@@ -122,7 +119,7 @@ function RemediationDetailsDropdown({
 RemediationDetailsDropdown.propTypes = {
   remediation: PropTypes.object.isRequired,
   remediationsList: PropTypes.array,
-  refetch: PropTypes.func,
+  refetchRemediationDetails: PropTypes.func,
   refetchAllRemediations: PropTypes.func,
 };
 
