@@ -6,6 +6,7 @@ const useOnConfirm = ({
   deleteRemediationSystems,
   remediation,
   refreshRemediation,
+  refetchConnectionStatus,
   setIsOpen,
   addNotification,
   clearSelection,
@@ -23,6 +24,9 @@ const useOnConfirm = ({
             ];
       await deleteRemediationSystems(selectedSystems, remediation);
       await refreshRemediation();
+      if (refetchConnectionStatus) {
+        await refetchConnectionStatus();
+      }
 
       activeSystem.current = undefined;
 
@@ -56,6 +60,7 @@ const useOnConfirm = ({
     deleteRemediationSystems,
     remediation,
     refreshRemediation,
+    refetchConnectionStatus,
     setIsOpen,
     addNotification,
     clearSelection,
