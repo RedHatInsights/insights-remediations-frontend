@@ -30,6 +30,7 @@ const SystemsTableWrapper = ({
   refreshRemediation,
   connectedData,
   areDetailsLoading,
+  refetchConnectionStatus,
 }) => {
   const inventory = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -44,12 +45,9 @@ const SystemsTableWrapper = ({
   const loaded = useSelector(({ entities }) => entities?.loaded);
   const rows = useSelector(({ entities }) => entities?.rows);
 
-  const { fetch: fetchSystems } = useRemediations(
-    'getRemediationSystems',
-    {
-      skip: true,
-    },
-  );
+  const { fetch: fetchSystems } = useRemediations('getRemediationSystems', {
+    skip: true,
+  });
 
   const clearSelection = useCallback(() => {
     if (selected && selected.size > 0) {
@@ -78,6 +76,7 @@ const SystemsTableWrapper = ({
     refreshRemediation: async () => {
       await refreshRemediation();
     },
+    refetchConnectionStatus,
     setIsOpen,
     addNotification,
     clearSelection,
@@ -216,6 +215,7 @@ SystemsTableWrapper.propTypes = {
     PropTypes.number,
   ]),
   areDetailsLoading: PropTypes.bool,
+  refetchConnectionStatus: PropTypes.func,
 };
 
 export default SystemsTable;
