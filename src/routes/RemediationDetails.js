@@ -88,6 +88,7 @@ const RemediationDetails = () => {
     areDetailsLoading,
     detailsError,
     connectedData,
+    refetchConnectionStatus,
   ] = useConnectionStatus(remediationDetailsSummary?.id, axios);
 
   const remediationStatus = {
@@ -183,6 +184,7 @@ const RemediationDetails = () => {
                 connectedData={remediationStatus?.connectedData}
                 areDetailsLoading={remediationStatus?.areDetailsLoading}
                 refreshRemediation={refetchRemediationDetails}
+                refetchConnectionStatus={refetchConnectionStatus}
               />
             </section>
           </Tab>

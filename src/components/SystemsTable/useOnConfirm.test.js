@@ -422,6 +422,64 @@ describe('useOnConfirm Hook', () => {
 
       expect(mockRefreshRemediation).toHaveBeenCalled();
     });
+
+    it('should call refetchConnectionStatus when provided', async () => {
+      mockSelected = new Map();
+      const mockRefetchConnectionStatus = jest.fn().mockResolvedValue();
+      mockDeleteSystems.mockReturnValue(createMockAction());
+      mockRefreshRemediation.mockResolvedValue();
+
+      const { result } = renderHook(() =>
+        useOnConfirm({
+          selected: mockSelected,
+          activeSystem: mockActiveSystem,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
+          remediation: mockRemediation,
+          refreshRemediation: mockRefreshRemediation,
+          refetchConnectionStatus: mockRefetchConnectionStatus,
+          setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
+        }),
+      );
+
+      await act(async () => {
+        await result.current();
+      });
+
+      expect(mockDeleteSystems).toHaveBeenCalled();
+      expect(mockRefreshRemediation).toHaveBeenCalled();
+      expect(mockRefetchConnectionStatus).toHaveBeenCalled();
+    });
+
+    it('should not call refetchConnectionStatus when not provided', async () => {
+      mockSelected = new Map();
+      mockDeleteSystems.mockReturnValue(createMockAction());
+      mockRefreshRemediation.mockResolvedValue();
+
+      const { result } = renderHook(() =>
+        useOnConfirm({
+          selected: mockSelected,
+          activeSystem: mockActiveSystem,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
+          remediation: mockRemediation,
+          refreshRemediation: mockRefreshRemediation,
+          setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
+        }),
+      );
+
+      await act(async () => {
+        await result.current();
+      });
+
+      expect(mockDeleteSystems).toHaveBeenCalled();
+      expect(mockRefreshRemediation).toHaveBeenCalled();
+      // refetchConnectionStatus is not provided, so it shouldn't be called
+    });
   });
 
   describe('Edge cases', () => {
