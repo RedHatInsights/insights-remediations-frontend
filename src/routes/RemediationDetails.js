@@ -57,12 +57,9 @@ const RemediationDetails = () => {
     params: { id },
   });
 
-  const { fetch: updateRemPlan } = useRemediations(
-    updateRemediationWrapper,
-    {
-      skip: true,
-    },
-  );
+  const { fetch: updateRemPlan } = useRemediations(updateRemediationWrapper, {
+    skip: true,
+  });
 
   useEffect(() => {
     remediationDetailsSummary &&

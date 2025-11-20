@@ -70,13 +70,10 @@ const SystemsContent = ({ remediationDetails, remediationStatus, refetch }) => {
   );
   const loadingProfile = tagsLoading || hostLoading;
 
-  const { fetchBatched: deleteSystems } = useRemediations(
-    deleteIssues(axios),
-    {
-      skip: true,
-      batched: true,
-    },
-  );
+  const { fetchBatched: deleteSystems } = useRemediations(deleteIssues(axios), {
+    skip: true,
+    batched: true,
+  });
   const { fetchQueue } = useRemediationFetchExtras({
     fetch: deleteSystems,
   });
