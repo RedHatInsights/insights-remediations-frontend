@@ -102,9 +102,22 @@ const DetailsCard = ({
   if (!details) {
     return <Spinner />;
   }
-  const onToggleAutoreboot = () => {
+  const onToggleAutoreboot = async () => {
     setRebootToggle(!rebootToggle);
-    updateRemPlan({ id: details.id, auto_reboot: !rebootToggle });
+    try {
+      await updateRemPlan({ id: details.id, auto_reboot: !rebootToggle });
+      await refetch();
+    } catch (error) {
+      console.error(error);
+      // Revert toggle on error
+      setRebootToggle(rebootToggle);
+      addNotification({
+        title: 'Failed to update auto-reboot setting',
+        variant: 'danger',
+        dismissable: true,
+        autoDismiss: true,
+      });
+    }
   };
 
   const formatedDate = new Date(remediationPlaybookRuns?.updated_at);

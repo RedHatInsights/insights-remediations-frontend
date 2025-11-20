@@ -1,6 +1,12 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Content, List, ListItem } from '@patternfly/react-core';
+import {
+  Button,
+  Content,
+  List,
+  ListItem,
+  Spinner,
+} from '@patternfly/react-core';
 import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
@@ -9,9 +15,10 @@ import { pluralize } from '../../Utilities/utils';
 export const ExecuteModalV2 = ({
   isOpen,
   onClose,
-  remediation,
   refetchRemediationPlaybookRuns,
   remediationStatus,
+  remediation,
+  detailsLoading,
 }) => {
   const addNotification = useAddNotification();
 
@@ -105,32 +112,36 @@ export const ExecuteModalV2 = ({
         </Button>,
       ]}
     >
-      <Content>
-        <Content component="p">
-          Once you execute this plan, changes will be pushed immediately and
-          cannot be rolled back.
-        </Content>
+      {detailsLoading ? (
+        <Spinner size="lg" />
+      ) : (
+        <Content>
+          <Content component="p">
+            Once you execute this plan, changes will be pushed immediately and
+            cannot be rolled back.
+          </Content>
 
-        <List className="pf-v6-u-mt-md">
-          <ListItem>
-            Executing this plan will remediate{' '}
-            {pluralize(connectedCount, 'system')}.
-          </ListItem>
-          <ListItem>
-            {autoRebootEnabled ? (
-              <>
-                Auto-reboot is enabled for this plan. All of the included
-                systems that require a reboot will reboot automatically.
-              </>
-            ) : (
-              <>
-                Auto-reboot is disabled for this plan. None of the included
-                systems will reboot automatically.
-              </>
-            )}
-          </ListItem>
-        </List>
-      </Content>
+          <List className="pf-v6-u-mt-md">
+            <ListItem>
+              Executing this plan will remediate{' '}
+              {pluralize(connectedCount, 'system')}.
+            </ListItem>
+            <ListItem>
+              {autoRebootEnabled ? (
+                <>
+                  Auto-reboot is enabled for this plan. All of the included
+                  systems that require a reboot will reboot automatically.
+                </>
+              ) : (
+                <>
+                  Auto-reboot is disabled for this plan. None of the included
+                  systems will reboot automatically.
+                </>
+              )}
+            </ListItem>
+          </List>
+        </Content>
+      )}
     </Modal>
   );
 };
@@ -139,7 +150,7 @@ ExecuteModalV2.propTypes = {
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
   remediation: PropTypes.object,
-  issueCount: PropTypes.number,
   refetchRemediationPlaybookRuns: PropTypes.func,
   remediationStatus: PropTypes.object,
+  detailsLoading: PropTypes.bool,
 };
