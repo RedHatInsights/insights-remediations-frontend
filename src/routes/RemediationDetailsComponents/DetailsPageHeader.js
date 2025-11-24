@@ -19,10 +19,11 @@ const RemediationDetailsPageHeader = ({
   allRemediations,
   refetchAllRemediations,
   updateRemPlan,
-  refetch,
+  refetchRemediationDetails,
   permissions,
   refetchRemediationPlaybookRuns,
   isExecutable,
+  detailsLoading,
 }) => {
   const addNotification = useAddNotification();
   const handleDownload = useCallback(() => {
@@ -75,6 +76,7 @@ const RemediationDetailsPageHeader = ({
                   refetchRemediationPlaybookRuns={
                     refetchRemediationPlaybookRuns
                   }
+                  detailsLoading={detailsLoading}
                 />
               </FlexItem>
               <FlexItem>
@@ -97,7 +99,7 @@ const RemediationDetailsPageHeader = ({
                   remediationsList={allRemediations}
                   refetchAllRemediations={refetchAllRemediations}
                   updateRemPlan={updateRemPlan}
-                  refetch={refetch}
+                  refetchRemediationDetails={refetchRemediationDetails}
                 />
               </FlexItem>
             </Flex>
@@ -137,11 +139,12 @@ RemediationDetailsPageHeader.propTypes = {
   isFedramp: PropTypes.bool,
   allRemediations: PropTypes.array,
   updateRemPlan: PropTypes.func,
-  refetch: PropTypes.func,
+  refetchRemediationDetails: PropTypes.func,
   isExecutable: PropTypes.any,
   refetchAllRemediations: PropTypes.func,
   refetchRemediationPlaybookRuns: PropTypes.func,
   permissions: PropTypes.object.isRequired,
+  detailsLoading: PropTypes.bool,
 };
 
 export default RemediationDetailsPageHeader;
