@@ -197,18 +197,185 @@ export const handleRemediationSubmit = async ({
   }
 };
 
-// Handles preview/download of remediation
-export const handleRemediationPreview = ({
-  selected,
+// Prepares playbook preview payload by merging existing remediation with new data
+// Returns payload in format: { issues: [{ id, systems: [], resolution?: string }], auto_reboot: boolean }
+export const preparePlaybookPreviewPayload = ({
+  isExistingPlanSelected,
   remediationDetailsSummary,
-  allRemediationsData,
-  download,
-  addNotification,
+  data,
+  autoReboot,
 }) => {
-  // Prepare remediation data for download
-  const remediationData = remediationDetailsSummary
-    ? [remediationDetailsSummary]
-    : allRemediationsData?.filter((r) => r.id === selected) || [];
+  // Check if systems are nested within issues (new structure)
+  const hasNestedSystems = data?.issues?.some(
+    (issue) => issue.systems && Array.isArray(issue.systems),
+  );
 
-  download([selected], remediationData, addNotification);
+  // Prepare new issues from data prop
+  const newIssues = (data?.issues || []).map((issue) => {
+    const issuePayload = {
+      id: issue.id,
+      systems: hasNestedSystems ? issue.systems || [] : data?.systems || [],
+    };
+
+    // Include resolution if present
+    if (issue.resolution) {
+      issuePayload.resolution = issue.resolution;
+    }
+
+    return issuePayload;
+  });
+
+  if (!isExistingPlanSelected || !remediationDetailsSummary) {
+    // New plan: just use the data prop
+    return {
+      issues: newIssues,
+      auto_reboot: autoReboot,
+    };
+  }
+
+  // Existing plan: merge existing remediation issues with new issues
+  const existingIssues = (remediationDetailsSummary.issues || []).map(
+    (issue) => {
+      // Extract system IDs - handle both object and string formats
+      const systemIds =
+        issue.systems?.map((system) =>
+          typeof system === 'string' ? system : system.id,
+        ) || [];
+
+      const issuePayload = {
+        id: issue.id,
+        systems: systemIds,
+      };
+
+      // Include resolution if present
+      if (issue.resolution) {
+        issuePayload.resolution =
+          typeof issue.resolution === 'string'
+            ? issue.resolution
+            : issue.resolution.id;
+      }
+
+      return issuePayload;
+    },
+  );
+
+  // Merge existing and new issues
+  // If an issue exists in both, combine their systems arrays (deduplicate)
+  const issuesMap = new Map();
+
+  // Add existing issues first
+  existingIssues.forEach((issue) => {
+    issuesMap.set(issue.id, {
+      ...issue,
+      systems: [...issue.systems],
+    });
+  });
+
+  // Merge new issues
+  newIssues.forEach((newIssue) => {
+    if (issuesMap.has(newIssue.id)) {
+      // Merge systems arrays and deduplicate
+      const existingIssue = issuesMap.get(newIssue.id);
+      const combinedSystems = [
+        ...new Set([...existingIssue.systems, ...newIssue.systems]),
+      ];
+      issuesMap.set(newIssue.id, {
+        ...existingIssue,
+        systems: combinedSystems,
+        // New resolution takes precedence if provided
+        resolution: newIssue.resolution || existingIssue.resolution,
+      });
+    } else {
+      // New issue, add it
+      issuesMap.set(newIssue.id, { ...newIssue });
+    }
+  });
+
+  return {
+    issues: Array.from(issuesMap.values()),
+    auto_reboot: autoReboot,
+  };
+};
+
+// Handles playbook preview generation and download
+export const handlePlaybookPreview = async ({
+  hasPlanSelection,
+  isExistingPlanSelected,
+  remediationDetailsSummary,
+  data,
+  autoReboot,
+  postPlaybookPreview,
+  addNotification,
+  inputValue,
+  selected,
+  allRemediationsData,
+  downloadFile,
+}) => {
+  if (!hasPlanSelection) {
+    return;
+  }
+
+  try {
+    // Prepare payload using helper function
+    const payload = preparePlaybookPreviewPayload({
+      isExistingPlanSelected,
+      remediationDetailsSummary,
+      data,
+      autoReboot,
+    });
+
+    const response = await postPlaybookPreview(payload, {
+      responseType: 'blob',
+    });
+
+    // Determine playbook name for filename
+    let playbookName = 'remediation-preview-playbook';
+    if (isExistingPlanSelected && remediationDetailsSummary?.name) {
+      playbookName = remediationDetailsSummary.name;
+    } else if (inputValue?.trim()) {
+      playbookName = inputValue.trim();
+    } else if (isExistingPlanSelected && selected) {
+      // Fallback: find name from allRemediationsData
+      const selectedRemediation = allRemediationsData?.find(
+        (r) => r.id === selected,
+      );
+      if (selectedRemediation?.name) {
+        playbookName = selectedRemediation.name;
+      }
+    }
+
+    const sanitizedFilename = playbookName
+      .replace(/[^a-z0-9]/gi, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
+    downloadFile(response, sanitizedFilename, 'yml');
+  } catch (error) {
+    console.error('Error generating playbook preview:', error);
+
+    // Handle blob error responses (need to parse as text)
+    let errorMessage = 'Failed to generate playbook preview. Please try again.';
+    if (error?.response?.data) {
+      if (error.response.data instanceof Blob) {
+        // Try to parse blob as text for error message
+        try {
+          const text = await error.response.data.text();
+          const parsed = JSON.parse(text);
+          errorMessage = parsed.message || parsed.error || errorMessage;
+        } catch {
+          // If parsing fails, use default message
+        }
+      } else if (error.response.data.message) {
+        errorMessage = error.response.data.message;
+      }
+    }
+
+    addNotification({
+      title: 'Preview failed',
+      description: errorMessage,
+      variant: 'danger',
+      dismissable: true,
+      autoDismiss: true,
+    });
+  }
 };

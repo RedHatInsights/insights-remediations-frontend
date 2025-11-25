@@ -21,20 +21,21 @@ import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import { RemediationsPopover } from '../../routes/RemediationsPopover';
 import {
   calculateActionPoints,
-  handleRemediationPreview,
   handleRemediationSubmit,
   renderExceedsLimitsAlert,
   wizardHelperText,
   normalizeRemediationData,
+  handlePlaybookPreview,
 } from '../helpers';
 import { remediationUrl } from '../../Utilities/utils';
 import { PlanSummaryHeader } from './PlanSummaryHeader';
 import { PlanSummaryCharts } from './PlanSummaryCharts';
 import { PlaybookSelect } from './PlaybookSelect';
 import { usePlaybookSelect } from './usePlaybookSelect';
-import { download } from '../../Utilities/DownloadPlaybookButton';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
+import { postPlaybookPreview } from '../../routes/api';
+import { downloadFile } from '../../Utilities/helpers';
 
 export const RemediationWizardV2 = ({ setOpen, data }) => {
   const addNotification = useAddNotification();
@@ -186,14 +187,19 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
       console.error(error);
     }
   };
-  //TODO: implement payload end point request
   const handlePreview = () => {
-    handleRemediationPreview({
-      selected,
+    handlePlaybookPreview({
+      hasPlanSelection,
+      isExistingPlanSelected,
       remediationDetailsSummary,
-      allRemediationsData: allRemediations?.data,
-      download,
+      data,
+      autoReboot,
+      postPlaybookPreview,
       addNotification,
+      inputValue,
+      selected,
+      allRemediationsData,
+      downloadFile,
     });
   };
 

@@ -70,10 +70,7 @@ describe('RemediationWizardV2', () => {
     helpers,
     'handleRemediationSubmit',
   );
-  const handleRemediationPreviewSpy = jest.spyOn(
-    helpers,
-    'handleRemediationPreview',
-  );
+  const handlePlaybookPreviewSpy = jest.spyOn(helpers, 'handlePlaybookPreview');
 
   beforeEach(() => {
     jest.spyOn(utils, 'remediationUrl').mockClear();
@@ -140,14 +137,14 @@ describe('RemediationWizardV2', () => {
       success: true,
       remediationId: 'test-id',
     });
-    handleRemediationPreviewSpy.mockClear();
+    handlePlaybookPreviewSpy.mockClear();
     // Reset mocks
     jest.spyOn(utils, 'remediationUrl').mockClear();
   });
 
   afterEach(() => {
     handleRemediationSubmitSpy.mockClear();
-    handleRemediationPreviewSpy.mockClear();
+    handlePlaybookPreviewSpy.mockClear();
   });
 
   describe('Basic rendering', () => {
@@ -784,7 +781,7 @@ describe('RemediationWizardV2', () => {
   });
 
   describe('Preview functionality', () => {
-    it('should call handleRemediationPreview when preview button is clicked', async () => {
+    it('should call handlePlaybookPreview when preview button is clicked', async () => {
       const user = userEvent.setup();
       useRemediationsQuery.mockReturnValue({
         result: {
@@ -839,18 +836,21 @@ describe('RemediationWizardV2', () => {
       const previewButton = screen.getByRole('button', { name: /Preview/i });
       await user.click(previewButton);
 
-      expect(handleRemediationPreviewSpy).toHaveBeenCalled();
-      const callArgs = handleRemediationPreviewSpy.mock.calls[0][0];
-      expect(callArgs.selected).toBe('plan-1');
+      expect(handlePlaybookPreviewSpy).toHaveBeenCalled();
+      const callArgs = handlePlaybookPreviewSpy.mock.calls[0][0];
+      expect(callArgs.hasPlanSelection).toBe(true);
+      expect(callArgs.isExistingPlanSelected).toBe(true);
       expect(callArgs.remediationDetailsSummary).toEqual(
         remediationDetailsSummary,
       );
+      expect(callArgs.selected).toBe('plan-1');
       expect(callArgs.allRemediationsData).toEqual([
         { id: 'plan-1', name: 'Plan 1' },
         { id: 'plan-2', name: 'Plan 2' },
       ]);
-      expect(callArgs.download).toBe(download);
+      expect(callArgs.postPlaybookPreview).toBeDefined();
       expect(callArgs.addNotification).toBeDefined();
+      expect(callArgs.downloadFile).toBeDefined();
     });
   });
 
