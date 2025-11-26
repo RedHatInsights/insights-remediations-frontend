@@ -166,7 +166,7 @@ const throttle = (ms) => {
 };
 
 // Handles remediation submission (create or update) with batching and throttling
-// Returns { success: boolean, remediationId?: string, remediationName?: string, isUpdate?: boolean }
+// Returns { success: boolean, status: 'success' | 'complete_failure' | 'partial_failure', remediationId?: string, remediationName?: string, isUpdate?: boolean }
 export const handleRemediationSubmit = async ({
   isExistingPlanSelected,
   selected,
@@ -183,6 +183,8 @@ export const handleRemediationSubmit = async ({
   const batches = createRemediationBatches(issues);
 
   let remediationId = selected;
+  let successfulBatches = 0;
+  let failedBatches = 0;
 
   // If no batches, still need to create/update with empty data
   if (batches.length === 0) {
@@ -194,26 +196,49 @@ export const handleRemediationSubmit = async ({
       auto_reboot: autoReboot,
     };
 
-    if (isExistingPlanSelected) {
-      await updateRemediationFetch([selected, emptyPayload]);
+    try {
+      if (isExistingPlanSelected) {
+        await updateRemediationFetch([selected, emptyPayload]);
+        successfulBatches++;
+      } else {
+        const remediationName = inputValue.trim() || 'New remediation plan';
+        const createPayload = {
+          ...emptyPayload,
+          name: remediationName,
+        };
+        const response = await createRemediationFetch(createPayload);
+        remediationId = response?.id;
+        if (remediationId) {
+          successfulBatches++;
+        } else {
+          failedBatches++;
+        }
+      }
+
+      if (failedBatches > 0) {
+        return {
+          success: false,
+          status: 'complete_failure',
+          remediationId,
+          remediationName: inputValue.trim() || 'New remediation plan',
+          isUpdate: isExistingPlanSelected,
+        };
+      }
+
       return {
         success: true,
-        remediationId: selected,
-        remediationName: inputValue,
-        isUpdate: true,
+        status: 'success',
+        remediationId,
+        remediationName: inputValue.trim() || 'New remediation plan',
+        isUpdate: isExistingPlanSelected,
       };
-    } else {
-      const remediationName = inputValue.trim() || 'New remediation plan';
-      const createPayload = {
-        ...emptyPayload,
-        name: remediationName,
-      };
-      const response = await createRemediationFetch(createPayload);
+    } catch {
       return {
-        success: true,
-        remediationId: response?.id,
-        remediationName,
-        isUpdate: false,
+        success: false,
+        status: 'complete_failure',
+        remediationId,
+        remediationName: inputValue.trim() || 'New remediation plan',
+        isUpdate: isExistingPlanSelected,
       };
     }
   }
@@ -231,22 +256,44 @@ export const handleRemediationSubmit = async ({
   // Throttle: wait 250ms before first request (4 requests per second)
   await throttle(250);
 
-  if (isExistingPlanSelected) {
-    // Update existing remediation with first batch
-    await updateRemediationFetch([selected, firstBatchPayload]);
-  } else {
-    // Create new remediation with first batch
-    const remediationName = inputValue.trim() || 'New remediation plan';
-    const createPayload = {
-      ...firstBatchPayload,
-      name: remediationName,
-    };
-    const response = await createRemediationFetch(createPayload);
-    remediationId = response?.id;
+  try {
+    if (isExistingPlanSelected) {
+      // Update existing remediation with first batch
+      await updateRemediationFetch([selected, firstBatchPayload]);
+      successfulBatches++;
+    } else {
+      // Create new remediation with first batch
+      const remediationName = inputValue.trim() || 'New remediation plan';
+      const createPayload = {
+        ...firstBatchPayload,
+        name: remediationName,
+      };
+      const response = await createRemediationFetch(createPayload);
+      remediationId = response?.id;
 
-    if (!remediationId) {
-      throw new Error('Failed to create remediation');
+      if (!remediationId) {
+        failedBatches++;
+        return {
+          success: false,
+          status: 'complete_failure',
+          remediationId: null,
+          remediationName: inputValue.trim() || 'New remediation plan',
+          isUpdate: false,
+        };
+      }
+      successfulBatches++;
     }
+  } catch (error) {
+    // Initial request failed - complete failure
+    console.error('Initial remediation request failed:', error);
+    failedBatches++;
+    return {
+      success: false,
+      status: 'complete_failure',
+      remediationId: null,
+      remediationName: inputValue.trim() || 'New remediation plan',
+      isUpdate: isExistingPlanSelected,
+    };
   }
 
   // Process remaining batches with throttling (4 requests per second)
@@ -263,15 +310,44 @@ export const handleRemediationSubmit = async ({
       auto_reboot: autoReboot,
     };
 
-    await updateRemediationFetch([remediationId, patchPayload]);
+    try {
+      await updateRemediationFetch([remediationId, patchPayload]);
+      successfulBatches++;
+    } catch (error) {
+      failedBatches++;
+      // Continue processing remaining batches even if one fails
+      console.warn(`Failed to add batch ${i + 1}:`, error);
+    }
   }
 
-  return {
-    success: true,
-    remediationId,
-    remediationName: inputValue.trim() || 'New remediation plan',
-    isUpdate: isExistingPlanSelected,
-  };
+  // Determine final status
+  if (failedBatches === 0) {
+    return {
+      success: true,
+      status: 'success',
+      remediationId,
+      remediationName: inputValue.trim() || 'New remediation plan',
+      isUpdate: isExistingPlanSelected,
+    };
+  } else if (successfulBatches > 0) {
+    // Partial failure - some succeeded, some failed
+    return {
+      success: false,
+      status: 'partial_failure',
+      remediationId,
+      remediationName: inputValue.trim() || 'New remediation plan',
+      isUpdate: isExistingPlanSelected,
+    };
+  } else {
+    // Complete failure - should not happen here since we check initial request above
+    return {
+      success: false,
+      status: 'complete_failure',
+      remediationId: null,
+      remediationName: inputValue.trim() || 'New remediation plan',
+      isUpdate: isExistingPlanSelected,
+    };
+  }
 };
 
 // Prepares playbook preview payload by merging existing remediation with new data

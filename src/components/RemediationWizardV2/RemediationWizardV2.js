@@ -44,6 +44,9 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null); // 'complete_failure' | 'partial_failure'
+  const [errorRemediationId, setErrorRemediationId] = useState(null);
+  const [errorIsUpdate, setErrorIsUpdate] = useState(false);
   const [autoReboot, setAutoReboot] = useState(true);
   const [actionsCount, setActionsCount] = useState(0);
   const [systemsCount, setSystemsCount] = useState(0);
@@ -170,6 +173,9 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
       return;
     }
     setIsSubmitting(true);
+    setSubmitError(null);
+    setErrorRemediationId(null);
+    setErrorIsUpdate(false);
     try {
       // Pass original data to preserve nested systems structure for payload
       const result = await handleRemediationSubmit({
@@ -181,13 +187,42 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
         createRemediationFetch,
         updateRemediationFetch,
       });
-      if (result?.success && result?.remediationId) {
+      if (
+        result?.success &&
+        result?.status === 'success' &&
+        result?.remediationId
+      ) {
         const url = remediationUrl(result.remediationId);
         window.location.href = url;
+      } else if (
+        result?.status === 'complete_failure' ||
+        result?.status === 'partial_failure'
+      ) {
+        setIsSubmitting(false);
+        setSubmitError(result.status);
+        setErrorRemediationId(result.remediationId || null);
+        setErrorIsUpdate(result.isUpdate || false);
       }
     } catch (error) {
       console.error(error);
       setIsSubmitting(false);
+      setSubmitError('complete_failure');
+      setErrorRemediationId(null);
+      setErrorIsUpdate(false);
+    }
+  };
+
+  const handleCloseError = () => {
+    setSubmitError(null);
+    setErrorRemediationId(null);
+    setErrorIsUpdate(false);
+    setIsSubmitting(false);
+  };
+
+  const handleViewPlan = () => {
+    if (errorRemediationId) {
+      const url = remediationUrl(errorRemediationId);
+      window.location.href = url;
     }
   };
   const handlePreview = () => {
@@ -346,25 +381,84 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
 
   const renderSubmittingContent = () => (
     <>
-      <ModalBody variant={ModalVariant.medium}>
+      <ModalHeader
+        title="Remediation plan creation is in progress"
+        labelId="submitting-title"
+        titleIconVariant="info"
+      />
+      <ModalBody>
         <Bullseye>
-          <Spinner size="xl" />
+          <div style={{ textAlign: 'center' }}>
+            <Spinner size="xl" className="pf-v6-u-mb-md" />
+            <p>
+              The actions and systems that you selected are being added to the
+              plan. This could take some time to complete.
+            </p>
+          </div>
         </Bullseye>
       </ModalBody>
     </>
   );
 
+  const renderErrorContent = () => {
+    const isCompleteFailure = submitError === 'complete_failure';
+    const isPartialFailure = submitError === 'partial_failure';
+    const errorTitle = errorIsUpdate
+      ? 'Remediation plan update failed'
+      : 'Remediation plan creation failed';
+
+    return (
+      <>
+        <ModalHeader
+          title={errorTitle}
+          labelId="error-title"
+          titleIconVariant={isCompleteFailure ? 'danger' : 'warning'}
+        />
+        <ModalBody>
+          <p>
+            {isCompleteFailure
+              ? errorIsUpdate
+                ? 'The plan update failed. The plan was not updated.'
+                : 'The plan creation failed. The plan was not created.'
+              : errorIsUpdate
+                ? 'The plan was partially updated. Some of the selected items were not added to the plan. Review the plan for changes before execution.'
+                : 'The plan was partially created. Some of the selected items were not added to the plan.'}
+          </p>
+        </ModalBody>
+        <ModalFooter>
+          <Flex gap={{ default: 'gapMd' }}>
+            {isPartialFailure && errorRemediationId && (
+              <Button variant="primary" onClick={handleViewPlan}>
+                View plan
+              </Button>
+            )}
+            <Button
+              variant={
+                isPartialFailure && errorRemediationId ? 'secondary' : 'primary'
+              }
+              onClick={handleCloseError}
+            >
+              Close
+            </Button>
+          </Flex>
+        </ModalFooter>
+      </>
+    );
+  };
+
   return (
     <Modal
       isOpen={isOpen}
       variant={ModalVariant.medium}
-      onClose={isSubmitting ? undefined : handleClose}
+      onClose={isSubmitting || submitError ? undefined : handleClose}
     >
-      {isSubmitting
-        ? renderSubmittingContent()
-        : showConfirmation
-          ? renderConfirmationContent()
-          : renderMainContent()}
+      {submitError
+        ? renderErrorContent()
+        : isSubmitting
+          ? renderSubmittingContent()
+          : showConfirmation
+            ? renderConfirmationContent()
+            : renderMainContent()}
     </Modal>
   );
 };
