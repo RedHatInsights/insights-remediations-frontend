@@ -33,10 +33,12 @@ spec:
   - name: path-context
     value: .
   - name: build-container-additional-secret
-    value: build-container-additional-secret
+    value: sentry-remediations
   - name: build-args
     value:
       - ENABLE_SENTRY=false
+      - SENTRY_RELEASE={{revision}}
+      - SENTRY_SECRET_NAME=sentry-remediations
   pipelineRef:
     name: docker-build-oci-ta
   taskRunTemplate:
