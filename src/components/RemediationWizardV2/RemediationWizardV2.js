@@ -27,6 +27,7 @@ import {
   normalizeRemediationData,
   handlePlaybookPreview,
   navigateToRemediation,
+  countUniqueSystemsFromRemediation,
 } from '../helpers';
 import { remediationUrl } from '../../Utilities/utils';
 import { PlanSummaryHeader } from './PlanSummaryHeader';
@@ -75,6 +76,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     playbookSelect;
 
   const { result: remediationDetailsSummary, loading: detailsLoading } =
+    //dont use summary format to calculate action points
     useRemediations('getRemediation', {
       params: { id: selected },
       skip: !isExistingPlanSelected || !isOpen,
@@ -108,7 +110,10 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
         // Plan details loaded: calculate points from plan issues and add to base
         const planIssues = remediationDetailsSummary.issues || [];
         const planActionsPoints = calculateActionPoints(planIssues);
-        const planSystemsCount = remediationDetailsSummary.system_count ?? 0;
+        // Count unique systems from nested structure (systems within issues)
+        const planSystemsCount = countUniqueSystemsFromRemediation(
+          remediationDetailsSummary,
+        );
         const planIssuesCount = planIssues.length;
         setActionsCount(baseActionsPoints + planActionsPoints);
         setSystemsCount(baseSystemsCount + planSystemsCount);
@@ -154,11 +159,11 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     return inputValue.trim().length > 0;
   }, [isExistingPlanSelected, inputValue, isSelectOpen]);
 
-  const handleClose = () => {
+  const handleRequestClose = () => {
     setShowConfirmation(true);
   };
 
-  const handleConfirmCancel = () => {
+  const handleConfirmClose = () => {
     setShowConfirmation(false);
     setIsOpen(false);
     setOpen(false);
@@ -342,7 +347,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
           >
             Preview <DownloadIcon size="md" />
           </Button>
-          <Button key="cancel" variant="link" onClick={handleClose}>
+          <Button key="cancel" variant="link" onClick={handleRequestClose}>
             Cancel
           </Button>
         </Flex>
@@ -350,6 +355,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     </>
   );
 
+  //TODO: implement new UX copy once completed
   const renderStatusContent = () => {
     if (submitError) {
       return (
@@ -372,7 +378,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
       return (
         <ModalStatusContent
           status="confirmation"
-          onConfirm={handleConfirmCancel}
+          onConfirm={handleConfirmClose}
           onCancel={handleGoBack}
         />
       );
@@ -385,7 +391,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     <Modal
       isOpen={isOpen}
       variant={ModalVariant.medium}
-      onClose={isSubmitting || submitError ? undefined : handleClose}
+      onClose={isSubmitting || submitError ? undefined : handleRequestClose}
     >
       {renderStatusContent() || renderMainContent()}
     </Modal>

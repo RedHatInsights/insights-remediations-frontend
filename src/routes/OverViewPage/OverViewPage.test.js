@@ -158,6 +158,10 @@ describe('OverViewPage', () => {
     // Default to feature flag disabled
     useFeatureFlag.mockReturnValue(false);
     jest.clearAllMocks();
+    // Reset global mock for quickstart
+    if (global.mockActivateQuickstart) {
+      global.mockActivateQuickstart.mockClear();
+    }
   });
   it('renders table rows and opens delete modal', async () => {
     const user = userEvent.setup();
@@ -191,12 +195,13 @@ describe('OverViewPage', () => {
   });
 
   it('shows Launch Quick Start button when remediations exist and triggers QS', async () => {
+    const user = userEvent.setup();
     renderPage();
     const qsBtn = await screen.findByRole('button', {
       name: /launch quick start/i,
     });
     expect(qsBtn).toBeInTheDocument();
-    await userEvent.click(qsBtn);
+    await user.click(qsBtn);
     expect(global.mockActivateQuickstart).toHaveBeenCalledWith(
       'insights-remediate-plan-create',
     );

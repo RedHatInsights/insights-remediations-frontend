@@ -49,6 +49,13 @@ export const renderExceedsLimitsAlert = ({
   systemsCount,
   actionsCount,
 }) => {
+  const MAX_SYSTEMS = 100;
+  const MAX_ACTIONS = 1000;
+
+  // Calculate how many need to be removed to get within limits
+  const systemsToRemove = exceededSystems ? systemsCount - MAX_SYSTEMS : 0;
+  const actionsToRemove = exceededActions ? actionsCount - MAX_ACTIONS : 0;
+
   return (
     <Alert
       isInline
@@ -64,11 +71,11 @@ export const renderExceedsLimitsAlert = ({
         <li>
           Remove{' '}
           {exceededSystems && exceededActions
-            ? `${systemsCount} systems or ${actionsCount} action points`
+            ? `at least ${systemsToRemove} systems or ${actionsToRemove} action points`
             : exceededSystems
-              ? `${systemsCount} systems`
-              : `${actionsCount} action points`}{' '}
-          from the plan before or after plan creation.
+              ? `at least ${systemsToRemove} systems`
+              : `at least ${actionsToRemove} action points`}{' '}
+          from the plan before or after plan creation to get within limits.
         </li>
         <li>
           Otherwise, create and download the plan to run with Red Hat{' '}
@@ -106,6 +113,31 @@ export const calculateActionPoints = (issues) => {
     const points = POINTS_MAP[application] || 0;
     return totalPoints + points;
   }, 0);
+};
+
+// Counts unique systems from remediation details summary (systems nested within issues)
+export const countUniqueSystemsFromRemediation = (remediationDetails) => {
+  if (
+    !remediationDetails?.issues ||
+    !Array.isArray(remediationDetails.issues)
+  ) {
+    return 0;
+  }
+
+  const systemsSet = new Set();
+  remediationDetails.issues.forEach((issue) => {
+    if (issue.systems && Array.isArray(issue.systems)) {
+      issue.systems.forEach((system) => {
+        // Systems can be objects with id property or strings
+        const systemId = typeof system === 'string' ? system : system.id;
+        if (systemId) {
+          systemsSet.add(systemId);
+        }
+      });
+    }
+  });
+
+  return systemsSet.size;
 };
 
 // Normalize data because different apps send data differently
@@ -533,7 +565,6 @@ export const handlePlaybookPreview = async ({
   }
 };
 
-// Navigates to the remediation page
 export const navigateToRemediation = (remediationId) => {
   if (remediationId) {
     const url = remediationUrl(remediationId);

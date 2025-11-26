@@ -47,7 +47,6 @@ jest.mock(
   }),
 );
 
-const { download } = require('../Utilities/DownloadPlaybookButton');
 const useRemediationsQuery = require('../api/useRemediationsQuery').default;
 const useRemediations =
   require('../Utilities/Hooks/api/useRemediations').default;
@@ -93,12 +92,12 @@ describe('RemediationWizardV2', () => {
   const defaultDataNested = {
     issues: [
       {
-        id: 'issue-1',
+        id: 'patch-advisory:RHSA-2021:1234',
         description: 'Test Issue 1',
         systems: ['system-1', 'system-2'],
       },
       {
-        id: 'issue-2',
+        id: 'patch-advisory:RHSA-2021:5678',
         description: 'Test Issue 2',
         systems: ['system-2', 'system-3', 'system-4'],
       },
@@ -135,7 +134,10 @@ describe('RemediationWizardV2', () => {
     // Reset spies
     handleRemediationSubmitSpy.mockResolvedValue({
       success: true,
+      status: 'success',
       remediationId: 'test-id',
+      remediationName: 'Test Plan',
+      isUpdate: false,
     });
     handlePlaybookPreviewSpy.mockClear();
     // Reset mocks
@@ -209,7 +211,8 @@ describe('RemediationWizardV2', () => {
 
       // Should display correct systems count in chart subtitle
       expect(screen.getAllByText(/3 systems/i).length).toBeGreaterThan(0);
-      expect(screen.getAllByText(/2 actions/i).length).toBeGreaterThan(0);
+      // Chart subtitle shows "points", label shows "actions, points"
+      expect(screen.getAllByText(/22 points/i).length).toBeGreaterThan(0);
     });
 
     it('should normalize nested data structure (systems within issues)', () => {
@@ -220,7 +223,9 @@ describe('RemediationWizardV2', () => {
       // Should extract unique systems from nested structure
       // system-1, system-2, system-3, system-4 = 4 unique systems
       expect(screen.getAllByText(/4 systems/i).length).toBeGreaterThan(0);
-      expect(screen.getAllByText(/2 actions/i).length).toBeGreaterThan(0);
+      // Chart subtitle shows "points", label shows "actions, points"
+      // 2 patch issues = 2 * 2 = 4 points
+      expect(screen.getAllByText(/4 points/i).length).toBeGreaterThan(0);
     });
 
     it('should handle empty data', () => {
@@ -232,7 +237,7 @@ describe('RemediationWizardV2', () => {
       );
 
       expect(screen.getAllByText(/0 systems/i).length).toBeGreaterThan(0);
-      expect(screen.getAllByText(/0 actions/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/0 points/i).length).toBeGreaterThan(0);
     });
 
     it('should handle data with no systems array and no nested systems', () => {
@@ -250,7 +255,8 @@ describe('RemediationWizardV2', () => {
       );
 
       expect(screen.getAllByText(/0 systems/i).length).toBeGreaterThan(0);
-      expect(screen.getAllByText(/1 action/i).length).toBeGreaterThan(0);
+      // For 1 issue, action points depend on issue type - default is 0 if unknown
+      expect(screen.getAllByText(/0 points/i).length).toBeGreaterThan(0);
     });
 
     it('should handle data with duplicate systems in nested structure', () => {
@@ -297,6 +303,7 @@ describe('RemediationWizardV2', () => {
       );
 
       // 2 + 20 + 20 = 42 action points
+      // Chart subtitle shows "points"
       expect(screen.getAllByText(/42 points/i).length).toBeGreaterThan(0);
     });
 
@@ -304,9 +311,18 @@ describe('RemediationWizardV2', () => {
       const user = userEvent.setup();
       const remediationDetailsSummary = {
         issues: [
-          { id: 'patch-advisory:RHSA-2021:5678', description: 'Plan Issue 1' },
+          {
+            id: 'patch-advisory:RHSA-2021:5678',
+            description: 'Plan Issue 1',
+            systems: [
+              'system-4',
+              'system-5',
+              'system-6',
+              'system-7',
+              'system-8',
+            ],
+          },
         ],
-        system_count: 5,
       };
 
       useRemediations.mockImplementation((method) => {
@@ -344,13 +360,13 @@ describe('RemediationWizardV2', () => {
       const option = screen.getByText('Existing Plan');
       await user.click(option);
 
-      // Base: 2 issues, 3 systems, ~22 action points (1 patch + 1 vulnerability)
-      // Plan: 1 issue, 5 systems, 2 action points
-      // Total: 3 issues, 8 systems, 24 action points
+      // Base: 2 issues, 3 systems, 22 action points (1 patch: 2pts + 1 vulnerability: 20pts)
+      // Plan: 1 issue, 5 systems, 2 action points (1 patch: 2pts)
+      // Total: 3 issues, 8 systems (3 base + 5 plan), 24 action points (22 + 2)
       await waitFor(() => {
-        expect(screen.getAllByText(/3 actions/i).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/8 systems/i).length).toBeGreaterThan(0);
       });
-      expect(screen.getAllByText(/8 systems/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/24 points/i).length).toBeGreaterThan(0);
     });
   });
 
@@ -613,6 +629,11 @@ describe('RemediationWizardV2', () => {
 
     it('should navigate to remediation details page after successful submission', async () => {
       const user = userEvent.setup();
+      // Mock window.location to prevent actual navigation
+      const originalLocation = window.location;
+      delete window.location;
+      window.location = { href: '' };
+
       renderWithRouter(
         <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
       );
@@ -645,20 +666,28 @@ describe('RemediationWizardV2', () => {
 
       // Should navigate to the remediation details page using window.location.href
       // Verify remediationUrl was called with the correct ID
-      expect(utils.remediationUrl).toHaveBeenCalledWith('test-id');
+      await waitFor(() => {
+        expect(utils.remediationUrl).toHaveBeenCalledWith('test-id');
+      });
       // Verify the URL was generated (remediationUrl returns the full URL)
       const generatedUrl = utils.remediationUrl.mock.results[0].value;
       expect(generatedUrl).toContain('test-id');
       expect(generatedUrl).toContain('remediations');
-      // Note: window.location.href assignment is tested indirectly via remediationUrl call
+      // The component sets window.location.href = url synchronously after successful submission
+      // In a unit test environment, we verify that remediationUrl was called correctly
+      // The actual navigation side effect is verified via integration/e2e tests
       // Modal should not be closed when navigating (navigation handles it)
       expect(mockSetOpen).not.toHaveBeenCalled();
+
+      // Restore window.location
+      window.location = originalLocation;
     });
 
     it('should close modal if navigation fails (no remediationId)', async () => {
       const user = userEvent.setup();
       handleRemediationSubmitSpy.mockResolvedValueOnce({
         success: true,
+        status: 'success',
         // No remediationId
       });
 
@@ -741,6 +770,274 @@ describe('RemediationWizardV2', () => {
       expect(mockSetOpen).not.toHaveBeenCalled();
 
       consoleSpy.mockRestore();
+    });
+
+    it('should show error state for complete failure', async () => {
+      const user = userEvent.setup();
+      handleRemediationSubmitSpy.mockResolvedValueOnce({
+        success: false,
+        status: 'complete_failure',
+        remediationId: null,
+        remediationName: 'Test Plan',
+        isUpdate: false,
+      });
+
+      renderWithRouter(
+        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
+      );
+
+      // Type a plan name to enable the submit button
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.type(input, 'New Plan');
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Create new playbook "New Plan"/i),
+        ).toBeInTheDocument();
+      });
+      const createOption = screen.getByText(/Create new playbook "New Plan"/i);
+      await user.click(createOption);
+
+      await waitFor(() => {
+        const submitButton = screen.getByRole('button', {
+          name: /Create plan/i,
+        });
+        expect(submitButton).toBeEnabled();
+      });
+
+      const submitButton = screen.getByRole('button', { name: /Create plan/i });
+      await user.click(submitButton);
+
+      // Should show error modal content
+      await waitFor(() => {
+        expect(
+          screen.getByText('Remediation plan creation failed'),
+        ).toBeInTheDocument();
+      });
+      expect(
+        screen.getByText('The plan creation failed. The plan was not created.'),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /Close/i }),
+      ).toBeInTheDocument();
+    });
+
+    it('should show error state for partial failure', async () => {
+      const user = userEvent.setup();
+      handleRemediationSubmitSpy.mockResolvedValueOnce({
+        success: false,
+        status: 'partial_failure',
+        remediationId: 'partial-remediation-id',
+        remediationName: 'Test Plan',
+        isUpdate: false,
+      });
+
+      renderWithRouter(
+        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
+      );
+
+      // Type a plan name to enable the submit button
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.type(input, 'New Plan');
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Create new playbook "New Plan"/i),
+        ).toBeInTheDocument();
+      });
+      const createOption = screen.getByText(/Create new playbook "New Plan"/i);
+      await user.click(createOption);
+
+      await waitFor(() => {
+        const submitButton = screen.getByRole('button', {
+          name: /Create plan/i,
+        });
+        expect(submitButton).toBeEnabled();
+      });
+
+      const submitButton = screen.getByRole('button', { name: /Create plan/i });
+      await user.click(submitButton);
+
+      // Should show error modal content for partial failure
+      await waitFor(() => {
+        expect(
+          screen.getByText('Remediation plan creation failed'),
+        ).toBeInTheDocument();
+      });
+      expect(
+        screen.getByText(
+          'The plan was partially created. Some of the selected items were not added to the plan.',
+        ),
+      ).toBeInTheDocument();
+      // Should show View plan button for partial failure
+      expect(
+        screen.getByRole('button', { name: /View plan/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /Close/i }),
+      ).toBeInTheDocument();
+    });
+
+    it('should show error state for update failure', async () => {
+      const user = userEvent.setup();
+      useRemediationsQuery.mockReturnValue({
+        result: {
+          data: [{ id: 'existing-plan-id', name: 'Existing Plan' }],
+        },
+        loading: false,
+      });
+
+      handleRemediationSubmitSpy.mockResolvedValueOnce({
+        success: false,
+        status: 'complete_failure',
+        remediationId: 'existing-plan-id',
+        remediationName: 'Existing Plan',
+        isUpdate: true,
+      });
+
+      renderWithRouter(
+        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
+      );
+
+      // Select an existing plan
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.click(input);
+      await waitFor(() => {
+        expect(screen.getByText('Existing Plan')).toBeInTheDocument();
+      });
+      const option = screen.getByText('Existing Plan');
+      await user.click(option);
+
+      await waitFor(() => {
+        const submitButton = screen.getByRole('button', {
+          name: /Update plan/i,
+        });
+        expect(submitButton).toBeEnabled();
+      });
+
+      const submitButton = screen.getByRole('button', { name: /Update plan/i });
+      await user.click(submitButton);
+
+      // Should show error modal content for update failure
+      await waitFor(() => {
+        expect(
+          screen.getByText('Remediation plan update failed'),
+        ).toBeInTheDocument();
+      });
+      expect(
+        screen.getByText('The plan update failed. The plan was not updated.'),
+      ).toBeInTheDocument();
+    });
+
+    it('should close error state and return to main content', async () => {
+      const user = userEvent.setup();
+      handleRemediationSubmitSpy.mockResolvedValueOnce({
+        success: false,
+        status: 'complete_failure',
+        remediationId: null,
+        remediationName: 'Test Plan',
+        isUpdate: false,
+      });
+
+      renderWithRouter(
+        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
+      );
+
+      // Type a plan name and submit
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.type(input, 'New Plan');
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Create new playbook "New Plan"/i),
+        ).toBeInTheDocument();
+      });
+      const createOption = screen.getByText(/Create new playbook "New Plan"/i);
+      await user.click(createOption);
+
+      await waitFor(() => {
+        const submitButton = screen.getByRole('button', {
+          name: /Create plan/i,
+        });
+        expect(submitButton).toBeEnabled();
+      });
+
+      const submitButton = screen.getByRole('button', { name: /Create plan/i });
+      await user.click(submitButton);
+
+      // Wait for error state
+      await waitFor(() => {
+        expect(
+          screen.getByText('Remediation plan creation failed'),
+        ).toBeInTheDocument();
+      });
+
+      // Click close button
+      const closeButton = screen.getByRole('button', { name: /Close/i });
+      await user.click(closeButton);
+
+      // Should return to main content
+      await waitFor(() => {
+        expect(screen.getByText('Plan a remediation')).toBeInTheDocument();
+      });
+    });
+
+    it('should navigate to plan when View plan is clicked in partial failure', async () => {
+      const user = userEvent.setup();
+      const originalLocation = window.location;
+      delete window.location;
+      window.location = { href: '' };
+
+      handleRemediationSubmitSpy.mockResolvedValueOnce({
+        success: false,
+        status: 'partial_failure',
+        remediationId: 'partial-remediation-id',
+        remediationName: 'Test Plan',
+        isUpdate: false,
+      });
+
+      renderWithRouter(
+        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
+      );
+
+      // Type a plan name and submit
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.type(input, 'New Plan');
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Create new playbook "New Plan"/i),
+        ).toBeInTheDocument();
+      });
+      const createOption = screen.getByText(/Create new playbook "New Plan"/i);
+      await user.click(createOption);
+
+      await waitFor(() => {
+        const submitButton = screen.getByRole('button', {
+          name: /Create plan/i,
+        });
+        expect(submitButton).toBeEnabled();
+      });
+
+      const submitButton = screen.getByRole('button', { name: /Create plan/i });
+      await user.click(submitButton);
+
+      // Wait for error state
+      await waitFor(() => {
+        expect(
+          screen.getByText('Remediation plan creation failed'),
+        ).toBeInTheDocument();
+      });
+
+      // Click View plan button
+      const viewPlanButton = screen.getByRole('button', { name: /View plan/i });
+      await user.click(viewPlanButton);
+
+      // Should navigate to remediation
+      await waitFor(() => {
+        expect(utils.remediationUrl).toHaveBeenCalledWith(
+          'partial-remediation-id',
+        );
+      });
+
+      // Restore window.location
+      window.location = originalLocation;
     });
 
     it('should pass original data (not normalized) to handleRemediationSubmit', async () => {
@@ -1048,7 +1345,7 @@ describe('RemediationWizardV2', () => {
       );
 
       expect(screen.getAllByText(/0 systems/i).length).toBeGreaterThan(0);
-      expect(screen.getAllByText(/0 actions/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/0 points/i).length).toBeGreaterThan(0);
     });
 
     it('should handle undefined data gracefully', () => {
@@ -1057,7 +1354,7 @@ describe('RemediationWizardV2', () => {
       );
 
       expect(screen.getAllByText(/0 systems/i).length).toBeGreaterThan(0);
-      expect(screen.getAllByText(/0 actions/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/0 points/i).length).toBeGreaterThan(0);
     });
 
     it('should handle data with missing issues array', () => {
@@ -1068,7 +1365,7 @@ describe('RemediationWizardV2', () => {
         />,
       );
 
-      expect(screen.getAllByText(/0 actions/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/0 points/i).length).toBeGreaterThan(0);
       expect(screen.getAllByText(/1 system/i).length).toBeGreaterThan(0);
     });
 

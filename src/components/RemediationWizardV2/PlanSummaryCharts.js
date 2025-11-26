@@ -18,11 +18,6 @@ export const PlanSummaryCharts = ({
   const clampedActionsCount = Math.min(actionsCount, ACTIONS_MAX);
   const clampedSystemsCount = Math.min(systemsCount, SYSTEMS_MAX);
 
-  // Calculate total for the bar
-  const totalPoints = Math.min(issuesCount + clampedActionsCount, ACTIONS_MAX);
-
-  const totalSystems = clampedSystemsCount;
-
   const flexDirection =
     detailsLoading && isExistingPlanSelected
       ? { default: 'row' }
@@ -51,9 +46,6 @@ export const PlanSummaryCharts = ({
                     comparativeWarningMeasureData={[
                       { name: 'Warning', y: ACTIONS_MAX },
                     ]}
-                    comparativeWarningMeasureLegendData={[
-                      { name: `Warning at ${ACTIONS_MAX}` },
-                    ]}
                     title="Actions"
                     subTitle={pluralize(actionsCount, 'point')}
                     height={120}
@@ -74,15 +66,7 @@ export const PlanSummaryCharts = ({
                     }}
                     maxDomain={{ y: ACTIONS_MAX }}
                     primarySegmentedMeasureData={[
-                      { name: 'total', y: totalPoints },
-                    ]}
-                    primarySegmentedMeasureLegendData={[
-                      {
-                        name: `${pluralize(
-                          issuesCount,
-                          'action',
-                        )}, ${pluralize(actionsCount, 'point')}`,
-                      },
+                      { name: 'total', y: clampedActionsCount },
                     ]}
                   />
                 </div>
@@ -114,9 +98,6 @@ export const PlanSummaryCharts = ({
                   comparativeWarningMeasureData={[
                     { name: 'Warning', y: SYSTEMS_MAX },
                   ]}
-                  comparativeWarningMeasureLegendData={[
-                    { name: `Warning at ${SYSTEMS_MAX}` },
-                  ]}
                   title="Systems"
                   subTitle={pluralize(systemsCount, 'system')}
                   height={120}
@@ -134,15 +115,7 @@ export const PlanSummaryCharts = ({
                   }}
                   maxDomain={{ y: SYSTEMS_MAX }}
                   primarySegmentedMeasureData={[
-                    { name: 'total', y: totalSystems },
-                  ]}
-                  primarySegmentedMeasureLegendData={[
-                    {
-                      name: `${systemsCount} ${pluralize(
-                        systemsCount,
-                        'system',
-                      )}`,
-                    },
+                    { name: 'total', y: clampedSystemsCount },
                   ]}
                 />
               </div>
