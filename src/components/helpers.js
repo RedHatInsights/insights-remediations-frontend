@@ -7,7 +7,7 @@ import {
 } from '@patternfly/react-core';
 import React from 'react';
 import { getIssueApplication } from '../Utilities/model';
-import { createRemediationBatches } from '../Utilities/utils';
+import { createRemediationBatches, remediationUrl } from '../Utilities/utils';
 
 export const wizardHelperText = (exceedsLimits) => {
   if (exceedsLimits) {
@@ -530,5 +530,13 @@ export const handlePlaybookPreview = async ({
       dismissable: true,
       autoDismiss: true,
     });
+  }
+};
+
+// Navigates to the remediation page
+export const navigateToRemediation = (remediationId) => {
+  if (remediationId) {
+    const url = remediationUrl(remediationId);
+    window.location.href = url;
   }
 };

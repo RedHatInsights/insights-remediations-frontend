@@ -14,8 +14,6 @@ import {
   HelperTextItem,
   Tooltip,
   Flex,
-  Spinner,
-  Bullseye,
 } from '@patternfly/react-core';
 import { DownloadIcon, ExternalLinkAltIcon } from '@patternfly/react-icons';
 import useRemediationsQuery from '../../api/useRemediationsQuery';
@@ -28,12 +26,14 @@ import {
   wizardHelperText,
   normalizeRemediationData,
   handlePlaybookPreview,
+  navigateToRemediation,
 } from '../helpers';
 import { remediationUrl } from '../../Utilities/utils';
 import { PlanSummaryHeader } from './PlanSummaryHeader';
 import { PlanSummaryCharts } from './PlanSummaryCharts';
 import { PlaybookSelect } from './PlaybookSelect';
 import { usePlaybookSelect } from './usePlaybookSelect';
+import ModalStatusContent from './ModalStatusContent';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import { postPlaybookPreview } from '../../routes/api';
@@ -220,10 +220,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
   };
 
   const handleViewPlan = () => {
-    if (errorRemediationId) {
-      const url = remediationUrl(errorRemediationId);
-      window.location.href = url;
-    }
+    navigateToRemediation(errorRemediationId);
   };
   const handlePreview = () => {
     handlePlaybookPreview({
@@ -353,97 +350,35 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     </>
   );
 
-  const renderConfirmationContent = () => (
-    <>
-      <ModalHeader
-        title={'Are you sure you want to cancel?'}
-        labelId="cancel-confirmation-title"
-        titleIconVariant={'warning'}
-      />
-      <ModalBody>
-        <span>
-          The systems and actions you selected are not added to this remediation
-          plan.
-        </span>
-      </ModalBody>
-      <ModalFooter>
-        <Flex gap={{ default: 'gapMd' }}>
-          <Button key="yes" variant="primary" onClick={handleConfirmCancel}>
-            Yes
-          </Button>
-          <Button key="no" variant="link" onClick={handleGoBack}>
-            No, go back
-          </Button>
-        </Flex>
-      </ModalFooter>
-    </>
-  );
-
-  const renderSubmittingContent = () => (
-    <>
-      <ModalHeader
-        title="Remediation plan creation is in progress"
-        labelId="submitting-title"
-        titleIconVariant="info"
-      />
-      <ModalBody>
-        <Bullseye>
-          <div style={{ textAlign: 'center' }}>
-            <Spinner size="xl" className="pf-v6-u-mb-md" />
-            <p>
-              The actions and systems that you selected are being added to the
-              plan. This could take some time to complete.
-            </p>
-          </div>
-        </Bullseye>
-      </ModalBody>
-    </>
-  );
-
-  const renderErrorContent = () => {
-    const isCompleteFailure = submitError === 'complete_failure';
-    const isPartialFailure = submitError === 'partial_failure';
-    const errorTitle = errorIsUpdate
-      ? 'Remediation plan update failed'
-      : 'Remediation plan creation failed';
-
-    return (
-      <>
-        <ModalHeader
-          title={errorTitle}
-          labelId="error-title"
-          titleIconVariant={isCompleteFailure ? 'danger' : 'warning'}
+  const renderStatusContent = () => {
+    if (submitError) {
+      return (
+        <ModalStatusContent
+          status="error"
+          errorType={submitError}
+          isUpdate={errorIsUpdate}
+          remediationId={errorRemediationId}
+          onClose={handleCloseError}
+          onViewPlan={handleViewPlan}
         />
-        <ModalBody>
-          <p>
-            {isCompleteFailure
-              ? errorIsUpdate
-                ? 'The plan update failed. The plan was not updated.'
-                : 'The plan creation failed. The plan was not created.'
-              : errorIsUpdate
-                ? 'The plan was partially updated. Some of the selected items were not added to the plan. Review the plan for changes before execution.'
-                : 'The plan was partially created. Some of the selected items were not added to the plan.'}
-          </p>
-        </ModalBody>
-        <ModalFooter>
-          <Flex gap={{ default: 'gapMd' }}>
-            {isPartialFailure && errorRemediationId && (
-              <Button variant="primary" onClick={handleViewPlan}>
-                View plan
-              </Button>
-            )}
-            <Button
-              variant={
-                isPartialFailure && errorRemediationId ? 'secondary' : 'primary'
-              }
-              onClick={handleCloseError}
-            >
-              Close
-            </Button>
-          </Flex>
-        </ModalFooter>
-      </>
-    );
+      );
+    }
+
+    if (isSubmitting) {
+      return <ModalStatusContent status="submitting" />;
+    }
+
+    if (showConfirmation) {
+      return (
+        <ModalStatusContent
+          status="confirmation"
+          onConfirm={handleConfirmCancel}
+          onCancel={handleGoBack}
+        />
+      );
+    }
+
+    return null;
   };
 
   return (
@@ -452,13 +387,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
       variant={ModalVariant.medium}
       onClose={isSubmitting || submitError ? undefined : handleClose}
     >
-      {submitError
-        ? renderErrorContent()
-        : isSubmitting
-          ? renderSubmittingContent()
-          : showConfirmation
-            ? renderConfirmationContent()
-            : renderMainContent()}
+      {renderStatusContent() || renderMainContent()}
     </Modal>
   );
 };
