@@ -7,6 +7,7 @@ import {
 } from '@patternfly/react-core';
 import React from 'react';
 import { getIssueApplication } from '../Utilities/model';
+import { createRemediationBatches } from '../Utilities/utils';
 
 export const wizardHelperText = (exceedsLimits) => {
   if (exceedsLimits) {
@@ -159,8 +160,13 @@ export const prepareRemediationPayload = (data, autoReboot) => {
   };
 };
 
-// Handles remediation submission (create or update)
-// Returns { success: boolean, remediationName?: string, error?: Error }
+// Throttle utility to limit requests to 4 per second (250ms delay)
+const throttle = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+// Handles remediation submission (create or update) with batching and throttling
+// Returns { success: boolean, remediationId?: string, remediationName?: string, isUpdate?: boolean }
 export const handleRemediationSubmit = async ({
   isExistingPlanSelected,
   selected,
@@ -171,30 +177,101 @@ export const handleRemediationSubmit = async ({
   updateRemediationFetch,
 }) => {
   const payload = prepareRemediationPayload(data, autoReboot);
+  const { issues } = payload.add;
+
+  // Create batches of issues (max 50 issues per batch, max 50 systems per issue)
+  const batches = createRemediationBatches(issues);
+
+  let remediationId = selected;
+
+  // If no batches, still need to create/update with empty data
+  if (batches.length === 0) {
+    const emptyPayload = {
+      add: {
+        issues: [],
+        systems: [],
+      },
+      auto_reboot: autoReboot,
+    };
+
+    if (isExistingPlanSelected) {
+      await updateRemediationFetch([selected, emptyPayload]);
+      return {
+        success: true,
+        remediationId: selected,
+        remediationName: inputValue,
+        isUpdate: true,
+      };
+    } else {
+      const remediationName = inputValue.trim() || 'New remediation plan';
+      const createPayload = {
+        ...emptyPayload,
+        name: remediationName,
+      };
+      const response = await createRemediationFetch(createPayload);
+      return {
+        success: true,
+        remediationId: response?.id,
+        remediationName,
+        isUpdate: false,
+      };
+    }
+  }
+
+  // Process first batch - create or update remediation
+  const firstBatch = batches[0];
+  const firstBatchPayload = {
+    add: {
+      issues: firstBatch,
+      systems: [],
+    },
+    auto_reboot: autoReboot,
+  };
+
+  // Throttle: wait 250ms before first request (4 requests per second)
+  await throttle(250);
 
   if (isExistingPlanSelected) {
-    await updateRemediationFetch([selected, payload]);
-    return {
-      success: true,
-      remediationId: selected,
-      remediationName: inputValue,
-      isUpdate: true,
-    };
+    // Update existing remediation with first batch
+    await updateRemediationFetch([selected, firstBatchPayload]);
   } else {
+    // Create new remediation with first batch
     const remediationName = inputValue.trim() || 'New remediation plan';
     const createPayload = {
-      ...payload,
+      ...firstBatchPayload,
       name: remediationName,
     };
-    // createRemediation expects (payload) - pass directly, not wrapped in params
     const response = await createRemediationFetch(createPayload);
-    return {
-      success: true,
-      remediationId: response?.id,
-      remediationName,
-      isUpdate: false,
-    };
+    remediationId = response?.id;
+
+    if (!remediationId) {
+      throw new Error('Failed to create remediation');
+    }
   }
+
+  // Process remaining batches with throttling (4 requests per second)
+  for (let i = 1; i < batches.length; i++) {
+    // Throttle: wait 250ms between requests
+    await throttle(250);
+
+    const batch = batches[i];
+    const patchPayload = {
+      add: {
+        issues: batch,
+        systems: [],
+      },
+      auto_reboot: autoReboot,
+    };
+
+    await updateRemediationFetch([remediationId, patchPayload]);
+  }
+
+  return {
+    success: true,
+    remediationId,
+    remediationName: inputValue.trim() || 'New remediation plan',
+    isUpdate: isExistingPlanSelected,
+  };
 };
 
 // Prepares playbook preview payload by merging existing remediation with new data

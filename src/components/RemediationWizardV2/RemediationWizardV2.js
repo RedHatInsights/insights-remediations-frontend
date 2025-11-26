@@ -14,6 +14,8 @@ import {
   HelperTextItem,
   Tooltip,
   Flex,
+  Spinner,
+  Bullseye,
 } from '@patternfly/react-core';
 import { DownloadIcon, ExternalLinkAltIcon } from '@patternfly/react-icons';
 import useRemediationsQuery from '../../api/useRemediationsQuery';
@@ -41,6 +43,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
   const addNotification = useAddNotification();
   const [isOpen, setIsOpen] = useState(true);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [autoReboot, setAutoReboot] = useState(true);
   const [actionsCount, setActionsCount] = useState(0);
   const [systemsCount, setSystemsCount] = useState(0);
@@ -162,12 +165,11 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     setShowConfirmation(false);
   };
 
-  //TODO: implement error state and success states once implementted by UX
-  //TODO: implement throttling
   const handleSubmit = async () => {
     if (!hasPlanSelection) {
       return;
     }
+    setIsSubmitting(true);
     try {
       // Pass original data to preserve nested systems structure for payload
       const result = await handleRemediationSubmit({
@@ -185,6 +187,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
       }
     } catch (error) {
       console.error(error);
+      setIsSubmitting(false);
     }
   };
   const handlePreview = () => {
@@ -341,9 +344,27 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     </>
   );
 
+  const renderSubmittingContent = () => (
+    <>
+      <ModalBody variant={ModalVariant.medium}>
+        <Bullseye>
+          <Spinner size="xl" />
+        </Bullseye>
+      </ModalBody>
+    </>
+  );
+
   return (
-    <Modal isOpen={isOpen} variant={ModalVariant.medium} onClose={handleClose}>
-      {showConfirmation ? renderConfirmationContent() : renderMainContent()}
+    <Modal
+      isOpen={isOpen}
+      variant={ModalVariant.medium}
+      onClose={isSubmitting ? undefined : handleClose}
+    >
+      {isSubmitting
+        ? renderSubmittingContent()
+        : showConfirmation
+          ? renderConfirmationContent()
+          : renderMainContent()}
     </Modal>
   );
 };
