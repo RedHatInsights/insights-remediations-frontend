@@ -21,13 +21,14 @@ import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import { RemediationsPopover } from '../../routes/RemediationsPopover';
 import {
   calculateActionPoints,
+  calculateActionPointsFromBoth,
   handleRemediationSubmit,
   renderExceedsLimitsAlert,
   wizardHelperText,
   normalizeRemediationData,
   handlePlaybookPreview,
   navigateToRemediation,
-  countUniqueSystemsFromRemediation,
+  countUniqueSystemsFromBoth,
 } from '../helpers';
 import { remediationUrl } from '../../Utilities/utils';
 import { PlanSummaryHeader } from './PlanSummaryHeader';
@@ -96,36 +97,70 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     },
   );
 
+  // Update autoReboot when remediation is selected
+  useEffect(() => {
+    if (isExistingPlanSelected && remediationDetailsSummary) {
+      const needsReboot = remediationDetailsSummary.auto_reboot ?? true;
+      setAutoReboot(needsReboot);
+    } else if (!isExistingPlanSelected) {
+      setAutoReboot(true);
+    }
+  }, [remediationDetailsSummary, isExistingPlanSelected]);
+
   // Update counts when remediation details are fetched for an existing plan
   // or when creating a new plan with data prop
   useEffect(() => {
     // Calculate action points from normalized data issues
     const baseActionsPoints = calculateActionPoints(normalizedData?.issues);
-    const baseSystemsCount = normalizedData?.systems?.length ?? 0;
     const baseIssuesCount = normalizedData?.issues?.length ?? 0;
 
     if (isExistingPlanSelected) {
-      // Existing plan selected: add plan's counts to data prop counts
+      // Existing plan selected: merge plan's counts with data prop counts
       if (remediationDetailsSummary) {
-        // Plan details loaded: calculate points from plan issues and add to base
-        const planIssues = remediationDetailsSummary.issues || [];
-        const planActionsPoints = calculateActionPoints(planIssues);
-        // Count unique systems from nested structure (systems within issues)
-        const planSystemsCount = countUniqueSystemsFromRemediation(
+        // Calculate action points from both sources, deduplicating issues by ID
+        const uniqueActionsPoints = calculateActionPointsFromBoth(
           remediationDetailsSummary,
+          normalizedData,
         );
-        const planIssuesCount = planIssues.length;
-        setActionsCount(baseActionsPoints + planActionsPoints);
-        setSystemsCount(baseSystemsCount + planSystemsCount);
-        setIssuesCount(baseIssuesCount + planIssuesCount);
+
+        // Count unique systems from both sources, deduplicating across both
+        const uniqueSystemsCount = countUniqueSystemsFromBoth(
+          remediationDetailsSummary,
+          normalizedData,
+        );
+
+        // Count unique issues from both sources
+        const issuesSet = new Set();
+        if (remediationDetailsSummary?.issues) {
+          remediationDetailsSummary.issues.forEach((issue) => {
+            if (issue.id) {
+              issuesSet.add(issue.id);
+            }
+          });
+        }
+        if (normalizedData?.issues) {
+          normalizedData.issues.forEach((issue) => {
+            if (issue.id) {
+              issuesSet.add(issue.id);
+            }
+          });
+        }
+        const uniqueIssuesCount = issuesSet.size;
+
+        setActionsCount(uniqueActionsPoints);
+        setSystemsCount(uniqueSystemsCount);
+        setIssuesCount(uniqueIssuesCount);
       } else {
         // Loading: reset to base counts while loading new plan data
+        const baseSystemsCount = normalizedData?.systems?.length ?? 0;
         setActionsCount(baseActionsPoints);
         setSystemsCount(baseSystemsCount);
         setIssuesCount(baseIssuesCount);
       }
     } else {
       // Creating new plan or no plan selected: use counts from data prop
+      // Handle both data formats: flat systems array or nested systems within issues
+      const baseSystemsCount = normalizedData?.systems?.length ?? 0;
       setActionsCount(baseActionsPoints);
       setSystemsCount(baseSystemsCount);
       setIssuesCount(baseIssuesCount);

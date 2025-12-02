@@ -16,8 +16,7 @@ export const PlanSummaryHeader = ({ autoReboot, onAutoRebootChange }) => {
       <FlexItem>
         <Switch
           id="auto-reboot-switch"
-          label="Auto-reboot is on"
-          labelOff="Auto-reboot is off"
+          label={autoReboot ? 'Auto-reboot is on' : 'Auto-reboot is off'}
           style={{ paddingRight: '50px' }}
           isChecked={autoReboot}
           hasCheckIcon

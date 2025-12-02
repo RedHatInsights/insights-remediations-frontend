@@ -115,27 +115,96 @@ export const calculateActionPoints = (issues) => {
   }, 0);
 };
 
-// Counts unique systems from remediation details summary (systems nested within issues)
-export const countUniqueSystemsFromRemediation = (remediationDetails) => {
+// Calculate action points from both remediationDetailsSummary and normalizedData, deduplicating issues by ID
+export const calculateActionPointsFromBoth = (
+  remediationDetailsSummary,
+  normalizedData,
+) => {
+  const issuesMap = new Map();
+
+  // Add issues from existing remediation plan
   if (
-    !remediationDetails?.issues ||
-    !Array.isArray(remediationDetails.issues)
+    remediationDetailsSummary?.issues &&
+    Array.isArray(remediationDetailsSummary.issues)
   ) {
-    return 0;
+    remediationDetailsSummary.issues.forEach((issue) => {
+      if (issue.id) {
+        issuesMap.set(issue.id, issue);
+      }
+    });
   }
 
+  // Add issues from normalizedData (new data being added)
+  if (normalizedData?.issues && Array.isArray(normalizedData.issues)) {
+    normalizedData.issues.forEach((issue) => {
+      if (issue.id) {
+        // If issue already exists, keep the existing one (don't overwrite)
+        // This ensures we don't count duplicates
+        if (!issuesMap.has(issue.id)) {
+          issuesMap.set(issue.id, issue);
+        }
+      }
+    });
+  }
+
+  // Calculate action points from deduplicated issues
+  const uniqueIssues = Array.from(issuesMap.values());
+  return calculateActionPoints(uniqueIssues);
+};
+
+// Counts unique systems from remediation details summary (systems nested within issues)
+// Count unique systems from both remediationDetailsSummary and normalizedData, deduplicating across both
+export const countUniqueSystemsFromBoth = (
+  remediationDetailsSummary,
+  normalizedData,
+) => {
   const systemsSet = new Set();
-  remediationDetails.issues.forEach((issue) => {
-    if (issue.systems && Array.isArray(issue.systems)) {
-      issue.systems.forEach((system) => {
-        // Systems can be objects with id property or strings
+
+  // Add systems from existing remediation plan
+  if (
+    remediationDetailsSummary?.issues &&
+    Array.isArray(remediationDetailsSummary.issues)
+  ) {
+    remediationDetailsSummary.issues.forEach((issue) => {
+      if (issue.systems && Array.isArray(issue.systems)) {
+        issue.systems.forEach((system) => {
+          // Systems can be objects with id property or strings
+          const systemId = typeof system === 'string' ? system : system.id;
+          if (systemId) {
+            systemsSet.add(systemId);
+          }
+        });
+      }
+    });
+  }
+
+  // Add systems from normalizedData (new data being added)
+  // Handle two formats: flat systems array or nested systems within issues
+  if (normalizedData) {
+    // Format 1: Flat systems array
+    if (normalizedData.systems && Array.isArray(normalizedData.systems)) {
+      normalizedData.systems.forEach((system) => {
         const systemId = typeof system === 'string' ? system : system.id;
         if (systemId) {
           systemsSet.add(systemId);
         }
       });
     }
-  });
+
+    // Format 2: Nested systems within issues
+    if (normalizedData.issues && Array.isArray(normalizedData.issues)) {
+      normalizedData.issues.forEach((issue) => {
+        if (issue.systems && Array.isArray(issue.systems)) {
+          issue.systems.forEach((system) => {
+            const systemId = typeof system === 'string' ? system : system.id;
+            if (systemId) {
+              systemsSet.add(systemId);
+            }
+          });
+        }
+      });
+    }
+  }
 
   return systemsSet.size;
 };

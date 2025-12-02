@@ -34,10 +34,10 @@ import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLin
 import { execStatus } from './helpers';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import { useFeatureFlag } from '../../Utilities/Hooks/useFeatureFlag';
+import { pluralize } from '../../Utilities/utils';
 
 const DetailsCard = ({
   details,
-  remediationStatus,
   updateRemPlan,
   onNavigateToTab,
   allRemediations,
@@ -285,9 +285,7 @@ const DetailsCard = ({
                 onClick={() => onNavigateToTab(null, 'systems')}
                 isInline
               >
-                {`${remediationStatus?.totalSystems} system${
-                  remediationStatus?.totalSystems !== 1 ? 's' : ''
-                }`}
+                {pluralize(details?.system_count, 'system')}
               </Button>
             </DescriptionListDescription>
           </DescriptionListGroup>
@@ -348,7 +346,6 @@ DetailsCard.propTypes = {
     issue_count: PropTypes.number.isRequired,
     system_count: PropTypes.number.isRequired,
   }).isRequired,
-  remediationStatus: PropTypes.any,
   onNavigateToTab: PropTypes.func,
   allRemediations: PropTypes.array,
   updateRemPlan: PropTypes.func,
