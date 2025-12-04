@@ -357,14 +357,27 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
               {isExistingPlanSelected ? 'Update' : 'Create'} plan
             </Button>
           )}
-          <Button
-            key="preview"
-            variant="secondary"
-            onClick={handlePreview}
-            isDisabled={!hasPlanSelection}
-          >
-            Preview <DownloadIcon size="md" />
-          </Button>
+          {exceedsLimits ? (
+            <Tooltip content="Plan must be within limits">
+              <Button
+                key="preview"
+                variant="secondary"
+                onClick={handlePreview}
+                isAriaDisabled={!hasPlanSelection || exceedsLimits}
+              >
+                Preview <DownloadIcon size="md" />
+              </Button>
+            </Tooltip>
+          ) : (
+            <Button
+              key="preview"
+              variant="secondary"
+              onClick={handlePreview}
+              isDisabled={!hasPlanSelection}
+            >
+              Preview <DownloadIcon size="md" />
+            </Button>
+          )}
           <Button key="cancel" variant="link" onClick={handleRequestClose}>
             Cancel
           </Button>
