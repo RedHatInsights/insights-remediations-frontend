@@ -29,6 +29,7 @@ import {
   handlePlaybookPreview,
   navigateToRemediation,
   countUniqueSystemsFromBoth,
+  countUniqueIssuesFromBoth,
 } from '../helpers';
 import { remediationUrl } from '../../Utilities/utils';
 import { PlanSummaryHeader } from './PlanSummaryHeader';
@@ -113,54 +114,34 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     // Calculate action points from normalized data issues
     const baseActionsPoints = calculateActionPoints(normalizedData?.issues);
     const baseIssuesCount = normalizedData?.issues?.length ?? 0;
+    const baseSystemsCount = normalizedData?.systems?.length ?? 0;
 
-    if (isExistingPlanSelected) {
+    if (isExistingPlanSelected && remediationDetailsSummary) {
       // Existing plan selected: merge plan's counts with data prop counts
-      if (remediationDetailsSummary) {
-        // Calculate action points from both sources, deduplicating issues by ID
-        const uniqueActionsPoints = calculateActionPointsFromBoth(
-          remediationDetailsSummary,
-          normalizedData,
-        );
+      // Calculate action points from both sources, deduplicating issues by ID
+      const uniqueActionsPoints = calculateActionPointsFromBoth(
+        remediationDetailsSummary,
+        normalizedData,
+      );
 
-        // Count unique systems from both sources, deduplicating across both
-        const uniqueSystemsCount = countUniqueSystemsFromBoth(
-          remediationDetailsSummary,
-          normalizedData,
-        );
+      // Count unique systems from both sources, deduplicating across both
+      const uniqueSystemsCount = countUniqueSystemsFromBoth(
+        remediationDetailsSummary,
+        normalizedData,
+      );
 
-        // Count unique issues from both sources
-        const issuesSet = new Set();
-        if (remediationDetailsSummary?.issues) {
-          remediationDetailsSummary.issues.forEach((issue) => {
-            if (issue.id) {
-              issuesSet.add(issue.id);
-            }
-          });
-        }
-        if (normalizedData?.issues) {
-          normalizedData.issues.forEach((issue) => {
-            if (issue.id) {
-              issuesSet.add(issue.id);
-            }
-          });
-        }
-        const uniqueIssuesCount = issuesSet.size;
+      // Count unique issues from both sources
+      const uniqueIssuesCount = countUniqueIssuesFromBoth(
+        remediationDetailsSummary,
+        normalizedData,
+      );
 
-        setActionsCount(uniqueActionsPoints);
-        setSystemsCount(uniqueSystemsCount);
-        setIssuesCount(uniqueIssuesCount);
-      } else {
-        // Loading: reset to base counts while loading new plan data
-        const baseSystemsCount = normalizedData?.systems?.length ?? 0;
-        setActionsCount(baseActionsPoints);
-        setSystemsCount(baseSystemsCount);
-        setIssuesCount(baseIssuesCount);
-      }
+      setActionsCount(uniqueActionsPoints);
+      setSystemsCount(uniqueSystemsCount);
+      setIssuesCount(uniqueIssuesCount);
     } else {
-      // Creating new plan or no plan selected: use counts from data prop
+      // Creating new plan, no plan selected, or loading: use counts from data prop
       // Handle both data formats: flat systems array or nested systems within issues
-      const baseSystemsCount = normalizedData?.systems?.length ?? 0;
       setActionsCount(baseActionsPoints);
       setSystemsCount(baseSystemsCount);
       setIssuesCount(baseIssuesCount);
@@ -177,8 +158,8 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
   }, [actionsCount, systemsCount]);
 
   // Determine which limits are exceeded for alert message
-  const exceededActions = actionsCount > 1000;
-  const exceededSystems = systemsCount > 100;
+  const exceededActions = useMemo(() => actionsCount > 1000, [actionsCount]);
+  const exceededSystems = useMemo(() => systemsCount > 100, [systemsCount]);
 
   // Disable while typing (dropdown is open) unless an existing plan is selected
   const hasPlanSelection = useMemo(() => {
@@ -208,14 +189,18 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     setShowConfirmation(false);
   };
 
+  const resetErrorState = () => {
+    setSubmitError(null);
+    setErrorRemediationId(null);
+    setErrorIsUpdate(false);
+  };
+
   const handleSubmit = async () => {
     if (!hasPlanSelection) {
       return;
     }
     setIsSubmitting(true);
-    setSubmitError(null);
-    setErrorRemediationId(null);
-    setErrorIsUpdate(false);
+    resetErrorState();
     try {
       // Pass original data to preserve nested systems structure for payload
       const result = await handleRemediationSubmit({
@@ -253,9 +238,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
   };
 
   const handleCloseError = () => {
-    setSubmitError(null);
-    setErrorRemediationId(null);
-    setErrorIsUpdate(false);
+    resetErrorState();
     setIsSubmitting(false);
   };
 

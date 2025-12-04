@@ -209,6 +209,37 @@ export const countUniqueSystemsFromBoth = (
   return systemsSet.size;
 };
 
+// Count unique issues from both remediationDetailsSummary and normalizedData, deduplicating by ID
+export const countUniqueIssuesFromBoth = (
+  remediationDetailsSummary,
+  normalizedData,
+) => {
+  const issuesSet = new Set();
+
+  // Add issues from existing remediation plan
+  if (
+    remediationDetailsSummary?.issues &&
+    Array.isArray(remediationDetailsSummary.issues)
+  ) {
+    remediationDetailsSummary.issues.forEach((issue) => {
+      if (issue.id) {
+        issuesSet.add(issue.id);
+      }
+    });
+  }
+
+  // Add issues from normalizedData (new data being added)
+  if (normalizedData?.issues && Array.isArray(normalizedData.issues)) {
+    normalizedData.issues.forEach((issue) => {
+      if (issue.id) {
+        issuesSet.add(issue.id);
+      }
+    });
+  }
+
+  return issuesSet.size;
+};
+
 // Normalize data because different apps send data differently
 export const normalizeRemediationData = (data) => {
   if (!data) {
