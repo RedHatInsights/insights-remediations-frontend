@@ -74,3 +74,17 @@ export const updateRemediationWrapper = (params) => {
   const { id, ...data } = params;
   return remediationsApi.updateRemediation(id, data);
 };
+
+/**
+ * POST request to /playbook endpoint to generate playbook preview.
+ * Used by RemediationWizardV2 preview functionality.
+ *
+ *  @param   {object}  payload             - Payload object
+ *  @param   {Array}   payload.issues      - Array of issues with id, systems, and optional resolution
+ *  @param   {boolean} payload.auto_reboot - Auto reboot setting
+ *  @param   {object}  [options]           - Axios options (e.g., responseType: 'blob')
+ *  @returns {Promise}                     API response promise
+ */
+export const postPlaybookPreview = (payload, options = {}) => {
+  return axiosInstance.post(`${API_BASE}/playbook`, payload, options);
+};

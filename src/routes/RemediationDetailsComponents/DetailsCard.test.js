@@ -518,7 +518,7 @@ describe('DetailsCard', () => {
       const learnMoreLink = screen.getByRole('link', { name: /learn more/i });
       expect(learnMoreLink).toHaveAttribute(
         'href',
-        'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-managing-playbooks_red-hat-lightspeed-remediation-guide',
+        'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide',
       );
       expect(learnMoreLink).toHaveAttribute('target', '_blank');
     });

@@ -34,10 +34,10 @@ import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLin
 import { execStatus } from './helpers';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import { useFeatureFlag } from '../../Utilities/Hooks/useFeatureFlag';
+import { pluralize } from '../../Utilities/utils';
 
 const DetailsCard = ({
   details,
-  remediationStatus,
   updateRemPlan,
   onNavigateToTab,
   allRemediations,
@@ -285,9 +285,7 @@ const DetailsCard = ({
                 onClick={() => onNavigateToTab(null, 'systems')}
                 isInline
               >
-                {`${remediationStatus?.totalSystems} system${
-                  remediationStatus?.totalSystems !== 1 ? 's' : ''
-                }`}
+                {pluralize(details?.system_count, 'system')}
               </Button>
             </DescriptionListDescription>
           </DescriptionListGroup>
@@ -310,7 +308,7 @@ const DetailsCard = ({
         {isLightspeedRebrandEnabled ? 'Red Hat Lightspeed' : 'Insights'}?{' '}
         <InsightsLink
           to={
-            'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-managing-playbooks_red-hat-lightspeed-remediation-guide'
+            'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide'
           }
           target="_blank"
         >
@@ -348,7 +346,6 @@ DetailsCard.propTypes = {
     issue_count: PropTypes.number.isRequired,
     system_count: PropTypes.number.isRequired,
   }).isRequired,
-  remediationStatus: PropTypes.any,
   onNavigateToTab: PropTypes.func,
   allRemediations: PropTypes.array,
   updateRemPlan: PropTypes.func,
