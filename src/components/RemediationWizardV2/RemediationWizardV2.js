@@ -288,7 +288,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
             variant="link"
             className="pf-v6-u-font-size-sm"
           >
-            Learn More
+            Learn more
           </Button>{' '}
         </InsightsLink>
         <Form>
