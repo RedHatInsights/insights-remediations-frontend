@@ -317,7 +317,7 @@ const DetailsCard = ({
             variant="link"
             className="pf-v6-u-font-size-sm"
           >
-            Learn More
+            Learn more
           </Button>{' '}
         </InsightsLink>
       </CardFooter>
