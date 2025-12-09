@@ -17,9 +17,9 @@ import {
   TextInput,
   ValidatedOptions,
   FormGroup,
-  CardFooter,
   Popover,
   FlexItem,
+  Alert,
 } from '@patternfly/react-core';
 import {
   CheckIcon,
@@ -44,6 +44,7 @@ const DetailsCard = ({
   refetch,
   remediationPlaybookRuns,
   refetchAllRemediations,
+  remediationIssues,
 }) => {
   const isLightspeedRebrandEnabled = useFeatureFlag(
     'platform.lightspeed-rebrand',
@@ -121,22 +122,69 @@ const DetailsCard = ({
   };
 
   const formatedDate = new Date(remediationPlaybookRuns?.updated_at);
+
+  const hasResolutionsAvailable = remediationIssues?.some(
+    (issue) => issue?.resolutions_available > 0 || issue?.resolution,
+  );
+
   return (
     <Card isFullHeight>
       <CardTitle>
-        <Title headingLevel="h4" size="xl">
-          Remediation plan details and status
-        </Title>
+        <Flex
+          direction={{ default: 'column' }}
+          spaceItems={{ default: 'spaceItemsMd' }}
+        >
+          <Flex
+            justifyContent={{ default: 'justifyContentSpaceBetween' }}
+            alignItems={{ default: 'alignItemsCenter' }}
+          >
+            <Title headingLevel="h4" size="xl">
+              Details
+            </Title>
+            <Flex
+              alignItems={{ default: 'alignItemsCenter' }}
+              spaceItems={{ default: 'spaceItemsSm' }}
+              style={{ fontWeight: 'normal' }}
+            >
+              <Switch
+                id="autoreboot-switch"
+                isChecked={rebootToggle}
+                onChange={onToggleAutoreboot}
+                className="pf-v6-u-font-size-sm"
+                style={{ fontSize: 'var(--pf-t--global--font-size--sm)' }}
+              />
+              <span className="pf-v6-u-font-size-sm">
+                Auto-reboot:{rebootToggle ? 'On' : 'Off'}
+              </span>
+            </Flex>
+          </Flex>
+          <Content
+            component="p"
+            style={{ wordBreak: 'break-word', fontWeight: 'normal' }}
+          >
+            New to remediating through{' '}
+            {isLightspeedRebrandEnabled ? 'Red Hat Lightspeed' : 'Insights'}?{' '}
+            <InsightsLink
+              to={
+                'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide'
+              }
+              target="_blank"
+            >
+              <Button icon={<ExternalLinkAltIcon />} variant="link" isInline>
+                Learn more
+              </Button>
+            </InsightsLink>
+          </Content>
+        </Flex>
       </CardTitle>
       <CardBody>
         <DescriptionList
-          isHorizontal
           orientation={{
             sm: 'vertical',
-            md: 'horizontal',
-            lg: 'horizontal',
-            xl: 'horizontal',
-            '2xl': 'horizontal',
+            md: 'vertical',
+            lg: 'vertical',
+            xl: 'vertical',
+            '2xl': 'vertical',
           }}
         >
           {/* Editable Name */}
@@ -222,20 +270,6 @@ const DetailsCard = ({
               )}
             </DescriptionListDescription>
           </DescriptionListGroup>
-          {/* Created by */}
-          <DescriptionListGroup>
-            <DescriptionListTerm>Created</DescriptionListTerm>
-            <DescriptionListDescription>
-              {formatDate(details?.created_at)}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          {/* Last Modified */}
-          <DescriptionListGroup>
-            <DescriptionListTerm>Last modified</DescriptionListTerm>
-            <DescriptionListDescription>
-              {formatDate(details?.updated_at)}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
           {/* Last Execution Status */}
           <DescriptionListGroup>
             <DescriptionListTerm>Latest execution status</DescriptionListTerm>
@@ -265,15 +299,29 @@ const DetailsCard = ({
               </Popover>
             </DescriptionListTerm>
             <DescriptionListDescription>
-              <Button
-                variant="link"
-                onClick={() => onNavigateToTab(null, 'actions')}
-                isInline
+              <Flex
+                direction={{ default: 'row' }}
+                alignItems={{ default: 'alignItemsCenter' }}
+                spaceItems={{ default: 'spaceItemsMd' }}
               >
-                {`${details?.issue_count} action${
-                  details?.issue_count !== 1 ? 's' : ''
-                }`}
-              </Button>
+                <Button
+                  variant="link"
+                  onClick={() => onNavigateToTab(null, 'actions')}
+                  isInline
+                >
+                  {`${details?.issue_count} action${
+                    details?.issue_count !== 1 ? 's' : ''
+                  }`}
+                </Button>
+                {hasResolutionsAvailable && (
+                  <Alert
+                    isInline
+                    isPlain
+                    variant="info"
+                    title="Resolution options are available."
+                  />
+                )}
+              </Flex>
             </DescriptionListDescription>
           </DescriptionListGroup>
           {/* Systems */}
@@ -289,38 +337,22 @@ const DetailsCard = ({
               </Button>
             </DescriptionListDescription>
           </DescriptionListGroup>
-          {/* Autoreboot toggle */}
+          {/* Last Modified */}
           <DescriptionListGroup>
-            <DescriptionListTerm>Auto-reboot</DescriptionListTerm>
+            <DescriptionListTerm>Last modified</DescriptionListTerm>
             <DescriptionListDescription>
-              <Switch
-                id="autoreboot-switch"
-                isChecked={rebootToggle}
-                onChange={onToggleAutoreboot}
-                label={rebootToggle ? 'On' : 'Off'}
-              />
+              {formatDate(details?.updated_at)}
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+          {/* Created by */}
+          <DescriptionListGroup>
+            <DescriptionListTerm>Created</DescriptionListTerm>
+            <DescriptionListDescription>
+              {formatDate(details?.created_at)}
             </DescriptionListDescription>
           </DescriptionListGroup>
         </DescriptionList>
       </CardBody>
-      <CardFooter className="pf-v6-u-font-size-sm">
-        New to remediating through{' '}
-        {isLightspeedRebrandEnabled ? 'Red Hat Lightspeed' : 'Insights'}?{' '}
-        <InsightsLink
-          to={
-            'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide'
-          }
-          target="_blank"
-        >
-          <Button
-            icon={<ExternalLinkAltIcon />}
-            variant="link"
-            className="pf-v6-u-font-size-sm"
-          >
-            Learn more
-          </Button>{' '}
-        </InsightsLink>
-      </CardFooter>
     </Card>
   );
 };
@@ -352,6 +384,7 @@ DetailsCard.propTypes = {
   refetch: PropTypes.func,
   remediationPlaybookRuns: PropTypes.object,
   refetchAllRemediations: PropTypes.func,
+  remediationIssues: PropTypes.array,
 };
 
 export default DetailsCard;
