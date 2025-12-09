@@ -67,8 +67,12 @@ const RemediationButton = ({
               return;
             }
 
-            validate(data);
-            setRemediationsData(data);
+            try {
+              validate(data);
+              setRemediationsData(data);
+            } catch {
+              setNoDataModalOpen(true);
+            }
           });
         }}
         {...buttonProps}
