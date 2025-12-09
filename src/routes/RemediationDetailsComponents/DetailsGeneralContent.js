@@ -16,6 +16,7 @@ const DetailsGeneralContent = ({
   remediationPlaybookRuns,
   refetchAllRemediations,
   detailsLoading,
+  remediationIssues,
 }) => {
   const canExecute =
     permissions?.execute &&
@@ -55,6 +56,7 @@ const DetailsGeneralContent = ({
             allRemediations={allRemediations}
             remediationPlaybookRuns={remediationPlaybookRuns}
             refetchAllRemediations={refetchAllRemediations}
+            remediationIssues={remediationIssues}
           />
         </GridItem>
         <GridItem span={12} md={6}>
@@ -82,6 +84,7 @@ DetailsGeneralContent.propTypes = {
   remediationPlaybookRuns: PropTypes.any,
   refetchAllRemediations: PropTypes.func,
   detailsLoading: PropTypes.bool,
+  remediationIssues: PropTypes.array,
 };
 
 export default DetailsGeneralContent;

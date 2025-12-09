@@ -57,6 +57,14 @@ const RemediationDetails = () => {
     params: { id },
   });
 
+  const { result: remediationIssues } = useRemediations(
+    'getRemediationIssues',
+    {
+      params: { id },
+      useTableState: false,
+    },
+  );
+
   const { fetch: updateRemPlan } = useRemediations(updateRemediationWrapper, {
     skip: true,
   });
@@ -160,6 +168,7 @@ const RemediationDetails = () => {
               permissions={context.permissions}
               remediationPlaybookRuns={remediationPlaybookRuns?.data[0]}
               detailsLoading={detailsLoading}
+              remediationIssues={remediationIssues?.data}
             />
           </Tab>
           <Tab
