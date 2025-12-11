@@ -169,10 +169,10 @@ const DetailsCard = ({
                 'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide'
               }
               target="_blank"
+              style={{ textDecoration: 'none' }}
             >
-              <Button icon={<ExternalLinkAltIcon />} variant="link" isInline>
-                Learn more
-              </Button>
+              Learn more{' '}
+              <ExternalLinkAltIcon size="md" className="pf-v6-u-ml-sm" />
             </InsightsLink>
           </Content>
         </Flex>
