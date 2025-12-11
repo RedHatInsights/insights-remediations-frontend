@@ -65,6 +65,8 @@ const DetailsGeneralContent = ({
             permissions={permissions}
             readyOrNot={canExecute}
             onNavigateToTab={onNavigateToTab}
+            details={details}
+            remediationIssues={remediationIssues}
           />
         </GridItem>
       </Grid>
