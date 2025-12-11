@@ -9,9 +9,7 @@ import { useConnectionStatus } from '../Utilities/useConnectionStatus';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import RemediationDetailsPageHeader from './RemediationDetailsComponents/DetailsPageHeader';
 import { PermissionContext } from '../App';
-import ActionsContent from './RemediationDetailsComponents/ActionsContent/ActionsContent';
-// import SystemsContent from './RemediationDetailsComponents/SystemsContent/SystemsContent';
-import SystemsTable from '../components/SystemsTable/SystemsTable';
+import PlannedRemediationsContent from './RemediationDetailsComponents/PlannedRemediationsContent';
 import ExecutionHistoryTab from './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent';
 import PlanNotFound from './RemediationDetailsComponents/PlanNotFound';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
@@ -107,11 +105,23 @@ const RemediationDetails = () => {
     connectedData,
   };
 
-  const handleTabClick = (_event, tabName) =>
-    setSearchParams({
+  const handleTabClick = (_event, tabName) => {
+    // Support nested tab navigation format: 'plannedRemediations:systems' or 'plannedRemediations:actions'
+    const [mainTab, nestedTab] = tabName?.split(':') || [];
+    const newParams = {
       ...Object.fromEntries(searchParams),
-      activeTab: tabName,
-    });
+      activeTab: mainTab || tabName,
+    };
+
+    if (mainTab === 'plannedRemediations' && nestedTab) {
+      newParams.nestedTab = nestedTab;
+    } else if (mainTab !== 'plannedRemediations') {
+      // Remove nestedTab param when navigating away from plannedRemediations
+      delete newParams.nestedTab;
+    }
+
+    setSearchParams(newParams);
+  };
 
   const getIsExecutable = (item) => String(item).trim().toUpperCase() === 'OK';
 
@@ -172,30 +182,19 @@ const RemediationDetails = () => {
             />
           </Tab>
           <Tab
-            eventKey={'actions'}
-            aria-label="ActionTab"
-            title={<TabTitleText>Actions</TabTitleText>}
+            eventKey={'plannedRemediations'}
+            aria-label="PlannedRemediationsTab"
+            title={<TabTitleText>Planned remediations</TabTitleText>}
           >
-            <ActionsContent refetch={refetchRemediationDetails} />
-          </Tab>
-          <Tab
-            eventKey={'systems'}
-            aria-label="SystemTab"
-            title={<TabTitleText>Systems</TabTitleText>}
-          >
-            <section
-              className={
-                'pf-v6-l-page__main-section pf-v6-c-page__main-section'
-              }
-            >
-              <SystemsTable
-                remediation={remediationDetailsSummary}
-                connectedData={remediationStatus?.connectedData}
-                areDetailsLoading={remediationStatus?.areDetailsLoading}
-                refreshRemediation={refetchRemediationDetails}
-                refetchConnectionStatus={refetchConnectionStatus}
-              />
-            </section>
+            <PlannedRemediationsContent
+              remediationDetailsSummary={remediationDetailsSummary}
+              remediationIssues={remediationIssues}
+              remediationStatus={remediationStatus}
+              refetchRemediationDetails={refetchRemediationDetails}
+              refetchConnectionStatus={refetchConnectionStatus}
+              detailsLoading={detailsLoading}
+              initialNestedTab={searchParams.get('nestedTab') || 'actions'}
+            />
           </Tab>
           <Tab
             eventKey={'executionHistory'}

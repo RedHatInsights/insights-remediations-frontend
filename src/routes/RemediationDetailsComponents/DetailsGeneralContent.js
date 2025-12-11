@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import {
   Alert,
   AlertActionCloseButton,
@@ -8,8 +8,6 @@ import {
 import PropTypes from 'prop-types';
 import DetailsCard from './DetailsCard';
 import ProgressCard from './ProgressCard';
-import { calculateActionPoints } from '../../components/helpers';
-import { calculateExecutionLimits } from './helpers';
 
 const DetailsGeneralContent = ({
   details,
@@ -25,8 +23,6 @@ const DetailsGeneralContent = ({
   detailsLoading,
   remediationIssues,
 }) => {
-  const [aapAlertOpen, setAapAlertOpen] = useState(true);
-
   const canExecute =
     permissions?.execute &&
     remediationStatus?.detailsError !== 403 &&
@@ -36,16 +32,7 @@ const DetailsGeneralContent = ({
     detailsLoading || remediationStatus?.areDetailsLoading || !permissions;
   const shouldShowAlert = !isStillLoading && !canExecute;
 
-  // const actionPoints = useMemo(() => {
-  //   return calculateActionPoints(remediationIssues);
-  // }, [remediationIssues]);
-
-  // const executionLimits = useMemo(() => {
-  //   return calculateExecutionLimits(details, actionPoints);
-  // }, [details, actionPoints]);
-
   const shouldShowAapAlert = true;
-  // !isStillLoading && aapAlertOpen && executionLimits.exceedsExecutionLimits;
 
   return (
     <section className="pf-v6-l-page__main-section pf-v6-c-page__main-section">
@@ -70,12 +57,7 @@ const DetailsGeneralContent = ({
           variant="info"
           title="Remediate at scale with Red Hat Ansible Automation Platform (AAP)"
           className="pf-v6-u-mb-md"
-          actionClose={
-            <AlertActionCloseButton
-              title="Close alert"
-              onClose={() => setAapAlertOpen(false)}
-            />
-          }
+          actionClose={<AlertActionCloseButton title="Close alert" />}
         >
           <p>
             To execute a remediation plan using Lightspeed it must be within the
