@@ -1,4 +1,4 @@
-import { Flex, Icon } from '@patternfly/react-core';
+import { Flex, Icon, Popover } from '@patternfly/react-core';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -83,3 +83,131 @@ export const getTimeAgo = (date) => {
 export const renderComponent = (Component, props) => (_data, _id, entity) => (
   <Component {...entity} {...props} />
 );
+
+// Execution limits constants
+export const MAX_SYSTEMS = 100;
+export const MAX_ACTIONS = 1000;
+
+/**
+ * Calculate execution limits status
+ *  @param   {object} details      - Remediation details object
+ *  @param   {number} actionPoints - Total action points
+ *  @returns {object}              Object containing limit status and counts
+ */
+export const calculateExecutionLimits = (details, actionPoints) => {
+  const systemCount = details?.system_count || 0;
+  const exceedsSystemsLimit = systemCount > MAX_SYSTEMS;
+  const exceedsActionsLimit = actionPoints > MAX_ACTIONS;
+  const exceedsExecutionLimits = exceedsSystemsLimit || exceedsActionsLimit;
+  const systemsToRemove = exceedsSystemsLimit ? systemCount - MAX_SYSTEMS : 0;
+  const actionsToRemove = exceedsActionsLimit ? actionPoints - MAX_ACTIONS : 0;
+
+  return {
+    exceedsSystemsLimit,
+    exceedsActionsLimit,
+    exceedsExecutionLimits,
+    systemsToRemove,
+    actionsToRemove,
+  };
+};
+
+/**
+ * Generate execution limits message
+ *  @param   {object} limits - Result from calculateExecutionLimits
+ *  @returns {string}        Formatted message
+ */
+export const getExecutionLimitsMessage = (limits) => {
+  const {
+    exceedsExecutionLimits,
+    exceedsSystemsLimit,
+    exceedsActionsLimit,
+    systemsToRemove,
+    actionsToRemove,
+  } = limits;
+
+  if (!exceedsExecutionLimits) {
+    return 'Within limits';
+  }
+
+  let message = `Exceeds limits. To execute in Red Hat Lightspeed remove `;
+
+  if (exceedsSystemsLimit && exceedsActionsLimit) {
+    message += `${systemsToRemove} or more systems, as well as ${actionsToRemove} or more actions from the plan.`;
+  } else if (exceedsSystemsLimit) {
+    message += `${systemsToRemove} or more systems from the plan.`;
+  } else if (exceedsActionsLimit) {
+    message += `${actionsToRemove} or more actions from the plan.`;
+  }
+
+  return message;
+};
+
+/**
+ * Calculate error count for remediation readiness
+ *  @param   {object}  params                        - Parameters object
+ *  @param   {boolean} params.hasExecutePermission   - Whether user has execute permission
+ *  @param   {number}  params.detailsError           - Details error code (403 indicates RHC not enabled)
+ *  @param   {number}  params.connectedSystems       - Number of connected systems
+ *  @param   {boolean} params.exceedsExecutionLimits - Whether execution limits are exceeded
+ *  @returns {number}                                Total error count
+ */
+export const calculateReadinessErrorCount = ({
+  hasExecutePermission,
+  detailsError,
+  connectedSystems,
+  exceedsExecutionLimits,
+}) => {
+  let count = 0;
+  if (!hasExecutePermission) count++;
+  if (detailsError === 403) count++;
+  if (connectedSystems === 0) count++;
+  if (exceedsExecutionLimits) count++;
+  return count;
+};
+
+/**
+ * Render a step title with popover functionality
+ *  @param   {string}          stepId         - Unique identifier for the step
+ *  @param   {string}          title          - Title text to display
+ *  @param   {React.ReactNode} popoverContent - Content to display in popover
+ *  @param   {object}          popoverState   - Popover state object with openPopover and setOpenPopover
+ *  @param   {boolean}         isError        - Whether to show error styling
+ *  @returns {React.ReactNode}                Rendered step title with popover
+ */
+export const renderStepTitleWithPopover = (
+  stepId,
+  title,
+  popoverContent,
+  popoverState,
+  isError = false,
+) => {
+  const { openPopover, setOpenPopover } = popoverState;
+
+  return (
+    <Popover
+      isVisible={openPopover === stepId}
+      shouldClose={() => setOpenPopover(null)}
+      position="top"
+      bodyContent={popoverContent}
+      aria-label={`${title} popover`}
+    >
+      <button
+        onClick={() => setOpenPopover(openPopover === stepId ? null : stepId)}
+        style={{
+          background: 'none',
+          border: 'none',
+          padding: 0,
+          cursor: 'pointer',
+          textDecoration: 'underline',
+          textDecorationStyle: 'dotted',
+          textUnderlineOffset: '2px',
+          color: isError ? 'var(--pf-v6-global--danger-color--100)' : 'inherit',
+          font: 'inherit',
+          fontWeight: 'inherit',
+        }}
+      >
+        {title}
+      </button>
+    </Popover>
+  );
+};

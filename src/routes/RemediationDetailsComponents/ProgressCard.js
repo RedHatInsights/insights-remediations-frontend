@@ -7,7 +7,6 @@ import {
   ProgressStepper,
   Spinner,
   Title,
-  Popover,
   Flex,
   Content,
   Label,
@@ -22,6 +21,12 @@ import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLin
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { calculateActionPoints } from '../../components/helpers';
 import { pluralize } from '../../Utilities/utils';
+import {
+  calculateExecutionLimits,
+  getExecutionLimitsMessage,
+  calculateReadinessErrorCount,
+  renderStepTitleWithPopover,
+} from './helpers';
 
 const ProgressCard = ({
   remediationStatus,
@@ -34,61 +39,27 @@ const ProgressCard = ({
   const [openPopover, setOpenPopover] = useState(null);
   const { quickStarts } = useChrome();
 
-  const MAX_SYSTEMS = 100;
-  const MAX_ACTIONS = 1000;
-
   const actionPoints = useMemo(() => {
     return calculateActionPoints(remediationIssues);
   }, [remediationIssues]);
 
-  const exceedsSystemsLimit = useMemo(() => {
-    return (details?.system_count || 0) > MAX_SYSTEMS;
-  }, [details?.system_count]);
+  const executionLimits = useMemo(() => {
+    return calculateExecutionLimits(details, actionPoints);
+  }, [details, actionPoints]);
 
-  const exceedsActionsLimit = useMemo(() => {
-    return actionPoints > MAX_ACTIONS;
-  }, [actionPoints]);
-
-  const exceedsExecutionLimits = exceedsSystemsLimit || exceedsActionsLimit;
-  const systemsToRemove = useMemo(() => {
-    return exceedsSystemsLimit ? (details?.system_count || 0) - MAX_SYSTEMS : 0;
-  }, [exceedsSystemsLimit, details?.system_count]);
-
-  const actionsToRemove = useMemo(() => {
-    return exceedsActionsLimit ? actionPoints - MAX_ACTIONS : 0;
-  }, [exceedsActionsLimit, actionPoints]);
+  const { exceedsExecutionLimits } = executionLimits;
 
   const executionLimitsMessage = useMemo(() => {
-    if (!exceedsExecutionLimits) {
-      return 'Within limits';
-    }
-
-    let message = `Exceeds limits. To execute in Red Hat Lightspeed remove `;
-
-    if (exceedsSystemsLimit && exceedsActionsLimit) {
-      message += `${systemsToRemove} or more systems, as well as ${actionsToRemove} or more actions from the plan.`;
-    } else if (exceedsSystemsLimit) {
-      message += `${systemsToRemove} or more systems from the plan.`;
-    } else if (exceedsActionsLimit) {
-      message += `${actionsToRemove} or more actions from the plan.`;
-    }
-
-    return message;
-  }, [
-    exceedsExecutionLimits,
-    exceedsSystemsLimit,
-    exceedsActionsLimit,
-    systemsToRemove,
-    actionsToRemove,
-  ]);
+    return getExecutionLimitsMessage(executionLimits);
+  }, [executionLimits]);
 
   const errorCount = useMemo(() => {
-    let count = 0;
-    if (!permissions?.execute) count++;
-    if (remediationStatus?.detailsError === 403) count++;
-    if (remediationStatus?.connectedSystems === 0) count++;
-    if (exceedsExecutionLimits) count++;
-    return count;
+    return calculateReadinessErrorCount({
+      hasExecutePermission: permissions?.execute,
+      detailsError: remediationStatus?.detailsError,
+      connectedSystems: remediationStatus?.connectedSystems,
+      exceedsExecutionLimits,
+    });
   }, [
     permissions?.execute,
     remediationStatus?.detailsError,
@@ -96,37 +67,7 @@ const ProgressCard = ({
     exceedsExecutionLimits,
   ]);
 
-  const renderStepTitle = (stepId, title, popoverContent, isError = false) => {
-    return (
-      <Popover
-        isVisible={openPopover === stepId}
-        shouldClose={() => setOpenPopover(null)}
-        position="top"
-        bodyContent={popoverContent}
-        aria-label={`${title} popover`}
-      >
-        <button
-          onClick={() => setOpenPopover(openPopover === stepId ? null : stepId)}
-          style={{
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            cursor: 'pointer',
-            textDecoration: 'underline',
-            textDecorationStyle: 'dotted',
-            textUnderlineOffset: '2px',
-            color: isError
-              ? 'var(--pf-v6-global--danger-color--100)'
-              : 'inherit',
-            font: 'inherit',
-            fontWeight: 'inherit',
-          }}
-        >
-          {title}
-        </button>
-      </Popover>
-    );
-  };
+  const popoverState = { openPopover, setOpenPopover };
 
   const executionLimitsPopoverContent = (
     <Flex
@@ -308,10 +249,11 @@ const ProgressCard = ({
             aria-label="ExecutionLimitsStep"
           >
             <span className="pf-v6-u-color-100">
-              {renderStepTitle(
+              {renderStepTitleWithPopover(
                 'executionLimitsStep',
                 'Red Hat Lightspeed execution limits',
                 executionLimitsPopoverContent,
+                popoverState,
                 exceedsExecutionLimits,
               )}
             </span>
@@ -335,10 +277,11 @@ const ProgressCard = ({
             aria-label="PermissionsStep1"
           >
             <span className="pf-v6-u-color-100">
-              {renderStepTitle(
+              {renderStepTitleWithPopover(
                 'permissionsStep',
                 'User access permissions',
                 permissionsPopoverContent,
+                popoverState,
               )}
             </span>
           </ProgressStep>
@@ -374,12 +317,13 @@ const ProgressCard = ({
             aria-label="RHCStep2"
           >
             <span className="pf-v6-u-color-100">
-              {renderStepTitle(
+              {renderStepTitleWithPopover(
                 'RHCStep',
                 'Remote Host Configuration Manager',
                 <Content>
                   Information about Remote Host Configuration Manager.
                 </Content>,
+                popoverState,
               )}
             </span>
           </ProgressStep>
@@ -420,10 +364,11 @@ const ProgressCard = ({
             aria-label="connectedSystemsStep"
           >
             <span className="pf-v6-u-color-100">
-              {renderStepTitle(
+              {renderStepTitleWithPopover(
                 'connectedSystemsStep',
                 'Systems connected to Red Hat Lightspeed',
                 connectedSystemsPopoverContent,
+                popoverState,
                 remediationStatus?.connectedSystems === 0,
               )}
             </span>
