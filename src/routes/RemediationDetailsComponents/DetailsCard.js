@@ -306,7 +306,9 @@ const DetailsCard = ({
               >
                 <Button
                   variant="link"
-                  onClick={() => onNavigateToTab(null, 'actions')}
+                  onClick={() =>
+                    onNavigateToTab(null, 'plannedRemediations:actions')
+                  }
                   isInline
                 >
                   {`${details?.issue_count} action${
@@ -330,7 +332,9 @@ const DetailsCard = ({
             <DescriptionListDescription>
               <Button
                 variant="link"
-                onClick={() => onNavigateToTab(null, 'systems')}
+                onClick={() =>
+                  onNavigateToTab(null, 'plannedRemediations:systems')
+                }
                 isInline
               >
                 {pluralize(details?.system_count, 'system')}

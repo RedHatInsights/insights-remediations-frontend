@@ -341,7 +341,9 @@ const ProgressCard = ({
                     disconnected system{' '}
                     <Button
                       variant="link"
-                      onClick={() => onNavigateToTab(null, 'systems')}
+                      onClick={() =>
+                        onNavigateToTab(null, 'plannedRemediations:systems')
+                      }
                     >
                       View systems
                     </Button>
@@ -351,7 +353,9 @@ const ProgressCard = ({
                     {`${remediationStatus?.connectedSystems} (of ${remediationStatus?.totalSystems}) connected systems`}{' '}
                     <Button
                       variant="link"
-                      onClick={() => onNavigateToTab(null, 'systems')}
+                      onClick={() =>
+                        onNavigateToTab(null, 'plannedRemediations:systems')
+                      }
                     >
                       View systems
                     </Button>

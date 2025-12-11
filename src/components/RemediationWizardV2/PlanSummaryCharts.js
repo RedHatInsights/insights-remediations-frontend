@@ -11,6 +11,7 @@ export const PlanSummaryCharts = ({
   issuesCount,
   detailsLoading,
   isExistingPlanSelected,
+  smallerFont = false,
 }) => {
   const ACTIONS_MAX = 1000;
   const SYSTEMS_MAX = 100;
@@ -72,7 +73,10 @@ export const PlanSummaryCharts = ({
                 </div>
                 <FlexItem alignSelf={{ default: 'alignSelfFlexEnd' }}>
                   <Flex justifyContent={{ default: 'justifyContentFlexEnd' }}>
-                    <FlexItem style={{ paddingRight: '50px' }}>
+                    <FlexItem
+                      style={{ paddingRight: '50px' }}
+                      className={smallerFont ? 'pf-v6-u-font-size-sm' : ''}
+                    >
                       {ACTIONS_MAX} points maximum
                     </FlexItem>
                   </Flex>
@@ -123,7 +127,10 @@ export const PlanSummaryCharts = ({
           </FlexItem>
           <FlexItem alignSelf={{ default: 'alignSelfFlexEnd' }}>
             <Flex justifyContent={{ default: 'justifyContentFlexEnd' }}>
-              <FlexItem style={{ paddingRight: '50px' }}>
+              <FlexItem
+                style={{ paddingRight: '50px' }}
+                className={smallerFont ? 'pf-v6-u-font-size-sm' : ''}
+              >
                 {SYSTEMS_MAX} systems maximum
               </FlexItem>
             </Flex>
@@ -140,4 +147,5 @@ PlanSummaryCharts.propTypes = {
   issuesCount: propTypes.number.isRequired,
   detailsLoading: propTypes.bool.isRequired,
   isExistingPlanSelected: propTypes.bool.isRequired,
+  smallerFont: propTypes.bool,
 };
