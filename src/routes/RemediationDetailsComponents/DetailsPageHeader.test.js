@@ -49,7 +49,7 @@ const remediationStatus = {
   connectedSystems: 1,
   totalSystems: 2,
   areDetailsLoading: false,
-  detailsError: null,
+  connectionError: null,
 };
 const allRemediations = { data: [] };
 const permissions = { execute: true };

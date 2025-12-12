@@ -146,20 +146,20 @@ export const getExecutionLimitsMessage = (limits) => {
  * Calculate error count for remediation readiness
  *  @param   {object}  params                        - Parameters object
  *  @param   {boolean} params.hasExecutePermission   - Whether user has execute permission
- *  @param   {number}  params.detailsError           - Details error code (403 indicates RHC not enabled)
+ *  @param   {object}  params.connectionError        - Connection error object (403 status indicates RHC not enabled)
  *  @param   {number}  params.connectedSystems       - Number of connected systems
  *  @param   {boolean} params.exceedsExecutionLimits - Whether execution limits are exceeded
  *  @returns {number}                                Total error count
  */
 export const calculateReadinessErrorCount = ({
   hasExecutePermission,
-  detailsError,
+  connectionError,
   connectedSystems,
   exceedsExecutionLimits,
 }) => {
   let count = 0;
   if (!hasExecutePermission) count++;
-  if (detailsError === 403) count++;
+  if (connectionError?.errors?.[0]?.status === 403) count++;
   if (connectedSystems === 0) count++;
   if (exceedsExecutionLimits) count++;
   return count;

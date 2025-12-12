@@ -5,8 +5,8 @@ export const useConnectionStatus = (remediationId, axios) => {
   const [connectedSystems, setConnectedSystems] = useState(0);
   const [totalSystems, setTotalSystems] = useState(0);
   const [areDetailsLoading, setAreDetailsLoading] = useState(true);
-  const [detailsError, setDetailsError] = useState();
   const [connectedData, setConnectedData] = useState([]);
+  const [connectionError, setConnectionError] = useState(null);
   const mounted = useRef(false);
 
   const fetchData = useCallback(async () => {
@@ -15,7 +15,7 @@ export const useConnectionStatus = (remediationId, axios) => {
     }
 
     setAreDetailsLoading(true);
-    setDetailsError(undefined);
+    setConnectionError(null);
     let connectedSystemCount = 0;
     let totalSystemsCount = 0;
 
@@ -37,8 +37,8 @@ export const useConnectionStatus = (remediationId, axios) => {
     } catch (error) {
       console.error(error);
       if (mounted.current) {
-        setDetailsError(error?.errors?.[0]?.status || '');
         setConnectedData(error?.errors?.[0]?.status);
+        setConnectionError(error);
       }
     } finally {
       if (mounted.current) {
@@ -59,8 +59,8 @@ export const useConnectionStatus = (remediationId, axios) => {
     connectedSystems,
     totalSystems,
     areDetailsLoading,
-    detailsError,
     connectedData,
     fetchData,
+    connectionError,
   ];
 };
