@@ -56,13 +56,13 @@ const ProgressCard = ({
   const errorCount = useMemo(() => {
     return calculateReadinessErrorCount({
       hasExecutePermission: permissions?.execute,
-      detailsError: remediationStatus?.detailsError,
+      connectionError: remediationStatus?.connectionError,
       connectedSystems: remediationStatus?.connectedSystems,
       exceedsExecutionLimits,
     });
   }, [
     permissions?.execute,
-    remediationStatus?.detailsError,
+    remediationStatus?.connectionError,
     remediationStatus?.connectedSystems,
     exceedsExecutionLimits,
   ]);
@@ -287,11 +287,14 @@ const ProgressCard = ({
           </ProgressStep>
           <ProgressStep
             variant={
-              remediationStatus?.detailsError !== 403 ? 'success' : 'danger'
+              remediationStatus?.connectionError?.errors?.[0]?.status !== 403
+                ? 'success'
+                : 'danger'
             }
             description={
               <span className="pf-v6-u-color-100">
-                {remediationStatus?.detailsError !== 403 ? (
+                {remediationStatus?.connectionError?.errors?.[0]?.status !==
+                403 ? (
                   'Enabled'
                 ) : (
                   <>

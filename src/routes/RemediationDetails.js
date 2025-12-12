@@ -92,17 +92,17 @@ const RemediationDetails = () => {
     connectedSystems,
     totalSystems,
     areDetailsLoading,
-    detailsError,
     connectedData,
     refetchConnectionStatus,
+    connectionError,
   ] = useConnectionStatus(remediationDetailsSummary?.id, axios);
 
   const remediationStatus = {
     connectedSystems,
     totalSystems,
     areDetailsLoading,
-    detailsError,
     connectedData,
+    connectionError,
   };
 
   const handleTabClick = (_event, tabName) => {

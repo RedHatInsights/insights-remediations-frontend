@@ -25,7 +25,7 @@ const DetailsGeneralContent = ({
 }) => {
   const canExecute =
     permissions?.execute &&
-    remediationStatus?.detailsError !== 403 &&
+    remediationStatus?.connectionError?.errors?.[0]?.status !== 403 &&
     remediationStatus?.connectedSystems !== 0;
 
   const isStillLoading =

@@ -149,7 +149,7 @@ describe('ProgressCard', () => {
   const defaultProps = {
     remediationStatus: {
       areDetailsLoading: false,
-      detailsError: null,
+      connectionError: null,
       connectedSystems: 5,
       totalSystems: 10,
     },
@@ -333,7 +333,7 @@ describe('ProgressCard', () => {
             {...defaultProps}
             remediationStatus={{
               ...defaultProps.remediationStatus,
-              detailsError: null,
+              connectionError: null,
             }}
           />,
         );
@@ -353,7 +353,7 @@ describe('ProgressCard', () => {
             {...defaultProps}
             remediationStatus={{
               ...defaultProps.remediationStatus,
-              detailsError: 500,
+              connectionError: { errors: [{ status: 500 }] },
             }}
           />,
         );
@@ -370,7 +370,7 @@ describe('ProgressCard', () => {
             {...defaultProps}
             remediationStatus={{
               ...defaultProps.remediationStatus,
-              detailsError: 403,
+              connectionError: { errors: [{ status: 403 }] },
             }}
           />,
         );
@@ -392,7 +392,7 @@ describe('ProgressCard', () => {
             {...defaultProps}
             remediationStatus={{
               ...defaultProps.remediationStatus,
-              detailsError: 403,
+              connectionError: { errors: [{ status: 403 }] },
             }}
           />,
         );
@@ -623,13 +623,13 @@ describe('ProgressCard', () => {
       ).toBeInTheDocument();
     });
 
-    it('should handle complex detailsError values', () => {
+    it('should handle complex connectionError values', () => {
       render(
         <ProgressCard
           {...defaultProps}
           remediationStatus={{
             ...defaultProps.remediationStatus,
-            detailsError: '403',
+            connectionError: { errors: [{ status: '403' }] },
           }}
         />,
       );
