@@ -149,7 +149,6 @@ const RemediationDetails = () => {
           activeKey={searchParams.get('activeTab') || 'general'}
           onSelect={handleTabClick}
           aria-label="Details Page Tabs"
-          role="region"
         >
           {isRenameModalOpen && (
             <RenameModal

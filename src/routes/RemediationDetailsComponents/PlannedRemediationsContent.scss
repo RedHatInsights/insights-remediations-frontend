@@ -1,0 +1,6 @@
+// Override for nested tabs current state styling - override Chrome insights styles
+// Target only the nested tabs in PlannedRemediationsContent to set white background
+.ins-c-planned-remediations-tabs .pf-v6-c-tabs__item.pf-m-current {
+  background: unset
+}
+

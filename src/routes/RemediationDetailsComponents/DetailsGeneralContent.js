@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Alert,
   AlertActionCloseButton,
@@ -6,6 +6,8 @@ import {
   GridItem,
 } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
+import { calculateActionPoints } from '../../components/helpers';
+import { calculateExecutionLimits } from './helpers';
 import DetailsCard from './DetailsCard';
 import ProgressCard from './ProgressCard';
 
@@ -32,7 +34,15 @@ const DetailsGeneralContent = ({
     detailsLoading || remediationStatus?.areDetailsLoading || !permissions;
   const shouldShowAlert = !isStillLoading && !canExecute;
 
-  const shouldShowAapAlert = true;
+  const actionPoints = useMemo(() => {
+    return calculateActionPoints(remediationIssues);
+  }, [remediationIssues]);
+
+  const executionLimits = useMemo(() => {
+    return calculateExecutionLimits(details, actionPoints);
+  }, [details, actionPoints]);
+
+  const shouldShowAapAlert = executionLimits?.exceedsExecutionLimits || false;
 
   return (
     <section className="pf-v6-l-page__main-section pf-v6-c-page__main-section">
@@ -41,7 +51,7 @@ const DetailsGeneralContent = ({
           isInline
           variant="danger"
           title="Remediation plan cannot be executed"
-          className="pf-v6-u-mb-md"
+          className="pf-v6-u-mb-sm"
         >
           <p>
             One or more prerequisites for executing this remediation plan were
