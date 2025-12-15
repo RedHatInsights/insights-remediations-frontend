@@ -201,6 +201,51 @@ const ProgressCard = ({
     </Flex>
   );
 
+  const rhcPopoverContent = (
+    <Flex
+      direction={{ default: 'column' }}
+      spaceItems={{ default: 'spaceItemsMd' }}
+    >
+      <Content>
+        <p>
+          To allow users to execute a remediation plan on a remote system from
+          <strong>Red Hat Lightspeed</strong>, you must configure the Remote
+          Host Configuration Manager settings in the Lightspeed UI. You can find
+          the settings in the console under Inventory &gt; System Configurations
+          &gt; Remote Host Configuration.
+        </p>
+      </Content>
+      <Flex
+        direction={{ default: 'column' }}
+        spaceItems={{ default: 'spaceItemsSm' }}
+      >
+        <Button
+          variant="secondary"
+          onClick={() =>
+            quickStarts?.activateQuickstart('insights-remediate-plan-create')
+          }
+        >
+          Open the quick start
+        </Button>
+        <Button
+          variant="link"
+          icon={<ExternalLinkAltIcon />}
+          component="a"
+          href="https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/remote_host_configuration_and_management/index"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Go to documentation
+        </Button>
+      </Flex>
+      <Content component="p">
+        {remediationStatus?.connectionError?.errors?.[0]?.status !== 403
+          ? 'Enabled'
+          : 'Not enabled'}
+      </Content>
+    </Flex>
+  );
+
   return permissions === undefined || remediationStatus.areDetailsLoading ? (
     <Spinner />
   ) : (
@@ -323,9 +368,7 @@ const ProgressCard = ({
               {renderStepTitleWithPopover(
                 'RHCStep',
                 'Remote Host Configuration Manager',
-                <Content>
-                  Information about Remote Host Configuration Manager.
-                </Content>,
+                rhcPopoverContent,
                 popoverState,
               )}
             </span>

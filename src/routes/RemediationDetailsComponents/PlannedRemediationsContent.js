@@ -13,6 +13,7 @@ import { PlanSummaryCharts } from '../../components/RemediationWizardV2/PlanSumm
 import { calculateActionPoints } from '../../components/helpers';
 import ActionsContent from './ActionsContent/ActionsContent';
 import SystemsTable from '../../components/SystemsTable/SystemsTable';
+import './PlannedRemediationsContent.scss';
 
 const PlannedRemediationsContent = ({
   remediationDetailsSummary,
@@ -74,63 +75,65 @@ const PlannedRemediationsContent = ({
           smallerFont
         />
       </div>
-
       {/* Nested Tabs */}
-      <Tabs
-        activeKey={nestedActiveTab}
-        onSelect={handleNestedTabClick}
-        aria-label="Planned Remediations Nested Tabs"
-        className="pf-v6-u-mt-lg"
-        isBox
-        variant="secondary"
-      >
-        <Tab
-          eventKey="actions"
-          title={
-            <TabTitleText>
-              <Flex spaceItems={{ default: 'spaceItemsSm' }}>
-                {exceedsActionsLimit && (
-                  <Icon status="danger">
-                    <ExclamationCircleIcon />
-                  </Icon>
-                )}
-                <span>{issuesCount} actions</span>
-              </Flex>
-            </TabTitleText>
-          }
-          aria-label="ActionsTab"
+      <div className="ins-c-planned-remediations-tabs">
+        <Tabs
+          activeKey={nestedActiveTab}
+          onSelect={handleNestedTabClick}
+          aria-label="Planned Remediations Nested Tabs"
+          className="pf-v6-u-mt-lg"
+          isBox
         >
-          <ActionsContent refetch={refetchRemediationDetails} />
-        </Tab>
-        <Tab
-          eventKey="systems"
-          title={
-            <TabTitleText>
-              <Flex spaceItems={{ default: 'spaceItemsSm' }}>
-                {exceedsSystemsLimit && (
-                  <Icon status="danger">
-                    <ExclamationCircleIcon />
-                  </Icon>
-                )}
-                <span>{systemsCount} systems</span>
-              </Flex>
-            </TabTitleText>
-          }
-          aria-label="SystemsTab"
-        >
-          <section
-            className={'pf-v6-l-page__main-section pf-v6-c-page__main-section'}
+          <Tab
+            eventKey="actions"
+            title={
+              <TabTitleText>
+                <Flex spaceItems={{ default: 'spaceItemsSm' }}>
+                  {exceedsActionsLimit && (
+                    <Icon status="danger">
+                      <ExclamationCircleIcon />
+                    </Icon>
+                  )}
+                  <span>{issuesCount} actions</span>
+                </Flex>
+              </TabTitleText>
+            }
+            aria-label="ActionsTab"
           >
-            <SystemsTable
-              remediation={remediationDetailsSummary}
-              connectedData={remediationStatus?.connectedData}
-              areDetailsLoading={remediationStatus?.areDetailsLoading}
-              refreshRemediation={refetchRemediationDetails}
-              refetchConnectionStatus={refetchConnectionStatus}
-            />
-          </section>
-        </Tab>
-      </Tabs>
+            <ActionsContent refetch={refetchRemediationDetails} />
+          </Tab>
+          <Tab
+            eventKey="systems"
+            title={
+              <TabTitleText>
+                <Flex spaceItems={{ default: 'spaceItemsSm' }}>
+                  {exceedsSystemsLimit && (
+                    <Icon status="danger">
+                      <ExclamationCircleIcon />
+                    </Icon>
+                  )}
+                  <span>{systemsCount} systems</span>
+                </Flex>
+              </TabTitleText>
+            }
+            aria-label="SystemsTab"
+          >
+            <section
+              className={
+                'pf-v6-l-page__main-section pf-v6-c-page__main-section'
+              }
+            >
+              <SystemsTable
+                remediation={remediationDetailsSummary}
+                connectedData={remediationStatus?.connectedData}
+                areDetailsLoading={remediationStatus?.areDetailsLoading}
+                refreshRemediation={refetchRemediationDetails}
+                refetchConnectionStatus={refetchConnectionStatus}
+              />
+            </section>
+          </Tab>
+        </Tabs>
+      </div>
     </div>
   );
 };
