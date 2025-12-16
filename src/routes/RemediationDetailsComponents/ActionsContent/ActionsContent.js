@@ -10,7 +10,6 @@ import chunk from 'lodash/chunk';
 import ConfirmationDialog from '../../../components/ConfirmationDialog';
 // import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
-import ResolutionOptionsDrawer from './ResolutionOptionsDrawer';
 import {
   useRawTableState,
   useStateCallbacks,
@@ -19,7 +18,11 @@ import {
 import TableEmptyState from '../../OverViewPage/TableEmptyState';
 import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
 
-const ActionsContent = ({ refetch }) => {
+const ActionsContent = ({
+  refetch,
+  onOpenResolutionDrawer,
+  selectedIssueForResolutionId,
+}) => {
   const { id } = useParams();
   const tableState = useRawTableState();
   const currentlySelected = tableState?.selected;
@@ -29,9 +32,6 @@ const ActionsContent = ({ refetch }) => {
   const [isSystemsModalOpen, setIsSystemsModalOpen] = useState(false);
   const [actionToShow, setActionToShow] = useState('');
   const [selectedIssueId, setSelectedIssueId] = useState('');
-  const [isResolutionDrawerOpen, setIsResolutionDrawerOpen] = useState(false);
-  const [selectedIssueForResolution, setSelectedIssueForResolution] =
-    useState(null);
 
   const {
     result: issuesResult,
@@ -94,23 +94,21 @@ const ActionsContent = ({ refetch }) => {
     return await fetchQueue(queue);
   };
 
-  const allIssues = issuesResult?.data ?? [];
+  const allIssues = useMemo(
+    () => issuesResult?.data ?? [],
+    [issuesResult?.data],
+  );
   const totalIssues = issuesResult?.meta?.total ?? allIssues?.length ?? 0;
 
   const handleViewResolutionOptions = useCallback(
     (issueId) => {
       const issue = allIssues.find((i) => i.id === issueId);
-      setSelectedIssueForResolution(issue);
-      setIsResolutionDrawerOpen(true);
+      if (onOpenResolutionDrawer && issue) {
+        onOpenResolutionDrawer(issue);
+      }
     },
-    [allIssues],
+    [allIssues, onOpenResolutionDrawer],
   );
-
-  const handleResolutionUpdated = useCallback(() => {
-    // Refetch issues to get updated data
-    refetchIssues();
-    refetch();
-  }, [refetchIssues, refetch]);
 
   const columnsWithSystemsButton = useMemo(() => {
     return columns.map((col) => {
@@ -141,6 +139,7 @@ const ActionsContent = ({ refetch }) => {
               <col.Component
                 {...rowData}
                 onViewResolutionOptions={handleViewResolutionOptions}
+                selectedIssueForResolutionId={selectedIssueForResolutionId}
               />
             );
           },
@@ -148,7 +147,7 @@ const ActionsContent = ({ refetch }) => {
       }
       return col;
     });
-  }, [handleViewResolutionOptions]);
+  }, [handleViewResolutionOptions, selectedIssueForResolutionId]);
 
   return (
     <section className="pf-v6-l-page__main-section pf-v6-c-page__main-section">
@@ -159,19 +158,6 @@ const ActionsContent = ({ refetch }) => {
           isOpen={isSystemsModalOpen}
           onClose={() => setIsSystemsModalOpen(false)}
           actionName={actionToShow}
-        />
-      )}
-      {isResolutionDrawerOpen && selectedIssueForResolution && (
-        <ResolutionOptionsDrawer
-          isOpen={isResolutionDrawerOpen}
-          onClose={() => {
-            setIsResolutionDrawerOpen(false);
-            setSelectedIssueForResolution(null);
-          }}
-          issueId={selectedIssueForResolution.id}
-          currentResolution={selectedIssueForResolution.resolution}
-          remediationId={id}
-          onResolutionUpdated={handleResolutionUpdated}
         />
       )}
       {isDeleteModalOpen && (
@@ -277,6 +263,8 @@ const ActionsContent = ({ refetch }) => {
 
 ActionsContent.propTypes = {
   refetch: PropTypes.func,
+  onOpenResolutionDrawer: PropTypes.func,
+  selectedIssueForResolutionId: PropTypes.string,
 };
 
 const ActionsContentProvider = (props) => (

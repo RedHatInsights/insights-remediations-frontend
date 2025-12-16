@@ -415,10 +415,22 @@ describe('DetailsGeneralContent', () => {
 
     it('should handle different connectionError values', () => {
       const testCases = [
-        { connectionError: { errors: [{ status: 500 }] }, shouldShowAlert: false },
-        { connectionError: { errors: [{ status: 404 }] }, shouldShowAlert: false },
-        { connectionError: { errors: [{ status: 403 }] }, shouldShowAlert: true },
-        { connectionError: { errors: [{ status: 0 }] }, shouldShowAlert: false },
+        {
+          connectionError: { errors: [{ status: 500 }] },
+          shouldShowAlert: false,
+        },
+        {
+          connectionError: { errors: [{ status: 404 }] },
+          shouldShowAlert: false,
+        },
+        {
+          connectionError: { errors: [{ status: 403 }] },
+          shouldShowAlert: true,
+        },
+        {
+          connectionError: { errors: [{ status: 0 }] },
+          shouldShowAlert: false,
+        },
         { connectionError: null, shouldShowAlert: false },
         { connectionError: undefined, shouldShowAlert: false },
       ];

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import {
   Drawer,
@@ -9,6 +10,7 @@ import {
   DrawerActions,
   DrawerCloseButton,
   DrawerPanelBody,
+  DrawerPanelDescription,
   Title,
   Content,
   Radio,
@@ -16,17 +18,22 @@ import {
   Button,
   Flex,
   FlexItem,
+  Skeleton,
+  HelperText,
+  HelperTextItem,
 } from '@patternfly/react-core';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
-import { patchRemediation } from '../../../api';
+import { getResolutionsBatch } from '../../../api';
 import { useParams } from 'react-router-dom';
 import useRemediations from '../../../Utilities/Hooks/api/useRemediations';
 
 const ResolutionOptionsDrawer = ({
   isOpen,
+  onExpand,
   onClose,
   issueId,
+  issueDescription,
   currentResolution,
   remediationId,
   onResolutionUpdated,
@@ -34,35 +41,57 @@ const ResolutionOptionsDrawer = ({
   const { id } = useParams();
   const [selectedResolution, setSelectedResolution] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [resolutions, setResolutions] = useState([]);
   const addNotification = useAddNotification();
+  const drawerRef = useRef(undefined);
 
-  const {
-    result: resolutionsResult,
-    loading: isLoading,
-    fetch: fetchResolutions,
-  } = useRemediations('getResolution', {
-    skip: !isOpen || !issueId,
-    params: { issue: issueId },
-  });
+  const { fetch: updateIssueResolution } = useRemediations(
+    'updateRemediationIssue',
+    {
+      skip: true,
+    },
+  );
+
+  const handleExpand = () => {
+    if (onExpand) {
+      onExpand();
+    }
+    drawerRef.current && drawerRef.current.focus();
+  };
 
   useEffect(() => {
-    if (isOpen && issueId) {
-      fetchResolutions({ issue: issueId });
-    }
-  }, [isOpen, issueId, fetchResolutions]);
+    const fetchResolutions = async () => {
+      if (!isOpen || !issueId) {
+        return;
+      }
 
-  useEffect(() => {
-    if (resolutionsResult?.resolutions) {
-      const issueResolutions = resolutionsResult.resolutions || [];
-      // Set current resolution as selected, or first one if no current
-      const current = issueResolutions.find(
-        (r) => r.id === currentResolution?.id,
-      );
-      setSelectedResolution(current || issueResolutions[0] || null);
-    }
-  }, [resolutionsResult, currentResolution]);
+      setIsLoading(true);
+      try {
+        const result = await getResolutionsBatch([issueId]);
+        const issueResolutionData = result?.[issueId];
+        const issueResolutions = issueResolutionData?.resolutions || [];
+        setResolutions(issueResolutions);
 
-  const resolutions = resolutionsResult?.resolutions || [];
+        // Set current resolution as selected, or first one if no current
+        const current = issueResolutions.find(
+          (r) => r.id === currentResolution?.id,
+        );
+        setSelectedResolution(current || issueResolutions[0] || null);
+      } catch (error) {
+        console.error('Error fetching resolutions:', error);
+        addNotification({
+          title: 'Failed to load resolution options',
+          variant: 'danger',
+          dismissable: true,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchResolutions();
+  }, [isOpen, issueId, currentResolution, addNotification]);
 
   const handleSave = async () => {
     if (!selectedResolution) {
@@ -71,16 +100,11 @@ const ResolutionOptionsDrawer = ({
 
     setIsSaving(true);
     try {
-      await patchRemediation(remediationId || id, {
-        add: {
-          issues: [
-            {
-              id: issueId,
-              resolution: selectedResolution.id,
-            },
-          ],
-        },
-      });
+      await updateIssueResolution([
+        remediationId || id,
+        issueId,
+        { resolution: selectedResolution.id },
+      ]);
 
       addNotification({
         title: 'Resolution updated successfully',
@@ -109,99 +133,149 @@ const ResolutionOptionsDrawer = ({
   const panelContent = (
     <DrawerPanelContent>
       <DrawerHead>
-        <Title headingLevel="h2" size="xl">
-          Resolution options
-        </Title>
+        <span tabIndex={isOpen ? 0 : -1} ref={drawerRef}>
+          <Title headingLevel="h2" size="xl" className="pf-v6-u-mb-lg">
+            Resolution options
+          </Title>
+          {issueDescription && (
+            <Title headingLevel="h3" size="md" className="pf-v6-u-mb-md">
+              {issueDescription}
+            </Title>
+          )}
+        </span>
         <DrawerActions>
           <DrawerCloseButton onClick={onClose} />
         </DrawerActions>
       </DrawerHead>
-      <DrawerPanelBody>
-        <Content component="p" className="pf-v6-u-mb-md">
-          A default resolution has been selected for you. To select a different
-          resolution, use the options below.
-        </Content>
+      <DrawerPanelDescription>
+        A default resolution has been selected for you. To select a different
+        resolution, use the options below.
+      </DrawerPanelDescription>
+      <DrawerPanelBody style={{ height: '100%' }}>
+        <Flex direction={{ default: 'column' }} style={{ height: '100%' }}>
+          <FlexItem grow={{ default: 'grow' }} style={{ overflowY: 'auto' }}>
+            <Content component="p" className="pf-v6-u-mb-lg">
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  // TODO: Add actual knowledgebase link
+                }}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View knowledgebase article{' '}
+                <ExternalLinkAltIcon className="pf-v6-u-ml-xs" />
+              </a>
+            </Content>
 
-        <Content component="p" className="pf-v6-u-mb-lg">
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              // TODO: Add actual knowledgebase link
-            }}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View knowledgebase article{' '}
-            <ExternalLinkAltIcon className="pf-v6-u-ml-xs" />
-          </a>
-        </Content>
+            {isLoading ? (
+              <Skeleton screenreaderText="Loading resolution options" />
+            ) : (
+              <>
+                <Title headingLevel="h3" size="md" className="pf-v6-u-mb-md">
+                  Select resolution
+                </Title>
 
-        {isLoading ? (
-          <Content component="p">Loading resolution options...</Content>
-        ) : (
-          <>
-            <Title headingLevel="h3" size="md" className="pf-v6-u-mb-md">
-              Resolution options
-            </Title>
+                <div className="pf-v6-u-mb-md">
+                  {resolutions.map((resolution) => (
+                    <Radio
+                      key={resolution.id}
+                      id={`resolution-${resolution.id}`}
+                      name="resolution-options"
+                      label={resolution.description}
+                      isChecked={selectedResolution?.id === resolution.id}
+                      onChange={() => setSelectedResolution(resolution)}
+                      className="pf-v6-u-mb-md"
+                    />
+                  ))}
+                </div>
+                <HelperText className="pf-v6-u-mt-md">
+                  <HelperTextItem>
+                    A default resolution has been selected for you. To select a
+                    different resolution, use the options above.
+                  </HelperTextItem>
+                </HelperText>
+              </>
+            )}
+          </FlexItem>
 
-            <div className="pf-v6-u-mb-md">
-              {resolutions.map((resolution) => (
-                <Radio
-                  key={resolution.id}
-                  id={`resolution-${resolution.id}`}
-                  name="resolution-options"
-                  label={resolution.description}
-                  isChecked={selectedResolution?.id === resolution.id}
-                  onChange={() => setSelectedResolution(resolution)}
-                  className="pf-v6-u-mb-md"
-                />
-              ))}
-            </div>
+          {!isLoading && (
+            <FlexItem>
+              <Alert
+                variant="info"
+                isInline
+                isPlain
+                title="Resolution is applied to all affected systems in the plan."
+                className="pf-v6-u-mb-md"
+              />
 
-            <Alert
-              variant="info"
-              isInline
-              title="Resolution is applied to all affected systems in the plan."
-              className="pf-v6-u-mb-lg"
-            />
-
-            <Flex spaceItems={{ default: 'spaceItemsMd' }}>
-              <FlexItem>
-                <Button
-                  variant="primary"
-                  onClick={handleSave}
-                  isDisabled={!selectedResolution || isSaving}
-                  isLoading={isSaving}
-                >
-                  Save
-                </Button>
-              </FlexItem>
-              <FlexItem>
-                <Button variant="link" onClick={onClose}>
-                  Cancel
-                </Button>
-              </FlexItem>
-            </Flex>
-          </>
-        )}
+              <Flex spaceItems={{ default: 'spaceItemsMd' }}>
+                <FlexItem>
+                  <Button
+                    variant="primary"
+                    onClick={handleSave}
+                    isDisabled={!selectedResolution || isSaving}
+                    isLoading={isSaving}
+                  >
+                    Save
+                  </Button>
+                </FlexItem>
+                <FlexItem>
+                  <Button variant="link" onClick={onClose}>
+                    Cancel
+                  </Button>
+                </FlexItem>
+              </Flex>
+            </FlexItem>
+          )}
+        </Flex>
       </DrawerPanelBody>
     </DrawerPanelContent>
   );
 
-  return (
-    <Drawer isExpanded={isOpen}>
-      <DrawerContent panelContent={panelContent}>
-        <DrawerContentBody />
-      </DrawerContent>
-    </Drawer>
+  if (!isOpen) {
+    return null;
+  }
+
+  return createPortal(
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 1000,
+        pointerEvents: 'none',
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          pointerEvents: 'auto',
+        }}
+      >
+        <Drawer isExpanded={isOpen} onExpand={handleExpand} position="right">
+          <DrawerContent panelContent={panelContent}>
+            <DrawerContentBody />
+          </DrawerContent>
+        </Drawer>
+      </div>
+    </div>,
+    document.body,
   );
 };
 
 ResolutionOptionsDrawer.propTypes = {
   isOpen: PropTypes.bool.isRequired,
+  onExpand: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
   issueId: PropTypes.string.isRequired,
+  issueDescription: PropTypes.string,
   currentResolution: PropTypes.shape({
     id: PropTypes.string,
     description: PropTypes.string,
