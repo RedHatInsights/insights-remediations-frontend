@@ -23,6 +23,8 @@ const PlannedRemediationsContent = ({
   refetchConnectionStatus,
   detailsLoading,
   initialNestedTab = 'actions',
+  onOpenResolutionDrawer,
+  selectedIssueForResolutionId,
 }) => {
   const [nestedActiveTab, setNestedActiveTab] = useState(initialNestedTab);
 
@@ -100,7 +102,11 @@ const PlannedRemediationsContent = ({
             }
             aria-label="ActionsTab"
           >
-            <ActionsContent refetch={refetchRemediationDetails} />
+            <ActionsContent
+              refetch={refetchRemediationDetails}
+              onOpenResolutionDrawer={onOpenResolutionDrawer}
+              selectedIssueForResolutionId={selectedIssueForResolutionId}
+            />
           </Tab>
           <Tab
             eventKey="systems"
@@ -146,6 +152,8 @@ PlannedRemediationsContent.propTypes = {
   refetchConnectionStatus: PropTypes.func,
   detailsLoading: PropTypes.bool,
   initialNestedTab: PropTypes.string,
+  onOpenResolutionDrawer: PropTypes.func,
+  selectedIssueForResolutionId: PropTypes.string,
 };
 
 export default PlannedRemediationsContent;

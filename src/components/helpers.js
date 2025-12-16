@@ -281,7 +281,6 @@ export const prepareRemediationPayload = (data, autoReboot) => {
     id: issue.id,
     // Use issue's systems if nested, otherwise use flat systems array
     systems: hasNestedSystems ? issue.systems || [] : data?.systems || [],
-    resolution: 'minimum',
   }));
 
   return {

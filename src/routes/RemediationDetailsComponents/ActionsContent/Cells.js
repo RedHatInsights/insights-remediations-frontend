@@ -37,6 +37,7 @@ export const ActionsCell = ({
   resolution,
   resolutions_available,
   onViewResolutionOptions,
+  selectedIssueForResolutionId,
 }) => {
   const { app } = getAppInfo(id);
   const hasMultipleResolutions = resolutions_available > 1;
@@ -68,6 +69,15 @@ export const ActionsCell = ({
                   variant="secondary"
                   size="sm"
                   onClick={() => onViewResolutionOptions?.(id)}
+                  style={
+                    selectedIssueForResolutionId === id
+                      ? {
+                          border: '1px solid',
+                          borderColor:
+                            'var(--pf-v6-global--primary-color--100)',
+                        }
+                      : {}
+                  }
                 >
                   View resolution options
                 </Button>
@@ -111,6 +121,7 @@ ActionsCell.propTypes = {
   id: PropTypes.string.isRequired,
   resolutions_available: PropTypes.number,
   onViewResolutionOptions: PropTypes.func,
+  selectedIssueForResolutionId: PropTypes.string,
 };
 RebootRequiredCell.propTypes = {
   resolution: PropTypes.shape({ needs_reboot: PropTypes.bool }),
