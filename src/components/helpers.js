@@ -1,10 +1,16 @@
 import {
   Alert,
+  Button,
   Flex,
   HelperText,
   HelperTextItem,
+  Hint,
+  HintBody,
+  HintTitle,
   Skeleton,
+  Spinner,
 } from '@patternfly/react-core';
+import { DownloadIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { getIssueApplication } from '../Utilities/model';
 import { createRemediationBatches, remediationUrl } from '../Utilities/utils';
@@ -91,6 +97,55 @@ export const renderExceedsLimitsAlert = ({
         </li>
       </ul>
     </Alert>
+  );
+};
+
+export const renderPreviewAlert = ({
+  hasPlanSelection,
+  onPreviewClick,
+  previewStatus,
+  previewLoading,
+}) => {
+  return (
+    <Hint variant="info" className="pf-v6-u-mt-lg">
+      <HintTitle>You can download a preview of this plan</HintTitle>
+      <HintBody>
+        <p>
+          The preview includes the playbook used in the plan, which you can
+          download and execute on your system. To execute the playbook using Red
+          Hat Lightspeed, complete this form to create a remediation plan. It
+          will automatically include the required remote execution
+          configurations.
+        </p>
+        <Flex
+          gap={{ default: 'gapSm' }}
+          alignItems={{ default: 'alignItemsCenter' }}
+          className="pf-v6-u-mt-sm"
+        >
+          <Button
+            variant="link"
+            icon={<DownloadIcon />}
+            onClick={onPreviewClick}
+            isDisabled={!hasPlanSelection || previewLoading}
+          >
+            Download preview
+          </Button>
+          {previewLoading && <Spinner size="sm" />}
+          {previewStatus && !previewLoading && (
+            <Alert
+              isInline
+              isPlain
+              variant={previewStatus === 'success' ? 'success' : 'danger'}
+              title={
+                previewStatus === 'success'
+                  ? 'Preview downloaded'
+                  : 'Preview download failed'
+              }
+            />
+          )}
+        </Flex>
+      </HintBody>
+    </Hint>
   );
 };
 
@@ -628,7 +683,6 @@ export const handlePlaybookPreview = async ({
   }
 
   try {
-    // Prepare payload using helper function
     const payload = preparePlaybookPreviewPayload({
       isExistingPlanSelected,
       remediationDetailsSummary,
