@@ -170,7 +170,10 @@ describe('OverViewPage', () => {
     const kebab = within(row).getByRole('button', { name: /Kebab toggle/i });
     await user.click(kebab);
 
-    const deleteItem = screen.getByRole('menuitem', { name: /delete/i });
+    // Wait for the menu to appear - the delete item might have "Delete button" as screenReaderText
+    const deleteItem = await waitFor(() => 
+      screen.getByRole('menuitem', { name: /delete/i })
+    );
 
     await user.click(deleteItem);
     expect(
