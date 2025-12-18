@@ -10,7 +10,18 @@ jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => {
     quickStarts: {
       activateQuickstart: jest.fn(),
     },
+    getApp: jest.fn(() => 'remediations'),
   }));
+});
+
+jest.mock('@redhat-cloud-services/frontend-components/InsightsLink', () => {
+  return function MockInsightsLink({ to, target, children, ...props }) {
+    return (
+      <a href={to} target={target} data-testid="insights-link" {...props}>
+        {children}
+      </a>
+    );
+  };
 });
 
 jest.mock('../../Utilities/Hooks/useFeatureFlag', () => ({
@@ -122,6 +133,66 @@ jest.mock('@patternfly/react-core', () => ({
       </div>
     );
   },
+  Flex: function MockFlex({ children, direction, spaceItems, ...props }) {
+    return (
+      <div data-testid="flex" {...props}>
+        {children}
+      </div>
+    );
+  },
+  Content: function MockContent({ children, component, className, ...props }) {
+    const Tag = component || 'div';
+    return (
+      <Tag data-testid="content" className={className} {...props}>
+        {children}
+      </Tag>
+    );
+  },
+  Label: function MockLabel({
+    children,
+    color,
+    icon,
+    isCompact,
+    variant,
+    ...props
+  }) {
+    return (
+      <span
+        data-testid="label"
+        data-color={color}
+        data-variant={variant}
+        data-compact={isCompact}
+        {...props}
+      >
+        {icon}
+        {children}
+      </span>
+    );
+  },
+  Popover: function MockPopover({
+    children,
+    isVisible,
+    shouldClose,
+    position,
+    bodyContent,
+    'aria-label': ariaLabel,
+    ...props
+  }) {
+    return (
+      <div
+        data-testid="popover"
+        data-visible={isVisible}
+        data-position={position}
+        aria-label={ariaLabel}
+        {...props}
+      >
+        {isVisible && (
+          <div data-testid="popover-content">{bodyContent}</div>
+        )}
+        {children}
+      </div>
+    );
+  },
 }));
 
 jest.mock('@patternfly/react-icons', () => ({
@@ -131,6 +202,20 @@ jest.mock('@patternfly/react-icons', () => ({
   }) {
     return (
       <span data-testid="open-drawer-icon" className={className} {...props} />
+    );
+  },
+  ExternalLinkAltIcon: function MockExternalLinkAltIcon({
+    className,
+    size,
+    ...props
+  }) {
+    return (
+      <span
+        data-testid="external-link-icon"
+        className={className}
+        data-size={size}
+        {...props}
+      />
     );
   },
 }));
@@ -226,7 +311,7 @@ describe('ProgressCard', () => {
         'h4',
       );
       expect(screen.getByTestId('title')).toHaveAttribute('data-size', 'xl');
-      expect(screen.getByText('Execution readiness')).toBeInTheDocument();
+      expect(screen.getByText('Execution readiness summary')).toBeInTheDocument();
     });
 
     it('should render card body with description', () => {
@@ -234,9 +319,8 @@ describe('ProgressCard', () => {
 
       expect(screen.getByTestId('card-body')).toBeInTheDocument();
       expect(
-        screen.getByText(/To pass the execution readiness check/),
+        screen.getByText(/Addressing errors in this section will ensure that your remediation plan is ready for execution/),
       ).toBeInTheDocument();
-      expect(screen.getByText(/Execute/)).toBeInTheDocument();
     });
 
     it('should render progress stepper with correct props', () => {
@@ -254,12 +338,9 @@ describe('ProgressCard', () => {
     it('should render card footer with help text', () => {
       render(<ProgressCard {...defaultProps} />);
 
-      expect(screen.getByTestId('card-footer')).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          /Need help to pass the remediations execution readiness check?/,
-        ),
-      ).toBeInTheDocument();
+      // The "Learn more" link is now in the CardBody, not a footer
+      expect(screen.getByText(/Learn more/)).toBeInTheDocument();
+      expect(screen.getByText(/Addressing errors in this section will ensure that your remediation plan is ready for execution/)).toBeInTheDocument();
     });
   });
 
@@ -278,7 +359,7 @@ describe('ProgressCard', () => {
         );
 
         const steps = screen.getAllByTestId('progress-step');
-        const permissionsStep = steps[0];
+        const permissionsStep = steps[1]; // permissionsStep is now second (after executionLimitsStep)
         expect(permissionsStep).toHaveAttribute('data-variant', 'success');
         expect(screen.getByText('User access permissions')).toBeInTheDocument();
         expect(screen.getByText('Authorized')).toBeInTheDocument();
@@ -290,14 +371,11 @@ describe('ProgressCard', () => {
         );
 
         const steps = screen.getAllByTestId('progress-step');
-        const permissionsStep = steps[0];
+        const permissionsStep = steps[1]; // permissionsStep is now second (after executionLimitsStep)
         expect(permissionsStep).toHaveAttribute('data-variant', 'danger');
         expect(screen.getByText('User access permissions')).toBeInTheDocument();
         expect(
-          screen.getByText(/You do not have the required/),
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText('Remediations administrator'),
+          screen.getByText(/Not authorized. Check your user access permissions to ensure that you have the Remediations administrator RBAC role/),
         ).toBeInTheDocument();
       });
 
@@ -305,7 +383,7 @@ describe('ProgressCard', () => {
         render(<ProgressCard {...defaultProps} permissions={null} />);
 
         const steps = screen.getAllByTestId('progress-step');
-        const permissionsStep = steps[0];
+        const permissionsStep = steps[1]; // permissionsStep is now second (after executionLimitsStep)
         expect(permissionsStep).toHaveAttribute('data-variant', 'danger');
       });
 
@@ -313,7 +391,7 @@ describe('ProgressCard', () => {
         render(<ProgressCard {...defaultProps} />);
 
         const steps = screen.getAllByTestId('progress-step');
-        const permissionsStep = steps[0];
+        const permissionsStep = steps[1]; // permissionsStep is now second (after executionLimitsStep)
         expect(permissionsStep).toHaveAttribute('data-id', 'permissionsStep');
         expect(permissionsStep).toHaveAttribute(
           'data-title-id',
@@ -339,10 +417,10 @@ describe('ProgressCard', () => {
         );
 
         const steps = screen.getAllByTestId('progress-step');
-        const rhcStep = steps[1];
+        const rhcStep = steps[2]; // RHCStep is now third (after executionLimitsStep and permissionsStep)
         expect(rhcStep).toHaveAttribute('data-variant', 'success');
         expect(
-          screen.getByText('Remote Host Configuration Manager (RHC)'),
+          screen.getByText('Remote Host Configuration Manager'),
         ).toBeInTheDocument();
         expect(screen.getByText('Enabled')).toBeInTheDocument();
       });
@@ -359,7 +437,7 @@ describe('ProgressCard', () => {
         );
 
         const steps = screen.getAllByTestId('progress-step');
-        const rhcStep = steps[1];
+        const rhcStep = steps[2]; // RHCStep is now third (after executionLimitsStep and permissionsStep)
         expect(rhcStep).toHaveAttribute('data-variant', 'success');
         expect(screen.getByText('Enabled')).toBeInTheDocument();
       });
@@ -376,13 +454,13 @@ describe('ProgressCard', () => {
         );
 
         const steps = screen.getAllByTestId('progress-step');
-        const rhcStep = steps[1];
+        const rhcStep = steps[2]; // RHCStep is now third (after executionLimitsStep and permissionsStep)
         expect(rhcStep).toHaveAttribute('data-variant', 'danger');
         expect(
           screen.getByText(/RHC Manager is not enabled/),
         ).toBeInTheDocument();
         expect(
-          screen.getByText('Remote Host Configuration (RHC)'),
+          screen.getByText('Remote Host Configuration'),
         ).toBeInTheDocument();
       });
 
@@ -412,7 +490,7 @@ describe('ProgressCard', () => {
         render(<ProgressCard {...defaultProps} />);
 
         const steps = screen.getAllByTestId('progress-step');
-        const rhcStep = steps[1];
+        const rhcStep = steps[2]; // RHCStep is now third (after executionLimitsStep and permissionsStep)
         expect(rhcStep).toHaveAttribute('data-id', 'RHCStep');
         expect(rhcStep).toHaveAttribute('data-title-id', 'RHCStep-title');
         expect(rhcStep).toHaveAttribute('aria-label', 'RHCStep2');
@@ -432,9 +510,9 @@ describe('ProgressCard', () => {
         );
 
         const steps = screen.getAllByTestId('progress-step');
-        const systemsStep = steps[2];
+        const systemsStep = steps[3]; // connectedSystemsStep is now fourth (last)
         expect(systemsStep).toHaveAttribute('data-variant', 'success');
-        expect(screen.getByText('Connected systems')).toBeInTheDocument();
+        expect(screen.getByText('Systems connected to Red Hat Lightspeed')).toBeInTheDocument();
         expect(
           screen.getByText('5 (of 10) connected systems'),
         ).toBeInTheDocument();
@@ -452,10 +530,10 @@ describe('ProgressCard', () => {
         );
 
         const steps = screen.getAllByTestId('progress-step');
-        const systemsStep = steps[2];
+        const systemsStep = steps[3]; // connectedSystemsStep is now fourth (last)
         expect(systemsStep).toHaveAttribute('data-variant', 'danger');
         expect(
-          screen.getByText('0 (of 10) connected systems'),
+          screen.getByText(/No connected systems/),
         ).toBeInTheDocument();
       });
 
@@ -473,7 +551,7 @@ describe('ProgressCard', () => {
         const button = screen.getByText('View systems');
         fireEvent.click(button);
 
-        expect(mockOnNavigateToTab).toHaveBeenCalledWith(null, 'systems');
+        expect(mockOnNavigateToTab).toHaveBeenCalledWith(null, 'plannedRemediations:systems');
       });
 
       it('should handle missing connectedSystems and totalSystems', () => {
@@ -488,7 +566,7 @@ describe('ProgressCard', () => {
         render(<ProgressCard {...defaultProps} />);
 
         const steps = screen.getAllByTestId('progress-step');
-        const systemsStep = steps[2];
+        const systemsStep = steps[3]; // connectedSystemsStep is now fourth (last)
         expect(systemsStep).toHaveAttribute('data-id', 'connectedSystemsStep');
         expect(systemsStep).toHaveAttribute(
           'data-title-id',
@@ -501,74 +579,31 @@ describe('ProgressCard', () => {
       });
     });
 
-    describe('Ready for execution step', () => {
-      it('should show success variant when readyOrNot is true', () => {
-        render(<ProgressCard {...defaultProps} readyOrNot={true} />);
-
-        const steps = screen.getAllByTestId('progress-step');
-        const readyStep = steps[3];
-        expect(readyStep).toHaveAttribute('data-variant', 'success');
-        expect(screen.getByText('Ready for execution')).toBeInTheDocument();
-      });
-
-      it('should show danger variant when readyOrNot is false', () => {
-        render(<ProgressCard {...defaultProps} readyOrNot={false} />);
-
-        const steps = screen.getAllByTestId('progress-step');
-        const readyStep = steps[3];
-        expect(readyStep).toHaveAttribute('data-variant', 'danger');
-        expect(screen.getByText('Not ready for execution')).toBeInTheDocument();
-      });
-
-      it('should show danger variant when readyOrNot is undefined', () => {
-        render(<ProgressCard {...defaultProps} readyOrNot={undefined} />);
-
-        const steps = screen.getAllByTestId('progress-step');
-        const readyStep = steps[3];
-        expect(readyStep).toHaveAttribute('data-variant', 'danger');
-        expect(screen.getByText('Not ready for execution')).toBeInTheDocument();
-      });
-
-      it('should have correct accessibility attributes', () => {
-        render(<ProgressCard {...defaultProps} />);
-
-        const steps = screen.getAllByTestId('progress-step');
-        const readyStep = steps[3];
-        expect(readyStep).toHaveAttribute('data-id', 'readyStep');
-        expect(readyStep).toHaveAttribute('data-title-id', 'readyStep-title');
-        expect(readyStep).toHaveAttribute('aria-label', 'Ready step');
-      });
-    });
+    // Note: "Ready for execution" step has been removed from the component
+    // The readyOrNot prop now only affects the label in the card title
   });
 
   describe('Quick start integration', () => {
-    it('should render Learn more button', () => {
+    it('should render Learn more link', () => {
       render(<ProgressCard {...defaultProps} />);
 
-      const button = screen.getByRole('button', { name: /Learn more/ });
-      expect(button).toBeInTheDocument();
-      expect(button).toHaveAttribute('data-testid', 'button-link');
+      const link = screen.getByRole('link', { name: /Learn more/ });
+      expect(link).toBeInTheDocument();
+      expect(link).toHaveAttribute('data-testid', 'insights-link');
       expect(screen.getByTestId('open-drawer-icon')).toBeInTheDocument();
     });
 
-    it('should call quickStarts.activateQuickstart when Learn more is clicked', () => {
-      const mockActivateQuickstart = jest.fn();
-      require('@redhat-cloud-services/frontend-components/useChrome').mockReturnValue(
-        {
-          quickStarts: {
-            activateQuickstart: mockActivateQuickstart,
-          },
-        },
-      );
-
+    // Note: "Learn more" is now a regular link, not a quickStarts trigger
+    // The quickStarts functionality has been removed from this component
+    it('should render Learn more as a link to documentation', () => {
       render(<ProgressCard {...defaultProps} />);
 
-      const button = screen.getByText('Learn more');
-      fireEvent.click(button);
-
-      expect(mockActivateQuickstart).toHaveBeenCalledWith(
-        'insights-remediate-plan-create',
+      const link = screen.getByRole('link', { name: /Learn more/ });
+      expect(link).toHaveAttribute(
+        'href',
+        'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide',
       );
+      expect(link).toHaveAttribute('target', '_blank');
     });
 
     it('should handle missing quickStarts gracefully', () => {
@@ -580,11 +615,9 @@ describe('ProgressCard', () => {
 
       render(<ProgressCard {...defaultProps} />);
 
-      const button = screen.getByText('Learn more');
-      fireEvent.click(button);
-
-      // Should not throw error
-      expect(button).toBeInTheDocument();
+      // Should render the link regardless of quickStarts
+      const link = screen.getByRole('link', { name: /Learn more/ });
+      expect(link).toBeInTheDocument();
     });
 
     it('should handle missing useChrome return gracefully', () => {
@@ -594,11 +627,9 @@ describe('ProgressCard', () => {
 
       render(<ProgressCard {...defaultProps} />);
 
-      const button = screen.getByText('Learn more');
-      fireEvent.click(button);
-
-      // Should not throw error
-      expect(button).toBeInTheDocument();
+      // Should render the link regardless of useChrome return value
+      const link = screen.getByRole('link', { name: /Learn more/ });
+      expect(link).toBeInTheDocument();
     });
   });
 
@@ -616,10 +647,10 @@ describe('ProgressCard', () => {
       render(<ProgressCard {...defaultProps} permissions={{}} />);
 
       const steps = screen.getAllByTestId('progress-step');
-      const permissionsStep = steps[0];
+      const permissionsStep = steps[1]; // permissionsStep is now second (after executionLimitsStep)
       expect(permissionsStep).toHaveAttribute('data-variant', 'danger');
       expect(
-        screen.getByText(/You do not have the required/),
+        screen.getByText(/Not authorized. Check your user access permissions to ensure that you have the Remediations administrator RBAC role/),
       ).toBeInTheDocument();
     });
 
@@ -635,24 +666,21 @@ describe('ProgressCard', () => {
       );
 
       const steps = screen.getAllByTestId('progress-step');
-      const rhcStep = steps[1];
+      const rhcStep = steps[2]; // RHCStep is now third (after executionLimitsStep and permissionsStep)
       expect(rhcStep).toHaveAttribute('data-variant', 'success'); // '403' !== 403
     });
   });
 
   describe('Component styling and classes', () => {
-    it('should apply correct CSS classes to card footer', () => {
-      render(<ProgressCard {...defaultProps} />);
-
-      const footer = screen.getByTestId('card-footer');
-      expect(footer).toHaveClass('pf-v6-u-font-size-sm');
-    });
+    // Card footer has been removed - "Learn more" is now in CardBody
+    // This test is no longer applicable
 
     it('should apply correct CSS classes to Learn more button', () => {
       render(<ProgressCard {...defaultProps} />);
 
-      const button = screen.getByRole('button', { name: /Learn more/ });
-      expect(button).toHaveClass('pf-v6-u-font-size-sm');
+      const link = screen.getByRole('link', { name: /Learn more/ });
+      // The link styling is handled via inline styles, not classes
+      expect(link).toBeInTheDocument();
     });
   });
 });

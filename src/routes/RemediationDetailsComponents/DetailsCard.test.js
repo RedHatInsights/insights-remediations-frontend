@@ -173,7 +173,7 @@ describe('DetailsCard', () => {
     it('renders without crashing', () => {
       renderComponent();
       expect(
-        screen.getByText('Remediation plan details and status'),
+        screen.getByText('Details'),
       ).toBeInTheDocument();
     });
 
@@ -181,7 +181,7 @@ describe('DetailsCard', () => {
       renderComponent({ details: null });
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
       expect(
-        screen.queryByText('Remediation plan details and status'),
+        screen.queryByText('Details'),
       ).not.toBeInTheDocument();
     });
 
@@ -195,7 +195,7 @@ describe('DetailsCard', () => {
       expect(screen.getByText('Latest execution status')).toBeInTheDocument();
       expect(screen.getByText('Actions')).toBeInTheDocument();
       expect(screen.getByText('Systems')).toBeInTheDocument();
-      expect(screen.getByText('Auto-reboot')).toBeInTheDocument();
+      expect(screen.getByText(/Auto-reboot/)).toBeInTheDocument();
     });
 
     it('displays correct action and system counts', () => {
@@ -437,8 +437,8 @@ describe('DetailsCard', () => {
       const toggle = screen.getByRole('switch');
       expect(toggle).toBeInTheDocument();
       expect(toggle).toBeChecked(); // auto_reboot is true in mockDetails
-      expect(screen.queryByText('Off')).not.toBeInTheDocument();
-      expect(screen.getByText('On')).toBeInTheDocument();
+      expect(screen.queryByText(/Auto-reboot:Off/)).not.toBeInTheDocument();
+      expect(screen.getByText(/Auto-reboot:On/)).toBeInTheDocument();
     });
 
     it('displays switch as unchecked when auto_reboot is false', () => {
@@ -447,8 +447,8 @@ describe('DetailsCard', () => {
 
       const toggle = screen.getByRole('switch');
       expect(toggle).not.toBeChecked();
-      expect(screen.getByText('Off')).toBeInTheDocument();
-      expect(screen.queryByText('On')).not.toBeInTheDocument();
+      expect(screen.getByText(/Auto-reboot:Off/)).toBeInTheDocument();
+      expect(screen.queryByText(/Auto-reboot:On/)).not.toBeInTheDocument();
     });
 
     it('calls updateRemPlan when toggle is changed', () => {
@@ -485,7 +485,7 @@ describe('DetailsCard', () => {
       const actionsLink = screen.getByText('2 actions');
       fireEvent.click(actionsLink);
 
-      expect(mockOnNavigateToTab).toHaveBeenCalledWith(null, 'actions');
+      expect(mockOnNavigateToTab).toHaveBeenCalledWith(null, 'plannedRemediations:actions');
     });
 
     it('navigates to systems tab when systems link is clicked', () => {
@@ -494,7 +494,7 @@ describe('DetailsCard', () => {
       const systemsLink = screen.getByText('10 systems');
       fireEvent.click(systemsLink);
 
-      expect(mockOnNavigateToTab).toHaveBeenCalledWith(null, 'systems');
+      expect(mockOnNavigateToTab).toHaveBeenCalledWith(null, 'plannedRemediations:systems');
     });
 
     it('navigates to execution history when status link is clicked', () => {
@@ -536,7 +536,7 @@ describe('DetailsCard', () => {
 
       // Should handle null remediationStatus without crashing
       expect(
-        screen.getByText('Remediation plan details and status'),
+        screen.getByText('Details'),
       ).toBeInTheDocument();
     });
 
@@ -545,7 +545,7 @@ describe('DetailsCard', () => {
 
       // Should still render the component
       expect(
-        screen.getByText('Remediation plan details and status'),
+        screen.getByText('Details'),
       ).toBeInTheDocument();
     });
   });
@@ -556,7 +556,7 @@ describe('DetailsCard', () => {
 
       // Should render without crashing
       expect(
-        screen.getByText('Remediation plan details and status'),
+        screen.getByText('Details'),
       ).toBeInTheDocument();
     });
 
@@ -565,7 +565,7 @@ describe('DetailsCard', () => {
 
       // Should render without crashing
       expect(
-        screen.getByText('Remediation plan details and status'),
+        screen.getByText('Details'),
       ).toBeInTheDocument();
     });
 
@@ -574,7 +574,7 @@ describe('DetailsCard', () => {
 
       // Should render without crashing
       expect(
-        screen.getByText('Remediation plan details and status'),
+        screen.getByText('Details'),
       ).toBeInTheDocument();
     });
 
@@ -583,7 +583,7 @@ describe('DetailsCard', () => {
 
       // Should handle undefined totalSystems
       expect(
-        screen.getByText('Remediation plan details and status'),
+        screen.getByText('Details'),
       ).toBeInTheDocument();
     });
   });
@@ -607,7 +607,7 @@ describe('DetailsCard', () => {
 
       // Should still render without crashing
       expect(
-        screen.getByText('Remediation plan details and status'),
+        screen.getByText('Details'),
       ).toBeInTheDocument();
     });
 

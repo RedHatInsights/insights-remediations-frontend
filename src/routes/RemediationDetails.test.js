@@ -165,8 +165,8 @@ describe('RemediationDetails', () => {
     expect(screen.getByText('ActionsContent')).toBeInTheDocument();
     expect(screen.getByText('ExecutionHistory')).toBeInTheDocument();
 
-    // 4) Assert exactly five calls in the right sequence
-    expect(remediationSpy).toHaveBeenCalledTimes(5);
+    // 4) Assert exactly six calls in the right sequence
+    expect(remediationSpy).toHaveBeenCalledTimes(6);
 
     const calls = remediationSpy.mock.calls;
 
@@ -175,8 +175,9 @@ describe('RemediationDetails', () => {
     expect(calls[1][0]).toBe('checkExecutable');
     expect(calls[2][0]).toBe('getRemediation');
     expect(calls[3][0]).toBe('listPlaybookRuns');
-    // The 5th call passes updateRemediationWrapper function
-    expect(typeof calls[4][0]).toBe('function');
+    expect(calls[4][0]).toBe('getRemediationIssues');
+    // The 6th call passes updateRemediationWrapper function
+    expect(typeof calls[5][0]).toBe('function');
 
     // 5) Spot‑check the options object on each call:
     expect(remediationSpy.mock.calls[0][1]).toEqual({
@@ -191,6 +192,10 @@ describe('RemediationDetails', () => {
     expect(remediationSpy.mock.calls[3][1]).toEqual({
       params: { id: '123' },
     });
-    expect(remediationSpy.mock.calls[4][1]).toEqual({ skip: true });
+    expect(remediationSpy.mock.calls[4][1]).toEqual({
+      params: { id: '123' },
+      useTableState: false,
+    });
+    expect(remediationSpy.mock.calls[5][1]).toEqual({ skip: true });
   });
 });

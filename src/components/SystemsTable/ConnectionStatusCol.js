@@ -5,11 +5,15 @@ import {
   DisconnectedIcon,
   UnknownIcon,
 } from '@patternfly/react-icons';
-import { Button, Tooltip } from '@patternfly/react-core';
+import { Button, Flex, Tooltip } from '@patternfly/react-core';
+import { useFeatureFlag } from '../../Utilities/Hooks/useFeatureFlag';
 import ConnectionStatusModal from './ConnectionStatusModal';
 
 const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const isLightspeedRebrandEnabled = useFeatureFlag(
+    'platform.lightspeed-rebrand',
+  );
   let status = connection_status;
   let execType = executor_type;
   // Convert to lowercase if connection_status is a string
@@ -64,35 +68,69 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
   // Render statuses that need modals (disconnected, not configured, unknown)
   let displayText = '';
   let icon = null;
+  let tooltipContent = '';
+  let tooltipPosition = 'left';
 
   if (isNotConfigured) {
     displayText = 'Not configured';
     icon = <DisconnectedIcon className="pf-v6-u-mr-xs" />;
+    tooltipContent = 'There are no connections configured for this system.';
   } else if (status === 'disconnected') {
-    displayText = 'Disconnected';
-    icon = <DisconnectedIcon className="pf-v6-u-mr-xs" />;
+    if (execType === 'rhc') {
+      displayText = 'Disconnected';
+      icon = <DisconnectedIcon className="pf-v6-u-mr-xs" />;
+      tooltipContent =
+        'The Remote Host Configuration (RHC) client is not configured for one or more systems in this plan.';
+    } else if (execType === 'rhc-satellite') {
+      displayText = 'Disconnected';
+      icon = <DisconnectedIcon className="pf-v6-u-mr-xs" />;
+      tooltipContent = `The Red Hat Satellite instance that this system is registered to is disconnected from ${isLightspeedRebrandEnabled ? 'Red Hat Lightspeed' : 'Red Hat Insights'}.`;
+    } else {
+      // Unknown executor type for disconnected status
+      displayText = 'Unknown';
+      icon = <UnknownIcon className="pf-v6-u-mr-xs" />;
+      tooltipContent = 'Connection Status Unknown';
+      tooltipPosition = undefined;
+    }
   } else {
     displayText = 'Unknown';
     icon = <UnknownIcon className="pf-v6-u-mr-xs" />;
+    tooltipContent = 'Connection Status Unknown';
+    tooltipPosition = undefined;
   }
+
+  const content = (
+    <Flex spaceItems={{ default: 'spaceItemsXs' }}>
+      {icon}
+      {shouldShowLink ? (
+        <Button
+          variant="link"
+          isInline
+          onClick={handleLinkClick}
+          style={{ padding: 0, fontSize: 'inherit', fontWeight: 'inherit' }}
+        >
+          <p style={{ maxWidth: 'fit-content', margin: 0 }}>
+            {displayText}
+          </p>
+        </Button>
+      ) : (
+        <p style={{ maxWidth: 'fit-content', margin: 0 }}>{displayText}</p>
+      )}
+    </Flex>
+  );
 
   return (
     <>
-      <span>
-        {icon}
-        {shouldShowLink ? (
-          <Button
-            variant="link"
-            isInline
-            onClick={handleLinkClick}
-            style={{ padding: 0, fontSize: 'inherit', fontWeight: 'inherit' }}
-          >
-            {displayText}
-          </Button>
-        ) : (
-          <span>{displayText}</span>
-        )}
-      </span>
+      {tooltipContent ? (
+        <Tooltip
+          content={tooltipContent}
+          {...(tooltipPosition && { position: tooltipPosition })}
+        >
+          {content}
+        </Tooltip>
+      ) : (
+        content
+      )}
       {isModalOpen && (
         <ConnectionStatusModal
           isOpen={isModalOpen}

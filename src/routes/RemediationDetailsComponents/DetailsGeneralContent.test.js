@@ -278,7 +278,7 @@ describe('DetailsGeneralContent', () => {
       const alert = screen.getByTestId('alert');
       expect(alert).toHaveAttribute('data-inline', 'true');
       expect(alert).toHaveAttribute('data-variant', 'danger');
-      expect(alert).toHaveClass('pf-v6-u-mb-md');
+      expect(alert).toHaveClass('pf-v6-u-mb-sm');
 
       expect(screen.getByTestId('alert-title')).toHaveTextContent(
         'Remediation plan cannot be executed',

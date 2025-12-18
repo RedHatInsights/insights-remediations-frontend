@@ -129,8 +129,8 @@ describe('useConnectionStatus', () => {
     expect(result.current[1]).toBe(1); // totalSystems
     expect(mockAxios.get).toHaveBeenCalledTimes(1);
 
-    // Call refetch function
-    const refetch = result.current[5];
+    // Call refetch function (fetchData is at index 4)
+    const refetch = result.current[4];
     await act(async () => {
       refetch();
     });
