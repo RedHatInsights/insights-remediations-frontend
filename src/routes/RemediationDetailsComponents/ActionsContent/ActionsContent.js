@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import columns from './Columns';
 import { Button } from '@patternfly/react-core';
@@ -18,7 +18,11 @@ import {
 import TableEmptyState from '../../OverViewPage/TableEmptyState';
 import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
 
-const ActionsContent = ({ refetch }) => {
+const ActionsContent = ({
+  refetch,
+  onOpenResolutionDrawer,
+  selectedIssueForResolutionId,
+}) => {
   const { id } = useParams();
   const tableState = useRawTableState();
   const currentlySelected = tableState?.selected;
@@ -90,8 +94,21 @@ const ActionsContent = ({ refetch }) => {
     return await fetchQueue(queue);
   };
 
-  const allIssues = issuesResult?.data ?? [];
+  const allIssues = useMemo(
+    () => issuesResult?.data ?? [],
+    [issuesResult?.data],
+  );
   const totalIssues = issuesResult?.meta?.total ?? allIssues?.length ?? 0;
+
+  const handleViewResolutionOptions = useCallback(
+    (issueId) => {
+      const issue = allIssues.find((i) => i.id === issueId);
+      if (onOpenResolutionDrawer && issue) {
+        onOpenResolutionDrawer(issue);
+      }
+    },
+    [allIssues, onOpenResolutionDrawer],
+  );
 
   const columnsWithSystemsButton = useMemo(() => {
     return columns.map((col) => {
@@ -113,9 +130,24 @@ const ActionsContent = ({ refetch }) => {
           },
         };
       }
+      if (col.exportKey === 'action') {
+        return {
+          ...col,
+          Component: (props) => {
+            const rowData = props;
+            return (
+              <col.Component
+                {...rowData}
+                onViewResolutionOptions={handleViewResolutionOptions}
+                selectedIssueForResolutionId={selectedIssueForResolutionId}
+              />
+            );
+          },
+        };
+      }
       return col;
     });
-  }, []);
+  }, [handleViewResolutionOptions, selectedIssueForResolutionId]);
 
   return (
     <section className="pf-v6-l-page__main-section pf-v6-c-page__main-section">
@@ -231,6 +263,8 @@ const ActionsContent = ({ refetch }) => {
 
 ActionsContent.propTypes = {
   refetch: PropTypes.func,
+  onOpenResolutionDrawer: PropTypes.func,
+  selectedIssueForResolutionId: PropTypes.string,
 };
 
 const ActionsContentProvider = (props) => (
