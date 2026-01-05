@@ -279,6 +279,7 @@ export const prepareRemediationPayload = (data, autoReboot) => {
 
   const issues = (data?.issues || []).map((issue) => ({
     id: issue.id,
+    precedence: issue.precedence,
     // Use issue's systems if nested, otherwise use flat systems array
     systems: hasNestedSystems ? issue.systems || [] : data?.systems || [],
   }));
@@ -499,6 +500,7 @@ export const preparePlaybookPreviewPayload = ({
   const newIssues = (data?.issues || []).map((issue) => {
     const issuePayload = {
       id: issue.id,
+      precedence: issue.precedence, // TODO double check if needed
       systems: hasNestedSystems ? issue.systems || [] : data?.systems || [],
     };
 
