@@ -67,7 +67,13 @@ const reducer = (state, action) => {
   }
 };
 
-export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
+export const RemediationWizard = ({
+  setOpen,
+  data,
+  basePath,
+  registry,
+  isCompliancePrecedenceEnabled = false,
+}) => {
   const allSystems = useRef(
     dedupeArray(
       data.issues?.reduce(
@@ -183,8 +189,12 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
               type: 'state',
               payload: { submitted: true, formValues: formValues },
             });
-            submitRemediation(formValues, data, basePath, (payload) =>
-              setState({ type: 'state', payload: payload }),
+            submitRemediation(
+              formValues,
+              data,
+              basePath,
+              (payload) => setState({ type: 'state', payload: payload }),
+              isCompliancePrecedenceEnabled,
             );
           }}
           onCancel={() => setOpen(false)}
@@ -229,6 +239,7 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
                         basePath,
                         (payload) =>
                           setState({ type: 'state', payload: payload }),
+                        isCompliancePrecedenceEnabled,
                       )
                     }
                     setState={(payload) =>
@@ -276,6 +287,7 @@ RemediationWizard.propTypes = {
     register: propTypes.func,
   }).isRequired,
   remediationsList: propTypes.array,
+  isCompliancePrecedenceEnabled: propTypes.bool,
 };
 
 const RemediationWizardWithContext = (props) => {

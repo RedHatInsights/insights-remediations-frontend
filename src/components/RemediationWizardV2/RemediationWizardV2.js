@@ -42,7 +42,11 @@ import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLin
 import { postPlaybookPreview } from '../../routes/api';
 import { downloadFile } from '../../Utilities/helpers';
 
-export const RemediationWizardV2 = ({ setOpen, data }) => {
+export const RemediationWizardV2 = ({
+  setOpen,
+  data,
+  isCompliancePrecedenceEnabled,
+}) => {
   const addNotification = useAddNotification();
   const [isOpen, setIsOpen] = useState(true);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -211,6 +215,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
         autoReboot,
         createRemediationFetch,
         updateRemediationFetch,
+        isCompliancePrecedenceEnabled,
       });
       if (
         result?.success &&
@@ -258,6 +263,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
       selected,
       allRemediationsData,
       downloadFile,
+      isCompliancePrecedenceEnabled,
     });
   };
 
@@ -429,6 +435,7 @@ RemediationWizardV2.propTypes = {
     onRemediationCreated: propTypes.func,
   }).isRequired,
   basePath: propTypes.string,
+  isCompliancePrecedenceEnabled: propTypes.bool,
 };
 
 export default RemediationWizardV2;

@@ -272,6 +272,7 @@ export const submitRemediation = async (
   data,
   basePath,
   setState,
+  enablePrecedence = false,
 ) => {
   let percent = 1;
   setState({ percent });
@@ -282,15 +283,20 @@ export const submitRemediation = async (
         formValues[EXISTING_PLAYBOOK]?.issues
           ?.find((i) => i.id === id)
           ?.systems?.map((s) => s.id) || [];
-      return {
+      const issuePayload = {
         id,
         resolution: getResolution(id, formValues)?.[0]?.id,
         systems: dedupeArray([
           ...(formValues[EXISTING_PLAYBOOK_SELECTED] ? [] : playbookSystems),
           ...(formValues[SYSTEMS][id] || []),
         ]),
-        precedence,
       };
+
+      if (enablePrecedence) {
+        issuePayload.precedence = precedence;
+      }
+
+      return issuePayload;
     })
     .filter((issue) => issue.systems.length > 0);
 
