@@ -271,17 +271,29 @@ export const normalizeRemediationData = (data) => {
 };
 
 // Prepares remediation payload for create/update
-export const prepareRemediationPayload = (data, autoReboot) => {
+export const prepareRemediationPayload = (
+  data,
+  autoReboot,
+  enablePrecedence = false,
+) => {
   // Check if systems are nested within issues (new structure)
   const hasNestedSystems = data?.issues?.some(
     (issue) => issue.systems && Array.isArray(issue.systems),
   );
 
-  const issues = (data?.issues || []).map((issue) => ({
-    id: issue.id,
-    // Use issue's systems if nested, otherwise use flat systems array
-    systems: hasNestedSystems ? issue.systems || [] : data?.systems || [],
-  }));
+  const issues = (data?.issues || []).map((issue) => {
+    const issuePayload = {
+      id: issue.id,
+      // Use issue's systems if nested, otherwise use flat systems array
+      systems: hasNestedSystems ? issue.systems || [] : data?.systems || [],
+    };
+
+    if (enablePrecedence) {
+      issuePayload.precedence = issue.precedence;
+    }
+
+    return issuePayload;
+  });
 
   return {
     add: {
@@ -307,8 +319,13 @@ export const handleRemediationSubmit = async ({
   autoReboot,
   createRemediationFetch,
   updateRemediationFetch,
+  isCompliancePrecedenceEnabled = false,
 }) => {
-  const payload = prepareRemediationPayload(data, autoReboot);
+  const payload = prepareRemediationPayload(
+    data,
+    autoReboot,
+    isCompliancePrecedenceEnabled,
+  );
   const { issues } = payload.add;
 
   // Create batches of issues (max 50 issues per batch, max 50 systems per issue)
@@ -489,6 +506,7 @@ export const preparePlaybookPreviewPayload = ({
   remediationDetailsSummary,
   data,
   autoReboot,
+  enablePrecedence = false,
 }) => {
   // Check if systems are nested within issues (new structure)
   const hasNestedSystems = data?.issues?.some(
@@ -505,6 +523,10 @@ export const preparePlaybookPreviewPayload = ({
     // Include resolution if present
     if (issue.resolution) {
       issuePayload.resolution = issue.resolution;
+    }
+
+    if (enablePrecedence) {
+      issuePayload.precedence = issue.precedence;
     }
 
     return issuePayload;
@@ -538,6 +560,10 @@ export const preparePlaybookPreviewPayload = ({
           typeof issue.resolution === 'string'
             ? issue.resolution
             : issue.resolution.id;
+      }
+
+      if (enablePrecedence) {
+        issuePayload.precedence = issue.precedence;
       }
 
       return issuePayload;
@@ -595,6 +621,7 @@ export const handlePlaybookPreview = async ({
   selected,
   allRemediationsData,
   downloadFile,
+  isCompliancePrecedenceEnabled = false,
 }) => {
   if (!hasPlanSelection) {
     return;
@@ -607,6 +634,7 @@ export const handlePlaybookPreview = async ({
       remediationDetailsSummary,
       data,
       autoReboot,
+      enablePrecedence: isCompliancePrecedenceEnabled,
     });
 
     const response = await postPlaybookPreview(payload, {
