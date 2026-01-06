@@ -113,7 +113,10 @@ describe('RemediationWizardV2', () => {
     helpers,
     'handleRemediationSubmit',
   );
-  const handlePlaybookPreviewSpy = jest.spyOn(helpers, 'handlePlaybookPreview');
+  const preparePlaybookPreviewPayloadSpy = jest.spyOn(
+    helpers,
+    'preparePlaybookPreviewPayload',
+  );
 
   beforeEach(() => {
     jest.spyOn(utils, 'remediationUrl').mockClear();
@@ -151,6 +154,9 @@ describe('RemediationWizardV2', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     api.postPlaybookPreview.mockClear();
+    api.postPlaybookPreview.mockResolvedValue(
+      new Blob(['test'], { type: 'text/yaml' }),
+    );
     utilitiesHelpers.downloadFile.mockClear();
     useRemediationsQuery.mockReturnValue({
       result: { data: [] },
@@ -185,14 +191,15 @@ describe('RemediationWizardV2', () => {
       remediationName: 'Test Plan',
       isUpdate: false,
     });
-    handlePlaybookPreviewSpy.mockClear();
+    preparePlaybookPreviewPayloadSpy.mockClear();
     // Reset mocks
     jest.spyOn(utils, 'remediationUrl').mockClear();
+    // Spy already calls through to real implementation by default
   });
 
   afterEach(() => {
     handleRemediationSubmitSpy.mockClear();
-    handlePlaybookPreviewSpy.mockClear();
+    preparePlaybookPreviewPayloadSpy.mockClear();
   });
 
   describe('Basic rendering', () => {
@@ -417,8 +424,7 @@ describe('RemediationWizardV2', () => {
       );
 
       expect(
-        screen.getAllByText(/Remediation plan exceeds execution limits/i)
-          .length,
+        screen.getAllByText(/Remediation plan exceeds limits/i).length,
       ).toBeGreaterThan(0);
     });
 
@@ -442,8 +448,7 @@ describe('RemediationWizardV2', () => {
       );
 
       expect(
-        screen.getAllByText(/Remediation plan exceeds execution limits/i)
-          .length,
+        screen.getAllByText(/Remediation plan exceeds limits/i).length,
       ).toBeGreaterThan(0);
     });
 
@@ -453,7 +458,7 @@ describe('RemediationWizardV2', () => {
       );
 
       expect(
-        screen.queryByText(/Remediation plan exceeds execution limits/i),
+        screen.queryByText(/Remediation plan exceeds limits/i),
       ).not.toBeInTheDocument();
     });
 
@@ -474,13 +479,11 @@ describe('RemediationWizardV2', () => {
         />,
       );
 
-      const alerts = screen.getAllByText(
-        /Remediation plan exceeds execution limits/i,
-      );
+      const alerts = screen.getAllByText(/Remediation plan exceeds limits/i);
       expect(alerts.length).toBeGreaterThan(0);
       expect(
         screen.getByText(
-          /To execute a remediation plan using Red Hat Lightspeed/i,
+          /To preview or execute a remediation plan using Red Hat Lightspeed/i,
         ),
       ).toBeInTheDocument();
     });
@@ -592,6 +595,7 @@ describe('RemediationWizardV2', () => {
       expect(callArgs.inputValue).toBe('New Remediation Plan');
       expect(callArgs.data).toEqual(defaultDataFlat);
       expect(callArgs.autoReboot).toBe(true);
+      expect(callArgs.isCompliancePrecedenceEnabled).toBe(false);
     });
 
     it('should call handleRemediationSubmit when updating existing plan', async () => {
@@ -634,6 +638,45 @@ describe('RemediationWizardV2', () => {
       expect(callArgs.selected).toBe('existing-plan-id');
       expect(callArgs.inputValue).toBe('Updated Plan');
       expect(callArgs.data).toEqual(defaultDataFlat);
+      expect(callArgs.isCompliancePrecedenceEnabled).toBe(false);
+    });
+
+    it('should pass isCompliancePrecedenceEnabled to handleRemediationSubmit when enabled', async () => {
+      const user = userEvent.setup();
+      renderWithRouter(
+        <RemediationWizardV2
+          setOpen={mockSetOpen}
+          data={defaultDataFlat}
+          isCompliancePrecedenceEnabled={true}
+        />,
+      );
+
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.type(input, 'New Plan');
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Create new playbook "New Plan"/i),
+        ).toBeInTheDocument();
+      });
+      const createOption = screen.getByText(/Create new playbook "New Plan"/i);
+      await user.click(createOption);
+
+      await waitFor(() => {
+        const submitButton = screen.getByRole('button', {
+          name: /Create plan/i,
+        });
+        expect(submitButton).toBeEnabled();
+      });
+
+      const submitButton = screen.getByRole('button', { name: /Create plan/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(handleRemediationSubmitSpy).toHaveBeenCalled();
+      });
+
+      const callArgs = handleRemediationSubmitSpy.mock.calls[0][0];
+      expect(callArgs.isCompliancePrecedenceEnabled).toBe(true);
     });
 
     it('should navigate to remediation details page after successful submission', async () => {
@@ -1066,7 +1109,7 @@ describe('RemediationWizardV2', () => {
   });
 
   describe('Preview functionality', () => {
-    it('should call handlePlaybookPreview when preview button is clicked', async () => {
+    it('should call postPlaybookPreview when preview button is clicked', async () => {
       const user = userEvent.setup();
       useRemediationsQuery.mockReturnValue({
         result: {
@@ -1127,9 +1170,91 @@ describe('RemediationWizardV2', () => {
         expect(api.postPlaybookPreview).toHaveBeenCalled();
       });
 
+      // Verify API was called with correct payload structure
       expect(api.postPlaybookPreview).toHaveBeenCalledWith(
         expect.objectContaining({
           auto_reboot: true,
+          issues: expect.any(Array),
+        }),
+        { responseType: 'blob' },
+      );
+
+      await waitFor(() => {
+        expect(utilitiesHelpers.downloadFile).toHaveBeenCalled();
+      });
+    });
+
+    it('should pass enablePrecedence when isCompliancePrecedenceEnabled is true', async () => {
+      const user = userEvent.setup();
+      useRemediationsQuery.mockReturnValue({
+        result: {
+          data: [
+            { id: 'plan-1', name: 'Plan 1' },
+            { id: 'plan-2', name: 'Plan 2' },
+          ],
+        },
+        loading: false,
+      });
+
+      const remediationDetailsSummary = {
+        id: 'plan-1',
+        name: 'Plan 1',
+        issues: [],
+      };
+
+      useRemediations.mockImplementation((method) => {
+        if (method === 'getRemediation') {
+          return {
+            result: remediationDetailsSummary,
+            loading: false,
+            fetch: jest.fn(),
+          };
+        }
+        return {
+          result: null,
+          loading: false,
+          fetch: jest.fn(),
+        };
+      });
+
+      renderWithRouter(
+        <RemediationWizardV2
+          setOpen={mockSetOpen}
+          data={defaultDataFlat}
+          isCompliancePrecedenceEnabled={true}
+        />,
+      );
+
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.click(input);
+      await waitFor(() => {
+        expect(screen.getByText('Plan 1')).toBeInTheDocument();
+      });
+      const option = screen.getByText('Plan 1');
+      await user.click(option);
+
+      await waitFor(() => {
+        const previewButton = screen.getByRole('button', {
+          name: /Download preview/i,
+        });
+        expect(previewButton).toBeInTheDocument();
+      });
+
+      const previewButton = screen.getByRole('button', {
+        name: /Download preview/i,
+      });
+      await user.click(previewButton);
+
+      await waitFor(() => {
+        expect(api.postPlaybookPreview).toHaveBeenCalled();
+      });
+
+      // Verify API was called with correct payload structure
+      // When enablePrecedence is true, issues should include precedence if present
+      expect(api.postPlaybookPreview).toHaveBeenCalledWith(
+        expect.objectContaining({
+          auto_reboot: true,
+          issues: expect.any(Array),
         }),
         { responseType: 'blob' },
       );

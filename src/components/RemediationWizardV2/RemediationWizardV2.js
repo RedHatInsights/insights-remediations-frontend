@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import propTypes from 'prop-types';
 import {
   Modal,
@@ -59,6 +59,7 @@ export const RemediationWizardV2 = ({
   const [issuesCount, setIssuesCount] = useState(0);
   const [previewStatus, setPreviewStatus] = useState(null); // null, 'success', 'failure'
   const [previewLoading, setPreviewLoading] = useState(false);
+  const isFirstRender = useRef(true);
 
   // Normalize data structure to ensure systems array exists
   const normalizedData = useMemo(() => normalizeRemediationData(data), [data]);
@@ -157,6 +158,15 @@ export const RemediationWizardV2 = ({
     normalizedData,
     selected,
   ]);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    // Clear preview status when any of these values change
+    setPreviewStatus(null);
+  }, [selected, inputValue, autoReboot]);
 
   const exceedsLimits = useMemo(() => {
     return actionsCount > 1000 || systemsCount > 100;
