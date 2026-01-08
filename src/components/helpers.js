@@ -1,10 +1,16 @@
 import {
   Alert,
+  Button,
   Flex,
   HelperText,
   HelperTextItem,
+  Hint,
+  HintBody,
+  HintTitle,
   Skeleton,
+  Spinner,
 } from '@patternfly/react-core';
+import { DownloadIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { getIssueApplication } from '../Utilities/model';
 import { createRemediationBatches, remediationUrl } from '../Utilities/utils';
@@ -14,7 +20,7 @@ export const wizardHelperText = (exceedsLimits) => {
     return (
       <HelperText isLiveRegion className="pf-v6-u-mt-sm">
         <HelperTextItem variant="warning">
-          Remediation plan exceeds execution limits
+          Remediation plan exceeds limits
         </HelperTextItem>
       </HelperText>
     );
@@ -60,12 +66,12 @@ export const renderExceedsLimitsAlert = ({
     <Alert
       isInline
       variant="warning"
-      title="Remediation plan exceeds execution limits"
+      title="Remediation plan exceeds limits "
       className="pf-v6-u-mt-lg"
     >
       <p>
-        To execute a remediation plan using Red Hat Lightspeed, the plan must
-        contain no more than 100 systems or 1000 action points.
+        To preview or execute a remediation plan using Red Hat Lightspeed, the
+        plan must be limited to a maximum of 100 systems or 1000 action points.
       </p>
       <ul className="pf-v6-c-list pf-v6-u-my-sm">
         <li>
@@ -81,7 +87,7 @@ export const renderExceedsLimitsAlert = ({
           Otherwise, create and download the plan to run with Red Hat{' '}
           <strong>Ansible Automation Platform (AAP)</strong> or execute using a{' '}
           <a
-            href="https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html-single/integrating_the_red_hat_hybrid_cloud_console_with_third-party_applications/index#assembly-configuring-integration-with-eda_integrating-communications"
+            href="https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/using_automation_execution/controller-setting-up-insights"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -91,6 +97,55 @@ export const renderExceedsLimitsAlert = ({
         </li>
       </ul>
     </Alert>
+  );
+};
+
+export const renderPreviewAlert = ({
+  hasPlanSelection,
+  onPreviewClick,
+  previewStatus,
+  previewLoading,
+}) => {
+  return (
+    <Hint variant="info" className="pf-v6-u-mt-lg">
+      <HintTitle>You can download a preview of this plan</HintTitle>
+      <HintBody>
+        <p>
+          The preview includes the playbook used in the plan, which you can
+          download and execute on your system. To execute the playbook using Red
+          Hat Lightspeed, complete this form to create a remediation plan. It
+          will automatically include the required remote execution
+          configurations.
+        </p>
+        <Flex
+          gap={{ default: 'gapSm' }}
+          alignItems={{ default: 'alignItemsCenter' }}
+          className="pf-v6-u-mt-sm"
+        >
+          <Button
+            variant="link"
+            icon={<DownloadIcon />}
+            onClick={onPreviewClick}
+            isDisabled={!hasPlanSelection || previewLoading}
+          >
+            Download preview
+          </Button>
+          {previewLoading && <Spinner size="sm" />}
+          {previewStatus && !previewLoading && (
+            <Alert
+              isInline
+              isPlain
+              variant={previewStatus === 'success' ? 'success' : 'danger'}
+              title={
+                previewStatus === 'success'
+                  ? 'Preview downloaded'
+                  : 'Preview download failed'
+              }
+            />
+          )}
+        </Flex>
+      </HintBody>
+    </Hint>
   );
 };
 
@@ -606,91 +661,6 @@ export const preparePlaybookPreviewPayload = ({
     issues: Array.from(issuesMap.values()),
     auto_reboot: autoReboot,
   };
-};
-
-// Handles playbook preview generation and download
-export const handlePlaybookPreview = async ({
-  hasPlanSelection,
-  isExistingPlanSelected,
-  remediationDetailsSummary,
-  data,
-  autoReboot,
-  postPlaybookPreview,
-  addNotification,
-  inputValue,
-  selected,
-  allRemediationsData,
-  downloadFile,
-  isCompliancePrecedenceEnabled = false,
-}) => {
-  if (!hasPlanSelection) {
-    return;
-  }
-
-  try {
-    // Prepare payload using helper function
-    const payload = preparePlaybookPreviewPayload({
-      isExistingPlanSelected,
-      remediationDetailsSummary,
-      data,
-      autoReboot,
-      enablePrecedence: isCompliancePrecedenceEnabled,
-    });
-
-    const response = await postPlaybookPreview(payload, {
-      responseType: 'blob',
-    });
-
-    // Determine playbook name for filename
-    let playbookName = 'remediation-preview-playbook';
-    if (isExistingPlanSelected && remediationDetailsSummary?.name) {
-      playbookName = remediationDetailsSummary.name;
-    } else if (inputValue?.trim()) {
-      playbookName = inputValue.trim();
-    } else if (isExistingPlanSelected && selected) {
-      // Fallback: find name from allRemediationsData
-      const selectedRemediation = allRemediationsData?.find(
-        (r) => r.id === selected,
-      );
-      if (selectedRemediation?.name) {
-        playbookName = selectedRemediation.name;
-      }
-    }
-
-    const sanitizedFilename = playbookName
-      .replace(/[^a-z0-9]/gi, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
-
-    downloadFile(response, sanitizedFilename, 'yml');
-  } catch (error) {
-    console.error('Error generating playbook preview:', error);
-
-    // Handle blob error responses (need to parse as text)
-    let errorMessage = 'Failed to generate playbook preview. Please try again.';
-    if (error?.response?.data) {
-      if (error.response.data instanceof Blob) {
-        // Try to parse blob as text for error message
-        try {
-          const text = await error.response.data.text();
-          const parsed = JSON.parse(text);
-          errorMessage = parsed.message || parsed.error || errorMessage;
-        } catch {
-          // If parsing fails, use default message
-        }
-      } else if (error.response.data.message) {
-        errorMessage = error.response.data.message;
-      }
-    }
-
-    addNotification({
-      title: 'Preview failed',
-      description: errorMessage,
-      variant: 'danger',
-      dismissable: true,
-      autoDismiss: true,
-    });
-  }
 };
 
 export const navigateToRemediation = (remediationId) => {
