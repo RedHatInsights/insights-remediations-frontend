@@ -58,6 +58,15 @@ jest.mock(
   () => ExecutionHistoryMock,
 );
 
+const PlannedRemediationsContentMock = () => (
+  <div>PlannedRemediationsContent</div>
+);
+PlannedRemediationsContentMock.displayName = 'PlannedRemediationsContent';
+jest.mock(
+  './RemediationDetailsComponents/PlannedRemediationsContent',
+  () => PlannedRemediationsContentMock,
+);
+
 // eslint-disable-next-line react/prop-types
 const RenameModalMock = ({ isRenameModalOpen }) =>
   isRenameModalOpen ? <div>RenameModal</div> : null;
@@ -90,14 +99,21 @@ describe('RemediationDetails', () => {
             // 2) checkExecutableStatus({ params: { remId: '123' } })
             return { result: 'OK' };
           case 3:
-            // 3) getRemediationDetails({ params: { remId: '123' } })
+            // 3) getRemediationDetails({ params: { remId: '123', format: 'summary' } })
             return {
               result: { id: '123', name: 'Test Remediation', issues: [] },
               refetch: jest.fn(),
               loading: false,
             };
           case 4:
-            // 4) getRemediationPlaybook({ params: { remId: '123' } })
+            // 4) getRemediationDetails({ params: { remId: '123' } }) - full details
+            return {
+              result: { id: '123', name: 'Test Remediation', issues: [] },
+              refetch: jest.fn(),
+              loading: false,
+            };
+          case 5:
+            // 5) getRemediationPlaybook({ params: { remId: '123' } })
             return {
               result: {
                 data: [
@@ -133,8 +149,18 @@ describe('RemediationDetails', () => {
               loading: false,
               refetch: jest.fn(),
             };
-          case 5:
-            // 5) updateRemediationPlans({ skip: true })
+          case 6:
+            // 6) getRemediationIssues({ params: { id: '123' }, useTableState: false })
+            return {
+              result: {
+                data: [],
+                meta: { total: 0 },
+              },
+              loading: false,
+              refetch: jest.fn(),
+            };
+          case 7:
+            // 7) updateRemediationWrapper({ skip: true })
             return { fetch: jest.fn() };
           default:
             return {};
@@ -161,12 +187,11 @@ describe('RemediationDetails', () => {
     // 3) Rendering sanity checks
     expect(screen.getByText('Header')).toBeInTheDocument();
     expect(screen.getByText('GeneralContent')).toBeInTheDocument();
-    expect(screen.getByText('SystemsTable')).toBeInTheDocument();
-    expect(screen.getByText('ActionsContent')).toBeInTheDocument();
+    expect(screen.getByText('PlannedRemediationsContent')).toBeInTheDocument();
     expect(screen.getByText('ExecutionHistory')).toBeInTheDocument();
 
-    // 4) Assert exactly six calls in the right sequence
-    expect(remediationSpy).toHaveBeenCalledTimes(6);
+    // 4) Assert exactly seven calls in the right sequence
+    expect(remediationSpy).toHaveBeenCalledTimes(7);
 
     const calls = remediationSpy.mock.calls;
 
@@ -174,10 +199,11 @@ describe('RemediationDetails', () => {
     expect(calls[0][0]).toBe('getRemediations');
     expect(calls[1][0]).toBe('checkExecutable');
     expect(calls[2][0]).toBe('getRemediation');
-    expect(calls[3][0]).toBe('listPlaybookRuns');
-    expect(calls[4][0]).toBe('getRemediationIssues');
-    // The 6th call passes updateRemediationWrapper function
-    expect(typeof calls[5][0]).toBe('function');
+    expect(calls[3][0]).toBe('getRemediation');
+    expect(calls[4][0]).toBe('listPlaybookRuns');
+    expect(calls[5][0]).toBe('getRemediationIssues');
+    // The 7th call passes updateRemediationWrapper function
+    expect(typeof calls[6][0]).toBe('function');
 
     // 5) Spot‑check the options object on each call:
     expect(remediationSpy.mock.calls[0][1]).toEqual({
@@ -194,8 +220,11 @@ describe('RemediationDetails', () => {
     });
     expect(remediationSpy.mock.calls[4][1]).toEqual({
       params: { id: '123' },
+    });
+    expect(remediationSpy.mock.calls[5][1]).toEqual({
+      params: { id: '123' },
       useTableState: false,
     });
-    expect(remediationSpy.mock.calls[5][1]).toEqual({ skip: true });
+    expect(remediationSpy.mock.calls[6][1]).toEqual({ skip: true });
   });
 });

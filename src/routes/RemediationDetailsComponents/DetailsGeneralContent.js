@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Alert,
   AlertActionCloseButton,
@@ -43,6 +43,11 @@ const DetailsGeneralContent = ({
   }, [details, actionPoints]);
 
   const shouldShowAapAlert = executionLimits?.exceedsExecutionLimits || false;
+  const [isAapAlertDismissed, setIsAapAlertDismissed] = useState(false);
+
+  const handleAapAlertClose = () => {
+    setIsAapAlertDismissed(true);
+  };
 
   return (
     <section className="pf-v6-l-page__main-section pf-v6-c-page__main-section">
@@ -61,13 +66,18 @@ const DetailsGeneralContent = ({
         </Alert>
       )}
 
-      {shouldShowAapAlert && (
+      {shouldShowAapAlert && !isAapAlertDismissed && (
         <Alert
           isInline
           variant="info"
           title="Remediate at scale with Red Hat Ansible Automation Platform (AAP)"
           className="pf-v6-u-mb-md"
-          actionClose={<AlertActionCloseButton title="Close alert" />}
+          actionClose={
+            <AlertActionCloseButton
+              title="Close alert"
+              onClose={handleAapAlertClose}
+            />
+          }
         >
           <p>
             To execute a remediation plan using Lightspeed it must be within the

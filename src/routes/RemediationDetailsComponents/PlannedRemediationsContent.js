@@ -3,7 +3,10 @@ import PropTypes from 'prop-types';
 import {
   Content,
   Flex,
+  HelperText,
+  HelperTextItem,
   Icon,
+  Label,
   Tab,
   Tabs,
   TabTitleText,
@@ -17,6 +20,7 @@ import './PlannedRemediationsContent.scss';
 
 const PlannedRemediationsContent = ({
   remediationDetailsSummary,
+  remediationDetailsFull,
   remediationIssues,
   remediationStatus,
   refetchRemediationDetails,
@@ -33,11 +37,14 @@ const PlannedRemediationsContent = ({
     setNestedActiveTab(initialNestedTab);
   }, [initialNestedTab]);
 
-  // Calculate counts from remediation data
+  // Use remediationDetailsFull.issues (full list) instead of remediationIssues.data (paginated, max 10)
   const { actionsCount, systemsCount, issuesCount } = useMemo(() => {
-    const issues = remediationIssues?.data || [];
+    // Prefer full remediation details issues, fallback to paginated issues
+    const issues =
+      remediationDetailsFull?.issues || remediationIssues?.data || [];
     const actionsPoints = calculateActionPoints(issues);
     const systems = remediationDetailsSummary?.system_count || 0;
+    // Use total from meta if available, otherwise use issues array length
     const issuesTotal = remediationIssues?.meta?.total || issues.length;
 
     return {
@@ -45,13 +52,14 @@ const PlannedRemediationsContent = ({
       systemsCount: systems,
       issuesCount: issuesTotal,
     };
-  }, [remediationIssues, remediationDetailsSummary]);
+  }, [remediationDetailsFull, remediationIssues, remediationDetailsSummary]);
 
   // Check if limits are exceeded
   const ACTIONS_MAX = 1000;
   const SYSTEMS_MAX = 100;
   const exceedsActionsLimit = actionsCount > ACTIONS_MAX;
   const exceedsSystemsLimit = systemsCount > SYSTEMS_MAX;
+  const exceedsLimits = exceedsActionsLimit || exceedsSystemsLimit;
 
   const handleNestedTabClick = (_event, tabName) => {
     setNestedActiveTab(tabName);
@@ -62,8 +70,14 @@ const PlannedRemediationsContent = ({
       {/* Summary Charts */}
       <div style={{ maxWidth: '60%' }}>
         <Content component="h2" className="pf-v6-u-ml-md pf-v6-u-mt-md">
-          Planned remediation action and systems
+          Planned remediation action and systems{' '}
+          {exceedsLimits && (
+            <Label status="danger" variant="outline" className="pf-v6-u-ml-sm">
+              Exceeds limits
+            </Label>
+          )}
         </Content>
+
         <Content component="p" className="pf-v6-u-ml-md">
           To execute a remediation plan using Lightspeed, it must be within the
           limit of 100 systems and 1000 action points.
@@ -76,6 +90,12 @@ const PlannedRemediationsContent = ({
           isExistingPlanSelected={true}
           smallerFont
         />
+        <HelperText className="pf-v6-u-mt-sm pf-v6-u-ml-md">
+          <HelperTextItem>
+            *Action points (pts) per issue type: Advisor: 20 pts, Vulnerability:
+            20 pts, Patch: 2 pts, and Compliance: 5 pts
+          </HelperTextItem>
+        </HelperText>
       </div>
       {/* Nested Tabs */}
       <div className="ins-c-planned-remediations-tabs">
@@ -146,6 +166,7 @@ const PlannedRemediationsContent = ({
 
 PlannedRemediationsContent.propTypes = {
   remediationDetailsSummary: PropTypes.object,
+  remediationDetailsFull: PropTypes.object,
   remediationIssues: PropTypes.object,
   remediationStatus: PropTypes.object,
   refetchRemediationDetails: PropTypes.func,

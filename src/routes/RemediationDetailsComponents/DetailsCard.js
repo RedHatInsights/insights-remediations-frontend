@@ -122,9 +122,8 @@ const DetailsCard = ({
   };
 
   const formatedDate = new Date(remediationPlaybookRuns?.updated_at);
-
   const hasResolutionsAvailable = remediationIssues?.some(
-    (issue) => issue?.resolutions_available > 0 || issue?.resolution,
+    (issue) => issue?.resolutions_available > 1,
   );
 
   return (

@@ -10,7 +10,6 @@ import {
   DrawerActions,
   DrawerCloseButton,
   DrawerPanelBody,
-  DrawerPanelDescription,
   Title,
   Content,
   Radio,
@@ -147,10 +146,6 @@ const ResolutionOptionsDrawer = ({
           <DrawerCloseButton onClick={onClose} />
         </DrawerActions>
       </DrawerHead>
-      <DrawerPanelDescription>
-        A default resolution has been selected for you. To select a different
-        resolution, use the options below.
-      </DrawerPanelDescription>
       <DrawerPanelBody style={{ height: '100%' }}>
         <Flex direction={{ default: 'column' }} style={{ height: '100%' }}>
           <FlexItem grow={{ default: 'grow' }} style={{ overflowY: 'auto' }}>

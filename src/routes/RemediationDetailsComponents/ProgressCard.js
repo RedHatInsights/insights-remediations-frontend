@@ -158,11 +158,11 @@ const ProgressCard = ({
       <Title headingLevel="h4">Lightspeed connected systems</Title>
       <Content>
         <p>
-          To execute a remediation plan from Red Hat Lightspeed, your RHEL
-          systems must be connected either directly via the &quot;rhc
-          connect&quot; command or through a properly configured Red Hat
-          Satellite server. For detailed troubleshooting guidance, review the{' '}
-          <strong>Connection status</strong> details for each disconnected
+          To execute a remediation plan from <strong>Red Hat Lightspeed</strong>
+          , your RHEL systems must be connected either directly via the
+          &quot;rhc connect&quot; command or through a properly configured Red
+          Hat Satellite server. For detailed troubleshooting guidance, review
+          the <strong>Connection status</strong> details for each disconnected
           system.{' '}
           <Button
             variant="link"
@@ -208,7 +208,7 @@ const ProgressCard = ({
     >
       <Content>
         <p>
-          To allow users to execute a remediation plan on a remote system from
+          To allow users to execute a remediation plan on a remote system from{' '}
           <strong>Red Hat Lightspeed</strong>, you must configure the Remote
           Host Configuration Manager settings in the Lightspeed UI. You can find
           the settings in the console under Inventory &gt; System Configurations
@@ -270,8 +270,8 @@ const ProgressCard = ({
 
       <CardBody>
         <p className="pf-v6-u-mb-md">
-          Addressing errors in this section will ensure that your remediation
-          plan is ready for execution?{' '}
+          Address errors in this section to ensure that your remediation plan is
+          ready for execution.{' '}
           <InsightsLink
             to="https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide"
             target="_blank"

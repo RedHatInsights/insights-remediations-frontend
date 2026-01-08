@@ -57,6 +57,11 @@ const RemediationDetails = () => {
     params: { id, format: 'summary' },
   });
 
+  // This is temporarily needed because getRemediationIssues is paginated (max 10 items).
+  const { result: remediationDetailsFull } = useRemediations('getRemediation', {
+    params: { id },
+  });
+
   const {
     result: remediationPlaybookRuns,
     loading: isPlaybookRunsLoading,
@@ -220,6 +225,7 @@ const RemediationDetails = () => {
             >
               <PlannedRemediationsContent
                 remediationDetailsSummary={remediationDetailsSummary}
+                remediationDetailsFull={remediationDetailsFull}
                 remediationIssues={remediationIssues}
                 remediationStatus={remediationStatus}
                 refetchRemediationDetails={refetchRemediationDetails}
