@@ -20,7 +20,7 @@ export const wizardHelperText = (exceedsLimits) => {
     return (
       <HelperText isLiveRegion className="pf-v6-u-mt-sm">
         <HelperTextItem variant="warning">
-          Remediation plan exceeds execution limits
+          Remediation plan exceeds limits
         </HelperTextItem>
       </HelperText>
     );

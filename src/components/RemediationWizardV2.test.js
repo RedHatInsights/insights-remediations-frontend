@@ -1264,15 +1264,6 @@ describe('RemediationWizardV2', () => {
       });
     });
   });
-
-  describe('Modal close functionality', () => {
-    it('should call setOpen(false) when modal is closed', () => {
-      renderWithRouter(
-        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
-      );
-    });
-  });
-
   describe('Modal close functionality', () => {
     it('should call setOpen(false) when Cancel button is clicked', async () => {
       const user = userEvent.setup();

@@ -87,6 +87,7 @@ export const PlaybookSelect = ({
       }}
       toggle={toggle}
       variant="typeahead"
+      isScrollable
     >
       <SelectList id="select-create-typeahead-listbox">
         {isLoadingRemediationsList ? (
