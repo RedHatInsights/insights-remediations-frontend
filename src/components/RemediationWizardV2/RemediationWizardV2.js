@@ -59,6 +59,12 @@ export const RemediationWizardV2 = ({
   const [issuesCount, setIssuesCount] = useState(0);
   const [previewStatus, setPreviewStatus] = useState(null); // null, 'success', 'failure'
   const [previewLoading, setPreviewLoading] = useState(false);
+  // Progress tracking for batched requests
+  const [progressTotalBatches, setProgressTotalBatches] = useState(0);
+  const [progressCompletedBatches, setProgressCompletedBatches] = useState(0);
+  const [progressFailedBatches, setProgressFailedBatches] = useState(0);
+  const [progressErrors, setProgressErrors] = useState([]);
+  const [progressIsComplete, setProgressIsComplete] = useState(false);
   const isFirstRender = useRef(true);
 
   // Normalize data structure to ensure systems array exists
@@ -207,6 +213,28 @@ export const RemediationWizardV2 = ({
     }
     setIsSubmitting(true);
     resetErrorState();
+    // Reset progress tracking
+    setProgressTotalBatches(0);
+    setProgressCompletedBatches(0);
+    setProgressFailedBatches(0);
+    setProgressErrors([]);
+    setProgressIsComplete(false);
+
+    // Progress callback to update state as batches complete
+    const onProgress = (
+      totalBatches,
+      successfulBatches,
+      failedBatches,
+      errors,
+      isComplete,
+    ) => {
+      setProgressTotalBatches(totalBatches);
+      setProgressCompletedBatches(successfulBatches);
+      setProgressFailedBatches(failedBatches);
+      setProgressErrors(errors || []);
+      setProgressIsComplete(isComplete);
+    };
+
     try {
       // Pass original data to preserve nested systems structure for payload
       const result = await handleRemediationSubmit({
@@ -218,12 +246,14 @@ export const RemediationWizardV2 = ({
         createRemediationFetch,
         updateRemediationFetch,
         isCompliancePrecedenceEnabled,
+        onProgress,
       });
       if (
         result?.success &&
         result?.status === 'success' &&
         result?.remediationId
       ) {
+        // Navigate to remediation details page on success
         const url = remediationUrl(result.remediationId);
         window.location.href = url;
       } else if (
@@ -234,6 +264,10 @@ export const RemediationWizardV2 = ({
         setSubmitError(result.status);
         setErrorRemediationId(result.remediationId || null);
         setErrorIsUpdate(result.isUpdate || false);
+        // Store errors from result if available
+        if (result.errors) {
+          setProgressErrors(result.errors);
+        }
       }
     } catch (error) {
       console.error(error);
@@ -419,7 +453,6 @@ export const RemediationWizardV2 = ({
     </>
   );
 
-  //TODO: implement new UX copy once completed
   const renderStatusContent = () => {
     if (submitError) {
       return (
@@ -430,11 +463,30 @@ export const RemediationWizardV2 = ({
           remediationId={errorRemediationId}
           onClose={handleCloseError}
           onViewPlan={handleViewPlan}
+          progressTotalBatches={progressTotalBatches}
+          progressCompletedBatches={progressCompletedBatches}
+          progressFailedBatches={progressFailedBatches}
+          progressErrors={progressErrors}
+          progressIsComplete={progressIsComplete}
         />
       );
     }
 
     if (isSubmitting) {
+      // Show progress bar if we have batch information, otherwise show spinner
+      if (progressTotalBatches > 0) {
+        return (
+          <ModalStatusContent
+            status="progress"
+            isUpdate={isExistingPlanSelected}
+            progressTotalBatches={progressTotalBatches}
+            progressCompletedBatches={progressCompletedBatches}
+            progressFailedBatches={progressFailedBatches}
+            progressErrors={progressErrors}
+            progressIsComplete={progressIsComplete}
+          />
+        );
+      }
       return <ModalStatusContent status="submitting" />;
     }
 
