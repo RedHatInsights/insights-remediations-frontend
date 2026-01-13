@@ -74,7 +74,6 @@ export const PlanSummaryCharts = ({
                 <FlexItem alignSelf={{ default: 'alignSelfFlexEnd' }}>
                   <Flex justifyContent={{ default: 'justifyContentFlexEnd' }}>
                     <FlexItem
-                      style={{ paddingRight: '50px' }}
                       className={smallerFont ? 'pf-v6-u-font-size-sm' : ''}
                     >
                       {ACTIONS_MAX} points maximum
@@ -127,10 +126,7 @@ export const PlanSummaryCharts = ({
           </FlexItem>
           <FlexItem alignSelf={{ default: 'alignSelfFlexEnd' }}>
             <Flex justifyContent={{ default: 'justifyContentFlexEnd' }}>
-              <FlexItem
-                style={{ paddingRight: '50px' }}
-                className={smallerFont ? 'pf-v6-u-font-size-sm' : ''}
-              >
+              <FlexItem className={smallerFont ? 'pf-v6-u-font-size-sm' : ''}>
                 {SYSTEMS_MAX} systems maximum
               </FlexItem>
             </Flex>

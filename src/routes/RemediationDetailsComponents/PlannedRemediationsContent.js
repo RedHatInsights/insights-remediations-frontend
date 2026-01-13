@@ -68,7 +68,7 @@ const PlannedRemediationsContent = ({
   return (
     <div>
       {/* Summary Charts */}
-      <div style={{ maxWidth: '60%' }}>
+      <div style={{ width: '100%', maxWidth: '1000px' }}>
         <Content component="h2" className="pf-v6-u-ml-md pf-v6-u-mt-md">
           Planned remediation action and systems{' '}
           {exceedsLimits && (
