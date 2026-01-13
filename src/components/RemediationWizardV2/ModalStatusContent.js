@@ -64,9 +64,6 @@ const ModalStatusContent = ({
               aria-label={`Progress: ${progressPercentage}%`}
               className="pf-v6-u-mb-sm"
             />
-            <div className="pf-v6-u-text-align-right">
-              {progressPercentage}%
-            </div>
           </div>
         </ModalBody>
       </>
