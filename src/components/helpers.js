@@ -365,7 +365,8 @@ const throttle = (ms) => {
 };
 
 // Handles remediation submission (create or update) with batching and throttling
-// Returns { success: boolean, status: 'success' | 'complete_failure' | 'partial_failure', remediationId?: string, remediationName?: string, isUpdate?: boolean }
+// Returns { success: boolean, status: 'success' | 'complete_failure' | 'partial_failure', remediationId?: string, remediationName?: string, isUpdate?: boolean, errors?: array }
+// onProgress callback: (totalBatches, successfulBatches, failedBatches, errors, isComplete) => void
 export const handleRemediationSubmit = async ({
   isExistingPlanSelected,
   selected,
@@ -375,6 +376,7 @@ export const handleRemediationSubmit = async ({
   createRemediationFetch,
   updateRemediationFetch,
   isCompliancePrecedenceEnabled = false,
+  onProgress,
 }) => {
   const payload = prepareRemediationPayload(
     data,
@@ -385,10 +387,28 @@ export const handleRemediationSubmit = async ({
 
   // Create batches of issues (max 50 issues per batch, max 50 systems per issue)
   const batches = createRemediationBatches(issues);
+  const totalBatches = Math.max(batches.length, 1); // At least 1 batch (empty case)
 
   let remediationId = selected;
   let successfulBatches = 0;
   let failedBatches = 0;
+  const collectedErrors = [];
+
+  // Helper function to extract error titles from error response
+  const extractErrorTitles = (error) => {
+    try {
+      const errorData = error?.response?.data || error?.data || {};
+      const errors = errorData?.errors || [];
+      return errors.map((err) => err?.title).filter(Boolean);
+    } catch {
+      return [];
+    }
+  };
+
+  // Report initial progress
+  if (onProgress) {
+    onProgress(totalBatches, successfulBatches, failedBatches, [], false);
+  }
 
   // If no batches, still need to create/update with empty data
   if (batches.length === 0) {
@@ -419,6 +439,11 @@ export const handleRemediationSubmit = async ({
         }
       }
 
+      // Report progress after empty batch
+      if (onProgress) {
+        onProgress(totalBatches, successfulBatches, failedBatches, [], true);
+      }
+
       if (failedBatches > 0) {
         return {
           success: false,
@@ -426,6 +451,7 @@ export const handleRemediationSubmit = async ({
           remediationId,
           remediationName: inputValue.trim() || 'New remediation plan',
           isUpdate: isExistingPlanSelected,
+          errors: collectedErrors,
         };
       }
 
@@ -435,14 +461,23 @@ export const handleRemediationSubmit = async ({
         remediationId,
         remediationName: inputValue.trim() || 'New remediation plan',
         isUpdate: isExistingPlanSelected,
+        errors: [],
       };
-    } catch {
+    } catch (error) {
+      failedBatches++;
+      const errorTitles = extractErrorTitles(error);
+      collectedErrors.push(...errorTitles);
+      // Report progress after failure
+      if (onProgress) {
+        onProgress(totalBatches, successfulBatches, failedBatches, collectedErrors, true);
+      }
       return {
         success: false,
         status: 'complete_failure',
         remediationId,
         remediationName: inputValue.trim() || 'New remediation plan',
         isUpdate: isExistingPlanSelected,
+        errors: collectedErrors,
       };
     }
   }
@@ -477,26 +512,43 @@ export const handleRemediationSubmit = async ({
 
       if (!remediationId) {
         failedBatches++;
+        // Report progress after failure
+        if (onProgress) {
+          onProgress(totalBatches, successfulBatches, failedBatches, collectedErrors, true);
+        }
         return {
           success: false,
           status: 'complete_failure',
           remediationId: null,
           remediationName: inputValue.trim() || 'New remediation plan',
           isUpdate: false,
+          errors: collectedErrors,
         };
       }
       successfulBatches++;
+    }
+    // Report progress after first batch (not complete yet)
+    if (onProgress) {
+      const isComplete = batches.length === 1;
+      onProgress(totalBatches, successfulBatches, failedBatches, collectedErrors, isComplete);
     }
   } catch (error) {
     // Initial request failed - complete failure
     console.error('Initial remediation request failed:', error);
     failedBatches++;
+    const errorTitles = extractErrorTitles(error);
+    collectedErrors.push(...errorTitles);
+    // Report progress after failure
+    if (onProgress) {
+      onProgress(totalBatches, successfulBatches, failedBatches, collectedErrors, true);
+    }
     return {
       success: false,
       status: 'complete_failure',
       remediationId: null,
       remediationName: inputValue.trim() || 'New remediation plan',
       isUpdate: isExistingPlanSelected,
+      errors: collectedErrors,
     };
   }
 
@@ -519,8 +571,15 @@ export const handleRemediationSubmit = async ({
       successfulBatches++;
     } catch (error) {
       failedBatches++;
+      const errorTitles = extractErrorTitles(error);
+      collectedErrors.push(...errorTitles);
       // Continue processing remaining batches even if one fails
       console.warn(`Failed to add batch ${i + 1}:`, error);
+    }
+    // Report progress after each batch (not complete until last batch)
+    if (onProgress) {
+      const isComplete = i === batches.length - 1;
+      onProgress(totalBatches, successfulBatches, failedBatches, collectedErrors, isComplete);
     }
   }
 
@@ -532,6 +591,7 @@ export const handleRemediationSubmit = async ({
       remediationId,
       remediationName: inputValue.trim() || 'New remediation plan',
       isUpdate: isExistingPlanSelected,
+      errors: [],
     };
   } else if (successfulBatches > 0) {
     // Partial failure - some succeeded, some failed
@@ -541,6 +601,7 @@ export const handleRemediationSubmit = async ({
       remediationId,
       remediationName: inputValue.trim() || 'New remediation plan',
       isUpdate: isExistingPlanSelected,
+      errors: collectedErrors,
     };
   } else {
     // Complete failure - should not happen here since we check initial request above
@@ -550,6 +611,7 @@ export const handleRemediationSubmit = async ({
       remediationId: null,
       remediationName: inputValue.trim() || 'New remediation plan',
       isUpdate: isExistingPlanSelected,
+      errors: collectedErrors,
     };
   }
 };

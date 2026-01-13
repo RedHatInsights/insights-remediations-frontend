@@ -170,7 +170,11 @@ describe('OverViewPage', () => {
     const kebab = within(row).getByRole('button', { name: /Kebab toggle/i });
     await user.click(kebab);
 
-    const deleteItem = screen.getByRole('menuitem', { name: /delete/i });
+    const deleteItem = await screen.findByRole(
+      'menuitem',
+      { name: /delete/i },
+      { timeout: 5000 },
+    );
 
     await user.click(deleteItem);
     expect(
@@ -185,9 +189,12 @@ describe('OverViewPage', () => {
     const kebab = within(row).getByRole('button', { name: /kebab toggle/i });
     await user.click(kebab);
 
-    const downloadItem = screen.getByRole('menuitem', {
-      name: /download/i,
-    });
+    // Wait for the menu to appear before trying to find the download item
+    const downloadItem = await screen.findByRole(
+      'menuitem',
+      { name: /download/i },
+      { timeout: 5000 },
+    );
     await user.click(downloadItem);
 
     await waitFor(() => expect(download).toHaveBeenCalledTimes(1));

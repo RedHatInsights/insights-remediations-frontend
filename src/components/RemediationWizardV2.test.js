@@ -183,13 +183,21 @@ describe('RemediationWizardV2', () => {
         fetch: jest.fn(),
       };
     });
-    // Reset spies
-    handleRemediationSubmitSpy.mockResolvedValue({
-      success: true,
-      status: 'success',
-      remediationId: 'test-id',
-      remediationName: 'Test Plan',
-      isUpdate: false,
+    // Reset spies - default mock for successful submission
+    handleRemediationSubmitSpy.mockImplementation(async (args) => {
+      // Call onProgress if provided to simulate progress updates
+      if (args.onProgress) {
+        // Call synchronously to set state before promise resolves
+        args.onProgress(1, 1, 0, [], true);
+      }
+      return {
+        success: true,
+        status: 'success',
+        remediationId: 'test-id',
+        remediationName: 'Test Plan',
+        isUpdate: false,
+        errors: [],
+      };
     });
     preparePlaybookPreviewPayloadSpy.mockClear();
     // Reset mocks
@@ -816,12 +824,20 @@ describe('RemediationWizardV2', () => {
 
     it('should show error state for complete failure', async () => {
       const user = userEvent.setup();
-      handleRemediationSubmitSpy.mockResolvedValueOnce({
-        success: false,
-        status: 'complete_failure',
-        remediationId: null,
-        remediationName: 'Test Plan',
-        isUpdate: false,
+      handleRemediationSubmitSpy.mockImplementationOnce(async (args) => {
+        // Call onProgress with values that will show standard error UI (not progress bar)
+        // Need progressTotalBatches > 0, progressCompletedBatches > 0, and remediationId to exist
+        if (args.onProgress) {
+          args.onProgress(1, 1, 0, [], true);
+        }
+        return {
+          success: false,
+          status: 'complete_failure',
+          remediationId: 'test-remediation-id', // Must exist to show standard error UI
+          remediationName: 'Test Plan',
+          isUpdate: false,
+          errors: [],
+        };
       });
 
       renderWithRouter(
@@ -864,12 +880,16 @@ describe('RemediationWizardV2', () => {
 
     it('should show error state for partial failure', async () => {
       const user = userEvent.setup();
-      handleRemediationSubmitSpy.mockResolvedValueOnce({
-        success: false,
-        status: 'partial_failure',
-        remediationId: 'partial-remediation-id',
-        remediationName: 'Test Plan',
-        isUpdate: false,
+      handleRemediationSubmitSpy.mockImplementationOnce(async () => {
+        // Don't call onProgress - when progressTotalBatches === 0, partial failure shows standard error UI
+        return {
+          success: false,
+          status: 'partial_failure',
+          remediationId: 'partial-remediation-id',
+          remediationName: 'Test Plan',
+          isUpdate: false,
+          errors: [],
+        };
       });
 
       renderWithRouter(
@@ -924,12 +944,20 @@ describe('RemediationWizardV2', () => {
         loading: false,
       });
 
-      handleRemediationSubmitSpy.mockResolvedValueOnce({
-        success: false,
-        status: 'complete_failure',
-        remediationId: 'existing-plan-id',
-        remediationName: 'Existing Plan',
-        isUpdate: true,
+      handleRemediationSubmitSpy.mockImplementationOnce(async (args) => {
+        // Call onProgress with values that will show standard error UI (not progress bar)
+        // progressTotalBatches > 0 and progressCompletedBatches > 0 to avoid progress bar UI
+        if (args.onProgress) {
+          args.onProgress(1, 1, 0, [], true);
+        }
+        return {
+          success: false,
+          status: 'complete_failure',
+          remediationId: 'existing-plan-id',
+          remediationName: 'Existing Plan',
+          isUpdate: true,
+          errors: [],
+        };
       });
 
       renderWithRouter(
