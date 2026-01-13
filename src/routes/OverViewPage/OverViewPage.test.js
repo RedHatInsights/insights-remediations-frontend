@@ -41,6 +41,7 @@ jest.mock('../api', () => ({
   deleteRemediationList: jest.fn(() => Promise.resolve({})),
 }));
 
+const defaultMockRemediationsData = { data: demoRows, meta: { total: 2 } };
 let mockRemediationsData = { data: demoRows, meta: { total: 2 } };
 
 jest.mock('../../Utilities/Hooks/api/useRemediations', () => ({
@@ -112,17 +113,6 @@ beforeAll(() => {
   });
 });
 
-beforeEach(() => {
-  jest.clearAllMocks();
-  store.clearActions();
-  getRemediations.mockImplementation(() =>
-    Promise.resolve({ data: demoRows, meta: { total: 2 } }),
-  );
-  getRemediationsList.mockImplementation(() =>
-    Promise.resolve({ data: demoRows }),
-  );
-});
-
 afterAll(() => JSON.stringify.mockRestore());
 
 const mockStore = configureStore([promiseMiddleware]);
@@ -152,12 +142,58 @@ const renderPageWithList = (list) => {
 };
 
 const { useFeatureFlag } = require('../../Utilities/Hooks/useFeatureFlag');
+const useRemediations =
+  require('../../Utilities/Hooks/api/useRemediations').default;
 
 describe('OverViewPage', () => {
   beforeEach(() => {
-    // Default to feature flag disabled
-    useFeatureFlag.mockReturnValue(false);
+    // Clear all mocks first to prevent leakage from other test files
     jest.clearAllMocks();
+
+    // Clear Redux store actions
+    store.clearActions();
+
+    // Reset mockRemediationsData to default
+    mockRemediationsData = { ...defaultMockRemediationsData };
+
+    // Reset shared mocks to their default implementations
+    // This is critical when tests run together - mocks from other files can leak
+    useFeatureFlag.mockReset();
+    useFeatureFlag.mockReturnValue(false);
+
+    // Reset useRemediations to default implementation for this test file
+    useRemediations.mockReset();
+    useRemediations.mockImplementation((endpoint) => {
+      if (endpoint === 'getRemediations') {
+        return {
+          result: mockRemediationsData,
+          loading: false,
+          refetch: jest.fn(),
+          fetchAllIds: jest
+            .fn()
+            .mockResolvedValue(mockRemediationsData.data.map((r) => r.id)),
+        };
+      }
+      if (endpoint === 'deleteRemediations') {
+        return {
+          fetchBatched: jest.fn().mockResolvedValue({}),
+        };
+      }
+      return {
+        result: null,
+        loading: false,
+        refetch: jest.fn(),
+      };
+    });
+
+    // Reset API mocks
+    getRemediations.mockImplementation(() =>
+      Promise.resolve({ data: demoRows, meta: { total: 2 } }),
+    );
+    getRemediationsList.mockImplementation(() =>
+      Promise.resolve({ data: demoRows }),
+    );
+
     // Reset global mock for quickstart
     if (global.mockActivateQuickstart) {
       global.mockActivateQuickstart.mockClear();

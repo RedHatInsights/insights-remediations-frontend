@@ -221,32 +221,51 @@ jest.mock('@patternfly/react-icons', () => ({
 }));
 
 const { useFeatureFlag } = require('../../Utilities/Hooks/useFeatureFlag');
+const useChrome = require('@redhat-cloud-services/frontend-components/useChrome');
 
 describe('ProgressCard', () => {
-  const mockOnNavigateToTab = jest.fn();
+  let mockOnNavigateToTab;
+  let defaultProps;
 
   beforeEach(() => {
-    // Default to feature flag disabled
+    // Clear all mocks first to prevent leakage from other test files
+    jest.clearAllMocks();
+
+    // Reset shared mocks to their default implementations
+    // This is critical when tests run together - mocks from other files can leak
+    useFeatureFlag.mockReset();
     useFeatureFlag.mockReturnValue(false);
-    jest.clearAllMocks();
-  });
 
-  const defaultProps = {
-    remediationStatus: {
-      areDetailsLoading: false,
-      connectionError: null,
-      connectedSystems: 5,
-      totalSystems: 10,
-    },
-    permissions: {
-      execute: true,
-    },
-    readyOrNot: true,
-    onNavigateToTab: mockOnNavigateToTab,
-  };
+    // Reset useChrome mock to default implementation
+    useChrome.mockReset();
+    useChrome.mockReturnValue({
+      quickStarts: {
+        activateQuickstart: jest.fn(),
+      },
+      getApp: jest.fn(() => 'remediations'),
+    });
 
-  beforeEach(() => {
-    jest.clearAllMocks();
+    // Create fresh mock function for each test
+    mockOnNavigateToTab = jest.fn();
+
+    // Create fresh default props object for each test
+    defaultProps = {
+      remediationStatus: {
+        areDetailsLoading: false,
+        connectionError: null,
+        connectedSystems: 5,
+        totalSystems: 10,
+      },
+      permissions: {
+        execute: true,
+      },
+      readyOrNot: true,
+      onNavigateToTab: mockOnNavigateToTab,
+      details: {
+        system_count: 0,
+      },
+      remediationIssues: [],
+    };
   });
 
   describe('Loading state', () => {
@@ -319,7 +338,7 @@ describe('ProgressCard', () => {
 
       expect(screen.getByTestId('card-body')).toBeInTheDocument();
       expect(
-        screen.getByText(/Addressing errors in this section will ensure that your remediation plan is ready for execution/),
+        screen.getByText(/Address errors in this section to ensure that your remediation plan is ready for execution/),
       ).toBeInTheDocument();
     });
 
@@ -338,9 +357,8 @@ describe('ProgressCard', () => {
     it('should render card footer with help text', () => {
       render(<ProgressCard {...defaultProps} />);
 
-      // The "Learn more" link is now in the CardBody, not a footer
       expect(screen.getByText(/Learn more/)).toBeInTheDocument();
-      expect(screen.getByText(/Addressing errors in this section will ensure that your remediation plan is ready for execution/)).toBeInTheDocument();
+      expect(screen.getByText(/Address errors in this section to ensure that your remediation plan is ready for execution/)).toBeInTheDocument();
     });
   });
 
@@ -607,11 +625,9 @@ describe('ProgressCard', () => {
     });
 
     it('should handle missing quickStarts gracefully', () => {
-      require('@redhat-cloud-services/frontend-components/useChrome').mockReturnValue(
-        {
-          quickStarts: null,
-        },
-      );
+      useChrome.mockReturnValueOnce({
+        quickStarts: null,
+      });
 
       render(<ProgressCard {...defaultProps} />);
 
@@ -621,9 +637,7 @@ describe('ProgressCard', () => {
     });
 
     it('should handle missing useChrome return gracefully', () => {
-      require('@redhat-cloud-services/frontend-components/useChrome').mockReturnValue(
-        {},
-      );
+      useChrome.mockReturnValueOnce({});
 
       render(<ProgressCard {...defaultProps} />);
 
