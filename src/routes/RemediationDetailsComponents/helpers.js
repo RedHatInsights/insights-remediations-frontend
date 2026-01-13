@@ -101,7 +101,6 @@ export const calculateExecutionLimits = (details, actionPoints) => {
   const exceedsExecutionLimits = exceedsSystemsLimit || exceedsActionsLimit;
   const systemsToRemove = exceedsSystemsLimit ? systemCount - MAX_SYSTEMS : 0;
   const actionsToRemove = exceedsActionsLimit ? actionPoints - MAX_ACTIONS : 0;
-
   return {
     exceedsSystemsLimit,
     exceedsActionsLimit,

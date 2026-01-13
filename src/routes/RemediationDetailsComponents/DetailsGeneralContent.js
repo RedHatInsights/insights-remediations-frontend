@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   Alert,
   AlertActionCloseButton,
@@ -36,15 +36,27 @@ const DetailsGeneralContent = ({
   const shouldShowAlert = !isStillLoading && !canExecute;
 
   const actionPoints = useMemo(() => {
-    return calculateActionPoints(remediationIssues);
-  }, [remediationIssues]);
+    // TODO: Remove remediationDetailsFull when BE summary endpoint is completed
+    const issues = remediationDetailsFull?.issues || remediationIssues || [];
+    return calculateActionPoints(issues);
+  }, [remediationDetailsFull, remediationIssues]);
 
   const executionLimits = useMemo(() => {
     return calculateExecutionLimits(details, actionPoints);
   }, [details, actionPoints]);
 
-  const shouldShowAapAlert = executionLimits?.exceedsExecutionLimits || false;
+  const exceedsExecutionLimits =
+    executionLimits?.exceedsExecutionLimits || false;
+  const shouldShowAapAlert = exceedsExecutionLimits;
+
   const [isAapAlertDismissed, setIsAapAlertDismissed] = useState(false);
+
+  // Reset dismissed state when exceedsExecutionLimits changes from false to true
+  useEffect(() => {
+    if (exceedsExecutionLimits) {
+      setIsAapAlertDismissed(false);
+    }
+  }, [exceedsExecutionLimits]);
 
   const handleAapAlertClose = () => {
     setIsAapAlertDismissed(true);

@@ -57,6 +57,7 @@ const RemediationDetails = () => {
     params: { id, format: 'summary' },
   });
 
+  // TODO: Remove this once BE summary endpoint is completed
   // This is temporarily needed because getRemediationIssues is paginated (max 10 items).
   const { result: remediationDetailsFull } = useRemediations('getRemediation', {
     params: { id },

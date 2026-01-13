@@ -205,11 +205,8 @@ describe('OverViewPage', () => {
     const row = await screen.findByRole('row', { name: /patch stuff/i });
     const kebab = within(row).getByRole('button', { name: /Kebab toggle/i });
 
-    // Click the kebab menu and wait for it to open
     await user.click(kebab);
 
-    // Wait for the menu to be fully rendered and visible before interacting
-    // This ensures the menu dropdown has completed its animation/rendering
     const deleteItem = await waitFor(
       () => {
         const menuItem = screen.getByRole('menuitem', { name: /delete/i });

@@ -20,6 +20,7 @@ import './PlannedRemediationsContent.scss';
 
 const PlannedRemediationsContent = ({
   remediationDetailsSummary,
+  // TODO: Remove this once BE summary endpoint is completed
   remediationDetailsFull,
   remediationIssues,
   remediationStatus,

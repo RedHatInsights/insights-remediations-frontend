@@ -35,6 +35,7 @@ const ProgressCard = ({
   readyOrNot,
   onNavigateToTab,
   details,
+  // TODO: Remove this once BE summary endpoint is completed
   remediationDetailsFull,
   remediationIssues,
 }) => {
