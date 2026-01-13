@@ -205,6 +205,7 @@ const RemediationDetails = () => {
             >
               <DetailsGeneralContent
                 details={remediationDetailsSummary}
+                remediationDetailsFull={remediationDetailsFull}
                 refetchAllRemediations={refetchAllRemediations}
                 onRename={setIsRenameModalOpen}
                 refetch={refetchRemediationDetails}

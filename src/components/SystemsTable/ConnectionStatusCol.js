@@ -109,12 +109,14 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
           onClick={handleLinkClick}
           style={{ padding: 0, fontSize: 'inherit', fontWeight: 'inherit' }}
         >
-          <p style={{ maxWidth: 'fit-content', margin: 0 }}>
+          <span style={{ maxWidth: 'fit-content', margin: 0 }}>
             {displayText}
-          </p>
+          </span>
         </Button>
       ) : (
-        <p style={{ maxWidth: 'fit-content', margin: 0 }}>{displayText}</p>
+        <span style={{ maxWidth: 'fit-content', margin: 0 }}>
+          {displayText}
+        </span>
       )}
     </Flex>
   );

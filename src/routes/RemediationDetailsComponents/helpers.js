@@ -143,6 +143,17 @@ export const getExecutionLimitsMessage = (limits) => {
 };
 
 /**
+ * Generate simple execution limits message for popover
+ *  @param   {object} limits - Result from calculateExecutionLimits
+ *  @returns {string}        Simple message: "Within limits" or "Exceeds limits"
+ */
+export const getExecutionLimitsPopoverMessage = (limits) => {
+  const { exceedsExecutionLimits } = limits;
+
+  return exceedsExecutionLimits ? 'Exceeds limits' : 'Within limits';
+};
+
+/**
  * Calculate error count for remediation readiness
  *  @param   {object}  params                        - Parameters object
  *  @param   {boolean} params.hasExecutePermission   - Whether user has execute permission

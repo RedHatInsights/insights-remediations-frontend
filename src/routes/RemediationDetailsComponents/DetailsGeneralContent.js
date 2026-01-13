@@ -13,6 +13,7 @@ import ProgressCard from './ProgressCard';
 
 const DetailsGeneralContent = ({
   details,
+  remediationDetailsFull,
   onRename,
   refetch,
   remediationStatus,
@@ -121,6 +122,7 @@ const DetailsGeneralContent = ({
             readyOrNot={canExecute}
             onNavigateToTab={onNavigateToTab}
             details={details}
+            remediationDetailsFull={remediationDetailsFull}
             remediationIssues={remediationIssues}
           />
         </GridItem>
@@ -131,6 +133,7 @@ const DetailsGeneralContent = ({
 
 DetailsGeneralContent.propTypes = {
   details: PropTypes.object.isRequired,
+  remediationDetailsFull: PropTypes.object,
   onRename: PropTypes.func.isRequired,
   refetch: PropTypes.func.isRequired,
   remediationStatus: PropTypes.object.isRequired,

@@ -153,7 +153,7 @@ const DetailsCard = ({
                 style={{ fontSize: 'var(--pf-t--global--font-size--sm)' }}
               />
               <span className="pf-v6-u-font-size-sm">
-                Auto-reboot:{rebootToggle ? 'On' : 'Off'}
+                Auto-reboot:{rebootToggle ? ' On' : ' Off'}
               </span>
             </Flex>
           </Flex>

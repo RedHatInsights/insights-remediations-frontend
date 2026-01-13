@@ -204,15 +204,23 @@ describe('OverViewPage', () => {
     renderPage();
     const row = await screen.findByRole('row', { name: /patch stuff/i });
     const kebab = within(row).getByRole('button', { name: /Kebab toggle/i });
+
+    // Click the kebab menu and wait for it to open
     await user.click(kebab);
 
-    const deleteItem = await screen.findByRole(
-      'menuitem',
-      { name: /delete/i },
+    // Wait for the menu to be fully rendered and visible before interacting
+    // This ensures the menu dropdown has completed its animation/rendering
+    const deleteItem = await waitFor(
+      () => {
+        const menuItem = screen.getByRole('menuitem', { name: /delete/i });
+        expect(menuItem).toBeVisible();
+        return menuItem;
+      },
       { timeout: 5000 },
     );
 
     await user.click(deleteItem);
+
     expect(
       await screen.findByRole('dialog', { name: /delete remediation plan/i }),
     ).toBeVisible();

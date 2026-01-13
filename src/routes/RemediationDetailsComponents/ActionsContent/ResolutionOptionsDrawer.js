@@ -267,7 +267,7 @@ const ResolutionOptionsDrawer = ({
 
 ResolutionOptionsDrawer.propTypes = {
   isOpen: PropTypes.bool.isRequired,
-  onExpand: PropTypes.func.isRequired,
+  onExpand: PropTypes.func,
   onClose: PropTypes.func.isRequired,
   issueId: PropTypes.string.isRequired,
   issueDescription: PropTypes.string,

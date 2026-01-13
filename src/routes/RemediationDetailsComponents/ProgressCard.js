@@ -24,6 +24,7 @@ import { pluralize } from '../../Utilities/utils';
 import {
   calculateExecutionLimits,
   getExecutionLimitsMessage,
+  getExecutionLimitsPopoverMessage,
   calculateReadinessErrorCount,
   renderStepTitleWithPopover,
 } from './helpers';
@@ -34,14 +35,17 @@ const ProgressCard = ({
   readyOrNot,
   onNavigateToTab,
   details,
+  remediationDetailsFull,
   remediationIssues,
 }) => {
   const [openPopover, setOpenPopover] = useState(null);
   const { quickStarts } = useChrome();
 
   const actionPoints = useMemo(() => {
-    return calculateActionPoints(remediationIssues);
-  }, [remediationIssues]);
+    // Use full remediation details issues if available, fallback to paginated issues
+    const issues = remediationDetailsFull?.issues || remediationIssues || [];
+    return calculateActionPoints(issues);
+  }, [remediationDetailsFull, remediationIssues]);
 
   const executionLimits = useMemo(() => {
     return calculateExecutionLimits(details, actionPoints);
@@ -52,6 +56,14 @@ const ProgressCard = ({
   const executionLimitsMessage = useMemo(() => {
     return getExecutionLimitsMessage(executionLimits);
   }, [executionLimits]);
+
+  const executionLimitsPopoverMessage = useMemo(() => {
+    return getExecutionLimitsPopoverMessage(executionLimits);
+  }, [executionLimits]);
+
+  const exceedsLimits = useMemo(() => {
+    return executionLimitsPopoverMessage === 'Exceeds limits';
+  }, [executionLimitsPopoverMessage]);
 
   const errorCount = useMemo(() => {
     return calculateReadinessErrorCount({
@@ -97,7 +109,7 @@ const ProgressCard = ({
         >
           Go to documentation
         </Button>
-        <Content component="p">{executionLimitsMessage}</Content>
+        <Content component="p">{executionLimitsPopoverMessage}</Content>
       </Flex>
     </Flex>
   );
@@ -299,7 +311,7 @@ const ProgressCard = ({
                 'Red Hat Lightspeed execution limits',
                 executionLimitsPopoverContent,
                 popoverState,
-                exceedsExecutionLimits,
+                exceedsLimits,
               )}
             </span>
           </ProgressStep>
@@ -435,6 +447,7 @@ ProgressCard.propTypes = {
   readyOrNot: PropTypes.bool,
   onNavigateToTab: PropTypes.func,
   details: PropTypes.object,
+  remediationDetailsFull: PropTypes.object,
   remediationIssues: PropTypes.array,
 };
 
