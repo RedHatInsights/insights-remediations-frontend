@@ -124,7 +124,6 @@ const DetailsGeneralContent = ({
             allRemediations={allRemediations}
             remediationPlaybookRuns={remediationPlaybookRuns}
             refetchAllRemediations={refetchAllRemediations}
-            remediationIssues={remediationIssues}
           />
         </GridItem>
         <GridItem span={12} md={6}>

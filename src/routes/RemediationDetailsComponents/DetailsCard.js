@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
@@ -20,6 +20,7 @@ import {
   Popover,
   FlexItem,
   Alert,
+  Skeleton,
 } from '@patternfly/react-core';
 import {
   CheckIcon,
@@ -35,6 +36,7 @@ import { execStatus } from './helpers';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import { useFeatureFlag } from '../../Utilities/Hooks/useFeatureFlag';
 import { pluralize } from '../../Utilities/utils';
+import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 
 const DetailsCard = ({
   details,
@@ -44,7 +46,6 @@ const DetailsCard = ({
   refetch,
   remediationPlaybookRuns,
   refetchAllRemediations,
-  remediationIssues,
 }) => {
   const isLightspeedRebrandEnabled = useFeatureFlag(
     'platform.lightspeed-rebrand',
@@ -52,7 +53,70 @@ const DetailsCard = ({
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(details?.name);
   const [rebootToggle, setRebootToggle] = useState(details?.auto_reboot);
+  const [hasResolutionsAvailable, setHasResolutionsAvailable] = useState(false);
+  const [isCheckingResolutions, setIsCheckingResolutions] = useState(true);
   const addNotification = useAddNotification();
+  //This is paginated, so we must loop through issues until we find a batch with multiple resolutions or we reach the end of the issues.
+  const { fetch: fetchRemediationIssues } = useRemediations(
+    'getRemediationIssues',
+    {
+      skip: true,
+      batched: true,
+      batch: { batchSize: 50 },
+    },
+  );
+
+  const checkResolutionsAvailable = useCallback(async () => {
+    if (!details?.id) {
+      setIsCheckingResolutions(false);
+      return;
+    }
+
+    setIsCheckingResolutions(true);
+    const BATCH_SIZE = 50;
+    let offset = 0;
+    let foundMultipleResolutions = false;
+
+    try {
+      while (!foundMultipleResolutions) {
+        const response = await fetchRemediationIssues({
+          id: details.id,
+          limit: BATCH_SIZE,
+          offset: offset,
+        });
+
+        const issues = response?.data || [];
+        const total = response?.meta?.total || 0;
+
+        // Check if any issue in this batch has multiple resolutions
+        foundMultipleResolutions = issues.some(
+          (issue) => issue?.resolutions_available > 1,
+        );
+
+        if (foundMultipleResolutions) {
+          setHasResolutionsAvailable(true);
+          setIsCheckingResolutions(false);
+          return;
+        }
+
+        // Check if we've fetched all issues
+        offset += issues.length;
+        if (offset >= total || issues.length === 0) {
+          setHasResolutionsAvailable(false);
+          setIsCheckingResolutions(false);
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('Error checking resolutions:', error);
+      setHasResolutionsAvailable(false);
+      setIsCheckingResolutions(false);
+    }
+  }, [details?.id, fetchRemediationIssues]);
+
+  useEffect(() => {
+    checkResolutionsAvailable();
+  }, [checkResolutionsAvailable]);
 
   useEffect(() => {
     setValue(details?.name || '');
@@ -122,9 +186,6 @@ const DetailsCard = ({
   };
 
   const formatedDate = new Date(remediationPlaybookRuns?.updated_at);
-  const hasResolutionsAvailable = remediationIssues?.some(
-    (issue) => issue?.resolutions_available > 1,
-  );
 
   return (
     <Card isFullHeight>
@@ -314,13 +375,21 @@ const DetailsCard = ({
                     details?.issue_count !== 1 ? 's' : ''
                   }`}
                 </Button>
-                {hasResolutionsAvailable && (
-                  <Alert
-                    isInline
-                    isPlain
-                    variant="info"
-                    title="Resolution options are available."
+                {isCheckingResolutions ? (
+                  <Skeleton
+                    height="1.5rem"
+                    width="200px"
+                    screenreaderText="Checking for resolution options"
                   />
+                ) : (
+                  hasResolutionsAvailable && (
+                    <Alert
+                      isInline
+                      isPlain
+                      variant="info"
+                      title="Resolution options are available."
+                    />
+                  )
                 )}
               </Flex>
             </DescriptionListDescription>
@@ -387,7 +456,6 @@ DetailsCard.propTypes = {
   refetch: PropTypes.func,
   remediationPlaybookRuns: PropTypes.object,
   refetchAllRemediations: PropTypes.func,
-  remediationIssues: PropTypes.array,
 };
 
 export default DetailsCard;
