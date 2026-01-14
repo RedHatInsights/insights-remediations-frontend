@@ -69,7 +69,16 @@ jest.mock('@patternfly/react-core', () => ({
 
 describe('DetailsGeneralContent', () => {
   const defaultProps = {
-    details: jest.fn(),
+    details: {
+      id: 'rem-1',
+      name: 'Test Remediation',
+      issue_count: 0,
+      system_count: 5,
+      issue_count_details: {},
+      auto_reboot: true,
+      created_at: '2023-01-01T00:00:00Z',
+      updated_at: '2023-01-01T00:00:00Z',
+    },
     onRename: jest.fn(),
     refetch: jest.fn(),
     remediationStatus: {

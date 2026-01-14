@@ -19,7 +19,7 @@ import {
 } from '@patternfly/react-icons';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
-import { calculateActionPoints } from '../../components/helpers';
+import { calculateActionPointsFromSummary } from '../../components/helpers';
 import { pluralize } from '../../Utilities/utils';
 import {
   calculateExecutionLimits,
@@ -35,18 +35,13 @@ const ProgressCard = ({
   readyOrNot,
   onNavigateToTab,
   details,
-  // TODO: Remove this once BE summary endpoint is completed
-  remediationDetailsFull,
-  remediationIssues,
 }) => {
   const [openPopover, setOpenPopover] = useState(null);
   const { quickStarts } = useChrome();
 
   const actionPoints = useMemo(() => {
-    // Use full remediation details issues if available, fallback to paginated issues
-    const issues = remediationDetailsFull?.issues || remediationIssues || [];
-    return calculateActionPoints(issues);
-  }, [remediationDetailsFull, remediationIssues]);
+    return calculateActionPointsFromSummary(details?.issue_count_details);
+  }, [details?.issue_count_details]);
 
   const executionLimits = useMemo(() => {
     return calculateExecutionLimits(details, actionPoints);
@@ -448,8 +443,6 @@ ProgressCard.propTypes = {
   readyOrNot: PropTypes.bool,
   onNavigateToTab: PropTypes.func,
   details: PropTypes.object,
-  remediationDetailsFull: PropTypes.object,
-  remediationIssues: PropTypes.array,
 };
 
 export default ProgressCard;

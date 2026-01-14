@@ -149,7 +149,34 @@ export const renderPreviewAlert = ({
   );
 };
 
+// Calculates action points from summary endpoint's issue_count_details object.
+// Used for existing remediations fetched via summary endpoint.
+// Points per action type: advisor (20 pts), vulnerabilities (20 pts), patch-advisory (2 pts), patch-package (2 pts), ssg (5 pts)
+export const calculateActionPointsFromSummary = (issueCountDetails) => {
+  if (!issueCountDetails || typeof issueCountDetails !== 'object') {
+    return 0;
+  }
+
+  const POINTS_MAP = {
+    advisor: 20,
+    vulnerabilities: 20,
+    'patch-advisory': 2,
+    'patch-package': 2,
+    ssg: 5,
+  };
+
+  let totalPoints = 0;
+  for (const [issueType, count] of Object.entries(issueCountDetails)) {
+    const points = POINTS_MAP[issueType] || 0;
+    totalPoints += points * (count || 0);
+  }
+
+  return totalPoints;
+};
+
 // Calculates action points from an array of issues based on their application type.
+// Used only for new data being added (normalizedData from other apps), not for existing remediations.
+// For existing remediations, always use calculateActionPointsFromSummary with summary endpoint data.
 // Points per action type: Advisor (20 pts), Vulnerability (20 pts), Patch (2 pts), Compliance (5 pts)
 export const calculateActionPoints = (issues) => {
   if (!issues || !Array.isArray(issues)) {
@@ -170,71 +197,24 @@ export const calculateActionPoints = (issues) => {
   }, 0);
 };
 
-// Calculate action points from both remediationDetailsSummary and normalizedData, deduplicating issues by ID
-export const calculateActionPointsFromBoth = (
+// Merges counts from summary endpoint with normalizedData (new data being added)
+// Returns { actionsCount, systemsCount, issuesCount }
+export const mergeSummaryWithNormalizedData = (
   remediationDetailsSummary,
   normalizedData,
 ) => {
-  const issuesMap = new Map();
+  // Get counts from existing plan (summary endpoint)
+  const existingActionPoints = calculateActionPointsFromSummary(
+    remediationDetailsSummary?.issue_count_details,
+  );
+  const existingSystemsCount = remediationDetailsSummary?.system_count || 0;
+  const existingIssuesCount = remediationDetailsSummary?.issue_count || 0;
 
-  // Add issues from existing remediation plan
-  if (
-    remediationDetailsSummary?.issues &&
-    Array.isArray(remediationDetailsSummary.issues)
-  ) {
-    remediationDetailsSummary.issues.forEach((issue) => {
-      if (issue.id) {
-        issuesMap.set(issue.id, issue);
-      }
-    });
-  }
+  // Calculate counts from new data being added
+  const newActionPoints = calculateActionPoints(normalizedData?.issues || []);
 
-  // Add issues from normalizedData (new data being added)
-  if (normalizedData?.issues && Array.isArray(normalizedData.issues)) {
-    normalizedData.issues.forEach((issue) => {
-      if (issue.id) {
-        // If issue already exists, keep the existing one (don't overwrite)
-        // This ensures we don't count duplicates
-        if (!issuesMap.has(issue.id)) {
-          issuesMap.set(issue.id, issue);
-        }
-      }
-    });
-  }
-
-  // Calculate action points from deduplicated issues
-  const uniqueIssues = Array.from(issuesMap.values());
-  return calculateActionPoints(uniqueIssues);
-};
-
-// Counts unique systems from remediation details summary (systems nested within issues)
-// Count unique systems from both remediationDetailsSummary and normalizedData, deduplicating across both
-export const countUniqueSystemsFromBoth = (
-  remediationDetailsSummary,
-  normalizedData,
-) => {
+  // Count unique systems from normalizedData
   const systemsSet = new Set();
-
-  // Add systems from existing remediation plan
-  if (
-    remediationDetailsSummary?.issues &&
-    Array.isArray(remediationDetailsSummary.issues)
-  ) {
-    remediationDetailsSummary.issues.forEach((issue) => {
-      if (issue.systems && Array.isArray(issue.systems)) {
-        issue.systems.forEach((system) => {
-          // Systems can be objects with id property or strings
-          const systemId = typeof system === 'string' ? system : system.id;
-          if (systemId) {
-            systemsSet.add(systemId);
-          }
-        });
-      }
-    });
-  }
-
-  // Add systems from normalizedData (new data being added)
-  // Handle two formats: flat systems array or nested systems within issues
   if (normalizedData) {
     // Format 1: Flat systems array
     if (normalizedData.systems && Array.isArray(normalizedData.systems)) {
@@ -260,30 +240,10 @@ export const countUniqueSystemsFromBoth = (
       });
     }
   }
+  const newSystemsCount = systemsSet.size;
 
-  return systemsSet.size;
-};
-
-// Count unique issues from both remediationDetailsSummary and normalizedData, deduplicating by ID
-export const countUniqueIssuesFromBoth = (
-  remediationDetailsSummary,
-  normalizedData,
-) => {
+  // Count unique issues by ID from normalizedData
   const issuesSet = new Set();
-
-  // Add issues from existing remediation plan
-  if (
-    remediationDetailsSummary?.issues &&
-    Array.isArray(remediationDetailsSummary.issues)
-  ) {
-    remediationDetailsSummary.issues.forEach((issue) => {
-      if (issue.id) {
-        issuesSet.add(issue.id);
-      }
-    });
-  }
-
-  // Add issues from normalizedData (new data being added)
   if (normalizedData?.issues && Array.isArray(normalizedData.issues)) {
     normalizedData.issues.forEach((issue) => {
       if (issue.id) {
@@ -291,8 +251,16 @@ export const countUniqueIssuesFromBoth = (
       }
     });
   }
+  const uniqueNewIssuesCount = issuesSet.size;
 
-  return issuesSet.size;
+  // Merge: add new counts to existing counts
+  // Note: This assumes no overlap between existing plan and new data
+  // If there is overlap, the backend will handle deduplication
+  return {
+    actionsCount: existingActionPoints + newActionPoints,
+    systemsCount: existingSystemsCount + newSystemsCount,
+    issuesCount: existingIssuesCount + uniqueNewIssuesCount,
+  };
 };
 
 // Normalize data because different apps send data differently
@@ -469,7 +437,13 @@ export const handleRemediationSubmit = async ({
       collectedErrors.push(...errorTitles);
       // Report progress after failure
       if (onProgress) {
-        onProgress(totalBatches, successfulBatches, failedBatches, collectedErrors, true);
+        onProgress(
+          totalBatches,
+          successfulBatches,
+          failedBatches,
+          collectedErrors,
+          true,
+        );
       }
       return {
         success: false,
@@ -514,7 +488,13 @@ export const handleRemediationSubmit = async ({
         failedBatches++;
         // Report progress after failure
         if (onProgress) {
-          onProgress(totalBatches, successfulBatches, failedBatches, collectedErrors, true);
+          onProgress(
+            totalBatches,
+            successfulBatches,
+            failedBatches,
+            collectedErrors,
+            true,
+          );
         }
         return {
           success: false,
@@ -530,7 +510,13 @@ export const handleRemediationSubmit = async ({
     // Report progress after first batch (not complete yet)
     if (onProgress) {
       const isComplete = batches.length === 1;
-      onProgress(totalBatches, successfulBatches, failedBatches, collectedErrors, isComplete);
+      onProgress(
+        totalBatches,
+        successfulBatches,
+        failedBatches,
+        collectedErrors,
+        isComplete,
+      );
     }
   } catch (error) {
     // Initial request failed - complete failure
@@ -540,7 +526,13 @@ export const handleRemediationSubmit = async ({
     collectedErrors.push(...errorTitles);
     // Report progress after failure
     if (onProgress) {
-      onProgress(totalBatches, successfulBatches, failedBatches, collectedErrors, true);
+      onProgress(
+        totalBatches,
+        successfulBatches,
+        failedBatches,
+        collectedErrors,
+        true,
+      );
     }
     return {
       success: false,
@@ -579,7 +571,13 @@ export const handleRemediationSubmit = async ({
     // Report progress after each batch (not complete until last batch)
     if (onProgress) {
       const isComplete = i === batches.length - 1;
-      onProgress(totalBatches, successfulBatches, failedBatches, collectedErrors, isComplete);
+      onProgress(
+        totalBatches,
+        successfulBatches,
+        failedBatches,
+        collectedErrors,
+        isComplete,
+      );
     }
   }
 
@@ -618,6 +616,9 @@ export const handleRemediationSubmit = async ({
 
 // Prepares playbook preview payload by merging existing remediation with new data
 // Returns payload in format: { issues: [{ id, systems: [], resolution?: string }], auto_reboot: boolean }
+// Note: remediationDetailsSummary may be from summary endpoint (no issues array) or full details (with issues array)
+// If summary endpoint is used and there are existing issues, they won't be included in the preview
+// For preview with existing issues, full details endpoint would be needed
 export const preparePlaybookPreviewPayload = ({
   isExistingPlanSelected,
   remediationDetailsSummary,

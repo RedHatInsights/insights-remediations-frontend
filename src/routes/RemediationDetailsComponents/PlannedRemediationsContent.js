@@ -13,16 +13,13 @@ import {
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { PlanSummaryCharts } from '../../components/RemediationWizardV2/PlanSummaryCharts';
-import { calculateActionPoints } from '../../components/helpers';
+import { calculateActionPointsFromSummary } from '../../components/helpers';
 import ActionsContent from './ActionsContent/ActionsContent';
 import SystemsTable from '../../components/SystemsTable/SystemsTable';
 import './PlannedRemediationsContent.scss';
 
 const PlannedRemediationsContent = ({
   remediationDetailsSummary,
-  // TODO: Remove this once BE summary endpoint is completed
-  remediationDetailsFull,
-  remediationIssues,
   remediationStatus,
   refetchRemediationDetails,
   refetchConnectionStatus,
@@ -38,22 +35,20 @@ const PlannedRemediationsContent = ({
     setNestedActiveTab(initialNestedTab);
   }, [initialNestedTab]);
 
-  // Use remediationDetailsFull.issues (full list) instead of remediationIssues.data (paginated, max 10)
+  // Use summary endpoint data for counts
   const { actionsCount, systemsCount, issuesCount } = useMemo(() => {
-    // Prefer full remediation details issues, fallback to paginated issues
-    const issues =
-      remediationDetailsFull?.issues || remediationIssues?.data || [];
-    const actionsPoints = calculateActionPoints(issues);
+    const actionsPoints = calculateActionPointsFromSummary(
+      remediationDetailsSummary?.issue_count_details,
+    );
     const systems = remediationDetailsSummary?.system_count || 0;
-    // Use total from meta if available, otherwise use issues array length
-    const issuesTotal = remediationIssues?.meta?.total || issues.length;
+    const issuesTotal = remediationDetailsSummary?.issue_count || 0;
 
     return {
       actionsCount: actionsPoints,
       systemsCount: systems,
       issuesCount: issuesTotal,
     };
-  }, [remediationDetailsFull, remediationIssues, remediationDetailsSummary]);
+  }, [remediationDetailsSummary]);
 
   // Check if limits are exceeded
   const ACTIONS_MAX = 1000;
@@ -167,8 +162,6 @@ const PlannedRemediationsContent = ({
 
 PlannedRemediationsContent.propTypes = {
   remediationDetailsSummary: PropTypes.object,
-  remediationDetailsFull: PropTypes.object,
-  remediationIssues: PropTypes.object,
   remediationStatus: PropTypes.object,
   refetchRemediationDetails: PropTypes.func,
   refetchConnectionStatus: PropTypes.func,

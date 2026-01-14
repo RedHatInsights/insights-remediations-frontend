@@ -22,15 +22,13 @@ import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import { RemediationsPopover } from '../../routes/RemediationsPopover';
 import {
   calculateActionPoints,
-  calculateActionPointsFromBoth,
+  mergeSummaryWithNormalizedData,
   handleRemediationSubmit,
   renderExceedsLimitsAlert,
   renderPreviewAlert,
   wizardHelperText,
   normalizeRemediationData,
   navigateToRemediation,
-  countUniqueSystemsFromBoth,
-  countUniqueIssuesFromBoth,
   preparePlaybookPreviewPayload,
 } from '../helpers';
 import { remediationUrl } from '../../Utilities/utils';
@@ -90,9 +88,8 @@ export const RemediationWizardV2 = ({
     playbookSelect;
 
   const { result: remediationDetailsSummary, loading: detailsLoading } =
-    //dont use summary format to calculate action points
     useRemediations('getRemediation', {
-      params: { id: selected },
+      params: { id: selected, format: 'summary' },
       skip: !isExistingPlanSelected || !isOpen,
     });
 
@@ -129,28 +126,15 @@ export const RemediationWizardV2 = ({
     const baseSystemsCount = normalizedData?.systems?.length ?? 0;
 
     if (isExistingPlanSelected && remediationDetailsSummary) {
-      // Existing plan selected: merge plan's counts with data prop counts
-      // Calculate action points from both sources, deduplicating issues by ID
-      const uniqueActionsPoints = calculateActionPointsFromBoth(
+      // Existing plan selected: merge plan's counts (from summary endpoint) with data prop counts
+      const mergedCounts = mergeSummaryWithNormalizedData(
         remediationDetailsSummary,
         normalizedData,
       );
 
-      // Count unique systems from both sources, deduplicating across both
-      const uniqueSystemsCount = countUniqueSystemsFromBoth(
-        remediationDetailsSummary,
-        normalizedData,
-      );
-
-      // Count unique issues from both sources
-      const uniqueIssuesCount = countUniqueIssuesFromBoth(
-        remediationDetailsSummary,
-        normalizedData,
-      );
-
-      setActionsCount(uniqueActionsPoints);
-      setSystemsCount(uniqueSystemsCount);
-      setIssuesCount(uniqueIssuesCount);
+      setActionsCount(mergedCounts.actionsCount);
+      setSystemsCount(mergedCounts.systemsCount);
+      setIssuesCount(mergedCounts.issuesCount);
     } else {
       // Creating new plan, no plan selected, or loading: use counts from data prop
       // Handle both data formats: flat systems array or nested systems within issues

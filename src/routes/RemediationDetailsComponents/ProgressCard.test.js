@@ -263,8 +263,9 @@ describe('ProgressCard', () => {
       onNavigateToTab: mockOnNavigateToTab,
       details: {
         system_count: 0,
+        issue_count: 0,
+        issue_count_details: {},
       },
-      remediationIssues: [],
     };
   });
 

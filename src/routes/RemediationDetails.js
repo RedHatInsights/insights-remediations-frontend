@@ -57,12 +57,6 @@ const RemediationDetails = () => {
     params: { id, format: 'summary' },
   });
 
-  // TODO: Remove this once BE summary endpoint is completed
-  // This is temporarily needed because getRemediationIssues is paginated (max 10 items).
-  const { result: remediationDetailsFull } = useRemediations('getRemediation', {
-    params: { id },
-  });
-
   const {
     result: remediationPlaybookRuns,
     loading: isPlaybookRunsLoading,
@@ -70,14 +64,6 @@ const RemediationDetails = () => {
   } = useRemediations('listPlaybookRuns', {
     params: { id },
   });
-
-  const { result: remediationIssues } = useRemediations(
-    'getRemediationIssues',
-    {
-      params: { id },
-      useTableState: false,
-    },
-  );
 
   const { fetch: updateRemPlan } = useRemediations(updateRemediationWrapper, {
     skip: true,
@@ -206,7 +192,6 @@ const RemediationDetails = () => {
             >
               <DetailsGeneralContent
                 details={remediationDetailsSummary}
-                remediationDetailsFull={remediationDetailsFull}
                 refetchAllRemediations={refetchAllRemediations}
                 onRename={setIsRenameModalOpen}
                 refetch={refetchRemediationDetails}
@@ -217,7 +202,6 @@ const RemediationDetails = () => {
                 permissions={context.permissions}
                 remediationPlaybookRuns={remediationPlaybookRuns?.data[0]}
                 detailsLoading={detailsLoading}
-                remediationIssues={remediationIssues?.data}
               />
             </Tab>
             <Tab
@@ -227,8 +211,6 @@ const RemediationDetails = () => {
             >
               <PlannedRemediationsContent
                 remediationDetailsSummary={remediationDetailsSummary}
-                remediationDetailsFull={remediationDetailsFull}
-                remediationIssues={remediationIssues}
                 remediationStatus={remediationStatus}
                 refetchRemediationDetails={refetchRemediationDetails}
                 refetchConnectionStatus={refetchConnectionStatus}

@@ -6,14 +6,13 @@ import {
   GridItem,
 } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
-import { calculateActionPoints } from '../../components/helpers';
+import { calculateActionPointsFromSummary } from '../../components/helpers';
 import { calculateExecutionLimits } from './helpers';
 import DetailsCard from './DetailsCard';
 import ProgressCard from './ProgressCard';
 
 const DetailsGeneralContent = ({
   details,
-  remediationDetailsFull,
   onRename,
   refetch,
   remediationStatus,
@@ -24,7 +23,6 @@ const DetailsGeneralContent = ({
   remediationPlaybookRuns,
   refetchAllRemediations,
   detailsLoading,
-  remediationIssues,
 }) => {
   const canExecute =
     permissions?.execute &&
@@ -36,10 +34,8 @@ const DetailsGeneralContent = ({
   const shouldShowAlert = !isStillLoading && !canExecute;
 
   const actionPoints = useMemo(() => {
-    // TODO: Remove remediationDetailsFull when BE summary endpoint is completed
-    const issues = remediationDetailsFull?.issues || remediationIssues || [];
-    return calculateActionPoints(issues);
-  }, [remediationDetailsFull, remediationIssues]);
+    return calculateActionPointsFromSummary(details?.issue_count_details);
+  }, [details?.issue_count_details]);
 
   const executionLimits = useMemo(() => {
     return calculateExecutionLimits(details, actionPoints);
@@ -133,8 +129,6 @@ const DetailsGeneralContent = ({
             readyOrNot={canExecute}
             onNavigateToTab={onNavigateToTab}
             details={details}
-            remediationDetailsFull={remediationDetailsFull}
-            remediationIssues={remediationIssues}
           />
         </GridItem>
       </Grid>
@@ -144,7 +138,6 @@ const DetailsGeneralContent = ({
 
 DetailsGeneralContent.propTypes = {
   details: PropTypes.object.isRequired,
-  remediationDetailsFull: PropTypes.object,
   onRename: PropTypes.func.isRequired,
   refetch: PropTypes.func.isRequired,
   remediationStatus: PropTypes.object.isRequired,
@@ -155,7 +148,6 @@ DetailsGeneralContent.propTypes = {
   remediationPlaybookRuns: PropTypes.any,
   refetchAllRemediations: PropTypes.func,
   detailsLoading: PropTypes.bool,
-  remediationIssues: PropTypes.array,
 };
 
 export default DetailsGeneralContent;
