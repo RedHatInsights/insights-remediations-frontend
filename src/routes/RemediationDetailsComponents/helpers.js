@@ -131,11 +131,11 @@ export const getExecutionLimitsMessage = (limits) => {
   let message = `Exceeds limits. To execute in Red Hat Lightspeed remove `;
 
   if (exceedsSystemsLimit && exceedsActionsLimit) {
-    message += `${systemsToRemove} or more systems, as well as ${actionsToRemove} or more actions from the plan.`;
+    message += `${systemsToRemove} or more systems, as well as ${actionsToRemove} or more action points from the plan.`;
   } else if (exceedsSystemsLimit) {
     message += `${systemsToRemove} or more systems from the plan.`;
   } else if (exceedsActionsLimit) {
-    message += `${actionsToRemove} or more actions from the plan.`;
+    message += `${actionsToRemove} or more action points from the plan.`;
   }
 
   return message;

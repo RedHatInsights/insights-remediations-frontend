@@ -176,9 +176,10 @@ const ModalStatusContent = ({
                 title="Unknown error"
                 className="pf-v6-u-mb-md"
               >
-                <p>{baseMessage}</p>
+                <p>
+                  {baseMessage} {closingMessage}
+                </p>
                 {errorList}
-                <p>{closingMessage}</p>
               </Alert>
             </div>
           </ModalBody>
@@ -241,9 +242,7 @@ const ModalStatusContent = ({
                 aria-label={`Progress: ${progressPercentage}%`}
                 className="pf-v6-u-mb-sm"
               />
-              <div className="pf-v6-u-text-align-right pf-v6-u-mb-md">
-                {progressPercentage}%
-              </div>
+
               <Alert
                 variant="warning"
                 isInline

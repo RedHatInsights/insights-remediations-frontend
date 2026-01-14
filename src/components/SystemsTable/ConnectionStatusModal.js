@@ -55,9 +55,19 @@ const ConnectionStatusModal = ({
           Ask your satellite administrator to navigate to the satellite&apos;s
           Inventory Upload page and execute the Configure Cloud Connector, Sync
           inventory status, and Restart jobs. In addition, visit{' '}
-          https://console.redhat.com/settings/integrations and ensure the
-          satellite is available; if not, execute systemctl restart rhcd.service
-          on the satellite.
+          <a
+            href="https://console.redhat.com/settings/integrations"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              textDecoration: 'none',
+              color: 'var(--pf-v6-global--link--Color)',
+            }}
+          >
+            https://console.redhat.com/settings/integrations
+          </a>{' '}
+          and ensure the satellite is available; if not, execute systemctl{' '}
+          restart rhcd.service on the satellite.
         </>
       );
       icon = <DisconnectedIcon />;
@@ -87,9 +97,19 @@ const ConnectionStatusModal = ({
           ask your satellite administrator to navigate to the satellite&apos;s
           Inventory Upload page and execute the Configure Cloud Connector, Sync
           inventory status, and Restart jobs. In addition, visit{' '}
-          https://console.redhat.com/settings/integrations and ensure that the
-          satellite is available; if not, execute systemctl restart rhcd.service
-          on the satellite.
+          <a
+            href="https://console.redhat.com/settings/integrations"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              textDecoration: 'none',
+              color: 'var(--pf-v6-global--link--Color)',
+            }}
+          >
+            https://console.redhat.com/settings/integrations
+          </a>{' '}
+          and ensure that the satellite is available; if not, execute systemctl{' '}
+          restart rhcd.service on the satellite.
         </p>
       </>
     );
