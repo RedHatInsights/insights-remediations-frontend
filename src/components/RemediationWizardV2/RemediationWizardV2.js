@@ -22,13 +22,15 @@ import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import { RemediationsPopover } from '../../routes/RemediationsPopover';
 import {
   calculateActionPoints,
-  mergeSummaryWithNormalizedData,
+  calculateActionPointsFromBoth,
   handleRemediationSubmit,
   renderExceedsLimitsAlert,
   renderPreviewAlert,
   wizardHelperText,
   normalizeRemediationData,
   navigateToRemediation,
+  countUniqueSystemsFromBoth,
+  countUniqueIssuesFromBoth,
   preparePlaybookPreviewPayload,
 } from '../helpers';
 import { remediationUrl } from '../../Utilities/utils';
@@ -127,16 +129,28 @@ export const RemediationWizardV2 = ({
     const baseSystemsCount = normalizedData?.systems?.length ?? 0;
 
     if (isExistingPlanSelected && remediationDetailsSummary) {
-      // Existing plan selected: merge plan's counts (from full remediation endpoint) with data prop counts
-      // Deduplicates to avoid double-counting when the same issue/system is already in the plan
-      const mergedCounts = mergeSummaryWithNormalizedData(
+      // Existing plan selected: merge plan's counts with data prop counts
+      // Calculate action points from both sources, deduplicating issues by ID
+      const uniqueActionsPoints = calculateActionPointsFromBoth(
         remediationDetailsSummary,
         normalizedData,
       );
 
-      setActionsCount(mergedCounts.actionsCount);
-      setSystemsCount(mergedCounts.systemsCount);
-      setIssuesCount(mergedCounts.issuesCount);
+      // Count unique systems from both sources, deduplicating across both
+      const uniqueSystemsCount = countUniqueSystemsFromBoth(
+        remediationDetailsSummary,
+        normalizedData,
+      );
+
+      // Count unique issues from both sources
+      const uniqueIssuesCount = countUniqueIssuesFromBoth(
+        remediationDetailsSummary,
+        normalizedData,
+      );
+
+      setActionsCount(uniqueActionsPoints);
+      setSystemsCount(uniqueSystemsCount);
+      setIssuesCount(uniqueIssuesCount);
     } else {
       // Creating new plan, no plan selected, or loading: use counts from data prop
       // Handle both data formats: flat systems array or nested systems within issues

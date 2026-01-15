@@ -12,7 +12,7 @@ import {
 } from '@patternfly/react-core';
 import { DownloadIcon } from '@patternfly/react-icons';
 import React from 'react';
-import { getIssueApplication } from '../Utilities/model';
+import { getIssuePrefix } from '../Utilities/model';
 import { createRemediationBatches, remediationUrl } from '../Utilities/utils';
 
 export const wizardHelperText = (exceedsLimits) => {
@@ -149,9 +149,6 @@ export const renderPreviewAlert = ({
   );
 };
 
-// Calculates action points from summary endpoint's issue_count_details object.
-// Used for existing remediations fetched via summary endpoint.
-// Points per action type: advisor (20 pts), vulnerabilities (20 pts), patch-advisory (2 pts), patch-package (2 pts), ssg (5 pts)
 export const calculateActionPointsFromSummary = (issueCountDetails) => {
   if (!issueCountDetails || typeof issueCountDetails !== 'object') {
     return 0;
@@ -173,10 +170,7 @@ export const calculateActionPointsFromSummary = (issueCountDetails) => {
 
   return totalPoints;
 };
-
 // Calculates action points from an array of issues based on their application type.
-// Used only for new data being added (normalizedData from other apps), not for existing remediations.
-// For existing remediations, always use calculateActionPointsFromSummary with summary endpoint data.
 // Points per action type: Advisor (20 pts), Vulnerability (20 pts), Patch (2 pts), Compliance (5 pts)
 export const calculateActionPoints = (issues) => {
   if (!issues || !Array.isArray(issues)) {
@@ -184,33 +178,33 @@ export const calculateActionPoints = (issues) => {
   }
 
   const POINTS_MAP = {
-    Advisor: 20,
-    Vulnerability: 20,
-    Patch: 2,
-    Compliance: 5,
+    advisor: 20,
+    vulnerabilities: 20,
+    'patch-advisory': 2,
+    'patch-package': 2,
+    ssg: 5,
   };
 
   return issues.reduce((totalPoints, issue) => {
-    const application = getIssueApplication(issue);
-    const points = POINTS_MAP[application] || 0;
+    const prefix = getIssuePrefix(issue.id);
+    const points = POINTS_MAP[prefix] || 0;
     return totalPoints + points;
   }, 0);
 };
 
-// Merges counts from full remediation endpoint with normalizedData (new data being added)
-// Deduplicates to avoid double-counting when the same issue/system is already in the plan
-// Returns { actionsCount, systemsCount, issuesCount }
-export const mergeSummaryWithNormalizedData = (
-  remediationDetails,
+// Calculate action points from both remediationDetailsSummary and normalizedData, deduplicating issues by ID
+export const calculateActionPointsFromBoth = (
+  remediationDetailsSummary,
   normalizedData,
 ) => {
-  // Merge issues from both sources, deduplicating by ID
-  // Use Map to preserve issue objects for action points calculation
   const issuesMap = new Map();
 
-  // Add issues from existing remediation plan first
-  if (remediationDetails?.issues && Array.isArray(remediationDetails.issues)) {
-    remediationDetails.issues.forEach((issue) => {
+  // Add issues from existing remediation plan
+  if (
+    remediationDetailsSummary?.issues &&
+    Array.isArray(remediationDetailsSummary.issues)
+  ) {
+    remediationDetailsSummary.issues.forEach((issue) => {
       if (issue.id) {
         issuesMap.set(issue.id, issue);
       }
@@ -232,14 +226,23 @@ export const mergeSummaryWithNormalizedData = (
 
   // Calculate action points from deduplicated issues
   const uniqueIssues = Array.from(issuesMap.values());
-  const actionsCount = calculateActionPoints(uniqueIssues);
+  return calculateActionPoints(uniqueIssues);
+};
 
-  // Count unique systems from both sources, deduplicating across both
+// Counts unique systems from remediation details summary (systems nested within issues)
+// Count unique systems from both remediationDetailsSummary and normalizedData, deduplicating across both
+export const countUniqueSystemsFromBoth = (
+  remediationDetailsSummary,
+  normalizedData,
+) => {
   const systemsSet = new Set();
 
   // Add systems from existing remediation plan
-  if (remediationDetails?.issues && Array.isArray(remediationDetails.issues)) {
-    remediationDetails.issues.forEach((issue) => {
+  if (
+    remediationDetailsSummary?.issues &&
+    Array.isArray(remediationDetailsSummary.issues)
+  ) {
+    remediationDetailsSummary.issues.forEach((issue) => {
       if (issue.systems && Array.isArray(issue.systems)) {
         issue.systems.forEach((system) => {
           // Systems can be objects with id property or strings
@@ -248,19 +251,6 @@ export const mergeSummaryWithNormalizedData = (
             systemsSet.add(systemId);
           }
         });
-      }
-    });
-  }
-
-  // Also check flat systems array from remediationDetails if present
-  if (
-    remediationDetails?.systems &&
-    Array.isArray(remediationDetails.systems)
-  ) {
-    remediationDetails.systems.forEach((system) => {
-      const systemId = typeof system === 'string' ? system : system.id;
-      if (systemId) {
-        systemsSet.add(systemId);
       }
     });
   }
@@ -293,14 +283,22 @@ export const mergeSummaryWithNormalizedData = (
     }
   }
 
-  const systemsCount = systemsSet.size;
+  return systemsSet.size;
+};
 
-  // Count unique issues from both sources, deduplicating by ID
+// Count unique issues from both remediationDetailsSummary and normalizedData, deduplicating by ID
+export const countUniqueIssuesFromBoth = (
+  remediationDetailsSummary,
+  normalizedData,
+) => {
   const issuesSet = new Set();
 
   // Add issues from existing remediation plan
-  if (remediationDetails?.issues && Array.isArray(remediationDetails.issues)) {
-    remediationDetails.issues.forEach((issue) => {
+  if (
+    remediationDetailsSummary?.issues &&
+    Array.isArray(remediationDetailsSummary.issues)
+  ) {
+    remediationDetailsSummary.issues.forEach((issue) => {
       if (issue.id) {
         issuesSet.add(issue.id);
       }
@@ -316,13 +314,7 @@ export const mergeSummaryWithNormalizedData = (
     });
   }
 
-  const issuesCount = issuesSet.size;
-
-  return {
-    actionsCount,
-    systemsCount,
-    issuesCount,
-  };
+  return issuesSet.size;
 };
 
 // Normalize data because different apps send data differently
@@ -678,9 +670,6 @@ export const handleRemediationSubmit = async ({
 
 // Prepares playbook preview payload by merging existing remediation with new data
 // Returns payload in format: { issues: [{ id, systems: [], resolution?: string }], auto_reboot: boolean }
-// Note: remediationDetailsSummary may be from summary endpoint (no issues array) or full details (with issues array)
-// If summary endpoint is used and there are existing issues, they won't be included in the preview
-// For preview with existing issues, full details endpoint would be needed
 export const preparePlaybookPreviewPayload = ({
   isExistingPlanSelected,
   remediationDetailsSummary,
