@@ -186,9 +186,7 @@ jest.mock('@patternfly/react-core', () => ({
         aria-label={ariaLabel}
         {...props}
       >
-        {isVisible && (
-          <div data-testid="popover-content">{bodyContent}</div>
-        )}
+        {isVisible && <div data-testid="popover-content">{bodyContent}</div>}
         {children}
       </div>
     );
@@ -331,7 +329,9 @@ describe('ProgressCard', () => {
         'h4',
       );
       expect(screen.getByTestId('title')).toHaveAttribute('data-size', 'xl');
-      expect(screen.getByText('Execution readiness summary')).toBeInTheDocument();
+      expect(
+        screen.getByText('Execution readiness summary'),
+      ).toBeInTheDocument();
     });
 
     it('should render card body with description', () => {
@@ -339,7 +339,9 @@ describe('ProgressCard', () => {
 
       expect(screen.getByTestId('card-body')).toBeInTheDocument();
       expect(
-        screen.getByText(/Address errors in this section to ensure that your remediation plan is ready for execution/),
+        screen.getByText(
+          /Address errors in this section to ensure that your remediation plan is ready for execution/,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -359,7 +361,11 @@ describe('ProgressCard', () => {
       render(<ProgressCard {...defaultProps} />);
 
       expect(screen.getByText(/Learn more/)).toBeInTheDocument();
-      expect(screen.getByText(/Address errors in this section to ensure that your remediation plan is ready for execution/)).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /Address errors in this section to ensure that your remediation plan is ready for execution/,
+        ),
+      ).toBeInTheDocument();
     });
   });
 
@@ -394,7 +400,9 @@ describe('ProgressCard', () => {
         expect(permissionsStep).toHaveAttribute('data-variant', 'danger');
         expect(screen.getByText('User access permissions')).toBeInTheDocument();
         expect(
-          screen.getByText(/Not authorized. Check your user access permissions to ensure that you have the Remediations administrator RBAC role/),
+          screen.getByText(
+            /Not authorized. Check your user access permissions to ensure that you have the Remediations administrator RBAC role/,
+          ),
         ).toBeInTheDocument();
       });
 
@@ -531,7 +539,9 @@ describe('ProgressCard', () => {
         const steps = screen.getAllByTestId('progress-step');
         const systemsStep = steps[3]; // connectedSystemsStep is now fourth (last)
         expect(systemsStep).toHaveAttribute('data-variant', 'success');
-        expect(screen.getByText('Systems connected to Red Hat Lightspeed')).toBeInTheDocument();
+        expect(
+          screen.getByText('Systems connected to Red Hat Lightspeed'),
+        ).toBeInTheDocument();
         expect(
           screen.getByText('5 (of 10) connected systems'),
         ).toBeInTheDocument();
@@ -551,9 +561,7 @@ describe('ProgressCard', () => {
         const steps = screen.getAllByTestId('progress-step');
         const systemsStep = steps[3]; // connectedSystemsStep is now fourth (last)
         expect(systemsStep).toHaveAttribute('data-variant', 'danger');
-        expect(
-          screen.getByText(/No connected systems/),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/No connected systems/)).toBeInTheDocument();
       });
 
       it('should render View systems button', () => {
@@ -570,7 +578,10 @@ describe('ProgressCard', () => {
         const button = screen.getByText('View systems');
         fireEvent.click(button);
 
-        expect(mockOnNavigateToTab).toHaveBeenCalledWith(null, 'plannedRemediations:systems');
+        expect(mockOnNavigateToTab).toHaveBeenCalledWith(
+          null,
+          'plannedRemediations:systems',
+        );
       });
 
       it('should handle missing connectedSystems and totalSystems', () => {
@@ -665,7 +676,9 @@ describe('ProgressCard', () => {
       const permissionsStep = steps[1]; // permissionsStep is now second (after executionLimitsStep)
       expect(permissionsStep).toHaveAttribute('data-variant', 'danger');
       expect(
-        screen.getByText(/Not authorized. Check your user access permissions to ensure that you have the Remediations administrator RBAC role/),
+        screen.getByText(
+          /Not authorized. Check your user access permissions to ensure that you have the Remediations administrator RBAC role/,
+        ),
       ).toBeInTheDocument();
     });
 

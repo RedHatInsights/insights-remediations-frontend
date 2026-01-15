@@ -223,6 +223,7 @@ const RemediationDetails = () => {
                 selectedIssueForResolutionId={
                   selectedIssueForResolution?.id || null
                 }
+                useNarrowWidth={true}
               />
             </Tab>
             <Tab

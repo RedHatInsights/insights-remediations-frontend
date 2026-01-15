@@ -81,7 +81,9 @@ const RemediationDetailsPageHeader = ({
               </FlexItem>
               <FlexItem>
                 <ButtonWithToolTip
-                  isDisabled={!remediation?.issue_count}
+                  isDisabled={
+                    !remediation?.issue_count || remediation.system_count === 0
+                  }
                   onClick={handleDownload}
                   tooltipContent={
                     <div>

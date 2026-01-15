@@ -36,7 +36,14 @@ jest.mock('@patternfly/react-core', () => ({
       </div>
     );
   },
-  Button: function MockButton({ children, onClick, variant, isInline, style, ...props }) {
+  Button: function MockButton({
+    children,
+    onClick,
+    variant,
+    isInline,
+    style,
+    ...props
+  }) {
     return (
       <button
         onClick={onClick}

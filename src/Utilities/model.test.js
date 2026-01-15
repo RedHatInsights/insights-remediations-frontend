@@ -66,7 +66,9 @@ describe('Model Utilities', () => {
     });
 
     it('should return correct application for patch-package issues', () => {
-      const issue = { id: 'patch-package:bind-export-libs-32:9.11.36-16.el8_10.6.x86_64' };
+      const issue = {
+        id: 'patch-package:bind-export-libs-32:9.11.36-16.el8_10.6.x86_64',
+      };
       expect(getIssueApplication(issue)).toBe('Patch');
     });
 

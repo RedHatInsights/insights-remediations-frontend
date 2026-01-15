@@ -27,6 +27,7 @@ const PlannedRemediationsContent = ({
   initialNestedTab = 'actions',
   onOpenResolutionDrawer,
   selectedIssueForResolutionId,
+  useNarrowWidth = false,
 }) => {
   const [nestedActiveTab, setNestedActiveTab] = useState(initialNestedTab);
 
@@ -64,7 +65,12 @@ const PlannedRemediationsContent = ({
   return (
     <div>
       {/* Summary Charts */}
-      <div style={{ width: '100%', maxWidth: '1000px' }}>
+      <div
+        style={{
+          width: useNarrowWidth ? '60%' : '100%',
+          maxWidth: '1000px',
+        }}
+      >
         <Content component="h2" className="pf-v6-u-ml-md pf-v6-u-mt-md">
           Planned remediation action and systems{' '}
           {exceedsLimits && (
@@ -169,6 +175,7 @@ PlannedRemediationsContent.propTypes = {
   initialNestedTab: PropTypes.string,
   onOpenResolutionDrawer: PropTypes.func,
   selectedIssueForResolutionId: PropTypes.string,
+  useNarrowWidth: PropTypes.bool,
 };
 
 export default PlannedRemediationsContent;

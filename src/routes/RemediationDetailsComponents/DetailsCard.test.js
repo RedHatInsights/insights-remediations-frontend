@@ -172,17 +172,13 @@ describe('DetailsCard', () => {
   describe('Component Rendering', () => {
     it('renders without crashing', () => {
       renderComponent();
-      expect(
-        screen.getByText('Details'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('displays loading spinner when no details provided', () => {
       renderComponent({ details: null });
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
-      expect(
-        screen.queryByText('Details'),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText('Details')).not.toBeInTheDocument();
     });
 
     it('displays all required information when details are provided', () => {
@@ -485,7 +481,10 @@ describe('DetailsCard', () => {
       const actionsLink = screen.getByText('2 actions');
       fireEvent.click(actionsLink);
 
-      expect(mockOnNavigateToTab).toHaveBeenCalledWith(null, 'plannedRemediations:actions');
+      expect(mockOnNavigateToTab).toHaveBeenCalledWith(
+        null,
+        'plannedRemediations:actions',
+      );
     });
 
     it('navigates to systems tab when systems link is clicked', () => {
@@ -494,7 +493,10 @@ describe('DetailsCard', () => {
       const systemsLink = screen.getByText('10 systems');
       fireEvent.click(systemsLink);
 
-      expect(mockOnNavigateToTab).toHaveBeenCalledWith(null, 'plannedRemediations:systems');
+      expect(mockOnNavigateToTab).toHaveBeenCalledWith(
+        null,
+        'plannedRemediations:systems',
+      );
     });
 
     it('navigates to execution history when status link is clicked', () => {
@@ -535,18 +537,14 @@ describe('DetailsCard', () => {
       renderComponent({ remediationStatus: null });
 
       // Should handle null remediationStatus without crashing
-      expect(
-        screen.getByText('Details'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('handles missing playbook runs gracefully', () => {
       renderComponent({ remediationPlaybookRuns: null });
 
       // Should still render the component
-      expect(
-        screen.getByText('Details'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
   });
 
@@ -555,36 +553,28 @@ describe('DetailsCard', () => {
       renderComponent({ onNavigateToTab: undefined });
 
       // Should render without crashing
-      expect(
-        screen.getByText('Details'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('handles missing updateRemPlan prop', () => {
       renderComponent({ updateRemPlan: undefined });
 
       // Should render without crashing
-      expect(
-        screen.getByText('Details'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('handles missing allRemediations prop', () => {
       renderComponent({ allRemediations: undefined });
 
       // Should render without crashing
-      expect(
-        screen.getByText('Details'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('handles undefined remediationStatus totalSystems', () => {
       renderComponent({ remediationStatus: {} });
 
       // Should handle undefined totalSystems
-      expect(
-        screen.getByText('Details'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
   });
 
@@ -606,9 +596,7 @@ describe('DetailsCard', () => {
       renderComponent({ details: detailsWithoutDate });
 
       // Should still render without crashing
-      expect(
-        screen.getByText('Details'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('handles very long remediation names', () => {
