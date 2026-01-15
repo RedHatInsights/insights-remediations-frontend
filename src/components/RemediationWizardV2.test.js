@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
@@ -181,7 +181,7 @@ describe('RemediationWizardV2', () => {
           fetch: mockUpdateRemediationFetch,
         };
       }
-      if (method === 'getRemediation' && options?.params?.format === 'summary') {
+      if (method === 'getRemediation' && !options?.params?.format) {
         return {
           result: null,
           loading: false,
@@ -364,22 +364,77 @@ describe('RemediationWizardV2', () => {
 
     it('should update counts when existing plan is selected', async () => {
       const user = userEvent.setup();
-      const remediationDetailsSummary = {
+      // Use full remediation endpoint format with issues array
+      const remediationDetails = {
         id: 'existing-plan-id',
         name: 'Existing Plan',
-        issue_count: 1,
-        system_count: 5,
-        issue_count_details: {
-          'patch-advisory': 1,
-        },
+        auto_reboot: true,
+        issues: [
+          {
+            id: 'patch-advisory:RHSA-2021:0000', // Different ID to avoid deduplication
+            systems: ['system-a', 'system-b', 'system-c', 'system-d', 'system-e'],
+          },
+        ],
       };
 
+      // Store remediation details in a way the mock can access
+      const remediationDetailsMap = {
+        'existing-plan-id': remediationDetails,
+      };
+
+      // Track calls to make mock reactive
+      let callCount = 0;
+      
+      // Create a mock that's reactive to the selected ID
       useRemediations.mockImplementation((method, options) => {
-        if (method === 'getRemediation' && options?.params?.format === 'summary') {
+        callCount++;
+        
+        // Handle getRemediation
+        if (method === 'getRemediation') {
+          // Skip if format is 'summary' (old format we're not using)
+          if (options?.params?.format === 'summary') {
+            return {
+              result: null,
+              loading: false,
+              fetch: jest.fn(),
+            };
+          }
+          // Get the ID from params
+          const id = options?.params?.id;
+          const skip = options?.skip;
+          
+          // Return data when id matches and skip is false
+          // Always return a new object to ensure React detects changes
+          if (id && remediationDetailsMap[id] && !skip) {
+            // Return data - create new object reference each time
+            return {
+              result: { ...remediationDetailsMap[id] },
+              loading: false,
+              fetch: jest.fn(),
+            };
+          }
+          
+          // Return null if skip is true, id doesn't match, or is empty
+          // Always return a new object to ensure React detects changes
           return {
-            result: remediationDetailsSummary,
+            result: null,
             loading: false,
             fetch: jest.fn(),
+          };
+        }
+        // Handle createRemediation and updateRemediation
+        if (method === 'createRemediation') {
+          return {
+            result: null,
+            loading: false,
+            fetch: mockCreateRemediationFetch,
+          };
+        }
+        if (method === 'updateRemediation') {
+          return {
+            result: null,
+            loading: false,
+            fetch: mockUpdateRemediationFetch,
           };
         }
         return {
@@ -408,15 +463,151 @@ describe('RemediationWizardV2', () => {
       const option = screen.getByText('Existing Plan');
       await user.click(option);
 
+      // Wait for the component to update after selection
       await waitFor(() => {
-        // Existing plan: 5 systems + new data: 3 systems = 8 systems
-        // Existing plan: 1 patch-advisory * 2 pts = 2 pts + new data: 2 patch-advisory * 2 pts = 4 pts = 6 pts total
-        // But wait, let me check what defaultDataFlat contains...
-        // Actually, the test expects 24 points, so let me recalculate:
-        // If defaultDataFlat has issues that total 22 points, then 2 + 22 = 24 points
-        expect(screen.getAllByText(/8 systems/i).length).toBeGreaterThan(0);
+        // Verify the plan was selected by checking if update button appears
+        expect(
+          screen.getByRole('button', { name: /Update plan/i }),
+        ).toBeInTheDocument();
       });
-      expect(screen.getAllByText(/24 points/i).length).toBeGreaterThan(0);
+
+      // Wait for counts to update
+      // The component should re-render when remediationDetailsSummary changes from null to the actual data
+      await waitFor(() => {
+        // The component should show merged counts after remediation details load
+        // Existing plan: 5 systems + new data: 3 systems = 8 systems (no duplicates)
+        // Existing plan: 1 patch-advisory * 2 pts = 2 pts
+        // New data: 1 patch-advisory * 2 pts + 1 vulnerability * 20 pts = 22 pts
+        // Total: 2 + 22 = 24 points
+        // Total issues: 1 (existing) + 2 (new) = 3 issues (displayed as "3 actions")
+        expect(screen.getAllByText(/8 systems/i).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/24 points/i).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/3 actions/i).length).toBeGreaterThan(0);
+      }, { timeout: 10000 });
+    });
+
+    it('should deduplicate counts when same issue/system already exists in plan', async () => {
+      const user = userEvent.setup();
+      // Existing plan has the same issue ID as the new data (should be deduplicated)
+      const remediationDetails = {
+        id: 'existing-plan-id',
+        name: 'Existing Plan',
+        auto_reboot: true,
+        issues: [
+          {
+            id: 'patch-advisory:RHSA-2021:1234', // Same ID as in defaultDataFlat
+            systems: ['system-1', 'system-2'], // 2 systems overlap with new data
+          },
+        ],
+      };
+
+      // Store remediation details in a way the mock can access
+      const remediationDetailsMap = {
+        'existing-plan-id': remediationDetails,
+      };
+
+      // Track calls to make mock reactive
+      let callCount = 0;
+      
+      // Create a mock that's reactive to the selected ID
+      useRemediations.mockImplementation((method, options) => {
+        callCount++;
+        
+        // Handle getRemediation
+        if (method === 'getRemediation') {
+          // Skip if format is 'summary' (old format we're not using)
+          if (options?.params?.format === 'summary') {
+            return {
+              result: null,
+              loading: false,
+              fetch: jest.fn(),
+            };
+          }
+          // Get the ID from params
+          const id = options?.params?.id;
+          const skip = options?.skip;
+          
+          // Return data when id matches and skip is false
+          // Always return a new object to ensure React detects changes
+          if (id && remediationDetailsMap[id] && !skip) {
+            // Return data - create new object reference each time
+            return {
+              result: { ...remediationDetailsMap[id] },
+              loading: false,
+              fetch: jest.fn(),
+            };
+          }
+          
+          // Return null if skip is true, id doesn't match, or is empty
+          // Always return a new object to ensure React detects changes
+          return {
+            result: null,
+            loading: false,
+            fetch: jest.fn(),
+          };
+        }
+        // Handle createRemediation and updateRemediation
+        if (method === 'createRemediation') {
+          return {
+            result: null,
+            loading: false,
+            fetch: mockCreateRemediationFetch,
+          };
+        }
+        if (method === 'updateRemediation') {
+          return {
+            result: null,
+            loading: false,
+            fetch: mockUpdateRemediationFetch,
+          };
+        }
+        return {
+          result: null,
+          loading: false,
+          fetch: jest.fn(),
+        };
+      });
+
+      useRemediationsQuery.mockReturnValue({
+        result: {
+          data: [{ id: 'existing-plan-id', name: 'Existing Plan' }],
+        },
+        loading: false,
+      });
+
+      renderWithRouter(
+        <RemediationWizardV2 setOpen={mockSetOpen} data={defaultDataFlat} />,
+      );
+
+      const input = screen.getByPlaceholderText(/Select or create a playbook/i);
+      await user.click(input);
+      await waitFor(() => {
+        expect(screen.getByText('Existing Plan')).toBeInTheDocument();
+      });
+      const option = screen.getByText('Existing Plan');
+      await user.click(option);
+
+      // Wait for the component to update after selection
+      await waitFor(() => {
+        // Verify the plan was selected by checking if update button appears
+        expect(
+          screen.getByRole('button', { name: /Update plan/i }),
+        ).toBeInTheDocument();
+      });
+
+      // Wait for counts to update - check all at once
+      await waitFor(() => {
+        // Wait for remediation details to load and counts to update
+        // Existing plan: 1 issue (patch-advisory), 2 systems
+        // New data: 2 issues (patch-advisory - same ID, vulnerability), 3 systems
+        // After deduplication:
+        // - Issues: 1 (existing patch-advisory) + 1 (new vulnerability) = 2 unique issues (displayed as "2 actions")
+        // - Systems: 2 (existing) + 1 (new unique system-3) = 3 unique systems
+        // - Points: 2 (existing patch) + 20 (vulnerability) = 22 points (patch is deduplicated, so only counted once)
+        expect(screen.getAllByText(/3 systems/i).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/22 points/i).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/2 actions/i).length).toBeGreaterThan(0);
+      }, { timeout: 10000 });
     });
   });
 
@@ -1159,23 +1350,49 @@ describe('RemediationWizardV2', () => {
         loading: false,
       });
 
-      const remediationDetailsSummary = {
+      // Use full remediation endpoint format with issues array
+      const remediationDetails = {
         id: 'plan-1',
         name: 'Plan 1',
-        issue_count: 0,
-        system_count: 0,
-        issue_count_details: {},
-        // Note: For preview, if there are existing issues, they would need to be fetched separately
-        // For now, we handle the case where there are no existing issues (empty array)
-        issues: [],
+        auto_reboot: true,
+        issues: [], // Empty plan for this test
+      };
+
+      // Store remediation details in a way the mock can access
+      const remediationDetailsMap = {
+        'plan-1': remediationDetails,
       };
 
       useRemediations.mockImplementation((method, options) => {
-        if (method === 'getRemediation' && options?.params?.format === 'summary') {
+        // Handle getRemediation - check for matching id dynamically
+        if (method === 'getRemediation' && !options?.params?.format) {
+          const id = options?.params?.id;
+          if (id && remediationDetailsMap[id]) {
+            return {
+              result: remediationDetailsMap[id],
+              loading: false,
+              fetch: jest.fn(),
+            };
+          }
           return {
-            result: remediationDetailsSummary,
+            result: null,
             loading: false,
             fetch: jest.fn(),
+          };
+        }
+        // Handle createRemediation and updateRemediation
+        if (method === 'createRemediation') {
+          return {
+            result: null,
+            loading: false,
+            fetch: mockCreateRemediationFetch,
+          };
+        }
+        if (method === 'updateRemediation') {
+          return {
+            result: null,
+            loading: false,
+            fetch: mockUpdateRemediationFetch,
           };
         }
         return {

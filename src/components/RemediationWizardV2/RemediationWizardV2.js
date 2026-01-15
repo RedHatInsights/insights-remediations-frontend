@@ -88,8 +88,9 @@ export const RemediationWizardV2 = ({
     playbookSelect;
 
   const { result: remediationDetailsSummary, loading: detailsLoading } =
+    //dont use summary format to calculate action points
     useRemediations('getRemediation', {
-      params: { id: selected, format: 'summary' },
+      params: { id: selected },
       skip: !isExistingPlanSelected || !isOpen,
     });
 
@@ -126,7 +127,8 @@ export const RemediationWizardV2 = ({
     const baseSystemsCount = normalizedData?.systems?.length ?? 0;
 
     if (isExistingPlanSelected && remediationDetailsSummary) {
-      // Existing plan selected: merge plan's counts (from summary endpoint) with data prop counts
+      // Existing plan selected: merge plan's counts (from full remediation endpoint) with data prop counts
+      // Deduplicates to avoid double-counting when the same issue/system is already in the plan
       const mergedCounts = mergeSummaryWithNormalizedData(
         remediationDetailsSummary,
         normalizedData,

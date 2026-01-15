@@ -197,24 +197,76 @@ export const calculateActionPoints = (issues) => {
   }, 0);
 };
 
-// Merges counts from summary endpoint with normalizedData (new data being added)
+// Merges counts from full remediation endpoint with normalizedData (new data being added)
+// Deduplicates to avoid double-counting when the same issue/system is already in the plan
 // Returns { actionsCount, systemsCount, issuesCount }
 export const mergeSummaryWithNormalizedData = (
-  remediationDetailsSummary,
+  remediationDetails,
   normalizedData,
 ) => {
-  // Get counts from existing plan (summary endpoint)
-  const existingActionPoints = calculateActionPointsFromSummary(
-    remediationDetailsSummary?.issue_count_details,
-  );
-  const existingSystemsCount = remediationDetailsSummary?.system_count || 0;
-  const existingIssuesCount = remediationDetailsSummary?.issue_count || 0;
+  // Merge issues from both sources, deduplicating by ID
+  // Use Map to preserve issue objects for action points calculation
+  const issuesMap = new Map();
 
-  // Calculate counts from new data being added
-  const newActionPoints = calculateActionPoints(normalizedData?.issues || []);
+  // Add issues from existing remediation plan first
+  if (remediationDetails?.issues && Array.isArray(remediationDetails.issues)) {
+    remediationDetails.issues.forEach((issue) => {
+      if (issue.id) {
+        issuesMap.set(issue.id, issue);
+      }
+    });
+  }
 
-  // Count unique systems from normalizedData
+  // Add issues from normalizedData (new data being added)
+  if (normalizedData?.issues && Array.isArray(normalizedData.issues)) {
+    normalizedData.issues.forEach((issue) => {
+      if (issue.id) {
+        // If issue already exists, keep the existing one (don't overwrite)
+        // This ensures we don't count duplicates
+        if (!issuesMap.has(issue.id)) {
+          issuesMap.set(issue.id, issue);
+        }
+      }
+    });
+  }
+
+  // Calculate action points from deduplicated issues
+  const uniqueIssues = Array.from(issuesMap.values());
+  const actionsCount = calculateActionPoints(uniqueIssues);
+
+  // Count unique systems from both sources, deduplicating across both
   const systemsSet = new Set();
+
+  // Add systems from existing remediation plan
+  if (remediationDetails?.issues && Array.isArray(remediationDetails.issues)) {
+    remediationDetails.issues.forEach((issue) => {
+      if (issue.systems && Array.isArray(issue.systems)) {
+        issue.systems.forEach((system) => {
+          // Systems can be objects with id property or strings
+          const systemId = typeof system === 'string' ? system : system.id;
+          if (systemId) {
+            systemsSet.add(systemId);
+          }
+        });
+      }
+    });
+  }
+
+  // Also check flat systems array from remediationDetails if present
+  if (
+    remediationDetails?.systems &&
+    Array.isArray(remediationDetails.systems)
+  ) {
+    remediationDetails.systems.forEach((system) => {
+      const systemId = typeof system === 'string' ? system : system.id;
+      if (systemId) {
+        systemsSet.add(systemId);
+      }
+    });
+  }
+
+  // Add systems from normalizedData (new data being added)
+  // Handle two formats: flat systems array or nested systems within issues
   if (normalizedData) {
     // Format 1: Flat systems array
     if (normalizedData.systems && Array.isArray(normalizedData.systems)) {
@@ -240,10 +292,22 @@ export const mergeSummaryWithNormalizedData = (
       });
     }
   }
-  const newSystemsCount = systemsSet.size;
 
-  // Count unique issues by ID from normalizedData
+  const systemsCount = systemsSet.size;
+
+  // Count unique issues from both sources, deduplicating by ID
   const issuesSet = new Set();
+
+  // Add issues from existing remediation plan
+  if (remediationDetails?.issues && Array.isArray(remediationDetails.issues)) {
+    remediationDetails.issues.forEach((issue) => {
+      if (issue.id) {
+        issuesSet.add(issue.id);
+      }
+    });
+  }
+
+  // Add issues from normalizedData (new data being added)
   if (normalizedData?.issues && Array.isArray(normalizedData.issues)) {
     normalizedData.issues.forEach((issue) => {
       if (issue.id) {
@@ -251,15 +315,13 @@ export const mergeSummaryWithNormalizedData = (
       }
     });
   }
-  const uniqueNewIssuesCount = issuesSet.size;
 
-  // Merge: add new counts to existing counts
-  // Note: This assumes no overlap between existing plan and new data
-  // If there is overlap, the backend will handle deduplication
+  const issuesCount = issuesSet.size;
+
   return {
-    actionsCount: existingActionPoints + newActionPoints,
-    systemsCount: existingSystemsCount + newSystemsCount,
-    issuesCount: existingIssuesCount + uniqueNewIssuesCount,
+    actionsCount,
+    systemsCount,
+    issuesCount,
   };
 };
 
