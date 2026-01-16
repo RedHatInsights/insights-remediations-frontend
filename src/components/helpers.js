@@ -12,7 +12,7 @@ import {
 } from '@patternfly/react-core';
 import { DownloadIcon } from '@patternfly/react-icons';
 import React from 'react';
-import { getIssueApplication } from '../Utilities/model';
+import { getIssuePrefix } from '../Utilities/model';
 import { createRemediationBatches, remediationUrl } from '../Utilities/utils';
 
 export const wizardHelperText = (exceedsLimits) => {
@@ -149,6 +149,27 @@ export const renderPreviewAlert = ({
   );
 };
 
+export const calculateActionPointsFromSummary = (issueCountDetails) => {
+  if (!issueCountDetails || typeof issueCountDetails !== 'object') {
+    return 0;
+  }
+
+  const POINTS_MAP = {
+    advisor: 20,
+    vulnerabilities: 20,
+    'patch-advisory': 2,
+    'patch-package': 2,
+    ssg: 5,
+  };
+
+  let totalPoints = 0;
+  for (const [issueType, count] of Object.entries(issueCountDetails)) {
+    const points = POINTS_MAP[issueType] || 0;
+    totalPoints += points * (count || 0);
+  }
+
+  return totalPoints;
+};
 // Calculates action points from an array of issues based on their application type.
 // Points per action type: Advisor (20 pts), Vulnerability (20 pts), Patch (2 pts), Compliance (5 pts)
 export const calculateActionPoints = (issues) => {
@@ -157,15 +178,16 @@ export const calculateActionPoints = (issues) => {
   }
 
   const POINTS_MAP = {
-    Advisor: 20,
-    Vulnerability: 20,
-    Patch: 2,
-    Compliance: 5,
+    advisor: 20,
+    vulnerabilities: 20,
+    'patch-advisory': 2,
+    'patch-package': 2,
+    ssg: 5,
   };
 
   return issues.reduce((totalPoints, issue) => {
-    const application = getIssueApplication(issue);
-    const points = POINTS_MAP[application] || 0;
+    const prefix = getIssuePrefix(issue.id);
+    const points = POINTS_MAP[prefix] || 0;
     return totalPoints + points;
   }, 0);
 };
@@ -469,7 +491,13 @@ export const handleRemediationSubmit = async ({
       collectedErrors.push(...errorTitles);
       // Report progress after failure
       if (onProgress) {
-        onProgress(totalBatches, successfulBatches, failedBatches, collectedErrors, true);
+        onProgress(
+          totalBatches,
+          successfulBatches,
+          failedBatches,
+          collectedErrors,
+          true,
+        );
       }
       return {
         success: false,
@@ -514,7 +542,13 @@ export const handleRemediationSubmit = async ({
         failedBatches++;
         // Report progress after failure
         if (onProgress) {
-          onProgress(totalBatches, successfulBatches, failedBatches, collectedErrors, true);
+          onProgress(
+            totalBatches,
+            successfulBatches,
+            failedBatches,
+            collectedErrors,
+            true,
+          );
         }
         return {
           success: false,
@@ -530,7 +564,13 @@ export const handleRemediationSubmit = async ({
     // Report progress after first batch (not complete yet)
     if (onProgress) {
       const isComplete = batches.length === 1;
-      onProgress(totalBatches, successfulBatches, failedBatches, collectedErrors, isComplete);
+      onProgress(
+        totalBatches,
+        successfulBatches,
+        failedBatches,
+        collectedErrors,
+        isComplete,
+      );
     }
   } catch (error) {
     // Initial request failed - complete failure
@@ -540,7 +580,13 @@ export const handleRemediationSubmit = async ({
     collectedErrors.push(...errorTitles);
     // Report progress after failure
     if (onProgress) {
-      onProgress(totalBatches, successfulBatches, failedBatches, collectedErrors, true);
+      onProgress(
+        totalBatches,
+        successfulBatches,
+        failedBatches,
+        collectedErrors,
+        true,
+      );
     }
     return {
       success: false,
@@ -579,7 +625,13 @@ export const handleRemediationSubmit = async ({
     // Report progress after each batch (not complete until last batch)
     if (onProgress) {
       const isComplete = i === batches.length - 1;
-      onProgress(totalBatches, successfulBatches, failedBatches, collectedErrors, isComplete);
+      onProgress(
+        totalBatches,
+        successfulBatches,
+        failedBatches,
+        collectedErrors,
+        isComplete,
+      );
     }
   }
 

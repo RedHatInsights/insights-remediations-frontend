@@ -8,10 +8,17 @@ import {
   Flex,
   Spinner,
   Bullseye,
-  Progress,
   ProgressVariant,
   Alert,
 } from '@patternfly/react-core';
+import {
+  getActionText,
+  getActionNoun,
+  calculateProgress,
+} from './ModalStatusComponents/helpers';
+import ErrorList from './ModalStatusComponents/ErrorList';
+import ProgressBar from './ModalStatusComponents/ProgressBar';
+import ErrorModalFooter from './ModalStatusComponents/ErrorModalFooter';
 
 const ModalStatusContent = ({
   status,
@@ -29,24 +36,25 @@ const ModalStatusContent = ({
   progressIsComplete,
 }) => {
   if (status === 'progress') {
-    // Calculate progress percentage
-    const totalCalls = progressTotalBatches || 1;
-    const completedCalls = progressCompletedBatches || 0;
-    const failedCalls = progressFailedBatches || 0;
-    const progressPercentage = Math.round((completedCalls / totalCalls) * 100);
-    const hasFailures = failedCalls > 0;
-
-    // Determine variant: warning (yellow) only if complete AND there are failures
+    const progressPercentage = calculateProgress(
+      progressTotalBatches,
+      progressCompletedBatches,
+    );
+    const hasFailures = (progressFailedBatches || 0) > 0;
     const progressVariant =
       progressIsComplete && hasFailures ? ProgressVariant.warning : undefined;
 
-    const progressBarText = isUpdate
-      ? 'Updating remediation plan'
-      : 'Creating remediation plan';
-
-    const bodyMessage = isUpdate
-      ? 'The update is in progress. You cannot change or cancel the update. To make changes, wait for the process to complete, and then update the plan again.'
-      : 'The plan creation is in progress. You cannot change or cancel this operation. To make changes to the plan, wait for the process to complete and then update the plan.';
+    const actionNoun = getActionNoun(isUpdate);
+    const progressBarText = getActionText(
+      isUpdate,
+      'Updating remediation plan',
+      'Creating remediation plan',
+    );
+    const bodyMessage = getActionText(
+      isUpdate,
+      'The update is in progress. You cannot change or cancel the update. To make changes, wait for the process to complete, and then update the plan again.',
+      'The plan creation is in progress. You cannot change or cancel this operation. To make changes to the plan, wait for the process to complete and then update the plan.',
+    );
 
     return (
       <>
@@ -54,15 +62,13 @@ const ModalStatusContent = ({
         <ModalBody>
           <div>
             <p className="pf-v6-u-color-200 pf-v6-u-mb-md">
-              Remediation plan {isUpdate ? 'update' : 'creation'} progress
+              Remediation plan {actionNoun} progress
             </p>
             <p className="pf-v6-u-mb-md">{bodyMessage}</p>
-            <p className="pf-v6-u-mb-sm">{progressBarText}</p>
-            <Progress
+            <ProgressBar
               value={progressPercentage}
               variant={progressVariant}
-              aria-label={`Progress: ${progressPercentage}%`}
-              className="pf-v6-u-mb-sm"
+              label={progressBarText}
             />
           </div>
         </ModalBody>
@@ -132,27 +138,21 @@ const ModalStatusContent = ({
         progressTotalBatches === 0);
 
     if (showCompleteFailureProgress) {
-      const descriptionText = isUpdate
-        ? 'Remediation plan update failed'
-        : 'Remediation plan creation failed';
-      const progressBarText = isUpdate
-        ? 'Could not update'
-        : 'Could not create';
-      // Build error message with error details if available
-      const baseMessage = isUpdate
-        ? 'The plan was not updated due to an unknown error.'
-        : 'The plan was not created due to an unknown error.';
-
-      const errorDetails = progressErrors && progressErrors.length > 0;
-      const errorList = errorDetails ? (
-        <ul className="pf-v6-u-mt-sm pf-v6-u-mb-sm">
-          {progressErrors.map((errorTitle, index) => (
-            <li key={index}>{errorTitle}</li>
-          ))}
-        </ul>
-      ) : null;
-
-      const closingMessage = 'Close this dialog to try again.';
+      const descriptionText = getActionText(
+        isUpdate,
+        'Remediation plan update failed',
+        'Remediation plan creation failed',
+      );
+      const progressBarText = getActionText(
+        isUpdate,
+        'Could not update',
+        'Could not create',
+      );
+      const baseMessage = getActionText(
+        isUpdate,
+        'The plan was not updated due to an unknown error.',
+        'The plan was not created due to an unknown error.',
+      );
 
       return (
         <>
@@ -162,23 +162,19 @@ const ModalStatusContent = ({
               <p className="pf-v6-u-color-200 pf-v6-u-mb-md">
                 {descriptionText}
               </p>
-              <p className="pf-v6-u-mb-sm">{progressBarText}</p>
-              <Progress
+              <ProgressBar
                 value={0}
                 variant={ProgressVariant.danger}
-                aria-label="Progress: 0%"
-                className="pf-v6-u-mb-sm"
+                label={progressBarText}
               />
-              <div className="pf-v6-u-text-align-right pf-v6-u-mb-md">0%</div>
               <Alert
                 variant="danger"
                 isInline
                 title="Unknown error"
                 className="pf-v6-u-mb-md"
               >
-                <p>{baseMessage}</p>
-                {errorList}
-                <p>{closingMessage}</p>
+                <p>{baseMessage} Close this dialog to try again.</p>
+                <ErrorList errors={progressErrors} />
               </Alert>
             </div>
           </ModalBody>
@@ -193,38 +189,31 @@ const ModalStatusContent = ({
 
     // For partial failure, show progress bar with warning and alert
     if (isPartialFailure && progressTotalBatches > 0) {
-      const descriptionText = isUpdate
-        ? 'Remediation plan update error'
-        : 'Remediation plan creation error';
-      const progressBarText = 'Could not add all items';
-      const alertTitle = isUpdate
-        ? 'An error occurred while updating the plan'
-        : 'An error occurred while creating the plan';
-
-      // Calculate progress percentage based on successful batches
-      const totalCalls = progressTotalBatches || 1;
-      const completedCalls = progressCompletedBatches || 0;
-      const progressPercentage = Math.round(
-        (completedCalls / totalCalls) * 100,
+      const descriptionText = getActionText(
+        isUpdate,
+        'Remediation plan update error',
+        'Remediation plan creation error',
+      );
+      const alertTitle = getActionText(
+        isUpdate,
+        'An error occurred while updating the plan',
+        'An error occurred while creating the plan',
+      );
+      const baseMessage = getActionText(
+        isUpdate,
+        'Some of the selected items were not added to the plan. We cannot automatically revert the plan to its original state.',
+        'Some of the selected items were not added to the plan.',
+      );
+      const closingMessage = getActionText(
+        isUpdate,
+        'Select View plan to review the contents of the partially updated plan, or close this dialog to try again.',
+        'Select View plan to review the contents of the plan, or close this dialog to try again.',
       );
 
-      // Build alert message with error details if available
-      const baseMessage = isUpdate
-        ? 'Some of the selected items were not added to the plan. We cannot automatically revert the plan to its original state.'
-        : 'Some of the selected items were not added to the plan.';
-
-      const errorDetails = progressErrors && progressErrors.length > 0;
-      const errorList = errorDetails ? (
-        <ul className="pf-v6-u-mt-sm pf-v6-u-mb-sm">
-          {progressErrors.map((errorTitle, index) => (
-            <li key={index}>{errorTitle}</li>
-          ))}
-        </ul>
-      ) : null;
-
-      const closingMessage = isUpdate
-        ? 'Select View plan to review the contents of the partially updated plan, or close this dialog to try again.'
-        : 'Select View plan to review the contents of the plan, or close this dialog to try again.';
+      const progressPercentage = calculateProgress(
+        progressTotalBatches,
+        progressCompletedBatches,
+      );
 
       return (
         <>
@@ -234,16 +223,11 @@ const ModalStatusContent = ({
               <p className="pf-v6-u-color-200 pf-v6-u-mb-md">
                 {descriptionText}
               </p>
-              <p className="pf-v6-u-mb-sm">{progressBarText}</p>
-              <Progress
+              <ProgressBar
                 value={progressPercentage}
                 variant={ProgressVariant.warning}
-                aria-label={`Progress: ${progressPercentage}%`}
-                className="pf-v6-u-mb-sm"
+                label="Could not add all items"
               />
-              <div className="pf-v6-u-text-align-right pf-v6-u-mb-md">
-                {progressPercentage}%
-              </div>
               <Alert
                 variant="warning"
                 isInline
@@ -251,31 +235,38 @@ const ModalStatusContent = ({
                 className="pf-v6-u-mb-md"
               >
                 <p>{baseMessage}</p>
-                {errorList}
+                <ErrorList errors={progressErrors} />
                 <p>{closingMessage}</p>
               </Alert>
             </div>
           </ModalBody>
-          <ModalFooter>
-            <Flex gap={{ default: 'gapMd' }}>
-              {remediationId && (
-                <Button variant="primary" onClick={onViewPlan}>
-                  View plan
-                </Button>
-              )}
-              <Button variant="link" onClick={onClose}>
-                Close
-              </Button>
-            </Flex>
-          </ModalFooter>
+          <ErrorModalFooter
+            remediationId={remediationId}
+            onViewPlan={onViewPlan}
+            onClose={onClose}
+          />
         </>
       );
     }
 
     // For complete failure or partial failure without progress data, show standard error
-    const errorTitle = isUpdate
-      ? 'Remediation plan update failed'
-      : 'Remediation plan creation failed';
+    const errorTitle = getActionText(
+      isUpdate,
+      'Remediation plan update failed',
+      'Remediation plan creation failed',
+    );
+
+    const errorMessage = isCompleteFailure
+      ? getActionText(
+          isUpdate,
+          'The plan update failed. The plan was not updated.',
+          'The plan creation failed. The plan was not created.',
+        )
+      : getActionText(
+          isUpdate,
+          'The plan was partially updated. Some of the selected items were not added to the plan. Review the plan for changes before execution.',
+          'The plan was partially created. Some of the selected items were not added to the plan.',
+        );
 
     return (
       <>
@@ -285,15 +276,7 @@ const ModalStatusContent = ({
           titleIconVariant={isCompleteFailure ? 'danger' : 'warning'}
         />
         <ModalBody>
-          <p>
-            {isCompleteFailure
-              ? isUpdate
-                ? 'The plan update failed. The plan was not updated.'
-                : 'The plan creation failed. The plan was not created.'
-              : isUpdate
-                ? 'The plan was partially updated. Some of the selected items were not added to the plan. Review the plan for changes before execution.'
-                : 'The plan was partially created. Some of the selected items were not added to the plan.'}
-          </p>
+          <p>{errorMessage}</p>
         </ModalBody>
         <ModalFooter>
           <Flex gap={{ default: 'gapMd' }}>
@@ -322,16 +305,13 @@ const ModalStatusContent = ({
 ModalStatusContent.propTypes = {
   status: PropTypes.oneOf(['error', 'confirmation', 'submitting', 'progress'])
     .isRequired,
-  // Error props
   errorType: PropTypes.oneOf(['complete_failure', 'partial_failure']),
   isUpdate: PropTypes.bool,
   remediationId: PropTypes.string,
   onClose: PropTypes.func,
   onViewPlan: PropTypes.func,
-  // Confirmation props
   onConfirm: PropTypes.func,
   onCancel: PropTypes.func,
-  // Progress props
   progressTotalBatches: PropTypes.number,
   progressCompletedBatches: PropTypes.number,
   progressFailedBatches: PropTypes.number,

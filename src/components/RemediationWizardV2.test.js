@@ -103,11 +103,9 @@ const renderWithRouter = (component) => {
 };
 
 describe('RemediationWizardV2', () => {
-  const mockSetOpen = jest.fn();
-  const mockCreateRemediationFetch = jest.fn(() =>
-    Promise.resolve({ id: 'new-id' }),
-  );
-  const mockUpdateRemediationFetch = jest.fn(() => Promise.resolve({}));
+  let mockSetOpen;
+  let mockCreateRemediationFetch;
+  let mockUpdateRemediationFetch;
 
   const handleRemediationSubmitSpy = jest.spyOn(
     helpers,
@@ -117,10 +115,6 @@ describe('RemediationWizardV2', () => {
     helpers,
     'preparePlaybookPreviewPayload',
   );
-
-  beforeEach(() => {
-    jest.spyOn(utils, 'remediationUrl').mockClear();
-  });
 
   const defaultDataFlat = {
     issues: [
@@ -152,16 +146,26 @@ describe('RemediationWizardV2', () => {
   };
 
   beforeEach(() => {
+    // Clear all mocks first to prevent leakage from other test files
     jest.clearAllMocks();
-    api.postPlaybookPreview.mockClear();
-    api.postPlaybookPreview.mockResolvedValue(
-      new Blob(['test'], { type: 'text/yaml' }),
+
+    // Create fresh mock functions for each test
+    mockSetOpen = jest.fn();
+    mockCreateRemediationFetch = jest.fn(() =>
+      Promise.resolve({ id: 'new-id' }),
     );
-    utilitiesHelpers.downloadFile.mockClear();
+    mockUpdateRemediationFetch = jest.fn(() => Promise.resolve({}));
+
+    // Reset shared mocks to their default implementations
+    // This is critical when tests run together - mocks from other files can leak
+    useRemediationsQuery.mockReset();
     useRemediationsQuery.mockReturnValue({
       result: { data: [] },
       loading: false,
     });
+
+    // Reset useRemediations to default implementation
+    useRemediations.mockReset();
     useRemediations.mockImplementation((method) => {
       if (method === 'createRemediation') {
         return {
@@ -183,26 +187,26 @@ describe('RemediationWizardV2', () => {
         fetch: jest.fn(),
       };
     });
-    // Reset spies - default mock for successful submission
-    handleRemediationSubmitSpy.mockImplementation(async (args) => {
-      // Call onProgress if provided to simulate progress updates
-      if (args.onProgress) {
-        // Call synchronously to set state before promise resolves
-        args.onProgress(1, 1, 0, [], true);
-      }
-      return {
-        success: true,
-        status: 'success',
-        remediationId: 'test-id',
-        remediationName: 'Test Plan',
-        isUpdate: false,
-        errors: [],
-      };
+
+    // Reset API mocks
+    api.postPlaybookPreview.mockClear();
+    api.postPlaybookPreview.mockResolvedValue(
+      new Blob(['test'], { type: 'text/yaml' }),
+    );
+    utilitiesHelpers.downloadFile.mockClear();
+
+    // Reset spies
+    handleRemediationSubmitSpy.mockResolvedValue({
+      success: true,
+      status: 'success',
+      remediationId: 'test-id',
+      remediationName: 'Test Plan',
+      isUpdate: false,
     });
     preparePlaybookPreviewPayloadSpy.mockClear();
-    // Reset mocks
+
+    // Reset utils mock
     jest.spyOn(utils, 'remediationUrl').mockClear();
-    // Spy already calls through to real implementation by default
   });
 
   afterEach(() => {

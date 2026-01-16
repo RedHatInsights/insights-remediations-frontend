@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
@@ -17,9 +17,10 @@ import {
   TextInput,
   ValidatedOptions,
   FormGroup,
-  CardFooter,
   Popover,
   FlexItem,
+  Alert,
+  Skeleton,
 } from '@patternfly/react-core';
 import {
   CheckIcon,
@@ -35,6 +36,7 @@ import { execStatus } from './helpers';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import { useFeatureFlag } from '../../Utilities/Hooks/useFeatureFlag';
 import { pluralize } from '../../Utilities/utils';
+import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 
 const DetailsCard = ({
   details,
@@ -51,7 +53,70 @@ const DetailsCard = ({
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(details?.name);
   const [rebootToggle, setRebootToggle] = useState(details?.auto_reboot);
+  const [hasResolutionsAvailable, setHasResolutionsAvailable] = useState(false);
+  const [isCheckingResolutions, setIsCheckingResolutions] = useState(true);
   const addNotification = useAddNotification();
+  //This is paginated, so we must loop through issues until we find a batch with multiple resolutions or we reach the end of the issues.
+  const { fetch: fetchRemediationIssues } = useRemediations(
+    'getRemediationIssues',
+    {
+      skip: true,
+      batched: true,
+      batch: { batchSize: 50 },
+    },
+  );
+
+  const checkResolutionsAvailable = useCallback(async () => {
+    if (!details?.id) {
+      setIsCheckingResolutions(false);
+      return;
+    }
+
+    setIsCheckingResolutions(true);
+    const BATCH_SIZE = 50;
+    let offset = 0;
+    let foundMultipleResolutions = false;
+
+    try {
+      while (!foundMultipleResolutions) {
+        const response = await fetchRemediationIssues({
+          id: details.id,
+          limit: BATCH_SIZE,
+          offset: offset,
+        });
+
+        const issues = response?.data || [];
+        const total = response?.meta?.total || 0;
+
+        // Check if any issue in this batch has multiple resolutions
+        foundMultipleResolutions = issues.some(
+          (issue) => issue?.resolutions_available > 1,
+        );
+
+        if (foundMultipleResolutions) {
+          setHasResolutionsAvailable(true);
+          setIsCheckingResolutions(false);
+          return;
+        }
+
+        // Check if we've fetched all issues
+        offset += issues.length;
+        if (offset >= total || issues.length === 0) {
+          setHasResolutionsAvailable(false);
+          setIsCheckingResolutions(false);
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('Error checking resolutions:', error);
+      setHasResolutionsAvailable(false);
+      setIsCheckingResolutions(false);
+    }
+  }, [details?.id, fetchRemediationIssues]);
+
+  useEffect(() => {
+    checkResolutionsAvailable();
+  }, [checkResolutionsAvailable]);
 
   useEffect(() => {
     setValue(details?.name || '');
@@ -121,22 +186,65 @@ const DetailsCard = ({
   };
 
   const formatedDate = new Date(remediationPlaybookRuns?.updated_at);
+
   return (
     <Card isFullHeight>
       <CardTitle>
-        <Title headingLevel="h4" size="xl">
-          Remediation plan details and status
-        </Title>
+        <Flex
+          direction={{ default: 'column' }}
+          spaceItems={{ default: 'spaceItemsMd' }}
+        >
+          <Flex
+            justifyContent={{ default: 'justifyContentSpaceBetween' }}
+            alignItems={{ default: 'alignItemsCenter' }}
+          >
+            <Title headingLevel="h4" size="xl">
+              Details
+            </Title>
+            <Flex
+              alignItems={{ default: 'alignItemsCenter' }}
+              spaceItems={{ default: 'spaceItemsSm' }}
+              style={{ fontWeight: 'normal' }}
+            >
+              <Switch
+                id="autoreboot-switch"
+                isChecked={rebootToggle}
+                onChange={onToggleAutoreboot}
+                className="pf-v6-u-font-size-sm"
+                style={{ fontSize: 'var(--pf-t--global--font-size--sm)' }}
+              />
+              <span className="pf-v6-u-font-size-sm">
+                Auto-reboot:{rebootToggle ? ' On' : ' Off'}
+              </span>
+            </Flex>
+          </Flex>
+          <Content
+            component="p"
+            style={{ wordBreak: 'break-word', fontWeight: 'normal' }}
+          >
+            New to remediating through{' '}
+            {isLightspeedRebrandEnabled ? 'Red Hat Lightspeed' : 'Insights'}?{' '}
+            <InsightsLink
+              to={
+                'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide'
+              }
+              target="_blank"
+              style={{ textDecoration: 'none' }}
+            >
+              Learn more{' '}
+              <ExternalLinkAltIcon size="md" className="pf-v6-u-ml-sm" />
+            </InsightsLink>
+          </Content>
+        </Flex>
       </CardTitle>
       <CardBody>
         <DescriptionList
-          isHorizontal
           orientation={{
             sm: 'vertical',
-            md: 'horizontal',
-            lg: 'horizontal',
-            xl: 'horizontal',
-            '2xl': 'horizontal',
+            md: 'vertical',
+            lg: 'vertical',
+            xl: 'vertical',
+            '2xl': 'vertical',
           }}
         >
           {/* Editable Name */}
@@ -222,20 +330,6 @@ const DetailsCard = ({
               )}
             </DescriptionListDescription>
           </DescriptionListGroup>
-          {/* Created by */}
-          <DescriptionListGroup>
-            <DescriptionListTerm>Created</DescriptionListTerm>
-            <DescriptionListDescription>
-              {formatDate(details?.created_at)}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          {/* Last Modified */}
-          <DescriptionListGroup>
-            <DescriptionListTerm>Last modified</DescriptionListTerm>
-            <DescriptionListDescription>
-              {formatDate(details?.updated_at)}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
           {/* Last Execution Status */}
           <DescriptionListGroup>
             <DescriptionListTerm>Latest execution status</DescriptionListTerm>
@@ -265,15 +359,39 @@ const DetailsCard = ({
               </Popover>
             </DescriptionListTerm>
             <DescriptionListDescription>
-              <Button
-                variant="link"
-                onClick={() => onNavigateToTab(null, 'actions')}
-                isInline
+              <Flex
+                direction={{ default: 'row' }}
+                alignItems={{ default: 'alignItemsCenter' }}
+                spaceItems={{ default: 'spaceItemsMd' }}
               >
-                {`${details?.issue_count} action${
-                  details?.issue_count !== 1 ? 's' : ''
-                }`}
-              </Button>
+                <Button
+                  variant="link"
+                  onClick={() =>
+                    onNavigateToTab(null, 'plannedRemediations:actions')
+                  }
+                  isInline
+                >
+                  {`${details?.issue_count} action${
+                    details?.issue_count !== 1 ? 's' : ''
+                  }`}
+                </Button>
+                {isCheckingResolutions ? (
+                  <Skeleton
+                    height="1.5rem"
+                    width="200px"
+                    screenreaderText="Checking for resolution options"
+                  />
+                ) : (
+                  hasResolutionsAvailable && (
+                    <Alert
+                      isInline
+                      isPlain
+                      variant="info"
+                      title="Resolution options are available."
+                    />
+                  )
+                )}
+              </Flex>
             </DescriptionListDescription>
           </DescriptionListGroup>
           {/* Systems */}
@@ -282,45 +400,31 @@ const DetailsCard = ({
             <DescriptionListDescription>
               <Button
                 variant="link"
-                onClick={() => onNavigateToTab(null, 'systems')}
+                onClick={() =>
+                  onNavigateToTab(null, 'plannedRemediations:systems')
+                }
                 isInline
               >
                 {pluralize(details?.system_count, 'system')}
               </Button>
             </DescriptionListDescription>
           </DescriptionListGroup>
-          {/* Autoreboot toggle */}
+          {/* Last Modified */}
           <DescriptionListGroup>
-            <DescriptionListTerm>Auto-reboot</DescriptionListTerm>
+            <DescriptionListTerm>Last modified</DescriptionListTerm>
             <DescriptionListDescription>
-              <Switch
-                id="autoreboot-switch"
-                isChecked={rebootToggle}
-                onChange={onToggleAutoreboot}
-                label={rebootToggle ? 'On' : 'Off'}
-              />
+              {formatDate(details?.updated_at)}
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+          {/* Created by */}
+          <DescriptionListGroup>
+            <DescriptionListTerm>Created</DescriptionListTerm>
+            <DescriptionListDescription>
+              {formatDate(details?.created_at)}
             </DescriptionListDescription>
           </DescriptionListGroup>
         </DescriptionList>
       </CardBody>
-      <CardFooter className="pf-v6-u-font-size-sm">
-        New to remediating through{' '}
-        {isLightspeedRebrandEnabled ? 'Red Hat Lightspeed' : 'Insights'}?{' '}
-        <InsightsLink
-          to={
-            'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide'
-          }
-          target="_blank"
-        >
-          <Button
-            icon={<ExternalLinkAltIcon />}
-            variant="link"
-            className="pf-v6-u-font-size-sm"
-          >
-            Learn more
-          </Button>{' '}
-        </InsightsLink>
-      </CardFooter>
     </Card>
   );
 };
