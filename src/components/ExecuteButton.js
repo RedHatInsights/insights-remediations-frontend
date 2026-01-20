@@ -15,6 +15,8 @@ const ExecuteButton = ({
   remediation,
   refetchRemediationPlaybookRuns,
   detailsLoading,
+  onNavigateToExecutionHistory,
+  remediationPlaybookRuns,
 }) => {
   const [open, setOpen] = useState(false);
   const isNewModalEnabled = useFeatureFlag('newModal');
@@ -63,6 +65,8 @@ const ExecuteButton = ({
           remediationStatus={remediationStatus}
           refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
           detailsLoading={detailsLoading}
+          onNavigateToExecutionHistory={onNavigateToExecutionHistory}
+          remediationPlaybookRuns={remediationPlaybookRuns}
         />
       )}
     </React.Fragment>
@@ -76,6 +80,8 @@ ExecuteButton.propTypes = {
   isDisabled: PropTypes.bool,
   refetchRemediationPlaybookRuns: PropTypes.func,
   detailsLoading: PropTypes.bool,
+  onNavigateToExecutionHistory: PropTypes.func,
+  remediationPlaybookRuns: PropTypes.object,
 };
 
 export default ExecuteButton;

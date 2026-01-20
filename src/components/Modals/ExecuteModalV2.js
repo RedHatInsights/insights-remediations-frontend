@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Button,
@@ -9,8 +9,10 @@ import {
 } from '@patternfly/react-core';
 import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import { pluralize } from '../../Utilities/utils';
+import { formatUtc } from '../../routes/RemediationDetailsComponents/ExecutionHistoryContent/helpers';
 
 export const ExecuteModalV2 = ({
   isOpen,
@@ -19,8 +21,14 @@ export const ExecuteModalV2 = ({
   remediationStatus,
   remediation,
   detailsLoading,
+  onNavigateToExecutionHistory,
+  remediationPlaybookRuns,
 }) => {
   const addNotification = useAddNotification();
+  const chrome = useChrome();
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [executionTimestamp, setExecutionTimestamp] = useState(null);
+  const [executionUsername, setExecutionUsername] = useState(null);
 
   const { connected, disconnected } = useMemo(() => {
     const connectedData = remediationStatus?.connectedData;
@@ -49,8 +57,57 @@ export const ExecuteModalV2 = ({
     skip: true,
   });
 
+  // Get username from chrome when component mounts or chrome becomes available
+  useEffect(() => {
+    if (chrome && chrome.auth && typeof chrome.auth.getUser === 'function') {
+      chrome.auth
+        .getUser()
+        .then((user) => {
+          if (user) {
+            const username =
+              user.identity?.user?.username || user.username || 'Unknown user';
+            setExecutionUsername(username);
+          } else {
+            setExecutionUsername('Unknown user');
+          }
+        })
+        .catch(() => {
+          setExecutionUsername('Unknown user');
+        });
+    } else {
+      setExecutionUsername('Unknown user');
+    }
+  }, [chrome]);
+
+  // Check for running execution when modal opens
+  useEffect(() => {
+    if (isOpen && remediationPlaybookRuns?.data) {
+      const runs = remediationPlaybookRuns.data;
+      const runningRun = runs.find((run) => run.status === 'running');
+      if (runningRun) {
+        setIsExecuting(true);
+        setExecutionTimestamp(runningRun.created_at || runningRun.updated_at);
+        // Get username from the run if available
+        if (runningRun.created_by?.username) {
+          setExecutionUsername(runningRun.created_by.username);
+        }
+      } else {
+        // Only reset if there's no running execution
+        setIsExecuting(false);
+        setExecutionTimestamp(null);
+      }
+    } else if (!isOpen) {
+      setIsExecuting(false);
+      setExecutionTimestamp(null);
+    }
+  }, [isOpen, remediationPlaybookRuns]);
+
   const handleExecute = () => {
     const exclude = disconnected.map((e) => e.executor_id).filter(Boolean);
+    const timestamp = new Date().toISOString();
+    setExecutionTimestamp(timestamp);
+    setIsExecuting(true);
+
     executeRun({
       id: remediation.id,
       playbookRunsInput: { exclude },
@@ -68,9 +125,10 @@ export const ExecuteModalV2 = ({
           dismissable: true,
           autoDismiss: true,
         });
-        onClose();
       })
       .catch((err) => {
+        setIsExecuting(false);
+        setExecutionTimestamp(null);
         addNotification({
           title: 'Failed to execute playbook',
           description: err.message || 'Unknown error',
@@ -81,37 +139,42 @@ export const ExecuteModalV2 = ({
       });
   };
 
+  const handleViewDetails = () => {
+    onClose();
+    if (onNavigateToExecutionHistory) {
+      onNavigateToExecutionHistory(null, 'executionHistory');
+    }
+  };
+
   const autoRebootEnabled = remediation?.auto_reboot ?? false;
 
-  return (
-    <Modal
-      data-testid="execute-modal-v2"
-      variant={ModalVariant.medium}
-      title="Plan execution cannot be stopped or rolled back"
-      titleIconVariant="warning"
-      isOpen={isOpen}
-      onClose={onClose}
-      isFooterLeftAligned
-      actions={[
-        <Button
-          key="execute"
-          variant="primary"
-          ouiaId="execute-playbook-v2"
-          isDisabled={connected.length === 0}
-          onClick={handleExecute}
+  const renderExecutionInProgress = () => (
+    <>
+      <Content>
+        <Content
+          component="p"
+          className="pf-v6-u-mb-md pf-v6-u-text-color-subtle"
         >
-          Execute
-        </Button>,
-        <Button
-          key="cancel"
-          variant="link"
-          ouiaId="cancel-execute-v2"
-          onClick={onClose}
-        >
-          Cancel
-        </Button>,
-      ]}
-    >
+          {executionTimestamp && (
+            <>
+              {formatUtc(executionTimestamp)}, initiated by {executionUsername}
+            </>
+          )}
+        </Content>
+        <Content component="p" className="pf-v6-u-mb-md">
+          Changes are in progress and cannot be rolled back. Go to the Execution
+          History tab of this plan to view more information about the execution,
+          or review the execution log file for each system in the plan.
+        </Content>
+        <div className="pf-v6-u-text-align-center pf-v6-u-my-lg">
+          <Spinner size="xl" />
+        </div>
+      </Content>
+    </>
+  );
+
+  const renderMainContent = () => (
+    <>
       {detailsLoading ? (
         <Spinner size="lg" />
       ) : (
@@ -142,6 +205,64 @@ export const ExecuteModalV2 = ({
           </List>
         </Content>
       )}
+    </>
+  );
+
+  return (
+    <Modal
+      data-testid="execute-modal-v2"
+      variant={ModalVariant.medium}
+      title={
+        isExecuting
+          ? `Execution is in progress for plan ${remediation?.name || ''}`
+          : 'Plan execution cannot be stopped or rolled back'
+      }
+      titleIconVariant={isExecuting ? 'info' : 'warning'}
+      isOpen={isOpen}
+      onClose={onClose}
+      isFooterLeftAligned
+      actions={
+        isExecuting
+          ? [
+              <Button
+                key="view-details"
+                variant="primary"
+                ouiaId="view-execution-details-v2"
+                onClick={handleViewDetails}
+              >
+                View details
+              </Button>,
+              <Button
+                key="close"
+                variant="link"
+                ouiaId="close-execution-modal-v2"
+                onClick={onClose}
+              >
+                Close
+              </Button>,
+            ]
+          : [
+              <Button
+                key="execute"
+                variant="primary"
+                ouiaId="execute-playbook-v2"
+                isDisabled={connected.length === 0}
+                onClick={handleExecute}
+              >
+                Execute
+              </Button>,
+              <Button
+                key="cancel"
+                variant="link"
+                ouiaId="cancel-execute-v2"
+                onClick={onClose}
+              >
+                Cancel
+              </Button>,
+            ]
+      }
+    >
+      {isExecuting ? renderExecutionInProgress() : renderMainContent()}
     </Modal>
   );
 };
@@ -153,4 +274,18 @@ ExecuteModalV2.propTypes = {
   refetchRemediationPlaybookRuns: PropTypes.func,
   remediationStatus: PropTypes.object,
   detailsLoading: PropTypes.bool,
+  onNavigateToExecutionHistory: PropTypes.func,
+  remediationPlaybookRuns: PropTypes.shape({
+    data: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string,
+        status: PropTypes.string,
+        created_at: PropTypes.string,
+        updated_at: PropTypes.string,
+        created_by: PropTypes.shape({
+          username: PropTypes.string,
+        }),
+      }),
+    ),
+  }),
 };
