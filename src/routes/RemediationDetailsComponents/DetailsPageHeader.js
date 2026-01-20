@@ -24,6 +24,8 @@ const RemediationDetailsPageHeader = ({
   refetchRemediationPlaybookRuns,
   isExecutable,
   detailsLoading,
+  onNavigateToTab,
+  remediationPlaybookRuns,
 }) => {
   const addNotification = useAddNotification();
   const handleDownload = useCallback(() => {
@@ -77,6 +79,8 @@ const RemediationDetailsPageHeader = ({
                     refetchRemediationPlaybookRuns
                   }
                   detailsLoading={detailsLoading}
+                  onNavigateToExecutionHistory={onNavigateToTab}
+                  remediationPlaybookRuns={remediationPlaybookRuns}
                 />
               </FlexItem>
               <FlexItem>
@@ -147,6 +151,8 @@ RemediationDetailsPageHeader.propTypes = {
   refetchRemediationPlaybookRuns: PropTypes.func,
   permissions: PropTypes.object.isRequired,
   detailsLoading: PropTypes.bool,
+  onNavigateToTab: PropTypes.func,
+  remediationPlaybookRuns: PropTypes.object,
 };
 
 export default RemediationDetailsPageHeader;
