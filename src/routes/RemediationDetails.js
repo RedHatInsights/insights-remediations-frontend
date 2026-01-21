@@ -169,6 +169,8 @@ const RemediationDetails = () => {
             isExecutable={getIsExecutable(isExecutable)}
             refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
             detailsLoading={detailsLoading}
+            onNavigateToTab={handleTabClick}
+            remediationPlaybookRuns={remediationPlaybookRuns}
           />
           <Tabs
             activeKey={searchParams.get('activeTab') || 'general'}
