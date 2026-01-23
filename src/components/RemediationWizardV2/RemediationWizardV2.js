@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import propTypes from 'prop-types';
 import {
   Modal,
@@ -14,8 +14,9 @@ import {
   HelperTextItem,
   Tooltip,
   Flex,
+  Skeleton,
 } from '@patternfly/react-core';
-import { DownloadIcon, ExternalLinkAltIcon } from '@patternfly/react-icons';
+import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import useRemediationsQuery from '../../api/useRemediationsQuery';
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import { RemediationsPopover } from '../../routes/RemediationsPopover';
@@ -24,12 +25,13 @@ import {
   calculateActionPointsFromBoth,
   handleRemediationSubmit,
   renderExceedsLimitsAlert,
+  renderPreviewAlert,
   wizardHelperText,
   normalizeRemediationData,
-  handlePlaybookPreview,
   navigateToRemediation,
   countUniqueSystemsFromBoth,
   countUniqueIssuesFromBoth,
+  preparePlaybookPreviewPayload,
 } from '../helpers';
 import { remediationUrl } from '../../Utilities/utils';
 import { PlanSummaryHeader } from './PlanSummaryHeader';
@@ -37,15 +39,16 @@ import { PlanSummaryCharts } from './PlanSummaryCharts';
 import { PlaybookSelect } from './PlaybookSelect';
 import { usePlaybookSelect } from './usePlaybookSelect';
 import ModalStatusContent from './ModalStatusContent';
-import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import { postPlaybookPreview } from '../../routes/api';
 import { downloadFile } from '../../Utilities/helpers';
 
-export const RemediationWizardV2 = ({ setOpen, data }) => {
-  const addNotification = useAddNotification();
+export const RemediationWizardV2 = ({
+  setOpen,
+  data,
+  isCompliancePrecedenceEnabled = false,
+}) => {
   const [isOpen, setIsOpen] = useState(true);
-  const [showConfirmation, setShowConfirmation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null); // 'complete_failure' | 'partial_failure'
   const [errorRemediationId, setErrorRemediationId] = useState(null);
@@ -54,6 +57,15 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
   const [actionsCount, setActionsCount] = useState(0);
   const [systemsCount, setSystemsCount] = useState(0);
   const [issuesCount, setIssuesCount] = useState(0);
+  const [previewStatus, setPreviewStatus] = useState(null); // null, 'success', 'failure'
+  const [previewLoading, setPreviewLoading] = useState(false);
+  // Progress tracking for batched requests
+  const [progressTotalBatches, setProgressTotalBatches] = useState(0);
+  const [progressCompletedBatches, setProgressCompletedBatches] = useState(0);
+  const [progressFailedBatches, setProgressFailedBatches] = useState(0);
+  const [progressErrors, setProgressErrors] = useState([]);
+  const [progressIsComplete, setProgressIsComplete] = useState(false);
+  const isFirstRender = useRef(true);
 
   // Normalize data structure to ensure systems array exists
   const normalizedData = useMemo(() => normalizeRemediationData(data), [data]);
@@ -153,6 +165,15 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     selected,
   ]);
 
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    // Clear preview status when any of these values change
+    setPreviewStatus(null);
+  }, [selected, inputValue, autoReboot]);
+
   const exceedsLimits = useMemo(() => {
     return actionsCount > 1000 || systemsCount > 100;
   }, [actionsCount, systemsCount]);
@@ -175,18 +196,9 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     return inputValue.trim().length > 0;
   }, [isExistingPlanSelected, inputValue, isSelectOpen]);
 
-  const handleRequestClose = () => {
-    setShowConfirmation(true);
-  };
-
-  const handleConfirmClose = () => {
-    setShowConfirmation(false);
+  const handleClose = () => {
     setIsOpen(false);
     setOpen(false);
-  };
-
-  const handleGoBack = () => {
-    setShowConfirmation(false);
   };
 
   const resetErrorState = () => {
@@ -201,6 +213,28 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     }
     setIsSubmitting(true);
     resetErrorState();
+    // Reset progress tracking
+    setProgressTotalBatches(0);
+    setProgressCompletedBatches(0);
+    setProgressFailedBatches(0);
+    setProgressErrors([]);
+    setProgressIsComplete(false);
+
+    // Progress callback to update state as batches complete
+    const onProgress = (
+      totalBatches,
+      successfulBatches,
+      failedBatches,
+      errors,
+      isComplete,
+    ) => {
+      setProgressTotalBatches(totalBatches);
+      setProgressCompletedBatches(successfulBatches);
+      setProgressFailedBatches(failedBatches);
+      setProgressErrors(errors || []);
+      setProgressIsComplete(isComplete);
+    };
+
     try {
       // Pass original data to preserve nested systems structure for payload
       const result = await handleRemediationSubmit({
@@ -211,12 +245,15 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
         autoReboot,
         createRemediationFetch,
         updateRemediationFetch,
+        isCompliancePrecedenceEnabled,
+        onProgress,
       });
       if (
         result?.success &&
         result?.status === 'success' &&
         result?.remediationId
       ) {
+        // Navigate to remediation details page on success
         const url = remediationUrl(result.remediationId);
         window.location.href = url;
       } else if (
@@ -227,6 +264,10 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
         setSubmitError(result.status);
         setErrorRemediationId(result.remediationId || null);
         setErrorIsUpdate(result.isUpdate || false);
+        // Store errors from result if available
+        if (result.errors) {
+          setProgressErrors(result.errors);
+        }
       }
     } catch (error) {
       console.error(error);
@@ -245,20 +286,55 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
   const handleViewPlan = () => {
     navigateToRemediation(errorRemediationId);
   };
-  const handlePreview = () => {
-    handlePlaybookPreview({
-      hasPlanSelection,
-      isExistingPlanSelected,
-      remediationDetailsSummary,
-      data,
-      autoReboot,
-      postPlaybookPreview,
-      addNotification,
-      inputValue,
-      selected,
-      allRemediationsData,
-      downloadFile,
-    });
+  const handlePreview = async () => {
+    if (!hasPlanSelection) {
+      return;
+    }
+
+    setPreviewStatus(null);
+    setPreviewLoading(true);
+    try {
+      const payload = preparePlaybookPreviewPayload({
+        isExistingPlanSelected,
+        remediationDetailsSummary,
+        data,
+        autoReboot,
+        enablePrecedence: isCompliancePrecedenceEnabled,
+      });
+
+      const response = await postPlaybookPreview(payload, {
+        responseType: 'blob',
+      });
+
+      // Determine playbook name for filename
+      let playbookName = 'remediation-preview-playbook';
+      if (isExistingPlanSelected && remediationDetailsSummary?.name) {
+        playbookName = remediationDetailsSummary.name;
+      } else if (inputValue?.trim()) {
+        playbookName = inputValue.trim();
+      } else if (isExistingPlanSelected && selected) {
+        // Fallback: find name from allRemediationsData
+        const selectedRemediation = allRemediationsData?.find(
+          (r) => r.id === selected,
+        );
+        if (selectedRemediation?.name) {
+          playbookName = selectedRemediation.name;
+        }
+      }
+
+      const sanitizedFilename = playbookName
+        .replace(/[^a-z0-9]/gi, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+
+      downloadFile(response, sanitizedFilename, 'yml');
+      setPreviewStatus('success');
+    } catch (error) {
+      console.error('Error generating playbook preview:', error);
+      setPreviewStatus('failure');
+    } finally {
+      setPreviewLoading(false);
+    }
   };
 
   const renderMainContent = () => (
@@ -326,13 +402,25 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
             20 pts, Patch: 2 pts, and Compliance: 5 pts
           </HelperTextItem>
         </HelperText>
-        {exceedsLimits &&
+        {detailsLoading ? (
+          <div className="pf-v6-u-mt-lg">
+            <Skeleton height="120px" width="100%" />
+          </div>
+        ) : exceedsLimits ? (
           renderExceedsLimitsAlert({
             exceededSystems,
             exceededActions,
             systemsCount,
             actionsCount,
-          })}
+          })
+        ) : (
+          renderPreviewAlert({
+            hasPlanSelection,
+            onPreviewClick: handlePreview,
+            previewStatus,
+            previewLoading,
+          })
+        )}
       </ModalBody>
       <ModalFooter>
         <Flex gap={{ default: 'gapMd' }}>
@@ -357,15 +445,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
               {isExistingPlanSelected ? 'Update' : 'Create'} plan
             </Button>
           )}
-          <Button
-            key="preview"
-            variant="secondary"
-            onClick={handlePreview}
-            isDisabled={!hasPlanSelection}
-          >
-            Preview <DownloadIcon size="md" />
-          </Button>
-          <Button key="cancel" variant="link" onClick={handleRequestClose}>
+          <Button key="cancel" variant="link" onClick={handleClose}>
             Cancel
           </Button>
         </Flex>
@@ -373,7 +453,6 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     </>
   );
 
-  //TODO: implement new UX copy once completed
   const renderStatusContent = () => {
     if (submitError) {
       return (
@@ -384,22 +463,31 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
           remediationId={errorRemediationId}
           onClose={handleCloseError}
           onViewPlan={handleViewPlan}
+          progressTotalBatches={progressTotalBatches}
+          progressCompletedBatches={progressCompletedBatches}
+          progressFailedBatches={progressFailedBatches}
+          progressErrors={progressErrors}
+          progressIsComplete={progressIsComplete}
         />
       );
     }
 
     if (isSubmitting) {
+      // Show progress bar if we have batch information, otherwise show spinner
+      if (progressTotalBatches > 0) {
+        return (
+          <ModalStatusContent
+            status="progress"
+            isUpdate={isExistingPlanSelected}
+            progressTotalBatches={progressTotalBatches}
+            progressCompletedBatches={progressCompletedBatches}
+            progressFailedBatches={progressFailedBatches}
+            progressErrors={progressErrors}
+            progressIsComplete={progressIsComplete}
+          />
+        );
+      }
       return <ModalStatusContent status="submitting" />;
-    }
-
-    if (showConfirmation) {
-      return (
-        <ModalStatusContent
-          status="confirmation"
-          onConfirm={handleConfirmClose}
-          onCancel={handleGoBack}
-        />
-      );
     }
 
     return null;
@@ -409,7 +497,7 @@ export const RemediationWizardV2 = ({ setOpen, data }) => {
     <Modal
       isOpen={isOpen}
       variant={ModalVariant.medium}
-      onClose={isSubmitting || submitError ? undefined : handleRequestClose}
+      onClose={isSubmitting || submitError ? undefined : handleClose}
     >
       {renderStatusContent() || renderMainContent()}
     </Modal>
@@ -429,6 +517,7 @@ RemediationWizardV2.propTypes = {
     onRemediationCreated: propTypes.func,
   }).isRequired,
   basePath: propTypes.string,
+  isCompliancePrecedenceEnabled: propTypes.bool,
 };
 
 export default RemediationWizardV2;

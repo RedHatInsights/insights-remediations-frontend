@@ -2,54 +2,315 @@ import {
   Button,
   Card,
   CardBody,
-  CardFooter,
   CardTitle,
   ProgressStep,
   ProgressStepper,
   Spinner,
   Title,
+  Flex,
+  Content,
+  Label,
 } from '@patternfly/react-core';
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { OpenDrawerRightIcon } from '@patternfly/react-icons';
+import {
+  ExternalLinkAltIcon,
+  OpenDrawerRightIcon,
+} from '@patternfly/react-icons';
+import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
-import { useFeatureFlag } from '../../Utilities/Hooks/useFeatureFlag';
+import { calculateActionPointsFromSummary } from '../../components/helpers';
+import { pluralize } from '../../Utilities/utils';
+import {
+  calculateExecutionLimits,
+  getExecutionLimitsMessage,
+  getExecutionLimitsPopoverMessage,
+  calculateReadinessErrorCount,
+  renderStepTitleWithPopover,
+} from './helpers';
 
 const ProgressCard = ({
   remediationStatus,
   permissions,
   readyOrNot,
   onNavigateToTab,
+  details,
 }) => {
-  const isLightspeedRebrandEnabled = useFeatureFlag(
-    'platform.lightspeed-rebrand',
-  );
+  const [openPopover, setOpenPopover] = useState(null);
   const { quickStarts } = useChrome();
+
+  const actionPoints = useMemo(() => {
+    return calculateActionPointsFromSummary(details?.issue_count_details);
+  }, [details?.issue_count_details]);
+
+  const executionLimits = useMemo(() => {
+    return calculateExecutionLimits(details, actionPoints);
+  }, [details, actionPoints]);
+
+  const { exceedsExecutionLimits } = executionLimits;
+
+  const executionLimitsMessage = useMemo(() => {
+    return getExecutionLimitsMessage(executionLimits);
+  }, [executionLimits]);
+
+  const executionLimitsPopoverMessage = useMemo(() => {
+    return getExecutionLimitsPopoverMessage(executionLimits);
+  }, [executionLimits]);
+
+  const exceedsLimits = useMemo(() => {
+    return executionLimitsPopoverMessage === 'Exceeds limits';
+  }, [executionLimitsPopoverMessage]);
+
+  const errorCount = useMemo(() => {
+    return calculateReadinessErrorCount({
+      hasExecutePermission: permissions?.execute,
+      connectionError: remediationStatus?.connectionError,
+      connectedSystems: remediationStatus?.connectedSystems,
+      exceedsExecutionLimits,
+    });
+  }, [
+    permissions?.execute,
+    remediationStatus?.connectionError,
+    remediationStatus?.connectedSystems,
+    exceedsExecutionLimits,
+  ]);
+
+  const popoverState = { openPopover, setOpenPopover };
+
+  const executionLimitsPopoverContent = (
+    <Flex
+      direction={{ default: 'column' }}
+      spaceItems={{ default: 'spaceItemsMd' }}
+    >
+      <Title headingLevel="h4">Red Hat Lightspeed execution limits</Title>
+      <Content>
+        <p>
+          To execute a remediation plan using Insights, it must be within the
+          limit of 100 systems or 1000 action points. Action points (pts) per
+          issue type: Advisor: 20 pts, Vulnerability: 20 pts, Patch: 2 pts, and
+          Compliance: 5 pts.
+        </p>
+      </Content>
+      <Flex
+        direction={{ default: 'column' }}
+        spaceItems={{ default: 'spaceItemsSm' }}
+      >
+        <Button
+          variant="link"
+          icon={<ExternalLinkAltIcon />}
+          component="a"
+          href="https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Go to documentation
+        </Button>
+        <Content component="p">{executionLimitsPopoverMessage}</Content>
+      </Flex>
+    </Flex>
+  );
+
+  const executionLimitsDescription = useMemo(() => {
+    return <span className="pf-v6-u-color-100">{executionLimitsMessage}</span>;
+  }, [executionLimitsMessage]);
+
+  const permissionsPopoverContent = (
+    <Flex
+      direction={{ default: 'column' }}
+      spaceItems={{ default: 'spaceItemsMd' }}
+    >
+      <Content>
+        <p>
+          To execute remediation plans on connected remote host systems from
+          within <strong>Red Hat Lightspeed</strong>, ensure that you have the
+          Remediations administrator RBAC role. You can check your role settings
+          in the console in Settings (⚙) &gt; User Access &gt; Groups. You
+          might need to contact your organization administrator to confirm your
+          user access settings and to apply the required permissions.
+        </p>
+      </Content>
+      <Flex
+        direction={{ default: 'column' }}
+        spaceItems={{ default: 'spaceItemsSm' }}
+      >
+        <Button
+          variant="secondary"
+          onClick={() =>
+            quickStarts?.activateQuickstart('insights-remediate-plan-create')
+          }
+        >
+          Open the quick start
+        </Button>
+        <Button
+          variant="link"
+          icon={<ExternalLinkAltIcon />}
+          component="a"
+          href="https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html/user-access-configuration-guide-for-role-based-access-control-rbac/index"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Go to documentation
+        </Button>
+      </Flex>
+      <Content component="p">
+        {permissions?.execute ? 'Authorized' : 'Not authorized'}
+      </Content>
+    </Flex>
+  );
+
+  const connectedSystemsPopoverContent = (
+    <Flex
+      direction={{ default: 'column' }}
+      spaceItems={{ default: 'spaceItemsMd' }}
+    >
+      <Title headingLevel="h4">Lightspeed connected systems</Title>
+      <Content>
+        <p>
+          To execute a remediation plan from <strong>Red Hat Lightspeed</strong>
+          , your RHEL systems must be connected either directly via the
+          &quot;rhc connect&quot; command or through a properly configured Red
+          Hat Satellite server. For detailed troubleshooting guidance, review
+          the <strong>Connection status</strong> details for each disconnected
+          system.{' '}
+          <Button
+            variant="link"
+            onClick={() => onNavigateToTab(null, 'systems')}
+          >
+            View systems
+          </Button>
+        </p>
+      </Content>
+      <Flex
+        direction={{ default: 'column' }}
+        spaceItems={{ default: 'spaceItemsSm' }}
+      >
+        <Button
+          variant="secondary"
+          onClick={() =>
+            quickStarts?.activateQuickstart('insights-remediate-plan-create')
+          }
+        >
+          Open the quick start
+        </Button>
+        <Button
+          variant="link"
+          icon={<ExternalLinkAltIcon />}
+          component="a"
+          href="https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#host-communication-with-red-hat-lightspeed_red-hat-lightspeed-remediation-guide"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Go to documentation
+        </Button>
+      </Flex>
+      <Content component="p">
+        {`${remediationStatus?.connectedSystems || 0} (of ${remediationStatus?.totalSystems || 0}) connected systems`}
+      </Content>
+    </Flex>
+  );
+
+  const rhcPopoverContent = (
+    <Flex
+      direction={{ default: 'column' }}
+      spaceItems={{ default: 'spaceItemsMd' }}
+    >
+      <Content>
+        <p>
+          To allow users to execute a remediation plan on a remote system from{' '}
+          <strong>Red Hat Lightspeed</strong>, you must configure the Remote
+          Host Configuration Manager settings in the Lightspeed UI. You can find
+          the settings in the console under Inventory &gt; System Configurations
+          &gt; Remote Host Configuration.
+        </p>
+      </Content>
+      <Flex
+        direction={{ default: 'column' }}
+        spaceItems={{ default: 'spaceItemsSm' }}
+      >
+        <Button
+          variant="secondary"
+          onClick={() =>
+            quickStarts?.activateQuickstart('insights-remediate-plan-create')
+          }
+        >
+          Open the quick start
+        </Button>
+        <Button
+          variant="link"
+          icon={<ExternalLinkAltIcon />}
+          component="a"
+          href="https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/remote_host_configuration_and_management/index"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Go to documentation
+        </Button>
+      </Flex>
+      <Content component="p">
+        {remediationStatus?.connectionError?.errors?.[0]?.status !== 403
+          ? 'Enabled'
+          : 'Not enabled'}
+      </Content>
+    </Flex>
+  );
 
   return permissions === undefined || remediationStatus.areDetailsLoading ? (
     <Spinner />
   ) : (
     <Card isFullHeight>
       <CardTitle>
-        <Title headingLevel="h4" size="xl">
-          Execution readiness
-        </Title>
+        <Flex
+          justifyContent={{ default: 'justifyContentSpaceBetween' }}
+          alignItems={{ default: 'alignItemsCenter' }}
+        >
+          <Title headingLevel="h4" size="xl">
+            Execution readiness summary
+          </Title>
+          {readyOrNot ? (
+            <Label status="success">Ready</Label>
+          ) : (
+            <Label status="danger" variant="outline">
+              {`Not ready (${pluralize(errorCount, 'error')})`}
+            </Label>
+          )}
+        </Flex>
       </CardTitle>
 
       <CardBody>
-        <p className="pf-v6-u-font-size-sm pf-v6-u-mb-md">
-          To pass the execution readiness check, ensure you have the required
-          permissions and that the Remote Host Configuration Manager is enabled
-          for the affected systems in{' '}
-          {isLightspeedRebrandEnabled ? 'Red Hat Lightspeed' : 'Insights'}. The
-          Remote Host Configuration (RHC) client must also be active on every
-          system. If the readiness check fails, the <b>Execute</b> button is
-          inactive.
+        <p className="pf-v6-u-mb-md">
+          Address errors in this section to ensure that your remediation plan is
+          ready for execution.{' '}
+          <InsightsLink
+            to="https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide"
+            target="_blank"
+            style={{ textDecoration: 'none' }}
+          >
+            Learn more{' '}
+            <OpenDrawerRightIcon size="xl" className="pf-v6-u-ml-sm" />
+          </InsightsLink>
         </p>
+
         <ProgressStepper
           isVertical={true}
           aria-label="Remediation Readiness card"
         >
+          <ProgressStep
+            variant={exceedsExecutionLimits ? 'danger' : 'success'}
+            description={executionLimitsDescription}
+            id="executionLimitsStep"
+            titleId="ExecutionLimitsStep"
+            aria-label="ExecutionLimitsStep"
+          >
+            <span className="pf-v6-u-color-100">
+              {renderStepTitleWithPopover(
+                'executionLimitsStep',
+                'Red Hat Lightspeed execution limits',
+                executionLimitsPopoverContent,
+                popoverState,
+                exceedsLimits,
+              )}
+            </span>
+          </ProgressStep>
           <ProgressStep
             variant={permissions?.execute ? 'success' : 'danger'}
             description={
@@ -58,9 +319,8 @@ const ProgressCard = ({
                   'Authorized'
                 ) : (
                   <>
-                    You do not have the required&nbsp;
-                    <strong>Remediations administrator</strong>&nbsp;RBAC role.
-                    Contact your organization administrator to request access.
+                    Not authorized. Check your user access permissions to ensure
+                    that you have the Remediations administrator RBAC role.
                   </>
                 )}
               </span>
@@ -69,15 +329,25 @@ const ProgressCard = ({
             titleId="PermissionsStep"
             aria-label="PermissionsStep1"
           >
-            User access permissions
+            <span className="pf-v6-u-color-100">
+              {renderStepTitleWithPopover(
+                'permissionsStep',
+                'User access permissions',
+                permissionsPopoverContent,
+                popoverState,
+              )}
+            </span>
           </ProgressStep>
           <ProgressStep
             variant={
-              remediationStatus?.detailsError !== 403 ? 'success' : 'danger'
+              remediationStatus?.connectionError?.errors?.[0]?.status !== 403
+                ? 'success'
+                : 'danger'
             }
             description={
               <span className="pf-v6-u-color-100">
-                {remediationStatus?.detailsError !== 403 ? (
+                {remediationStatus?.connectionError?.errors?.[0]?.status !==
+                403 ? (
                   'Enabled'
                 ) : (
                   <>
@@ -91,7 +361,7 @@ const ProgressCard = ({
                         color: 'var(--pf-v6-global--link--Color)',
                       }}
                     >
-                      Remote Host Configuration&nbsp;(RHC)
+                      Remote Host Configuration
                     </a>
                     .
                   </>
@@ -103,7 +373,12 @@ const ProgressCard = ({
             aria-label="RHCStep2"
           >
             <span className="pf-v6-u-color-100">
-              Remote Host Configuration Manager (RHC)
+              {renderStepTitleWithPopover(
+                'RHCStep',
+                'Remote Host Configuration Manager',
+                rhcPopoverContent,
+                popoverState,
+              )}
             </span>
           </ProgressStep>
           <ProgressStep
@@ -112,46 +387,52 @@ const ProgressCard = ({
             }
             description={
               <div className="pf-v6-u-color-100">
-                {`${remediationStatus?.connectedSystems} (of ${remediationStatus?.totalSystems}) connected systems`}{' '}
-                <Button
-                  variant="link"
-                  onClick={() => onNavigateToTab(null, 'systems')}
-                >
-                  View systems
-                </Button>
+                {remediationStatus?.connectedSystems === 0 ? (
+                  <>
+                    No connected systems. You must connect one or more systems
+                    to execute this plan. Review the{' '}
+                    <strong>Connection status</strong> details for each
+                    disconnected system{' '}
+                    <Button
+                      variant="link"
+                      onClick={() =>
+                        onNavigateToTab(null, 'plannedRemediations:systems')
+                      }
+                    >
+                      View systems
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    {`${remediationStatus?.connectedSystems} (of ${remediationStatus?.totalSystems}) connected systems`}{' '}
+                    <Button
+                      variant="link"
+                      onClick={() =>
+                        onNavigateToTab(null, 'plannedRemediations:systems')
+                      }
+                    >
+                      View systems
+                    </Button>
+                  </>
+                )}
               </div>
             }
             id="connectedSystemsStep"
             titleId="connectedSystemsStep-title"
             aria-label="connectedSystemsStep"
           >
-            <span className="pf-v6-u-color-100">Connected systems</span>
-          </ProgressStep>
-          <ProgressStep
-            variant={readyOrNot ? `success` : 'danger'}
-            id="readyStep"
-            titleId="readyStep-title"
-            aria-label="Ready step"
-          >
-            <span className="pf-v6-u-font-weight-bold pf-v6-u-color-100">
-              {readyOrNot ? 'Ready for execution' : 'Not ready for execution'}
+            <span className="pf-v6-u-color-100">
+              {renderStepTitleWithPopover(
+                'connectedSystemsStep',
+                'Systems connected to Red Hat Lightspeed',
+                connectedSystemsPopoverContent,
+                popoverState,
+                remediationStatus?.connectedSystems === 0,
+              )}
             </span>
           </ProgressStep>
         </ProgressStepper>
       </CardBody>
-      <CardFooter className="pf-v6-u-font-size-sm">
-        Need help to pass the remediations execution readiness check?
-        <Button
-          icon={<OpenDrawerRightIcon data-testid="open-drawer-icon" />}
-          onClick={() =>
-            quickStarts?.activateQuickstart('insights-remediate-plan-create')
-          }
-          variant="link"
-          className="pf-v6-u-font-size-sm"
-        >
-          Learn more
-        </Button>
-      </CardFooter>
     </Card>
   );
 };
@@ -161,6 +442,7 @@ ProgressCard.propTypes = {
   permissions: PropTypes.object,
   readyOrNot: PropTypes.bool,
   onNavigateToTab: PropTypes.func,
+  details: PropTypes.object,
 };
 
 export default ProgressCard;

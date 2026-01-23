@@ -81,7 +81,9 @@ const RemediationDetailsPageHeader = ({
               </FlexItem>
               <FlexItem>
                 <ButtonWithToolTip
-                  isDisabled={!remediation?.issue_count}
+                  isDisabled={
+                    !remediation?.issue_count || remediation.system_count === 0
+                  }
                   onClick={handleDownload}
                   tooltipContent={
                     <div>
@@ -134,7 +136,7 @@ RemediationDetailsPageHeader.propTypes = {
     connectedSystems: PropTypes.number.isRequired,
     totalSystems: PropTypes.number.isRequired,
     areDetailsLoading: PropTypes.bool.isRequired,
-    detailsError: PropTypes.any,
+    connectionError: PropTypes.any,
   }).isRequired,
   isFedramp: PropTypes.bool,
   allRemediations: PropTypes.array,

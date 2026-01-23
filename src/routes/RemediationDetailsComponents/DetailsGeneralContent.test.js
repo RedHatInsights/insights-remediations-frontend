@@ -69,11 +69,20 @@ jest.mock('@patternfly/react-core', () => ({
 
 describe('DetailsGeneralContent', () => {
   const defaultProps = {
-    details: jest.fn(),
+    details: {
+      id: 'rem-1',
+      name: 'Test Remediation',
+      issue_count: 0,
+      system_count: 5,
+      issue_count_details: {},
+      auto_reboot: true,
+      created_at: '2023-01-01T00:00:00Z',
+      updated_at: '2023-01-01T00:00:00Z',
+    },
     onRename: jest.fn(),
     refetch: jest.fn(),
     remediationStatus: {
-      detailsError: null,
+      connectionError: null,
       connectedSystems: 5,
     },
     updateRemPlan: jest.fn(),
@@ -140,7 +149,7 @@ describe('DetailsGeneralContent', () => {
         ...defaultProps,
         permissions: { execute: true },
         remediationStatus: {
-          detailsError: null,
+          connectionError: null,
           connectedSystems: 5,
         },
       };
@@ -162,7 +171,7 @@ describe('DetailsGeneralContent', () => {
         ...defaultProps,
         permissions: { execute: false },
         remediationStatus: {
-          detailsError: null,
+          connectionError: null,
           connectedSystems: 5,
         },
       };
@@ -179,12 +188,12 @@ describe('DetailsGeneralContent', () => {
       expect(progressCardProps.readyOrNot).toBe(false); // Should be false when execute permission is false
     });
 
-    it('should calculate readyOrNot as false when detailsError is 403', () => {
+    it('should calculate readyOrNot as false when connectionError status is 403', () => {
       const props = {
         ...defaultProps,
         permissions: { execute: true },
         remediationStatus: {
-          detailsError: 403,
+          connectionError: { errors: [{ status: 403 }] },
           connectedSystems: 5,
         },
       };
@@ -206,7 +215,7 @@ describe('DetailsGeneralContent', () => {
         ...defaultProps,
         permissions: { execute: true },
         remediationStatus: {
-          detailsError: null,
+          connectionError: null,
           connectedSystems: 0,
         },
       };
@@ -228,7 +237,7 @@ describe('DetailsGeneralContent', () => {
         ...defaultProps,
         permissions: undefined,
         remediationStatus: {
-          detailsError: null,
+          connectionError: null,
           connectedSystems: 5,
         },
       };
@@ -248,12 +257,12 @@ describe('DetailsGeneralContent', () => {
       const props = {
         ...defaultProps,
         permissions: { execute: true },
-        remediationStatus: {}, // Missing detailsError and connectedSystems
+        remediationStatus: {}, // Missing connectionError and connectedSystems
       };
 
       render(<DetailsGeneralContent {...props} />);
 
-      // Should NOT show alert because undefined !== 403 and undefined !== 0 are both true
+      // Should NOT show alert because connectionError?.errors?.[0]?.status !== 403 and undefined !== 0 are both true
       expect(screen.queryByTestId('alert')).not.toBeInTheDocument();
 
       const progressCardProps = JSON.parse(
@@ -268,7 +277,7 @@ describe('DetailsGeneralContent', () => {
       const props = {
         ...defaultProps,
         remediationStatus: {
-          detailsError: 403,
+          connectionError: { errors: [{ status: 403 }] },
           connectedSystems: 5,
         },
       };
@@ -278,7 +287,7 @@ describe('DetailsGeneralContent', () => {
       const alert = screen.getByTestId('alert');
       expect(alert).toHaveAttribute('data-inline', 'true');
       expect(alert).toHaveAttribute('data-variant', 'danger');
-      expect(alert).toHaveClass('pf-v6-u-mb-md');
+      expect(alert).toHaveClass('pf-v6-u-mb-sm');
 
       expect(screen.getByTestId('alert-title')).toHaveTextContent(
         'Remediation plan cannot be executed',
@@ -342,7 +351,7 @@ describe('DetailsGeneralContent', () => {
         onRename: jest.fn(),
         refetch: jest.fn(),
         remediationStatus: {
-          detailsError: null,
+          connectionError: null,
           connectedSystems: 5,
         },
       };
@@ -385,7 +394,7 @@ describe('DetailsGeneralContent', () => {
         ...defaultProps,
         permissions: { execute: false },
         remediationStatus: {
-          detailsError: 403,
+          connectionError: { errors: [{ status: 403 }] },
           connectedSystems: 0,
         },
       };
@@ -409,25 +418,37 @@ describe('DetailsGeneralContent', () => {
 
       render(<DetailsGeneralContent {...props} />);
 
-      // Should NOT show alert because null?.detailsError !== 403 and null?.connectedSystems !== 0 are both true
+      // Should NOT show alert because null?.connectionError?.errors?.[0]?.status !== 403 and null?.connectedSystems !== 0 are both true
       expect(screen.queryByTestId('alert')).not.toBeInTheDocument();
     });
 
-    it('should handle different detailsError values', () => {
+    it('should handle different connectionError values', () => {
       const testCases = [
-        { detailsError: 500, shouldShowAlert: false },
-        { detailsError: 404, shouldShowAlert: false },
-        { detailsError: 403, shouldShowAlert: true },
-        { detailsError: 0, shouldShowAlert: false },
-        { detailsError: null, shouldShowAlert: false },
-        { detailsError: undefined, shouldShowAlert: false },
+        {
+          connectionError: { errors: [{ status: 500 }] },
+          shouldShowAlert: false,
+        },
+        {
+          connectionError: { errors: [{ status: 404 }] },
+          shouldShowAlert: false,
+        },
+        {
+          connectionError: { errors: [{ status: 403 }] },
+          shouldShowAlert: true,
+        },
+        {
+          connectionError: { errors: [{ status: 0 }] },
+          shouldShowAlert: false,
+        },
+        { connectionError: null, shouldShowAlert: false },
+        { connectionError: undefined, shouldShowAlert: false },
       ];
 
-      testCases.forEach(({ detailsError, shouldShowAlert }) => {
+      testCases.forEach(({ connectionError, shouldShowAlert }) => {
         const props = {
           ...defaultProps,
           remediationStatus: {
-            detailsError,
+            connectionError,
             connectedSystems: 5,
           },
         };
@@ -457,7 +478,7 @@ describe('DetailsGeneralContent', () => {
         const props = {
           ...defaultProps,
           remediationStatus: {
-            detailsError: null,
+            connectionError: null,
             connectedSystems,
           },
         };

@@ -34,7 +34,7 @@ const App = () => {
 
   useEffect(() => {
     if (chrome) {
-      chrome?.hideGlobalFilter?.();
+      chrome?.hideGlobalFilter?.(true);
 
       getIsReceptorConfigured()
         .then((isConfigured) =>

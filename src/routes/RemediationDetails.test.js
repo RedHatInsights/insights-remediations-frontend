@@ -58,6 +58,15 @@ jest.mock(
   () => ExecutionHistoryMock,
 );
 
+const PlannedRemediationsContentMock = () => (
+  <div>PlannedRemediationsContent</div>
+);
+PlannedRemediationsContentMock.displayName = 'PlannedRemediationsContent';
+jest.mock(
+  './RemediationDetailsComponents/PlannedRemediationsContent',
+  () => PlannedRemediationsContentMock,
+);
+
 // eslint-disable-next-line react/prop-types
 const RenameModalMock = ({ isRenameModalOpen }) =>
   isRenameModalOpen ? <div>RenameModal</div> : null;
@@ -90,9 +99,15 @@ describe('RemediationDetails', () => {
             // 2) checkExecutableStatus({ params: { remId: '123' } })
             return { result: 'OK' };
           case 3:
-            // 3) getRemediationDetails({ params: { remId: '123' } })
+            // 3) getRemediationDetails({ params: { remId: '123', format: 'summary' } })
             return {
-              result: { id: '123', name: 'Test Remediation', issues: [] },
+              result: {
+                id: '123',
+                name: 'Test Remediation',
+                issue_count: 0,
+                system_count: 0,
+                issue_count_details: {},
+              },
               refetch: jest.fn(),
               loading: false,
             };
@@ -134,7 +149,7 @@ describe('RemediationDetails', () => {
               refetch: jest.fn(),
             };
           case 5:
-            // 5) updateRemediationPlans({ skip: true })
+            // 5) updateRemediationWrapper({ skip: true })
             return { fetch: jest.fn() };
           default:
             return {};
@@ -161,11 +176,11 @@ describe('RemediationDetails', () => {
     // 3) Rendering sanity checks
     expect(screen.getByText('Header')).toBeInTheDocument();
     expect(screen.getByText('GeneralContent')).toBeInTheDocument();
-    expect(screen.getByText('SystemsTable')).toBeInTheDocument();
-    expect(screen.getByText('ActionsContent')).toBeInTheDocument();
+    expect(screen.getByText('PlannedRemediationsContent')).toBeInTheDocument();
     expect(screen.getByText('ExecutionHistory')).toBeInTheDocument();
 
     // 4) Assert exactly five calls in the right sequence
+    // Note: getRemediationIssues is called from ActionsContent (child component), not from RemediationDetails
     expect(remediationSpy).toHaveBeenCalledTimes(5);
 
     const calls = remediationSpy.mock.calls;

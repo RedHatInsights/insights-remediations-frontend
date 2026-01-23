@@ -1,12 +1,18 @@
 import {
   Alert,
+  Button,
   Flex,
   HelperText,
   HelperTextItem,
+  Hint,
+  HintBody,
+  HintTitle,
   Skeleton,
+  Spinner,
 } from '@patternfly/react-core';
+import { DownloadIcon } from '@patternfly/react-icons';
 import React from 'react';
-import { getIssueApplication } from '../Utilities/model';
+import { getIssuePrefix } from '../Utilities/model';
 import { createRemediationBatches, remediationUrl } from '../Utilities/utils';
 
 export const wizardHelperText = (exceedsLimits) => {
@@ -14,7 +20,7 @@ export const wizardHelperText = (exceedsLimits) => {
     return (
       <HelperText isLiveRegion className="pf-v6-u-mt-sm">
         <HelperTextItem variant="warning">
-          Remediation plan exceeds execution limits
+          Remediation plan exceeds limits
         </HelperTextItem>
       </HelperText>
     );
@@ -60,12 +66,12 @@ export const renderExceedsLimitsAlert = ({
     <Alert
       isInline
       variant="warning"
-      title="Remediation plan exceeds execution limits"
+      title="Remediation plan exceeds limits "
       className="pf-v6-u-mt-lg"
     >
       <p>
-        To execute a remediation plan using Red Hat Lightspeed, the plan must
-        contain no more than 100 systems or 1000 action points.
+        To preview or execute a remediation plan using Red Hat Lightspeed, the
+        plan must be limited to a maximum of 100 systems or 1000 action points.
       </p>
       <ul className="pf-v6-c-list pf-v6-u-my-sm">
         <li>
@@ -81,7 +87,7 @@ export const renderExceedsLimitsAlert = ({
           Otherwise, create and download the plan to run with Red Hat{' '}
           <strong>Ansible Automation Platform (AAP)</strong> or execute using a{' '}
           <a
-            href="https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html-single/integrating_the_red_hat_hybrid_cloud_console_with_third-party_applications/index#assembly-configuring-integration-with-eda_integrating-communications"
+            href="https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/using_automation_execution/controller-setting-up-insights"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -94,6 +100,76 @@ export const renderExceedsLimitsAlert = ({
   );
 };
 
+export const renderPreviewAlert = ({
+  hasPlanSelection,
+  onPreviewClick,
+  previewStatus,
+  previewLoading,
+}) => {
+  return (
+    <Hint variant="info" className="pf-v6-u-mt-lg">
+      <HintTitle>You can download a preview of this plan</HintTitle>
+      <HintBody>
+        <p>
+          The preview includes the playbook used in the plan, which you can
+          download and execute on your system. To execute the playbook using Red
+          Hat Lightspeed, complete this form to create a remediation plan. It
+          will automatically include the required remote execution
+          configurations.
+        </p>
+        <Flex
+          gap={{ default: 'gapSm' }}
+          alignItems={{ default: 'alignItemsCenter' }}
+          className="pf-v6-u-mt-sm"
+        >
+          <Button
+            variant="link"
+            icon={<DownloadIcon />}
+            onClick={onPreviewClick}
+            isDisabled={!hasPlanSelection || previewLoading}
+          >
+            Download preview
+          </Button>
+          {previewLoading && <Spinner size="sm" />}
+          {previewStatus && !previewLoading && (
+            <Alert
+              isInline
+              isPlain
+              variant={previewStatus === 'success' ? 'success' : 'danger'}
+              title={
+                previewStatus === 'success'
+                  ? 'Preview downloaded'
+                  : 'Preview download failed'
+              }
+            />
+          )}
+        </Flex>
+      </HintBody>
+    </Hint>
+  );
+};
+
+export const calculateActionPointsFromSummary = (issueCountDetails) => {
+  if (!issueCountDetails || typeof issueCountDetails !== 'object') {
+    return 0;
+  }
+
+  const POINTS_MAP = {
+    advisor: 20,
+    vulnerabilities: 20,
+    'patch-advisory': 2,
+    'patch-package': 2,
+    ssg: 5,
+  };
+
+  let totalPoints = 0;
+  for (const [issueType, count] of Object.entries(issueCountDetails)) {
+    const points = POINTS_MAP[issueType] || 0;
+    totalPoints += points * (count || 0);
+  }
+
+  return totalPoints;
+};
 // Calculates action points from an array of issues based on their application type.
 // Points per action type: Advisor (20 pts), Vulnerability (20 pts), Patch (2 pts), Compliance (5 pts)
 export const calculateActionPoints = (issues) => {
@@ -102,15 +178,16 @@ export const calculateActionPoints = (issues) => {
   }
 
   const POINTS_MAP = {
-    Advisor: 20,
-    Vulnerability: 20,
-    Patch: 2,
-    Compliance: 5,
+    advisor: 20,
+    vulnerabilities: 20,
+    'patch-advisory': 2,
+    'patch-package': 2,
+    ssg: 5,
   };
 
   return issues.reduce((totalPoints, issue) => {
-    const application = getIssueApplication(issue);
-    const points = POINTS_MAP[application] || 0;
+    const prefix = getIssuePrefix(issue.id);
+    const points = POINTS_MAP[prefix] || 0;
     return totalPoints + points;
   }, 0);
 };
@@ -271,17 +348,29 @@ export const normalizeRemediationData = (data) => {
 };
 
 // Prepares remediation payload for create/update
-export const prepareRemediationPayload = (data, autoReboot) => {
+export const prepareRemediationPayload = (
+  data,
+  autoReboot,
+  enablePrecedence = false,
+) => {
   // Check if systems are nested within issues (new structure)
   const hasNestedSystems = data?.issues?.some(
     (issue) => issue.systems && Array.isArray(issue.systems),
   );
 
-  const issues = (data?.issues || []).map((issue) => ({
-    id: issue.id,
-    // Use issue's systems if nested, otherwise use flat systems array
-    systems: hasNestedSystems ? issue.systems || [] : data?.systems || [],
-  }));
+  const issues = (data?.issues || []).map((issue) => {
+    const issuePayload = {
+      id: issue.id,
+      // Use issue's systems if nested, otherwise use flat systems array
+      systems: hasNestedSystems ? issue.systems || [] : data?.systems || [],
+    };
+
+    if (enablePrecedence) {
+      issuePayload.precedence = issue.precedence;
+    }
+
+    return issuePayload;
+  });
 
   return {
     add: {
@@ -298,7 +387,8 @@ const throttle = (ms) => {
 };
 
 // Handles remediation submission (create or update) with batching and throttling
-// Returns { success: boolean, status: 'success' | 'complete_failure' | 'partial_failure', remediationId?: string, remediationName?: string, isUpdate?: boolean }
+// Returns { success: boolean, status: 'success' | 'complete_failure' | 'partial_failure', remediationId?: string, remediationName?: string, isUpdate?: boolean, errors?: array }
+// onProgress callback: (totalBatches, successfulBatches, failedBatches, errors, isComplete) => void
 export const handleRemediationSubmit = async ({
   isExistingPlanSelected,
   selected,
@@ -307,16 +397,40 @@ export const handleRemediationSubmit = async ({
   autoReboot,
   createRemediationFetch,
   updateRemediationFetch,
+  isCompliancePrecedenceEnabled = false,
+  onProgress,
 }) => {
-  const payload = prepareRemediationPayload(data, autoReboot);
+  const payload = prepareRemediationPayload(
+    data,
+    autoReboot,
+    isCompliancePrecedenceEnabled,
+  );
   const { issues } = payload.add;
 
   // Create batches of issues (max 50 issues per batch, max 50 systems per issue)
   const batches = createRemediationBatches(issues);
+  const totalBatches = Math.max(batches.length, 1); // At least 1 batch (empty case)
 
   let remediationId = selected;
   let successfulBatches = 0;
   let failedBatches = 0;
+  const collectedErrors = [];
+
+  // Helper function to extract error titles from error response
+  const extractErrorTitles = (error) => {
+    try {
+      const errorData = error?.response?.data || error?.data || {};
+      const errors = errorData?.errors || [];
+      return errors.map((err) => err?.title).filter(Boolean);
+    } catch {
+      return [];
+    }
+  };
+
+  // Report initial progress
+  if (onProgress) {
+    onProgress(totalBatches, successfulBatches, failedBatches, [], false);
+  }
 
   // If no batches, still need to create/update with empty data
   if (batches.length === 0) {
@@ -347,6 +461,11 @@ export const handleRemediationSubmit = async ({
         }
       }
 
+      // Report progress after empty batch
+      if (onProgress) {
+        onProgress(totalBatches, successfulBatches, failedBatches, [], true);
+      }
+
       if (failedBatches > 0) {
         return {
           success: false,
@@ -354,6 +473,7 @@ export const handleRemediationSubmit = async ({
           remediationId,
           remediationName: inputValue.trim() || 'New remediation plan',
           isUpdate: isExistingPlanSelected,
+          errors: collectedErrors,
         };
       }
 
@@ -363,14 +483,29 @@ export const handleRemediationSubmit = async ({
         remediationId,
         remediationName: inputValue.trim() || 'New remediation plan',
         isUpdate: isExistingPlanSelected,
+        errors: [],
       };
-    } catch {
+    } catch (error) {
+      failedBatches++;
+      const errorTitles = extractErrorTitles(error);
+      collectedErrors.push(...errorTitles);
+      // Report progress after failure
+      if (onProgress) {
+        onProgress(
+          totalBatches,
+          successfulBatches,
+          failedBatches,
+          collectedErrors,
+          true,
+        );
+      }
       return {
         success: false,
         status: 'complete_failure',
         remediationId,
         remediationName: inputValue.trim() || 'New remediation plan',
         isUpdate: isExistingPlanSelected,
+        errors: collectedErrors,
       };
     }
   }
@@ -405,26 +540,61 @@ export const handleRemediationSubmit = async ({
 
       if (!remediationId) {
         failedBatches++;
+        // Report progress after failure
+        if (onProgress) {
+          onProgress(
+            totalBatches,
+            successfulBatches,
+            failedBatches,
+            collectedErrors,
+            true,
+          );
+        }
         return {
           success: false,
           status: 'complete_failure',
           remediationId: null,
           remediationName: inputValue.trim() || 'New remediation plan',
           isUpdate: false,
+          errors: collectedErrors,
         };
       }
       successfulBatches++;
+    }
+    // Report progress after first batch (not complete yet)
+    if (onProgress) {
+      const isComplete = batches.length === 1;
+      onProgress(
+        totalBatches,
+        successfulBatches,
+        failedBatches,
+        collectedErrors,
+        isComplete,
+      );
     }
   } catch (error) {
     // Initial request failed - complete failure
     console.error('Initial remediation request failed:', error);
     failedBatches++;
+    const errorTitles = extractErrorTitles(error);
+    collectedErrors.push(...errorTitles);
+    // Report progress after failure
+    if (onProgress) {
+      onProgress(
+        totalBatches,
+        successfulBatches,
+        failedBatches,
+        collectedErrors,
+        true,
+      );
+    }
     return {
       success: false,
       status: 'complete_failure',
       remediationId: null,
       remediationName: inputValue.trim() || 'New remediation plan',
       isUpdate: isExistingPlanSelected,
+      errors: collectedErrors,
     };
   }
 
@@ -447,8 +617,21 @@ export const handleRemediationSubmit = async ({
       successfulBatches++;
     } catch (error) {
       failedBatches++;
+      const errorTitles = extractErrorTitles(error);
+      collectedErrors.push(...errorTitles);
       // Continue processing remaining batches even if one fails
       console.warn(`Failed to add batch ${i + 1}:`, error);
+    }
+    // Report progress after each batch (not complete until last batch)
+    if (onProgress) {
+      const isComplete = i === batches.length - 1;
+      onProgress(
+        totalBatches,
+        successfulBatches,
+        failedBatches,
+        collectedErrors,
+        isComplete,
+      );
     }
   }
 
@@ -460,6 +643,7 @@ export const handleRemediationSubmit = async ({
       remediationId,
       remediationName: inputValue.trim() || 'New remediation plan',
       isUpdate: isExistingPlanSelected,
+      errors: [],
     };
   } else if (successfulBatches > 0) {
     // Partial failure - some succeeded, some failed
@@ -469,6 +653,7 @@ export const handleRemediationSubmit = async ({
       remediationId,
       remediationName: inputValue.trim() || 'New remediation plan',
       isUpdate: isExistingPlanSelected,
+      errors: collectedErrors,
     };
   } else {
     // Complete failure - should not happen here since we check initial request above
@@ -478,6 +663,7 @@ export const handleRemediationSubmit = async ({
       remediationId: null,
       remediationName: inputValue.trim() || 'New remediation plan',
       isUpdate: isExistingPlanSelected,
+      errors: collectedErrors,
     };
   }
 };
@@ -489,6 +675,7 @@ export const preparePlaybookPreviewPayload = ({
   remediationDetailsSummary,
   data,
   autoReboot,
+  enablePrecedence = false,
 }) => {
   // Check if systems are nested within issues (new structure)
   const hasNestedSystems = data?.issues?.some(
@@ -505,6 +692,10 @@ export const preparePlaybookPreviewPayload = ({
     // Include resolution if present
     if (issue.resolution) {
       issuePayload.resolution = issue.resolution;
+    }
+
+    if (enablePrecedence) {
+      issuePayload.precedence = issue.precedence;
     }
 
     return issuePayload;
@@ -538,6 +729,10 @@ export const preparePlaybookPreviewPayload = ({
           typeof issue.resolution === 'string'
             ? issue.resolution
             : issue.resolution.id;
+      }
+
+      if (enablePrecedence) {
+        issuePayload.precedence = issue.precedence;
       }
 
       return issuePayload;
@@ -580,89 +775,6 @@ export const preparePlaybookPreviewPayload = ({
     issues: Array.from(issuesMap.values()),
     auto_reboot: autoReboot,
   };
-};
-
-// Handles playbook preview generation and download
-export const handlePlaybookPreview = async ({
-  hasPlanSelection,
-  isExistingPlanSelected,
-  remediationDetailsSummary,
-  data,
-  autoReboot,
-  postPlaybookPreview,
-  addNotification,
-  inputValue,
-  selected,
-  allRemediationsData,
-  downloadFile,
-}) => {
-  if (!hasPlanSelection) {
-    return;
-  }
-
-  try {
-    // Prepare payload using helper function
-    const payload = preparePlaybookPreviewPayload({
-      isExistingPlanSelected,
-      remediationDetailsSummary,
-      data,
-      autoReboot,
-    });
-
-    const response = await postPlaybookPreview(payload, {
-      responseType: 'blob',
-    });
-
-    // Determine playbook name for filename
-    let playbookName = 'remediation-preview-playbook';
-    if (isExistingPlanSelected && remediationDetailsSummary?.name) {
-      playbookName = remediationDetailsSummary.name;
-    } else if (inputValue?.trim()) {
-      playbookName = inputValue.trim();
-    } else if (isExistingPlanSelected && selected) {
-      // Fallback: find name from allRemediationsData
-      const selectedRemediation = allRemediationsData?.find(
-        (r) => r.id === selected,
-      );
-      if (selectedRemediation?.name) {
-        playbookName = selectedRemediation.name;
-      }
-    }
-
-    const sanitizedFilename = playbookName
-      .replace(/[^a-z0-9]/gi, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
-
-    downloadFile(response, sanitizedFilename, 'yml');
-  } catch (error) {
-    console.error('Error generating playbook preview:', error);
-
-    // Handle blob error responses (need to parse as text)
-    let errorMessage = 'Failed to generate playbook preview. Please try again.';
-    if (error?.response?.data) {
-      if (error.response.data instanceof Blob) {
-        // Try to parse blob as text for error message
-        try {
-          const text = await error.response.data.text();
-          const parsed = JSON.parse(text);
-          errorMessage = parsed.message || parsed.error || errorMessage;
-        } catch {
-          // If parsing fails, use default message
-        }
-      } else if (error.response.data.message) {
-        errorMessage = error.response.data.message;
-      }
-    }
-
-    addNotification({
-      title: 'Preview failed',
-      description: errorMessage,
-      variant: 'danger',
-      dismissable: true,
-      autoDismiss: true,
-    });
-  }
 };
 
 export const navigateToRemediation = (remediationId) => {
