@@ -491,6 +491,37 @@ describe('ProgressCard', () => {
         ).toBeInTheDocument();
       });
 
+      it('should show danger variant when error code is DEPENDENCY_UNAVAILABLE', () => {
+        render(
+          <ProgressCard
+            {...defaultProps}
+            remediationStatus={{
+              ...defaultProps.remediationStatus,
+              connectionError: {
+                errors: [
+                  {
+                    status: 503,
+                    code: 'DEPENDENCY_UNAVAILABLE',
+                    title:
+                      'Internal service dependency is temporarily unavailable.',
+                  },
+                ],
+              },
+            }}
+          />,
+        );
+
+        const steps = screen.getAllByTestId('progress-step');
+        const rhcStep = steps[2]; // RHCStep is now third (after executionLimitsStep and permissionsStep)
+        expect(rhcStep).toHaveAttribute('data-variant', 'danger');
+        expect(
+          screen.getByText(/RHC Manager is not enabled/),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('Remote Host Configuration'),
+        ).toBeInTheDocument();
+      });
+
       it('should render external link when RHC is not enabled', () => {
         render(
           <ProgressCard
