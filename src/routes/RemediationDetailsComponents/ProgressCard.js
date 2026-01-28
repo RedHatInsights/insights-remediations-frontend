@@ -58,7 +58,10 @@ const ProgressCard = ({
   }, [executionLimits]);
 
   const exceedsLimits = useMemo(() => {
-    return executionLimitsPopoverMessage === 'Exceeds limits';
+    return (
+      executionLimitsPopoverMessage.startsWith('Exceeds limits by') ||
+      executionLimitsPopoverMessage === 'Exceeds limits'
+    );
   }, [executionLimitsPopoverMessage]);
 
   const errorCount = useMemo(() => {
@@ -105,7 +108,6 @@ const ProgressCard = ({
         >
           Go to documentation
         </Button>
-        <Content component="p">{executionLimitsPopoverMessage}</Content>
       </Flex>
     </Flex>
   );
@@ -122,15 +124,15 @@ const ProgressCard = ({
       <Content>
         <p>
           To execute remediation plans on connected remote host systems from
-          within <strong>Red Hat Lightspeed</strong>, ensure that you have the
-          Remediations administrator RBAC role. You can check your role settings
-          in the console in Settings (⚙) &gt; User Access &gt; Groups. You
-          might need to contact your organization administrator to confirm your
-          user access settings and to apply the required permissions.
+          within Red Hat Lightspeed , ensure that you have the Remediations
+          administrator RBAC role. You can check your role settings in the
+          console in Settings (⚙) &gt; User Access &gt; Groups. You might need
+          to contact your organization administrator to confirm your user access
+          settings and to apply the required permissions.
         </p>
       </Content>
       <Flex
-        direction={{ default: 'column' }}
+        direction={{ default: 'row' }}
         spaceItems={{ default: 'spaceItemsSm' }}
       >
         <Button
@@ -152,9 +154,6 @@ const ProgressCard = ({
           Go to documentation
         </Button>
       </Flex>
-      <Content component="p">
-        {permissions?.execute ? 'Authorized' : 'Not authorized'}
-      </Content>
     </Flex>
   );
 
@@ -166,11 +165,11 @@ const ProgressCard = ({
       <Title headingLevel="h4">Lightspeed connected systems</Title>
       <Content>
         <p>
-          To execute a remediation plan from <strong>Red Hat Lightspeed</strong>
-          , your RHEL systems must be connected either directly via the
-          &quot;rhc connect&quot; command or through a properly configured Red
-          Hat Satellite server. For detailed troubleshooting guidance, review
-          the <strong>Connection status</strong> details for each disconnected
+          To execute a remediation plan from Red Hat Lightspeed , your RHEL
+          systems must be connected either directly via the &quot;rhc
+          connect&quot; command or through a properly configured Red Hat
+          Satellite server. For detailed troubleshooting guidance, review the{' '}
+          <strong>Connection status</strong> details for each disconnected
           system.{' '}
           <Button
             variant="link"
@@ -181,7 +180,7 @@ const ProgressCard = ({
         </p>
       </Content>
       <Flex
-        direction={{ default: 'column' }}
+        direction={{ default: 'row' }}
         spaceItems={{ default: 'spaceItemsSm' }}
       >
         <Button
@@ -203,9 +202,6 @@ const ProgressCard = ({
           Go to documentation
         </Button>
       </Flex>
-      <Content component="p">
-        {`${remediationStatus?.connectedSystems || 0} (of ${remediationStatus?.totalSystems || 0}) connected systems`}
-      </Content>
     </Flex>
   );
 
@@ -217,14 +213,14 @@ const ProgressCard = ({
       <Content>
         <p>
           To allow users to execute a remediation plan on a remote system from{' '}
-          <strong>Red Hat Lightspeed</strong>, you must configure the Remote
-          Host Configuration Manager settings in the Lightspeed UI. You can find
-          the settings in the console under Inventory &gt; System Configurations
-          &gt; Remote Host Configuration.
+          Red Hat Lightspeed, you must configure the Remote Host Configuration
+          Manager settings in the Lightspeed UI. You can find the settings in
+          the console under Inventory &gt; System Configurations &gt; Remote
+          Host Configuration.
         </p>
       </Content>
       <Flex
-        direction={{ default: 'column' }}
+        direction={{ default: 'row' }}
         spaceItems={{ default: 'spaceItemsSm' }}
       >
         <Button
@@ -246,11 +242,6 @@ const ProgressCard = ({
           Go to documentation
         </Button>
       </Flex>
-      <Content component="p">
-        {remediationStatus?.connectionError?.errors?.[0]?.status !== 403
-          ? 'Enabled'
-          : 'Not enabled'}
-      </Content>
     </Flex>
   );
 

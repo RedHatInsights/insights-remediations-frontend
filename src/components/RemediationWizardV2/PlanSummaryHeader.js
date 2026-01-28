@@ -4,13 +4,22 @@ import propTypes from 'prop-types';
 
 export const PlanSummaryHeader = ({ autoReboot, onAutoRebootChange }) => {
   return (
-    <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
-      <FlexItem>
+    <Flex
+      justifyContent={{
+        default: 'justifyContentSpaceBetween',
+      }}
+      alignItems={{
+        default: 'alignItemsCenter',
+      }}
+    >
+      <FlexItem style={{ maxWidth: '75%' }}>
         <Title headingLevel="h3" size="md">
           Plan summary
         </Title>
         <Content component="p">
-          Execution limits: 100 systems and 1000 action points*
+          Execution limits: 100 systems and 1000 action points. Action points
+          (pts) per issue type: Advisor: 20 pts, Vulnerability: 20 pts, Patch: 2
+          pts, and Compliance: 5 pts
         </Content>
       </FlexItem>
       <FlexItem>
