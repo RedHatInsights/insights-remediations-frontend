@@ -10,8 +10,6 @@ import {
   ModalBody,
   ModalFooter,
   Divider,
-  HelperText,
-  HelperTextItem,
   Tooltip,
   Flex,
   Skeleton,
@@ -66,6 +64,7 @@ export const RemediationWizardV2 = ({
   const [progressErrors, setProgressErrors] = useState([]);
   const [progressIsComplete, setProgressIsComplete] = useState(false);
   const isFirstRender = useRef(true);
+  const totalBatchesRef = useRef(0);
 
   // Normalize data structure to ensure systems array exists
   const normalizedData = useMemo(() => normalizeRemediationData(data), [data]);
@@ -213,7 +212,7 @@ export const RemediationWizardV2 = ({
     }
     setIsSubmitting(true);
     resetErrorState();
-    // Reset progress tracking
+    totalBatchesRef.current = 0;
     setProgressTotalBatches(0);
     setProgressCompletedBatches(0);
     setProgressFailedBatches(0);
@@ -228,6 +227,7 @@ export const RemediationWizardV2 = ({
       errors,
       isComplete,
     ) => {
+      totalBatchesRef.current = totalBatches;
       setProgressTotalBatches(totalBatches);
       setProgressCompletedBatches(successfulBatches);
       setProgressFailedBatches(failedBatches);
@@ -253,6 +253,10 @@ export const RemediationWizardV2 = ({
         result?.status === 'success' &&
         result?.remediationId
       ) {
+        // If there's only one batch (no batching occurred), add a 3-second delay
+        if (totalBatchesRef.current === 1) {
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+        }
         // Navigate to remediation details page on success
         const url = remediationUrl(result.remediationId);
         window.location.href = url;
@@ -279,6 +283,7 @@ export const RemediationWizardV2 = ({
   };
 
   const handleCloseError = () => {
+    handleClose();
     resetErrorState();
     setIsSubmitting(false);
   };
@@ -340,12 +345,9 @@ export const RemediationWizardV2 = ({
   const renderMainContent = () => (
     <>
       <ModalHeader
-        title={
-          <>
-            Plan a remediation <RemediationsPopover />
-          </>
-        }
+        title={'Plan a remediation'}
         labelId="plan-a-remediation-title"
+        help={<RemediationsPopover />}
       />
       <ModalBody id="create-a-remediation-body">
         <span>
@@ -396,12 +398,7 @@ export const RemediationWizardV2 = ({
           detailsLoading={detailsLoading}
           isExistingPlanSelected={isExistingPlanSelected}
         />
-        <HelperText className="pf-v6-u-mt-sm">
-          <HelperTextItem>
-            *Action points (pts) per issue type: Advisor: 20 pts, Vulnerability:
-            20 pts, Patch: 2 pts, and Compliance: 5 pts
-          </HelperTextItem>
-        </HelperText>
+
         {detailsLoading ? (
           <div className="pf-v6-u-mt-lg">
             <Skeleton height="120px" width="100%" />
@@ -473,21 +470,17 @@ export const RemediationWizardV2 = ({
     }
 
     if (isSubmitting) {
-      // Show progress bar if we have batch information, otherwise show spinner
-      if (progressTotalBatches > 0) {
-        return (
-          <ModalStatusContent
-            status="progress"
-            isUpdate={isExistingPlanSelected}
-            progressTotalBatches={progressTotalBatches}
-            progressCompletedBatches={progressCompletedBatches}
-            progressFailedBatches={progressFailedBatches}
-            progressErrors={progressErrors}
-            progressIsComplete={progressIsComplete}
-          />
-        );
-      }
-      return <ModalStatusContent status="submitting" />;
+      return (
+        <ModalStatusContent
+          status="progress"
+          isUpdate={isExistingPlanSelected}
+          progressTotalBatches={progressTotalBatches}
+          progressCompletedBatches={progressCompletedBatches}
+          progressFailedBatches={progressFailedBatches}
+          progressErrors={progressErrors}
+          progressIsComplete={progressIsComplete}
+        />
+      );
     }
 
     return null;
@@ -497,7 +490,7 @@ export const RemediationWizardV2 = ({
     <Modal
       isOpen={isOpen}
       variant={ModalVariant.medium}
-      onClose={isSubmitting || submitError ? undefined : handleClose}
+      onClose={submitError && handleClose}
     >
       {renderStatusContent() || renderMainContent()}
     </Modal>
