@@ -30,6 +30,21 @@ const RemediationDetailsPageHeader = ({
     download([remediation.id], [remediation], addNotification);
   }, [remediation, addNotification]);
 
+  const getDownloadTooltipMessage = () => {
+    const hasNoActions = !remediation?.issue_count;
+    const hasNoSystems = remediation?.system_count === 0;
+    let message =
+      'The remediation plan cannot be downloaded because it does not include any';
+    if (hasNoActions && hasNoSystems) {
+      message += ' actions or systems.';
+    } else if (hasNoActions) {
+      message += ' actions.';
+    } else if (hasNoSystems) {
+      message += ' systems.';
+    }
+    return message;
+  };
+
   return (
     <PageHeader>
       <Flex
@@ -85,12 +100,7 @@ const RemediationDetailsPageHeader = ({
                     !remediation?.issue_count || remediation.system_count === 0
                   }
                   onClick={handleDownload}
-                  tooltipContent={
-                    <div>
-                      The remediation plan cannot be downloaded because it does
-                      not include any actions or systems.
-                    </div>
-                  }
+                  tooltipContent={<div>{getDownloadTooltipMessage()}</div>}
                 >
                   Download
                 </ButtonWithToolTip>

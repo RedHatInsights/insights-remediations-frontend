@@ -200,6 +200,7 @@ export const renderStepTitleWithPopover = (
       position="top"
       bodyContent={popoverContent}
       aria-label={`${title} popover`}
+      maxWidth="450px"
     >
       <button
         onClick={() => setOpenPopover(openPopover === stepId ? null : stepId)}
