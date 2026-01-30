@@ -10,6 +10,7 @@ import chunk from 'lodash/chunk';
 import ConfirmationDialog from '../../../components/ConfirmationDialog';
 // import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
+import ResolutionOptionsModal from './ResolutionOptionsModal';
 import {
   useRawTableState,
   useStateCallbacks,
@@ -20,8 +21,8 @@ import RemediationsTable from '../../../components/RemediationsTable/Remediation
 
 const ActionsContent = ({
   refetch,
-  onOpenResolutionDrawer,
-  selectedIssueForResolutionId,
+  remediationId,
+  refetchRemediationDetails,
 }) => {
   const { id } = useParams();
   const tableState = useRawTableState();
@@ -32,6 +33,9 @@ const ActionsContent = ({
   const [isSystemsModalOpen, setIsSystemsModalOpen] = useState(false);
   const [actionToShow, setActionToShow] = useState('');
   const [selectedIssueId, setSelectedIssueId] = useState('');
+  const [isResolutionModalOpen, setIsResolutionModalOpen] = useState(false);
+  const [selectedIssueForResolution, setSelectedIssueForResolution] =
+    useState(null);
 
   const {
     result: issuesResult,
@@ -103,12 +107,25 @@ const ActionsContent = ({
   const handleViewResolutionOptions = useCallback(
     (issueId) => {
       const issue = allIssues.find((i) => i.id === issueId);
-      if (onOpenResolutionDrawer && issue) {
-        onOpenResolutionDrawer(issue);
+      if (issue) {
+        setSelectedIssueForResolution(issue);
+        setIsResolutionModalOpen(true);
       }
     },
-    [allIssues, onOpenResolutionDrawer],
+    [allIssues],
   );
+
+  const handleResolutionUpdated = useCallback(() => {
+    if (refetchRemediationDetails) {
+      refetchRemediationDetails();
+    }
+    refetchIssues();
+  }, [refetchRemediationDetails, refetchIssues]);
+
+  const handleModalClose = useCallback(() => {
+    setIsResolutionModalOpen(false);
+    setSelectedIssueForResolution(null);
+  }, []);
 
   const columnsWithSystemsButton = useMemo(() => {
     return columns.map((col) => {
@@ -139,7 +156,9 @@ const ActionsContent = ({
               <col.Component
                 {...rowData}
                 onViewResolutionOptions={handleViewResolutionOptions}
-                selectedIssueForResolutionId={selectedIssueForResolutionId}
+                selectedIssueForResolutionId={
+                  selectedIssueForResolution?.id || null
+                }
               />
             );
           },
@@ -147,7 +166,7 @@ const ActionsContent = ({
       }
       return col;
     });
-  }, [handleViewResolutionOptions, selectedIssueForResolutionId]);
+  }, [handleViewResolutionOptions, selectedIssueForResolution]);
 
   return (
     <section className="pf-v6-l-page__main-section pf-v6-c-page__main-section">
@@ -158,6 +177,17 @@ const ActionsContent = ({
           isOpen={isSystemsModalOpen}
           onClose={() => setIsSystemsModalOpen(false)}
           actionName={actionToShow}
+        />
+      )}
+      {isResolutionModalOpen && selectedIssueForResolution && (
+        <ResolutionOptionsModal
+          isOpen={isResolutionModalOpen}
+          onClose={handleModalClose}
+          issueId={selectedIssueForResolution.id}
+          issueDescription={selectedIssueForResolution.description}
+          currentResolution={selectedIssueForResolution.resolution}
+          remediationId={remediationId || id}
+          onResolutionUpdated={handleResolutionUpdated}
         />
       )}
       {isDeleteModalOpen && (
@@ -263,8 +293,8 @@ const ActionsContent = ({
 
 ActionsContent.propTypes = {
   refetch: PropTypes.func,
-  onOpenResolutionDrawer: PropTypes.func,
-  selectedIssueForResolutionId: PropTypes.string,
+  remediationId: PropTypes.string,
+  refetchRemediationDetails: PropTypes.func,
 };
 
 const ActionsContentProvider = (props) => (
