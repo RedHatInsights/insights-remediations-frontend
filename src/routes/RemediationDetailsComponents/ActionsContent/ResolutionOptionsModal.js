@@ -161,9 +161,10 @@ const ResolutionOptionsModal = ({
                   }}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="pf-v6-u-ml-md"
                 >
                   View knowledgebase article{' '}
-                  <ExternalLinkAltIcon className="pf-v6-u-ml-md" />
+                  <ExternalLinkAltIcon className="pf-v6-u-ml-sm" />
                 </a>
               </span>{' '}
             </p>
