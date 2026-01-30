@@ -78,11 +78,11 @@ const DetailsGeneralContent = ({
           </p>
           <p>
             <a
-              href="https://www.redhat.com/en/technologies/management/ansible/trial"
+              href="http://sandbox.redhat.com"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Get a 60-day free trial of Red Hat Ansible Automation Platform
+              Get a 30-day free trial of Red Hat Ansible Automation Platform
             </a>
           </p>
         </Alert>

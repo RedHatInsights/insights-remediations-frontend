@@ -17,7 +17,6 @@ import {
   ExternalLinkAltIcon,
   OpenDrawerRightIcon,
 } from '@patternfly/react-icons';
-import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { calculateActionPointsFromSummary } from '../../components/helpers';
 import { pluralize } from '../../Utilities/utils';
@@ -121,6 +120,7 @@ const ProgressCard = ({
       direction={{ default: 'column' }}
       spaceItems={{ default: 'spaceItemsMd' }}
     >
+      <Title headingLevel="h4">User access permissions</Title>
       <Content>
         <p>
           To execute remediation plans on connected remote host systems from
@@ -210,6 +210,7 @@ const ProgressCard = ({
       direction={{ default: 'column' }}
       spaceItems={{ default: 'spaceItemsMd' }}
     >
+      <Title headingLevel="h4">Remote Host Configuration Manager</Title>
       <Content>
         <p>
           To allow users to execute a remediation plan on a remote system from{' '}
@@ -271,14 +272,15 @@ const ProgressCard = ({
         <p className="pf-v6-u-mb-md">
           Address errors in this section to ensure that your remediation plan is
           ready for execution.{' '}
-          <InsightsLink
-            to="https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide"
-            target="_blank"
-            style={{ textDecoration: 'none' }}
+          <Button
+            variant="link"
+            onClick={() =>
+              quickStarts?.activateQuickstart('insights-remediate-plan-create')
+            }
           >
             Learn more{' '}
             <OpenDrawerRightIcon size="xl" className="pf-v6-u-ml-sm" />
-          </InsightsLink>
+          </Button>
         </p>
 
         <ProgressStepper

@@ -21,8 +21,7 @@ const PlannedRemediationsContent = ({
   refetchConnectionStatus,
   detailsLoading,
   initialNestedTab = 'actions',
-  onOpenResolutionDrawer,
-  selectedIssueForResolutionId,
+  remediationId,
 }) => {
   const [nestedActiveTab, setNestedActiveTab] = useState(initialNestedTab);
 
@@ -112,8 +111,8 @@ const PlannedRemediationsContent = ({
           >
             <ActionsContent
               refetch={refetchRemediationDetails}
-              onOpenResolutionDrawer={onOpenResolutionDrawer}
-              selectedIssueForResolutionId={selectedIssueForResolutionId}
+              remediationId={remediationId}
+              refetchRemediationDetails={refetchRemediationDetails}
             />
           </Tab>
           <Tab
@@ -154,8 +153,7 @@ PlannedRemediationsContent.propTypes = {
   refetchConnectionStatus: PropTypes.func,
   detailsLoading: PropTypes.bool,
   initialNestedTab: PropTypes.string,
-  onOpenResolutionDrawer: PropTypes.func,
-  selectedIssueForResolutionId: PropTypes.string,
+  remediationId: PropTypes.string,
 };
 
 export default PlannedRemediationsContent;
