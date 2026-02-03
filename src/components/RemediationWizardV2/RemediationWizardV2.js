@@ -350,11 +350,11 @@ export const RemediationWizardV2 = ({
         help={<RemediationsPopover />}
       />
       <ModalBody id="create-a-remediation-body">
-        <span>
+        <p>
           Create or update a plan to remediate issues identified by Red Hat
           Lightspeed using Ansible playbooks. Once you generate a plan, you can
           review, download, or execute the plan.
-        </span>
+        </p>
         <InsightsLink
           to={
             'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide'
@@ -486,11 +486,21 @@ export const RemediationWizardV2 = ({
     return null;
   };
 
+  // Only show close button when not submitting (on mainContent or after error)
+  let handleModalClose;
+  if (isSubmitting) {
+    handleModalClose = undefined;
+  } else if (submitError) {
+    handleModalClose = handleCloseError;
+  } else {
+    handleModalClose = handleClose;
+  }
+
   return (
     <Modal
       isOpen={isOpen}
       variant={ModalVariant.medium}
-      onClose={submitError && handleClose}
+      onClose={handleModalClose}
     >
       {renderStatusContent() || renderMainContent()}
     </Modal>

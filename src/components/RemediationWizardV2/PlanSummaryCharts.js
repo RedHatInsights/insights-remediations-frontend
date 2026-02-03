@@ -14,9 +14,11 @@ export const PlanSummaryCharts = ({
 }) => {
   const ACTIONS_MAX = 1000;
   const SYSTEMS_MAX = 100;
+  const ACTIONS_MAX_DISPLAY = 1250;
+  const SYSTEMS_MAX_DISPLAY = 125;
 
-  const clampedActionsCount = Math.min(actionsCount, ACTIONS_MAX);
-  const clampedSystemsCount = Math.min(systemsCount, 125);
+  const clampedActionsCount = Math.min(actionsCount, ACTIONS_MAX_DISPLAY);
+  const clampedSystemsCount = Math.min(systemsCount, SYSTEMS_MAX_DISPLAY);
 
   const actionsExceedsLimit = actionsCount > ACTIONS_MAX;
   const systemsExceedsLimit = systemsCount > SYSTEMS_MAX;
@@ -63,7 +65,7 @@ export const PlanSummaryCharts = ({
                     height={120}
                     padding={{
                       bottom: 50,
-                      left: 175,
+                      left: 200,
                       right: 50,
                     }}
                     maxDomain={{ y: 1250 }}
