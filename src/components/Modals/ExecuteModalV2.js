@@ -23,6 +23,7 @@ export const ExecuteModalV2 = ({
   detailsLoading,
   onNavigateToExecutionHistory,
   remediationPlaybookRuns,
+  isPlaybookRunsLoading,
 }) => {
   const addNotification = useAddNotification();
   const chrome = useChrome();
@@ -59,25 +60,51 @@ export const ExecuteModalV2 = ({
 
   // Get username from chrome when component mounts or chrome becomes available
   useEffect(() => {
+    // Check if there's a running execution with a username first
+    const hasRunningExecutionWithUsername = () => {
+      if (isOpen && remediationPlaybookRuns?.data) {
+        const runs = remediationPlaybookRuns.data;
+        const runningRun = runs.find((run) => run.status === 'running');
+        return !!runningRun?.created_by?.username;
+      }
+      return false;
+    };
+
+    // Don't fetch chrome username if there's already a running execution with username
+    if (hasRunningExecutionWithUsername()) {
+      return;
+    }
+
     if (chrome && chrome.auth && typeof chrome.auth.getUser === 'function') {
       chrome.auth
         .getUser()
         .then((user) => {
+          console.log('user', user);
+          // Double-check there's still no running execution before setting
+          if (hasRunningExecutionWithUsername()) {
+            return;
+          }
+
           if (user) {
-            const username =
-              user.identity?.user?.username || user.username || 'Unknown user';
+            const username = user.identity?.user?.username || 'Unknown user';
             setExecutionUsername(username);
           } else {
             setExecutionUsername('Unknown user');
           }
         })
         .catch(() => {
-          setExecutionUsername('Unknown user');
+          // Only set fallback if no running execution with username
+          if (!hasRunningExecutionWithUsername()) {
+            setExecutionUsername('Unknown user');
+          }
         });
     } else {
-      setExecutionUsername('Unknown user');
+      // Only set fallback if no running execution with username
+      if (!hasRunningExecutionWithUsername()) {
+        setExecutionUsername('Unknown user');
+      }
     }
-  }, [chrome]);
+  }, [chrome, isOpen, remediationPlaybookRuns]);
 
   // Check for running execution when modal opens
   useEffect(() => {
@@ -173,40 +200,47 @@ export const ExecuteModalV2 = ({
     </>
   );
 
-  const renderMainContent = () => (
-    <>
-      {detailsLoading ? (
-        <Spinner size="lg" />
-      ) : (
-        <Content>
-          <Content component="p">
-            Once you execute this plan, changes will be pushed immediately and
-            cannot be rolled back.
-          </Content>
+  const renderMainContent = () => {
+    const isLoading =
+      detailsLoading ||
+      remediationStatus?.areDetailsLoading ||
+      isPlaybookRunsLoading;
 
-          <List className="pf-v6-u-mt-md">
-            <ListItem>
-              Executing this plan will remediate{' '}
-              {pluralize(connectedCount, 'system')}.
-            </ListItem>
-            <ListItem>
-              {autoRebootEnabled ? (
-                <>
-                  Auto-reboot is enabled for this plan. All of the included
-                  systems that require a reboot will reboot automatically.
-                </>
-              ) : (
-                <>
-                  Auto-reboot is disabled for this plan. None of the included
-                  systems will reboot automatically.
-                </>
-              )}
-            </ListItem>
-          </List>
-        </Content>
-      )}
-    </>
-  );
+    return (
+      <>
+        {isLoading ? (
+          <Spinner size="lg" />
+        ) : (
+          <Content>
+            <Content component="p">
+              Once you execute this plan, changes will be pushed immediately and
+              cannot be rolled back.
+            </Content>
+
+            <List className="pf-v6-u-mt-md">
+              <ListItem>
+                Executing this plan will remediate{' '}
+                {pluralize(connectedCount, 'system')}.
+              </ListItem>
+              <ListItem>
+                {autoRebootEnabled ? (
+                  <>
+                    Auto-reboot is enabled for this plan. All of the included
+                    systems that require a reboot will reboot automatically.
+                  </>
+                ) : (
+                  <>
+                    Auto-reboot is disabled for this plan. None of the included
+                    systems will reboot automatically.
+                  </>
+                )}
+              </ListItem>
+            </List>
+          </Content>
+        )}
+      </>
+    );
+  };
 
   return (
     <Modal
@@ -246,7 +280,12 @@ export const ExecuteModalV2 = ({
                 key="execute"
                 variant="primary"
                 ouiaId="execute-playbook-v2"
-                isDisabled={connected.length === 0}
+                isDisabled={
+                  connected.length === 0 ||
+                  detailsLoading ||
+                  remediationStatus?.areDetailsLoading ||
+                  isPlaybookRunsLoading
+                }
                 onClick={handleExecute}
               >
                 Execute
@@ -288,4 +327,5 @@ ExecuteModalV2.propTypes = {
       }),
     ),
   }),
+  isPlaybookRunsLoading: PropTypes.bool,
 };

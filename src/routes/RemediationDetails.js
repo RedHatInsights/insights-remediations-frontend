@@ -138,6 +138,7 @@ const RemediationDetails = () => {
             detailsLoading={detailsLoading}
             onNavigateToTab={handleTabClick}
             remediationPlaybookRuns={remediationPlaybookRuns}
+            isPlaybookRunsLoading={isPlaybookRunsLoading}
           />
           <Tabs
             activeKey={searchParams.get('activeTab') || 'general'}
