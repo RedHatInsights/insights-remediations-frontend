@@ -350,25 +350,23 @@ export const RemediationWizardV2 = ({
         help={<RemediationsPopover />}
       />
       <ModalBody id="create-a-remediation-body">
-        <p>
-          Create or update a plan to remediate issues identified by Red Hat
-          Lightspeed using Ansible playbooks. Once you generate a plan, you can
-          review, download, or execute the plan.
-        </p>
-        <InsightsLink
-          to={
-            'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide'
-          }
-          target="_blank"
-        >
-          <Button
-            icon={<ExternalLinkAltIcon />}
-            variant="link"
-            className="pf-v6-u-font-size-sm"
-          >
-            Learn more
-          </Button>{' '}
-        </InsightsLink>
+        <div>
+          <p>
+            Create or update a plan to remediate issues identified by Red Hat
+            Lightspeed using Ansible playbooks. Once you generate a plan, you
+            can review, download, or execute the plan.
+            <InsightsLink
+              to={
+                'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide'
+              }
+              target="_blank"
+              className="pf-v6-u-ml-sm pf-v6-u-font-size-sm"
+            >
+              Learn more
+              <ExternalLinkAltIcon className="pf-v6-u-ml-sm" />
+            </InsightsLink>
+          </p>
+        </div>
         <Form>
           <FormGroup
             label="Select or create a playbook"

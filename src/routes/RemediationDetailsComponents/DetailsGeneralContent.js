@@ -22,6 +22,7 @@ const DetailsGeneralContent = ({
   permissions,
   remediationPlaybookRuns,
   refetchAllRemediations,
+  isPlaybookRunsLoading,
 }) => {
   const canExecute =
     permissions?.execute &&
@@ -100,6 +101,7 @@ const DetailsGeneralContent = ({
             allRemediations={allRemediations}
             remediationPlaybookRuns={remediationPlaybookRuns}
             refetchAllRemediations={refetchAllRemediations}
+            isPlaybookRunsLoading={isPlaybookRunsLoading}
           />
         </GridItem>
         <GridItem span={12} md={6}>
@@ -128,6 +130,7 @@ DetailsGeneralContent.propTypes = {
   remediationPlaybookRuns: PropTypes.any,
   refetchAllRemediations: PropTypes.func,
   detailsLoading: PropTypes.bool,
+  isPlaybookRunsLoading: PropTypes.bool,
 };
 
 export default DetailsGeneralContent;

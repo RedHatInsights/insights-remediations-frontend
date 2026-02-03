@@ -278,7 +278,7 @@ const ProgressCard = ({
               quickStarts?.activateQuickstart('insights-remediate-plan-create')
             }
           >
-            Learn more{' '}
+            Learn more
             <OpenDrawerRightIcon size="xl" className="pf-v6-u-ml-sm" />
           </Button>
         </p>

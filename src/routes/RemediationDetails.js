@@ -169,6 +169,7 @@ const RemediationDetails = () => {
                 permissions={context.permissions}
                 remediationPlaybookRuns={remediationPlaybookRuns?.data[0]}
                 detailsLoading={detailsLoading}
+                isPlaybookRunsLoading={isPlaybookRunsLoading}
               />
             </Tab>
             <Tab

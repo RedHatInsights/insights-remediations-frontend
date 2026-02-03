@@ -1,8 +1,7 @@
-import { Flex, Icon, Popover } from '@patternfly/react-core';
+import { Flex, Icon, Popover, Spinner } from '@patternfly/react-core';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
-  InProgressIcon,
 } from '@patternfly/react-icons';
 import React from 'react';
 
@@ -26,14 +25,7 @@ export const execStatus = (status, date) => {
     )),
       (displayValue = 'Succeeded'));
   } else if (status === 'running') {
-    ((icon = (
-      <Icon data-testid="icon">
-        <InProgressIcon
-          color="var(--pf-v6-global--icon--Color--light--dark)"
-          data-testid="in-progress-icon"
-        />
-      </Icon>
-    )),
+    ((icon = <Spinner size="sm" data-testid="spinner" />),
       (displayValue = 'In progress'));
   } else if (status === 'failure') {
     ((icon = (
