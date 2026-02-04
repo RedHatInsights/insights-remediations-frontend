@@ -18,6 +18,7 @@
     "@patternfly/react-log-viewer": "^6.3.0",
     "@patternfly/react-table": "^6.3.1",
     "@patternfly/react-tokens": "^6.3.1",
+    "@project-kessel/react-kessel-access-check": "^0.4.0",
     "@redhat-cloud-services/frontend-components": "^7.0.5",
     "@redhat-cloud-services/frontend-components-notifications": "^6.1.7",
     "@redhat-cloud-services/frontend-components-utilities": "^7.0.5",
