@@ -1,10 +1,4 @@
-import React, {
-  useContext,
-  useEffect,
-  useState,
-  useMemo,
-  useCallback,
-} from 'react';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import useRemediations from '../Utilities/Hooks/api/useRemediations';
 import { updateRemediationWrapper } from './api';
@@ -19,8 +13,6 @@ import PlannedRemediationsContent from './RemediationDetailsComponents/PlannedRe
 import ExecutionHistoryTab from './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent';
 import PlanNotFound from './RemediationDetailsComponents/PlanNotFound';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
-import ResolutionOptionsDrawer from './RemediationDetailsComponents/ActionsContent/ResolutionOptionsDrawer';
-
 const RemediationDetails = () => {
   const chrome = useChrome();
   const { id } = useParams();
@@ -28,9 +20,6 @@ const RemediationDetails = () => {
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [showPlanNotFound, setShowPlanNotFound] = useState(false);
-  const [isResolutionDrawerOpen, setIsResolutionDrawerOpen] = useState(false);
-  const [selectedIssueForResolution, setSelectedIssueForResolution] =
-    useState(null);
   const { isFedramp } = chrome;
   const context = useContext(PermissionContext);
   const axios = useAxiosWithPlatformInterceptors();
@@ -127,34 +116,12 @@ const RemediationDetails = () => {
 
   const getIsExecutable = (item) => String(item).trim().toUpperCase() === 'OK';
 
-  const handleResolutionUpdated = useCallback(() => {
-    // Refetch remediation details to update the UI
-    // Note: Issues are refetched separately in ActionsContent component
-    refetchRemediationDetails();
-  }, [refetchRemediationDetails]);
-
   if (showPlanNotFound) {
     return <PlanNotFound planId={id} />;
   }
 
   return (
     <>
-      {remediationDetailsSummary &&
-        isResolutionDrawerOpen &&
-        selectedIssueForResolution && (
-          <ResolutionOptionsDrawer
-            isOpen={isResolutionDrawerOpen}
-            onClose={() => {
-              setIsResolutionDrawerOpen(false);
-              setSelectedIssueForResolution(null);
-            }}
-            issueId={selectedIssueForResolution.id}
-            issueDescription={selectedIssueForResolution.description}
-            currentResolution={selectedIssueForResolution.resolution}
-            remediationId={id}
-            onResolutionUpdated={handleResolutionUpdated}
-          />
-        )}
       {remediationDetailsSummary && (
         <>
           <RemediationDetailsPageHeader
@@ -202,6 +169,7 @@ const RemediationDetails = () => {
                 permissions={context.permissions}
                 remediationPlaybookRuns={remediationPlaybookRuns?.data[0]}
                 detailsLoading={detailsLoading}
+                isPlaybookRunsLoading={isPlaybookRunsLoading}
               />
             </Tab>
             <Tab
@@ -216,14 +184,7 @@ const RemediationDetails = () => {
                 refetchConnectionStatus={refetchConnectionStatus}
                 detailsLoading={detailsLoading}
                 initialNestedTab={searchParams.get('nestedTab') || 'actions'}
-                onOpenResolutionDrawer={(issue) => {
-                  setSelectedIssueForResolution(issue);
-                  setIsResolutionDrawerOpen(true);
-                }}
-                selectedIssueForResolutionId={
-                  selectedIssueForResolution?.id || null
-                }
-                useNarrowWidth={true}
+                remediationId={id}
               />
             </Tab>
             <Tab

@@ -27,7 +27,7 @@ export const wizardHelperText = (exceedsLimits) => {
   }
 
   return (
-    <HelperText>
+    <HelperText className="pf-v6-u-pt-sm">
       <HelperTextItem>
         Select an existing playbook or type a unique name to create a new one
       </HelperTextItem>
@@ -84,8 +84,8 @@ export const renderExceedsLimitsAlert = ({
           from the plan before or after plan creation to get within limits.
         </li>
         <li>
-          Otherwise, create and download the plan to run with Red Hat{' '}
-          <strong>Ansible Automation Platform (AAP)</strong> or execute using a{' '}
+          Otherwise, create and download the plan to run with Red Hat Ansible
+          Automation Platform (AAP) or execute using a{' '}
           <a
             href="https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/using_automation_execution/controller-setting-up-insights"
             target="_blank"

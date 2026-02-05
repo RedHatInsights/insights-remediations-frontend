@@ -22,16 +22,12 @@ const DetailsGeneralContent = ({
   permissions,
   remediationPlaybookRuns,
   refetchAllRemediations,
-  detailsLoading,
+  isPlaybookRunsLoading,
 }) => {
   const canExecute =
     permissions?.execute &&
     remediationStatus?.connectionError?.errors?.[0]?.status !== 403 &&
     remediationStatus?.connectedSystems !== 0;
-
-  const isStillLoading =
-    detailsLoading || remediationStatus?.areDetailsLoading || !permissions;
-  const shouldShowAlert = !isStillLoading && !canExecute;
 
   const actionPoints = useMemo(() => {
     return calculateActionPointsFromSummary(details?.issue_count_details);
@@ -60,21 +56,6 @@ const DetailsGeneralContent = ({
 
   return (
     <section className="pf-v6-l-page__main-section pf-v6-c-page__main-section">
-      {shouldShowAlert && (
-        <Alert
-          isInline
-          variant="danger"
-          title="Remediation plan cannot be executed"
-          className="pf-v6-u-mb-sm"
-        >
-          <p>
-            One or more prerequisites for executing this remediation plan were
-            not met. See the <strong>Execution readiness</strong> section for
-            more information.
-          </p>
-        </Alert>
-      )}
-
       {shouldShowAapAlert && !isAapAlertDismissed && (
         <Alert
           isInline
@@ -98,11 +79,11 @@ const DetailsGeneralContent = ({
           </p>
           <p>
             <a
-              href="https://www.redhat.com/en/technologies/management/ansible/trial"
+              href="http://sandbox.redhat.com"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Get a 60-day free trial of Red Hat Ansible Automation Platform
+              Get a 30-day free trial of Red Hat Ansible Automation Platform
             </a>
           </p>
         </Alert>
@@ -120,6 +101,7 @@ const DetailsGeneralContent = ({
             allRemediations={allRemediations}
             remediationPlaybookRuns={remediationPlaybookRuns}
             refetchAllRemediations={refetchAllRemediations}
+            isPlaybookRunsLoading={isPlaybookRunsLoading}
           />
         </GridItem>
         <GridItem span={12} md={6}>
@@ -148,6 +130,7 @@ DetailsGeneralContent.propTypes = {
   remediationPlaybookRuns: PropTypes.any,
   refetchAllRemediations: PropTypes.func,
   detailsLoading: PropTypes.bool,
+  isPlaybookRunsLoading: PropTypes.bool,
 };
 
 export default DetailsGeneralContent;

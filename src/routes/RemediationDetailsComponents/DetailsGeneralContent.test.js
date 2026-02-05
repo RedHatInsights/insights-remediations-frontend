@@ -178,9 +178,6 @@ describe('DetailsGeneralContent', () => {
 
       render(<DetailsGeneralContent {...props} />);
 
-      // Should show alert because permissions.execute is false
-      expect(screen.getByTestId('alert')).toBeInTheDocument();
-
       // Check that ProgressCard receives correct canExecute value
       const progressCardProps = JSON.parse(
         screen.getByTestId('progress-card-props').textContent,
@@ -200,9 +197,6 @@ describe('DetailsGeneralContent', () => {
 
       render(<DetailsGeneralContent {...props} />);
 
-      // Should show alert when not ready
-      expect(screen.getByTestId('alert')).toBeInTheDocument();
-
       // Check that ProgressCard receives correct readyOrNot value
       const progressCardProps = JSON.parse(
         screen.getByTestId('progress-card-props').textContent,
@@ -221,9 +215,6 @@ describe('DetailsGeneralContent', () => {
       };
 
       render(<DetailsGeneralContent {...props} />);
-
-      // Should show alert when not ready
-      expect(screen.getByTestId('alert')).toBeInTheDocument();
 
       // Check that ProgressCard receives correct readyOrNot value
       const progressCardProps = JSON.parse(
@@ -273,7 +264,7 @@ describe('DetailsGeneralContent', () => {
   });
 
   describe('Alert rendering', () => {
-    it('should render alert with correct props when not ready', () => {
+    it('should not render readiness alert - readiness is handled by ProgressCard', () => {
       const props = {
         ...defaultProps,
         remediationStatus: {
@@ -284,18 +275,7 @@ describe('DetailsGeneralContent', () => {
 
       render(<DetailsGeneralContent {...props} />);
 
-      const alert = screen.getByTestId('alert');
-      expect(alert).toHaveAttribute('data-inline', 'true');
-      expect(alert).toHaveAttribute('data-variant', 'danger');
-      expect(alert).toHaveClass('pf-v6-u-mb-sm');
-
-      expect(screen.getByTestId('alert-title')).toHaveTextContent(
-        'Remediation plan cannot be executed',
-      );
-      expect(
-        screen.getByText(/One or more prerequisites for executing/),
-      ).toBeInTheDocument();
-      expect(screen.getByText('Execution readiness')).toBeInTheDocument();
+      expect(screen.queryByTestId('alert')).not.toBeInTheDocument();
     });
 
     it('should not render alert when ready', () => {
@@ -401,9 +381,6 @@ describe('DetailsGeneralContent', () => {
 
       render(<DetailsGeneralContent {...props} />);
 
-      // Should show alert
-      expect(screen.getByTestId('alert')).toBeInTheDocument();
-
       const progressCardProps = JSON.parse(
         screen.getByTestId('progress-card-props').textContent,
       );
@@ -426,25 +403,25 @@ describe('DetailsGeneralContent', () => {
       const testCases = [
         {
           connectionError: { errors: [{ status: 500 }] },
-          shouldShowAlert: false,
+          expectedReadyOrNot: true,
         },
         {
           connectionError: { errors: [{ status: 404 }] },
-          shouldShowAlert: false,
+          expectedReadyOrNot: true,
         },
         {
           connectionError: { errors: [{ status: 403 }] },
-          shouldShowAlert: true,
+          expectedReadyOrNot: false,
         },
         {
           connectionError: { errors: [{ status: 0 }] },
-          shouldShowAlert: false,
+          expectedReadyOrNot: true,
         },
-        { connectionError: null, shouldShowAlert: false },
-        { connectionError: undefined, shouldShowAlert: false },
+        { connectionError: null, expectedReadyOrNot: true },
+        { connectionError: undefined, expectedReadyOrNot: true },
       ];
 
-      testCases.forEach(({ connectionError, shouldShowAlert }) => {
+      testCases.forEach(({ connectionError, expectedReadyOrNot }) => {
         const props = {
           ...defaultProps,
           remediationStatus: {
@@ -455,11 +432,10 @@ describe('DetailsGeneralContent', () => {
 
         const { unmount } = render(<DetailsGeneralContent {...props} />);
 
-        if (shouldShowAlert) {
-          expect(screen.getByTestId('alert')).toBeInTheDocument();
-        } else {
-          expect(screen.queryByTestId('alert')).not.toBeInTheDocument();
-        }
+        const progressCardProps = JSON.parse(
+          screen.getByTestId('progress-card-props').textContent,
+        );
+        expect(progressCardProps.readyOrNot).toBe(expectedReadyOrNot);
 
         unmount();
       });
@@ -467,14 +443,14 @@ describe('DetailsGeneralContent', () => {
 
     it('should handle different connectedSystems values', () => {
       const testCases = [
-        { connectedSystems: 1, shouldShowAlert: false },
-        { connectedSystems: 5, shouldShowAlert: false },
-        { connectedSystems: 0, shouldShowAlert: true },
-        { connectedSystems: null, shouldShowAlert: false }, // null !== 0 is true
-        { connectedSystems: undefined, shouldShowAlert: false }, // undefined !== 0 is true
+        { connectedSystems: 1, expectedReadyOrNot: true },
+        { connectedSystems: 5, expectedReadyOrNot: true },
+        { connectedSystems: 0, expectedReadyOrNot: false },
+        { connectedSystems: null, expectedReadyOrNot: true }, // null !== 0 is true
+        { connectedSystems: undefined, expectedReadyOrNot: true }, // undefined !== 0 is true
       ];
 
-      testCases.forEach(({ connectedSystems, shouldShowAlert }) => {
+      testCases.forEach(({ connectedSystems, expectedReadyOrNot }) => {
         const props = {
           ...defaultProps,
           remediationStatus: {
@@ -485,11 +461,10 @@ describe('DetailsGeneralContent', () => {
 
         const { unmount } = render(<DetailsGeneralContent {...props} />);
 
-        if (shouldShowAlert) {
-          expect(screen.getByTestId('alert')).toBeInTheDocument();
-        } else {
-          expect(screen.queryByTestId('alert')).not.toBeInTheDocument();
-        }
+        const progressCardProps = JSON.parse(
+          screen.getByTestId('progress-card-props').textContent,
+        );
+        expect(progressCardProps.readyOrNot).toBe(expectedReadyOrNot);
 
         unmount();
       });
