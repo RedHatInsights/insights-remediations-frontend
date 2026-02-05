@@ -89,7 +89,6 @@ export const RemediationsPopover = () => {
         icon={<OutlinedQuestionCircleIcon />}
         variant="plain"
         aria-label="Open Remediations popover"
-        style={{ padding: 0 }}
         ouiaId="AboutRemediationsPopover"
       />
     </Popover>

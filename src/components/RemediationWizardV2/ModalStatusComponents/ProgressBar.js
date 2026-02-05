@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Progress } from '@patternfly/react-core';
 
-// Reusable Progress bar component
 const ProgressBar = ({ value, variant, label }) => (
   <>
     {label && <p className="pf-v6-u-mb-sm">{label}</p>}
@@ -10,7 +9,7 @@ const ProgressBar = ({ value, variant, label }) => (
       value={value}
       variant={variant}
       aria-label={`Progress: ${value}%`}
-      className="pf-v6-u-mb-sm"
+      className="pf-v6-u-mb-lg"
     />
   </>
 );

@@ -614,26 +614,30 @@ describe('ProgressCard', () => {
   });
 
   describe('Quick start integration', () => {
-    it('should render Learn more link', () => {
+    it('should render Learn more button', () => {
       render(<ProgressCard {...defaultProps} />);
 
-      const link = screen.getByRole('link', { name: /Learn more/ });
-      expect(link).toBeInTheDocument();
-      expect(link).toHaveAttribute('data-testid', 'insights-link');
+      const button = screen.getByRole('button', { name: /Learn more/ });
+      expect(button).toBeInTheDocument();
       expect(screen.getByTestId('open-drawer-icon')).toBeInTheDocument();
     });
 
-    // Note: "Learn more" is now a regular link, not a quickStarts trigger
-    // The quickStarts functionality has been removed from this component
-    it('should render Learn more as a link to documentation', () => {
+    it('should trigger quickStarts when Learn more button is clicked', () => {
+      const mockActivateQuickstart = jest.fn();
+      useChrome.mockReturnValueOnce({
+        quickStarts: {
+          activateQuickstart: mockActivateQuickstart,
+        },
+      });
+
       render(<ProgressCard {...defaultProps} />);
 
-      const link = screen.getByRole('link', { name: /Learn more/ });
-      expect(link).toHaveAttribute(
-        'href',
-        'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide',
+      const button = screen.getByRole('button', { name: /Learn more/ });
+      fireEvent.click(button);
+
+      expect(mockActivateQuickstart).toHaveBeenCalledWith(
+        'insights-remediate-plan-create',
       );
-      expect(link).toHaveAttribute('target', '_blank');
     });
 
     it('should handle missing quickStarts gracefully', () => {
@@ -643,9 +647,8 @@ describe('ProgressCard', () => {
 
       render(<ProgressCard {...defaultProps} />);
 
-      // Should render the link regardless of quickStarts
-      const link = screen.getByRole('link', { name: /Learn more/ });
-      expect(link).toBeInTheDocument();
+      const button = screen.getByRole('button', { name: /Learn more/ });
+      expect(button).toBeInTheDocument();
     });
 
     it('should handle missing useChrome return gracefully', () => {
@@ -653,9 +656,8 @@ describe('ProgressCard', () => {
 
       render(<ProgressCard {...defaultProps} />);
 
-      // Should render the link regardless of useChrome return value
-      const link = screen.getByRole('link', { name: /Learn more/ });
-      expect(link).toBeInTheDocument();
+      const button = screen.getByRole('button', { name: /Learn more/ });
+      expect(button).toBeInTheDocument();
     });
   });
 
@@ -700,15 +702,11 @@ describe('ProgressCard', () => {
   });
 
   describe('Component styling and classes', () => {
-    // Card footer has been removed - "Learn more" is now in CardBody
-    // This test is no longer applicable
-
     it('should apply correct CSS classes to Learn more button', () => {
       render(<ProgressCard {...defaultProps} />);
 
-      const link = screen.getByRole('link', { name: /Learn more/ });
-      // The link styling is handled via inline styles, not classes
-      expect(link).toBeInTheDocument();
+      const button = screen.getByRole('button', { name: /Learn more/ });
+      expect(button).toBeInTheDocument();
     });
   });
 });

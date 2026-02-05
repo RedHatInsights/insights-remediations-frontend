@@ -15,8 +15,9 @@ export const usePlaybookSelect = ({
   const textInputRef = useRef(undefined);
   const [userCreatedOptions, setUserCreatedOptions] = useState([]);
 
-  const isExistingPlanSelected =
-    selected && selected !== CREATE_NEW && !selected.startsWith('local-');
+  const isExistingPlanSelected = Boolean(
+    selected && selected !== CREATE_NEW && !selected.startsWith('local-'),
+  );
 
   const initialSelectOptions = useMemo(
     () =>

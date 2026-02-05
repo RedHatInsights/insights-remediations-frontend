@@ -46,6 +46,7 @@ const DetailsCard = ({
   refetch,
   remediationPlaybookRuns,
   refetchAllRemediations,
+  isPlaybookRunsLoading,
 }) => {
   const isLightspeedRebrandEnabled = useFeatureFlag(
     'platform.lightspeed-rebrand',
@@ -230,8 +231,9 @@ const DetailsCard = ({
               }
               target="_blank"
               style={{ textDecoration: 'none' }}
+              className="pf-v6-u-ml-sm"
             >
-              Learn more{' '}
+              Learn more
               <ExternalLinkAltIcon size="md" className="pf-v6-u-ml-sm" />
             </InsightsLink>
           </Content>
@@ -334,13 +336,17 @@ const DetailsCard = ({
           <DescriptionListGroup>
             <DescriptionListTerm>Latest execution status</DescriptionListTerm>
             <DescriptionListDescription>
-              <Button
-                variant="link"
-                isInline
-                onClick={() => onNavigateToTab(null, 'executionHistory')}
-              >
-                {execStatus(remediationPlaybookRuns?.status, formatedDate)}
-              </Button>
+              {isPlaybookRunsLoading ? (
+                <Spinner size="md" />
+              ) : (
+                <Button
+                  variant="link"
+                  isInline
+                  onClick={() => onNavigateToTab(null, 'executionHistory')}
+                >
+                  {execStatus(remediationPlaybookRuns?.status, formatedDate)}
+                </Button>
+              )}
             </DescriptionListDescription>
           </DescriptionListGroup>
           {/* Actions */}
@@ -456,6 +462,7 @@ DetailsCard.propTypes = {
   refetch: PropTypes.func,
   remediationPlaybookRuns: PropTypes.object,
   refetchAllRemediations: PropTypes.func,
+  isPlaybookRunsLoading: PropTypes.bool,
 };
 
 export default DetailsCard;

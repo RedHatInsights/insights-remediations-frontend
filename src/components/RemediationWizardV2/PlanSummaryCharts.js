@@ -1,6 +1,6 @@
 import React from 'react';
 import { Flex, FlexItem } from '@patternfly/react-core';
-import { ChartBullet } from '@patternfly/react-charts';
+import { ChartAxis, ChartBullet } from '@patternfly/react-charts';
 import { pluralize } from '../../Utilities/utils';
 import { renderChartSkeleton } from '../helpers';
 import propTypes from 'prop-types';
@@ -11,13 +11,17 @@ export const PlanSummaryCharts = ({
   issuesCount,
   detailsLoading,
   isExistingPlanSelected,
-  smallerFont = false,
 }) => {
   const ACTIONS_MAX = 1000;
   const SYSTEMS_MAX = 100;
+  const ACTIONS_MAX_DISPLAY = 1250;
+  const SYSTEMS_MAX_DISPLAY = 125;
 
-  const clampedActionsCount = Math.min(actionsCount, ACTIONS_MAX);
-  const clampedSystemsCount = Math.min(systemsCount, SYSTEMS_MAX);
+  const clampedActionsCount = Math.min(actionsCount, ACTIONS_MAX_DISPLAY);
+  const clampedSystemsCount = Math.min(systemsCount, SYSTEMS_MAX_DISPLAY);
+
+  const actionsExceedsLimit = actionsCount > ACTIONS_MAX;
+  const systemsExceedsLimit = systemsCount > SYSTEMS_MAX;
 
   const flexDirection =
     detailsLoading && isExistingPlanSelected
@@ -47,15 +51,7 @@ export const PlanSummaryCharts = ({
                     comparativeWarningMeasureData={[
                       { name: 'Warning', y: ACTIONS_MAX },
                     ]}
-                    title="Actions"
-                    subTitle={pluralize(actionsCount, 'point')}
-                    height={120}
-                    padding={{
-                      bottom: 50,
-                      left: 100,
-                      right: 50,
-                      top: 50,
-                    }}
+                    title={pluralize(actionsCount, 'Action point')}
                     labels={({ datum }) => {
                       if (datum.name === 'total') {
                         return `${pluralize(
@@ -65,21 +61,45 @@ export const PlanSummaryCharts = ({
                       }
                       return `${datum.name}: ${datum.y}`;
                     }}
-                    maxDomain={{ y: ACTIONS_MAX }}
+                    {...(actionsExceedsLimit && { themeColor: 'gold' })}
+                    height={120}
+                    padding={{
+                      bottom: 50,
+                      left: 200,
+                      right: 50,
+                    }}
+                    maxDomain={{ y: 1250 }}
                     primarySegmentedMeasureData={[
-                      { name: 'total', y: clampedActionsCount },
+                      {
+                        name: 'total',
+                        y: clampedActionsCount,
+                      },
                     ]}
+                    axisComponent={
+                      <ChartAxis
+                        tickValues={[0, 250, 500, 750, 1000, 1250]}
+                        tickFormat={(val) => {
+                          switch (val) {
+                            case 0:
+                              return '0';
+                            case 250:
+                              return '250';
+                            case 500:
+                              return '500';
+                            case 750:
+                              return '750';
+                            case 1000:
+                              return '1000';
+                            case 1250:
+                              return '1250';
+                            default:
+                              return '';
+                          }
+                        }}
+                      />
+                    }
                   />
                 </div>
-                <FlexItem alignSelf={{ default: 'alignSelfFlexEnd' }}>
-                  <Flex justifyContent={{ default: 'justifyContentFlexEnd' }}>
-                    <FlexItem
-                      className={smallerFont ? 'pf-v6-u-font-size-sm' : ''}
-                    >
-                      {ACTIONS_MAX} points maximum
-                    </FlexItem>
-                  </Flex>
-                </FlexItem>
               </>
             )}
           </FlexItem>
@@ -101,35 +121,53 @@ export const PlanSummaryCharts = ({
                   comparativeWarningMeasureData={[
                     { name: 'Warning', y: SYSTEMS_MAX },
                   ]}
-                  title="Systems"
-                  subTitle={pluralize(systemsCount, 'system')}
-                  height={120}
-                  padding={{
-                    bottom: 50,
-                    left: 100,
-                    right: 50,
-                    top: 50,
-                  }}
+                  title={pluralize(systemsCount, 'System')}
                   labels={({ datum }) => {
                     if (datum.name === 'total') {
                       return pluralize(systemsCount, 'system');
                     }
                     return `${datum.name}: ${datum.y}`;
                   }}
-                  maxDomain={{ y: SYSTEMS_MAX }}
+                  {...(systemsExceedsLimit && { themeColor: 'gold' })}
+                  height={120}
+                  padding={{
+                    bottom: 50,
+                    left: 175,
+                    right: 50,
+                  }}
+                  maxDomain={{ y: 125 }}
                   primarySegmentedMeasureData={[
-                    { name: 'total', y: clampedSystemsCount },
+                    {
+                      name: 'total',
+                      y: clampedSystemsCount,
+                    },
                   ]}
+                  axisComponent={
+                    <ChartAxis
+                      tickValues={[0, 25, 50, 75, 100, 125]}
+                      tickFormat={(val) => {
+                        switch (val) {
+                          case 0:
+                            return '0';
+                          case 25:
+                            return '25';
+                          case 50:
+                            return '50';
+                          case 75:
+                            return '75';
+                          case 100:
+                            return '100';
+                          case 125:
+                            return '125';
+                          default:
+                            return '';
+                        }
+                      }}
+                    />
+                  }
                 />
               </div>
             )}
-          </FlexItem>
-          <FlexItem alignSelf={{ default: 'alignSelfFlexEnd' }}>
-            <Flex justifyContent={{ default: 'justifyContentFlexEnd' }}>
-              <FlexItem className={smallerFont ? 'pf-v6-u-font-size-sm' : ''}>
-                {SYSTEMS_MAX} systems maximum
-              </FlexItem>
-            </Flex>
           </FlexItem>
         </Flex>
       </FlexItem>

@@ -24,6 +24,9 @@ jest.mock('@patternfly/react-core', () => ({
       </span>
     );
   },
+  Spinner: function MockSpinner({ size, ...props }) {
+    return <span data-testid="spinner" data-size={size} {...props} />;
+  },
   TextContent: function MockTextContent({ children, ...props }) {
     return (
       <div data-testid="text-content" {...props}>
@@ -40,11 +43,6 @@ jest.mock('@patternfly/react-icons', () => ({
   },
   ExclamationCircleIcon: function MockExclamationCircleIcon(props) {
     return <span data-testid="exclamation-circle-icon" {...props} />;
-  },
-  InProgressIcon: function MockInProgressIcon({ color, ...props }) {
-    return (
-      <span data-testid="in-progress-icon" data-color={color} {...props} />
-    );
   },
 }));
 
@@ -139,17 +137,16 @@ describe('RemediationDetailsComponents helpers', () => {
     });
 
     describe('Running status', () => {
-      it('should render running status with in-progress icon', () => {
+      it('should render running status with spinner', () => {
         const date = new Date('2023-12-01T11:30:00Z');
         const result = execStatus('running', date);
         render(result);
 
         expect(screen.getByTestId('flex')).toBeInTheDocument();
-        expect(screen.getByTestId('icon')).toBeInTheDocument();
-        expect(screen.queryByTestId('icon')).not.toHaveAttribute('data-status');
-        expect(screen.getByTestId('in-progress-icon')).toHaveAttribute(
-          'data-color',
-          'var(--pf-v6-global--icon--Color--light--dark)',
+        expect(screen.getByTestId('spinner')).toBeInTheDocument();
+        expect(screen.getByTestId('spinner')).toHaveAttribute(
+          'data-size',
+          'sm',
         );
         expect(
           screen.getByText('In progress 30 minutes ago'),
