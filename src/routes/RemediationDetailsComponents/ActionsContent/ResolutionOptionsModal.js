@@ -14,10 +14,11 @@ import {
   ModalFooter,
   Flex,
   FlexItem,
+  Tooltip,
 } from '@patternfly/react-core';
 import {
-  ExternalLinkAltIcon,
   OutlinedQuestionCircleIcon,
+  PowerOffIcon,
 } from '@patternfly/react-icons';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import { getResolutionsBatch } from '../../../api';
@@ -128,21 +129,6 @@ const ResolutionOptionsModal = ({
             <div>
               <p className="pf-v6-u-mb-md" style={{ fontSize: '14px' }}>
                 <strong>{issueDescription} </strong>
-                <span>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      // TODO: Add actual knowledgebase link
-                    }}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="pf-v6-u-ml-md"
-                  >
-                    View knowledgebase article{' '}
-                    <ExternalLinkAltIcon className="pf-v6-u-ml-sm" />
-                  </a>
-                </span>{' '}
               </p>
             </div>
             <Flex
@@ -171,7 +157,7 @@ const ResolutionOptionsModal = ({
                   bodyContent={
                     <div>
                       A default resolution has been selected for you. To select
-                      a different resolution, use the options above.
+                      a different resolution use the radio buttons.
                     </div>
                   }
                 >
@@ -191,7 +177,32 @@ const ResolutionOptionsModal = ({
                   key={resolution.id}
                   id={`resolution-${resolution.id}`}
                   name="resolution-options"
-                  label={resolution.description}
+                  label={
+                    <Flex
+                      alignItems={{ default: 'alignItemsCenter' }}
+                      gap={{ default: 'gapSm' }}
+                    >
+                      <FlexItem>{resolution.description}</FlexItem>
+                      {resolution?.needs_reboot && (
+                        <FlexItem>
+                          <Tooltip content="System reboot required">
+                            <button
+                              type="button"
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                padding: 0,
+                                display: 'inline-flex',
+                              }}
+                              aria-label="System reboot required"
+                            >
+                              <PowerOffIcon color="var(--pf-t--global--icon--color--status--danger--default)" />
+                            </button>
+                          </Tooltip>
+                        </FlexItem>
+                      )}
+                    </Flex>
+                  }
                   isChecked={selectedResolution?.id === resolution.id}
                   onChange={() => setSelectedResolution(resolution)}
                   className="pf-v6-u-mb-md"

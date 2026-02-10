@@ -1,9 +1,22 @@
 import React from 'react';
 import { Flex, FlexItem } from '@patternfly/react-core';
 import { ChartAxis, ChartBullet } from '@patternfly/react-charts';
-import { pluralize } from '../../Utilities/utils';
 import { renderChartSkeleton } from '../helpers';
 import propTypes from 'prop-types';
+
+const formatNumberWithCommas = (num) => {
+  if (num >= 1000) {
+    return num.toLocaleString('en-US');
+  }
+  return num.toString();
+};
+
+const formatPluralize = (count, word) => {
+  const formattedCount = formatNumberWithCommas(count);
+  return count === 1
+    ? `${formattedCount} ${word}`
+    : `${formattedCount} ${word}s`;
+};
 
 export const PlanSummaryCharts = ({
   actionsCount,
@@ -49,17 +62,20 @@ export const PlanSummaryCharts = ({
                     ariaTitle="Action points"
                     name="actions-chart"
                     comparativeWarningMeasureData={[
-                      { name: 'Warning', y: ACTIONS_MAX },
+                      { name: 'Execution limit', y: ACTIONS_MAX },
                     ]}
-                    title={pluralize(actionsCount, 'Action point')}
+                    title={formatPluralize(actionsCount, 'Action point')}
                     labels={({ datum }) => {
                       if (datum.name === 'total') {
-                        return `${pluralize(
+                        return `${formatPluralize(
                           issuesCount,
                           'action',
-                        )}, ${pluralize(actionsCount, 'point')}`;
+                        )}, ${formatPluralize(actionsCount, 'point')}`;
                       }
-                      return `${datum.name}: ${datum.y}`;
+                      if (datum.name === 'Execution limit') {
+                        return `${datum.name}: ${datum.y}`;
+                      }
+                      return `${datum.name}: ${formatNumberWithCommas(datum.y)}`;
                     }}
                     {...(actionsExceedsLimit && { themeColor: 'gold' })}
                     height={120}
@@ -119,14 +135,17 @@ export const PlanSummaryCharts = ({
                   ariaTitle="Systems"
                   name="systems-chart"
                   comparativeWarningMeasureData={[
-                    { name: 'Warning', y: SYSTEMS_MAX },
+                    { name: 'Execution limit', y: SYSTEMS_MAX },
                   ]}
-                  title={pluralize(systemsCount, 'System')}
+                  title={formatPluralize(systemsCount, 'System')}
                   labels={({ datum }) => {
                     if (datum.name === 'total') {
-                      return pluralize(systemsCount, 'system');
+                      return formatPluralize(systemsCount, 'system');
                     }
-                    return `${datum.name}: ${datum.y}`;
+                    if (datum.name === 'Execution limit') {
+                      return `${datum.name}: ${datum.y}`;
+                    }
+                    return `${datum.name}: ${formatNumberWithCommas(datum.y)}`;
                   }}
                   {...(systemsExceedsLimit && { themeColor: 'gold' })}
                   height={120}
