@@ -3,15 +3,11 @@ import PropTypes from 'prop-types';
 import {
   Content,
   Flex,
-  HelperText,
-  HelperTextItem,
-  Icon,
   Label,
   Tab,
   Tabs,
   TabTitleText,
 } from '@patternfly/react-core';
-import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { PlanSummaryCharts } from '../../components/RemediationWizardV2/PlanSummaryCharts';
 import { calculateActionPointsFromSummary } from '../../components/helpers';
 import ActionsContent from './ActionsContent/ActionsContent';
@@ -25,9 +21,7 @@ const PlannedRemediationsContent = ({
   refetchConnectionStatus,
   detailsLoading,
   initialNestedTab = 'actions',
-  onOpenResolutionDrawer,
-  selectedIssueForResolutionId,
-  useNarrowWidth = false,
+  remediationId,
 }) => {
   const [nestedActiveTab, setNestedActiveTab] = useState(initialNestedTab);
 
@@ -67,14 +61,14 @@ const PlannedRemediationsContent = ({
       {/* Summary Charts */}
       <div
         style={{
-          width: useNarrowWidth ? '60%' : '100%',
+          width: '100%',
           maxWidth: '1000px',
         }}
       >
         <Content component="h2" className="pf-v6-u-ml-md pf-v6-u-mt-md">
           Planned remediation action and systems{' '}
           {exceedsLimits && (
-            <Label status="danger" variant="outline" className="pf-v6-u-ml-sm">
+            <Label status="warning" variant="outline" className="pf-v6-u-ml-sm">
               Exceeds limits
             </Label>
           )}
@@ -82,7 +76,9 @@ const PlannedRemediationsContent = ({
 
         <Content component="p" className="pf-v6-u-ml-md">
           To execute a remediation plan using Lightspeed, it must be within the
-          limit of 100 systems and 1000 action points.
+          limit of 100 systems and 1000 action points. Action points (pts) per
+          issue type: Advisor: 20 pts, Vulnerability: 20 pts, Patch: 2 pts, and
+          Compliance: 5 pts
         </Content>
         <PlanSummaryCharts
           actionsCount={actionsCount}
@@ -92,12 +88,6 @@ const PlannedRemediationsContent = ({
           isExistingPlanSelected={true}
           smallerFont
         />
-        <HelperText className="pf-v6-u-mt-sm pf-v6-u-ml-md">
-          <HelperTextItem>
-            *Action points (pts) per issue type: Advisor: 20 pts, Vulnerability:
-            20 pts, Patch: 2 pts, and Compliance: 5 pts
-          </HelperTextItem>
-        </HelperText>
       </div>
       {/* Nested Tabs */}
       <div className="ins-c-planned-remediations-tabs">
@@ -113,12 +103,7 @@ const PlannedRemediationsContent = ({
             title={
               <TabTitleText>
                 <Flex spaceItems={{ default: 'spaceItemsSm' }}>
-                  {exceedsActionsLimit && (
-                    <Icon status="danger">
-                      <ExclamationCircleIcon />
-                    </Icon>
-                  )}
-                  <span>{issuesCount} actions</span>
+                  <span>Actions</span>
                 </Flex>
               </TabTitleText>
             }
@@ -126,8 +111,8 @@ const PlannedRemediationsContent = ({
           >
             <ActionsContent
               refetch={refetchRemediationDetails}
-              onOpenResolutionDrawer={onOpenResolutionDrawer}
-              selectedIssueForResolutionId={selectedIssueForResolutionId}
+              remediationId={remediationId}
+              refetchRemediationDetails={refetchRemediationDetails}
             />
           </Tab>
           <Tab
@@ -135,12 +120,7 @@ const PlannedRemediationsContent = ({
             title={
               <TabTitleText>
                 <Flex spaceItems={{ default: 'spaceItemsSm' }}>
-                  {exceedsSystemsLimit && (
-                    <Icon status="danger">
-                      <ExclamationCircleIcon />
-                    </Icon>
-                  )}
-                  <span>{systemsCount} systems</span>
+                  <span>Systems</span>
                 </Flex>
               </TabTitleText>
             }
@@ -173,9 +153,7 @@ PlannedRemediationsContent.propTypes = {
   refetchConnectionStatus: PropTypes.func,
   detailsLoading: PropTypes.bool,
   initialNestedTab: PropTypes.string,
-  onOpenResolutionDrawer: PropTypes.func,
-  selectedIssueForResolutionId: PropTypes.string,
-  useNarrowWidth: PropTypes.bool,
+  remediationId: PropTypes.string,
 };
 
 export default PlannedRemediationsContent;

@@ -6,8 +6,6 @@ import {
   ModalFooter,
   Button,
   Flex,
-  Spinner,
-  Bullseye,
   ProgressVariant,
   Alert,
 } from '@patternfly/react-core';
@@ -18,7 +16,7 @@ import {
 } from './ModalStatusComponents/helpers';
 import ErrorList from './ModalStatusComponents/ErrorList';
 import ProgressBar from './ModalStatusComponents/ProgressBar';
-import ErrorModalFooter from './ModalStatusComponents/ErrorModalFooter';
+import { RemediationsPopover } from '../../routes/RemediationsPopover';
 
 const ModalStatusContent = ({
   status,
@@ -27,8 +25,6 @@ const ModalStatusContent = ({
   remediationId,
   onClose,
   onViewPlan,
-  onConfirm,
-  onCancel,
   progressTotalBatches,
   progressCompletedBatches,
   progressFailedBatches,
@@ -58,7 +54,11 @@ const ModalStatusContent = ({
 
     return (
       <>
-        <ModalHeader title="Plan a remediation" labelId="progress-title" />
+        <ModalHeader
+          title="Plan a remediation"
+          labelId="progress-title"
+          help={<RemediationsPopover />}
+        />
         <ModalBody>
           <div>
             <p className="pf-v6-u-color-200 pf-v6-u-mb-md">
@@ -72,57 +72,6 @@ const ModalStatusContent = ({
             />
           </div>
         </ModalBody>
-      </>
-    );
-  }
-
-  if (status === 'submitting') {
-    return (
-      <>
-        <ModalHeader
-          title="Remediation plan creation is in progress"
-          labelId="submitting-title"
-          titleIconVariant="info"
-        />
-        <ModalBody>
-          <Bullseye>
-            <div style={{ textAlign: 'center' }}>
-              <Spinner size="xl" className="pf-v6-u-mb-md" />
-              <p>
-                The actions and systems that you selected are being added to the
-                plan. This could take some time to complete.
-              </p>
-            </div>
-          </Bullseye>
-        </ModalBody>
-      </>
-    );
-  }
-
-  if (status === 'confirmation') {
-    return (
-      <>
-        <ModalHeader
-          title="Are you sure you want to cancel?"
-          labelId="cancel-confirmation-title"
-          titleIconVariant="warning"
-        />
-        <ModalBody>
-          <span>
-            The systems and actions you selected are not added to this
-            remediation plan.
-          </span>
-        </ModalBody>
-        <ModalFooter>
-          <Flex gap={{ default: 'gapMd' }}>
-            <Button key="yes" variant="primary" onClick={onConfirm}>
-              Yes
-            </Button>
-            <Button key="no" variant="link" onClick={onCancel}>
-              No, go back
-            </Button>
-          </Flex>
-        </ModalFooter>
       </>
     );
   }
@@ -156,7 +105,11 @@ const ModalStatusContent = ({
 
       return (
         <>
-          <ModalHeader title="Plan a remediation" labelId="error-title" />
+          <ModalHeader
+            title="Plan a remediation"
+            labelId="error-title"
+            help={<RemediationsPopover />}
+          />
           <ModalBody>
             <div>
               <p className="pf-v6-u-color-200 pf-v6-u-mb-md">
@@ -167,12 +120,7 @@ const ModalStatusContent = ({
                 variant={ProgressVariant.danger}
                 label={progressBarText}
               />
-              <Alert
-                variant="danger"
-                isInline
-                title="Unknown error"
-                className="pf-v6-u-mb-md"
-              >
+              <Alert variant="danger" isInline title="Unknown error">
                 <p>{baseMessage} Close this dialog to try again.</p>
                 <ErrorList errors={progressErrors} />
               </Alert>
@@ -217,7 +165,11 @@ const ModalStatusContent = ({
 
       return (
         <>
-          <ModalHeader title="Plan a remediation" labelId="error-title" />
+          <ModalHeader
+            title="Plan a remediation"
+            labelId="error-title"
+            help={<RemediationsPopover />}
+          />
           <ModalBody>
             <div>
               <p className="pf-v6-u-color-200 pf-v6-u-mb-md">
@@ -240,11 +192,18 @@ const ModalStatusContent = ({
               </Alert>
             </div>
           </ModalBody>
-          <ErrorModalFooter
-            remediationId={remediationId}
-            onViewPlan={onViewPlan}
-            onClose={onClose}
-          />
+          <ModalFooter>
+            <Flex gap={{ default: 'gapMd' }}>
+              {remediationId && (
+                <Button variant="primary" onClick={onViewPlan}>
+                  View plan
+                </Button>
+              )}
+              <Button variant="link" onClick={onClose}>
+                Close
+              </Button>
+            </Flex>
+          </ModalFooter>
         </>
       );
     }
@@ -274,6 +233,7 @@ const ModalStatusContent = ({
           title={errorTitle}
           labelId="error-title"
           titleIconVariant={isCompleteFailure ? 'danger' : 'warning'}
+          help={<RemediationsPopover />}
         />
         <ModalBody>
           <p>{errorMessage}</p>
@@ -303,15 +263,12 @@ const ModalStatusContent = ({
 };
 
 ModalStatusContent.propTypes = {
-  status: PropTypes.oneOf(['error', 'confirmation', 'submitting', 'progress'])
-    .isRequired,
+  status: PropTypes.oneOf(['error', 'progress']).isRequired,
   errorType: PropTypes.oneOf(['complete_failure', 'partial_failure']),
   isUpdate: PropTypes.bool,
   remediationId: PropTypes.string,
   onClose: PropTypes.func,
   onViewPlan: PropTypes.func,
-  onConfirm: PropTypes.func,
-  onCancel: PropTypes.func,
   progressTotalBatches: PropTypes.number,
   progressCompletedBatches: PropTypes.number,
   progressFailedBatches: PropTypes.number,
