@@ -79,7 +79,6 @@ export const ExecuteModalV2 = ({
       chrome.auth
         .getUser()
         .then((user) => {
-          console.log('user', user);
           // Double-check there's still no running execution before setting
           if (hasRunningExecutionWithUsername()) {
             return;
