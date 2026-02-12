@@ -204,6 +204,58 @@ describe('DetailsGeneralContent', () => {
       expect(progressCardProps.readyOrNot).toBe(false);
     });
 
+    it('should calculate readyOrNot as false when connectionError status is 503', () => {
+      const props = {
+        ...defaultProps,
+        permissions: { execute: true },
+        remediationStatus: {
+          connectionError: {
+            errors: [
+              {
+                id: '2bb8b920fe07464ea020c1454e7b29f4',
+                status: 503,
+                code: 'DEPENDENCY_UNAVAILABLE',
+                title:
+                  'Internal service dependency is temporarily unavailable.  If the issue persists please contact Red Hat support: https://access.redhat.com/support/cases/',
+                details: {
+                  name: 'configManager',
+                  impl: 'impl',
+                },
+              },
+            ],
+          },
+          connectedSystems: 5,
+        },
+      };
+
+      render(<DetailsGeneralContent {...props} />);
+
+      const progressCardProps = JSON.parse(
+        screen.getByTestId('progress-card-props').textContent,
+      );
+      expect(progressCardProps.readyOrNot).toBe(false);
+    });
+
+    it('should calculate readyOrNot as false when connectionError code is DEPENDENCY_UNAVAILABLE', () => {
+      const props = {
+        ...defaultProps,
+        permissions: { execute: true },
+        remediationStatus: {
+          connectionError: {
+            errors: [{ code: 'DEPENDENCY_UNAVAILABLE' }],
+          },
+          connectedSystems: 5,
+        },
+      };
+
+      render(<DetailsGeneralContent {...props} />);
+
+      const progressCardProps = JSON.parse(
+        screen.getByTestId('progress-card-props').textContent,
+      );
+      expect(progressCardProps.readyOrNot).toBe(false);
+    });
+
     it('should calculate readyOrNot as false when connectedSystems is 0', () => {
       const props = {
         ...defaultProps,
@@ -411,6 +463,16 @@ describe('DetailsGeneralContent', () => {
         },
         {
           connectionError: { errors: [{ status: 403 }] },
+          expectedReadyOrNot: false,
+        },
+        {
+          connectionError: { errors: [{ status: 503 }] },
+          expectedReadyOrNot: false,
+        },
+        {
+          connectionError: {
+            errors: [{ code: 'DEPENDENCY_UNAVAILABLE' }],
+          },
           expectedReadyOrNot: false,
         },
         {
