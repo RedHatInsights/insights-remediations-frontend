@@ -193,6 +193,7 @@ const ResolutionOptionsModal = ({
                                 border: 'none',
                                 padding: 0,
                                 display: 'inline-flex',
+                                cursor: 'default',
                               }}
                               aria-label="System reboot required"
                             >
