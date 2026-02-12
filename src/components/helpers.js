@@ -29,7 +29,7 @@ export const wizardHelperText = (exceedsLimits) => {
   return (
     <HelperText className="pf-v6-u-pt-sm">
       <HelperTextItem>
-        Select an existing playbook or type a unique name to create a new one
+        Enter a new plan name or select an existing plan.
       </HelperTextItem>
     </HelperText>
   );
