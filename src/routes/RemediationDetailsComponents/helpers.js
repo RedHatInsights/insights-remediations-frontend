@@ -49,7 +49,7 @@ export const getTimeAgo = (date) => {
   const diffMinutes = Math.floor(diffMs / 60000);
 
   if (diffMinutes < 1) {
-    return 'Just now';
+    return '';
   } else if (diffMinutes < 60) {
     return `${diffMinutes} minute${diffMinutes === 1 ? '' : 's'} ago`;
   }
