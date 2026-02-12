@@ -79,7 +79,11 @@ const ProgressCard = ({
 
   const isRhcNotEnabled = useMemo(() => {
     const error = remediationStatus?.connectionError?.errors?.[0];
-    return error?.status === 403 || error?.code === 'DEPENDENCY_UNAVAILABLE';
+    return (
+      error?.status === 403 ||
+      error?.status === 503 ||
+      error?.code === 'DEPENDENCY_UNAVAILABLE'
+    );
   }, [remediationStatus?.connectionError]);
 
   const popoverState = { openPopover, setOpenPopover };
