@@ -106,6 +106,44 @@ describe('RemediationDetailsPageHeader', () => {
     expect(screen.getByText('Execute')).toBeDisabled();
   });
 
+  it('disables ExecuteButton when isExecutable is false (e.g., due to 503 connection error)', () => {
+    render(
+      <Provider store={store}>
+        <RemediationDetailsPageHeader
+          remediation={remediation}
+          remediationStatus={{
+            ...remediationStatus,
+            connectionError: {
+              errors: [
+                {
+                  id: '2bb8b920fe07464ea020c1454e7b29f4',
+                  status: 503,
+                  code: 'DEPENDENCY_UNAVAILABLE',
+                  title:
+                    'Internal service dependency is temporarily unavailable.  If the issue persists please contact Red Hat support: https://access.redhat.com/support/cases/',
+                  details: {
+                    name: 'configManager',
+                    impl: 'impl',
+                  },
+                },
+              ],
+            },
+            connectedSystems: 5,
+          }}
+          isFedramp={false}
+          allRemediations={allRemediations}
+          updateRemPlan={updateRemPlan}
+          refetch={refetch}
+          permissions={permissions}
+          isExecutable={false}
+          refetchAllRemediations={refetchAllRemediations}
+          refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
+        />
+      </Provider>,
+    );
+    expect(screen.getByText('Execute')).toBeDisabled();
+  });
+
   it('shows spinner when loading', () => {
     render(
       <Provider store={store}>

@@ -27,7 +27,11 @@ const DetailsGeneralContent = ({
   const canExecute =
     permissions?.execute &&
     remediationStatus?.connectionError?.errors?.[0]?.status !== 403 &&
-    remediationStatus?.connectedSystems !== 0;
+    remediationStatus?.connectionError?.errors?.[0]?.status !== 503 &&
+    remediationStatus?.connectionError?.errors?.[0]?.code !==
+      'DEPENDENCY_UNAVAILABLE' &&
+    remediationStatus?.connectedSystems !== 0 &&
+    !exceedsExecutionLimits;
 
   const actionPoints = useMemo(() => {
     return calculateActionPointsFromSummary(details?.issue_count_details);

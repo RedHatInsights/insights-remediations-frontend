@@ -77,6 +77,15 @@ const ProgressCard = ({
     exceedsExecutionLimits,
   ]);
 
+  const isRhcNotEnabled = useMemo(() => {
+    const error = remediationStatus?.connectionError?.errors?.[0];
+    return (
+      error?.status === 403 ||
+      error?.status === 503 ||
+      error?.code === 'DEPENDENCY_UNAVAILABLE'
+    );
+  }, [remediationStatus?.connectionError]);
+
   const popoverState = { openPopover, setOpenPopover };
 
   const executionLimitsPopoverContent = (
@@ -333,17 +342,10 @@ const ProgressCard = ({
             </span>
           </ProgressStep>
           <ProgressStep
-            variant={
-              remediationStatus?.connectionError?.errors?.[0]?.status !== 403
-                ? 'success'
-                : 'danger'
-            }
+            variant={isRhcNotEnabled ? 'danger' : 'success'}
             description={
               <span className="pf-v6-u-color-100">
-                {remediationStatus?.connectionError?.errors?.[0]?.status !==
-                403 ? (
-                  'Enabled'
-                ) : (
+                {isRhcNotEnabled ? (
                   <>
                     RHC Manager is not enabled. Enable it in&nbsp;
                     <a
@@ -359,6 +361,8 @@ const ProgressCard = ({
                     </a>
                     .
                   </>
+                ) : (
+                  'Enabled'
                 )}
               </span>
             }
