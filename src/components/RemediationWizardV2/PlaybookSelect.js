@@ -52,8 +52,8 @@ export const PlaybookSelect = ({
           autoComplete="off"
           placeholder={
             isLoadingRemediationsList
-              ? 'Loading playbooks...'
-              : 'Select or create a playbook'
+              ? 'Loading remediation plans...'
+              : 'Enter or select'
           }
           innerRef={textInputRef}
           isDisabled={isLoadingRemediationsList}
