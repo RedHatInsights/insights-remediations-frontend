@@ -182,8 +182,16 @@ const ProgressCard = ({
           <strong>Connection status</strong> details for each disconnected
           system.{' '}
           <Button
+            type="button"
             variant="link"
-            onClick={() => onNavigateToTab(null, 'systems')}
+            isInline
+            //TODO: Update after PF issue is resolved
+            onClick={() => {
+              setOpenPopover(null);
+              setTimeout(() => {
+                onNavigateToTab(null, 'plannedRemediations:systems');
+              }, 100);
+            }}
           >
             View systems
           </Button>
