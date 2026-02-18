@@ -127,12 +127,12 @@ describe('RemediationDetailsComponents helpers', () => {
         expect(screen.getByText('Succeeded 1 hour ago')).toBeInTheDocument();
       });
 
-      it('should render success status with "Just now" for recent date', () => {
+      it('should render success status with "Succeedded" for recent date', () => {
         const date = new Date('2023-12-01T11:59:30Z'); // 30 seconds ago
         const result = execStatus('success', date);
         render(result);
 
-        expect(screen.getByText('Succeeded Just now')).toBeInTheDocument();
+        expect(screen.getByText('Succeeded')).toBeInTheDocument();
       });
     });
 
@@ -249,19 +249,19 @@ describe('RemediationDetailsComponents helpers', () => {
     });
 
     describe('Recent times', () => {
-      it('should return "Just now" for times less than 1 minute ago', () => {
+      it('should return empty string for times less than 1 minute ago', () => {
         const date = new Date('2023-12-01T11:59:30Z'); // 30 seconds ago
-        expect(getTimeAgo(date)).toBe('Just now');
+        expect(getTimeAgo(date)).toBe('');
       });
 
-      it('should return "Just now" for current time', () => {
+      it('should return empty string for current time', () => {
         const date = new Date('2023-12-01T12:00:00Z'); // exact current time
-        expect(getTimeAgo(date)).toBe('Just now');
+        expect(getTimeAgo(date)).toBe('');
       });
 
-      it('should return "Just now" for times 59 seconds ago', () => {
+      it('should return empty string for times 59 seconds ago', () => {
         const date = new Date('2023-12-01T11:59:01Z'); // 59 seconds ago
-        expect(getTimeAgo(date)).toBe('Just now');
+        expect(getTimeAgo(date)).toBe('');
       });
     });
 

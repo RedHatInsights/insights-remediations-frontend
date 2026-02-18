@@ -77,6 +77,15 @@ const ProgressCard = ({
     exceedsExecutionLimits,
   ]);
 
+  const isRhcNotEnabled = useMemo(() => {
+    const error = remediationStatus?.connectionError?.errors?.[0];
+    return (
+      error?.status === 403 ||
+      error?.status === 503 ||
+      error?.code === 'DEPENDENCY_UNAVAILABLE'
+    );
+  }, [remediationStatus?.connectionError]);
+
   const popoverState = { openPopover, setOpenPopover };
 
   const executionLimitsPopoverContent = (
@@ -104,6 +113,7 @@ const ProgressCard = ({
           href="https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index"
           target="_blank"
           rel="noopener noreferrer"
+          style={{ alignSelf: 'flex-start' }}
         >
           Go to documentation
         </Button>
@@ -172,8 +182,16 @@ const ProgressCard = ({
           <strong>Connection status</strong> details for each disconnected
           system.{' '}
           <Button
+            type="button"
             variant="link"
-            onClick={() => onNavigateToTab(null, 'systems')}
+            isInline
+            //TODO: Update after PF issue is resolved
+            onClick={() => {
+              setOpenPopover(null);
+              setTimeout(() => {
+                onNavigateToTab(null, 'plannedRemediations:systems');
+              }, 100);
+            }}
           >
             View systems
           </Button>
@@ -332,17 +350,10 @@ const ProgressCard = ({
             </span>
           </ProgressStep>
           <ProgressStep
-            variant={
-              remediationStatus?.connectionError?.errors?.[0]?.status !== 403
-                ? 'success'
-                : 'danger'
-            }
+            variant={isRhcNotEnabled ? 'danger' : 'success'}
             description={
               <span className="pf-v6-u-color-100">
-                {remediationStatus?.connectionError?.errors?.[0]?.status !==
-                403 ? (
-                  'Enabled'
-                ) : (
+                {isRhcNotEnabled ? (
                   <>
                     RHC Manager is not enabled. Enable it in&nbsp;
                     <a
@@ -358,6 +369,8 @@ const ProgressCard = ({
                     </a>
                     .
                   </>
+                ) : (
+                  'Enabled'
                 )}
               </span>
             }

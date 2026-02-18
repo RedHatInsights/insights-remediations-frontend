@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState, useMemo } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import useRemediations from '../Utilities/Hooks/api/useRemediations';
 import { updateRemediationWrapper } from './api';
-import { Tab, Tabs, TabTitleText } from '@patternfly/react-core';
+import { Spinner, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import DetailsGeneralContent from './RemediationDetailsComponents/DetailsGeneralContent';
 import RenameModal from '../components/RenameModal';
 import { useConnectionStatus } from '../Utilities/useConnectionStatus';
@@ -120,7 +120,9 @@ const RemediationDetails = () => {
     return <PlanNotFound planId={id} />;
   }
 
-  return (
+  return detailsLoading ? (
+    <Spinner size="xl" />
+  ) : (
     <>
       {remediationDetailsSummary && (
         <>
@@ -136,6 +138,9 @@ const RemediationDetails = () => {
             isExecutable={getIsExecutable(isExecutable)}
             refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
             detailsLoading={detailsLoading}
+            onNavigateToTab={handleTabClick}
+            remediationPlaybookRuns={remediationPlaybookRuns}
+            isPlaybookRunsLoading={isPlaybookRunsLoading}
           />
           <Tabs
             activeKey={searchParams.get('activeTab') || 'general'}

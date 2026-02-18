@@ -69,7 +69,7 @@ export const usePlaybookSelect = ({
         newSelectOptions = [
           ...newSelectOptions,
           {
-            children: `Create new playbook "${filterValue}"`,
+            children: `Create new plan "${filterValue}"`,
             value: CREATE_NEW,
           },
         ];
@@ -131,7 +131,7 @@ export const usePlaybookSelect = ({
   const onSelect = (_event, value) => {
     if (value) {
       if (value === CREATE_NEW) {
-        // Create new playbook with the filter value as the name
+        // Create new plan with the filter value as the name
         const createdName = filterValue;
         setSelected(CREATE_NEW);
         setInputValue(createdName);

@@ -24,11 +24,6 @@ const DetailsGeneralContent = ({
   refetchAllRemediations,
   isPlaybookRunsLoading,
 }) => {
-  const canExecute =
-    permissions?.execute &&
-    remediationStatus?.connectionError?.errors?.[0]?.status !== 403 &&
-    remediationStatus?.connectedSystems !== 0;
-
   const actionPoints = useMemo(() => {
     return calculateActionPointsFromSummary(details?.issue_count_details);
   }, [details?.issue_count_details]);
@@ -40,6 +35,15 @@ const DetailsGeneralContent = ({
   const exceedsExecutionLimits =
     executionLimits?.exceedsExecutionLimits || false;
   const shouldShowAapAlert = exceedsExecutionLimits;
+
+  const canExecute =
+    permissions?.execute &&
+    remediationStatus?.connectionError?.errors?.[0]?.status !== 403 &&
+    remediationStatus?.connectionError?.errors?.[0]?.status !== 503 &&
+    remediationStatus?.connectionError?.errors?.[0]?.code !==
+      'DEPENDENCY_UNAVAILABLE' &&
+    remediationStatus?.connectedSystems !== 0 &&
+    !exceedsExecutionLimits;
 
   const [isAapAlertDismissed, setIsAapAlertDismissed] = useState(false);
 

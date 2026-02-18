@@ -351,7 +351,7 @@ export const RemediationWizardV2 = ({
       />
       <ModalBody id="create-a-remediation-body">
         <div>
-          <p>
+          <p className="pf-v6-u-mb-sm">
             Create or update a plan to remediate issues identified by Red Hat
             Lightspeed using Ansible playbooks. Once you generate a plan, you
             can review, download, or execute the plan.
@@ -368,11 +368,7 @@ export const RemediationWizardV2 = ({
           </p>
         </div>
         <Form>
-          <FormGroup
-            label="Select or create a playbook"
-            isRequired
-            fieldId="playbook-select"
-          >
+          <FormGroup label="Plan name" isRequired fieldId="playbook-select">
             <PlaybookSelect
               {...playbookSelect}
               isLoadingRemediationsList={isLoadingRemediationsList}

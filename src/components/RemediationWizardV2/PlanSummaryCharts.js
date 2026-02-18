@@ -49,7 +49,7 @@ export const PlanSummaryCharts = ({
                     ariaTitle="Action points"
                     name="actions-chart"
                     comparativeWarningMeasureData={[
-                      { name: 'Warning', y: ACTIONS_MAX },
+                      { name: 'Execution limit', y: ACTIONS_MAX },
                     ]}
                     title={pluralize(actionsCount, 'Action point')}
                     labels={({ datum }) => {
@@ -57,7 +57,10 @@ export const PlanSummaryCharts = ({
                         return `${pluralize(
                           issuesCount,
                           'action',
-                        )}, ${pluralize(actionsCount, 'point')}`;
+                        )} ${pluralize(actionsCount, 'point')}`;
+                      }
+                      if (datum.name === 'Execution limit') {
+                        return `${datum.name}: ${datum.y} pts`;
                       }
                       return `${datum.name}: ${datum.y}`;
                     }}
@@ -119,12 +122,15 @@ export const PlanSummaryCharts = ({
                   ariaTitle="Systems"
                   name="systems-chart"
                   comparativeWarningMeasureData={[
-                    { name: 'Warning', y: SYSTEMS_MAX },
+                    { name: 'Execution limit', y: SYSTEMS_MAX },
                   ]}
                   title={pluralize(systemsCount, 'System')}
                   labels={({ datum }) => {
                     if (datum.name === 'total') {
                       return pluralize(systemsCount, 'system');
+                    }
+                    if (datum.name === 'Execution limit') {
+                      return `${datum.name}: ${datum.y} systems`;
                     }
                     return `${datum.name}: ${datum.y}`;
                   }}

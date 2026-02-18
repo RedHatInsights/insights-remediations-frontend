@@ -13,6 +13,23 @@ jest.mock(
   }),
 );
 
+const mockChrome = {
+  auth: {
+    getUser: jest.fn().mockResolvedValue({
+      identity: {
+        user: {
+          username: 'testuser',
+        },
+      },
+    }),
+  },
+};
+
+jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
+  __esModule: true,
+  default: () => mockChrome,
+}));
+
 const mockExecuteRun = jest.fn();
 jest.mock('../../../Utilities/Hooks/api/useRemediations', () => ({
   __esModule: true,
@@ -37,11 +54,19 @@ describe('ExecuteModalV2', () => {
     },
     refetchRemediationPlaybookRuns: jest.fn(),
     remediationStatus: mockRemediationStatus,
+    remediationPlaybookRuns: { data: [] },
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
     mockExecuteRun.mockResolvedValue({});
+    mockChrome.auth.getUser.mockResolvedValue({
+      identity: {
+        user: {
+          username: 'testuser',
+        },
+      },
+    });
   });
 
   describe('Rendering', () => {
@@ -234,9 +259,32 @@ describe('ExecuteModalV2', () => {
         });
       });
 
+      // Modal should show execution in progress state instead of closing
       await waitFor(() => {
-        expect(mockOnClose).toHaveBeenCalledTimes(1);
+        expect(
+          screen.getByText(
+            /Execution is in progress for plan Test Remediation/,
+          ),
+        ).toBeInTheDocument();
       });
+
+      // Modal should show View details and Close buttons
+      expect(
+        screen.getByRole('button', { name: 'View details' }),
+      ).toBeInTheDocument();
+      // Get all Close buttons (X button and footer Close button) and verify footer Close exists
+      const closeButtons = screen.getAllByRole('button', { name: 'Close' });
+      expect(closeButtons.length).toBeGreaterThan(0);
+      // Verify the footer Close button by checking it has the ouiaId
+      const footerCloseButton = closeButtons.find(
+        (btn) =>
+          btn.getAttribute('data-ouia-component-id') ===
+          'close-execution-modal-v2',
+      );
+      expect(footerCloseButton).toBeInTheDocument();
+
+      // Modal should not close after execution
+      expect(mockOnClose).not.toHaveBeenCalled();
     });
 
     it('should handle execution error and show error notification', async () => {
