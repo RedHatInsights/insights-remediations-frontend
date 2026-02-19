@@ -74,12 +74,10 @@ const DetailsGeneralContent = ({
           }
         >
           <p>
-            To execute a remediation plan using Lightspeed it must be within the
-            limit of 100 systems or 1000 action points. We recommend executing
-            this plan with Red Hat® Ansible® Automation Platform for at-scale
-            automation. You download the plan to run with Red Hat® Ansible®
-            Automation Platform (AAP) or execute using a connected AAP
-            integration.
+            We recommend executing this plan with Red Hat® Ansible® Automation
+            Platform for at-scale automation. Download the plan to run with Red
+            Hat® Ansible® Automation Platform (AAP) or execute using a
+            connected AAP integration.
           </p>
           <p>
             <a

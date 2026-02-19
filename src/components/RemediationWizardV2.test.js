@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { RemediationWizardV2 } from './RemediationWizardV2/RemediationWizardV2';
+import { EXECUTION_LIMITS_HEADER_DESCRIPTION } from '../routes/RemediationDetailsComponents/helpers';
 
 jest.mock('../api/useRemediationsQuery', () => ({
   __esModule: true,
@@ -236,9 +237,7 @@ describe('RemediationWizardV2', () => {
 
       expect(screen.getByText('Plan summary')).toBeInTheDocument();
       expect(
-        screen.getByText(
-          /Execution limits: 100 systems and 1000 action points/i,
-        ),
+        screen.getByText(EXECUTION_LIMITS_HEADER_DESCRIPTION),
       ).toBeInTheDocument();
       expect(
         screen.getByRole('switch', { name: /Auto-reboot/i }),

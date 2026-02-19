@@ -80,6 +80,13 @@ export const renderComponent = (Component, props) => (_data, _id, entity) => (
 export const MAX_SYSTEMS = 100;
 export const MAX_ACTIONS = 1000;
 
+const ACTION_POINTS_BREAKDOWN =
+  'Action points (pts) per issue type: Advisor: 20 pts, Vulnerability: 20 pts, Patch: 2 pts, and Compliance: 5 pts';
+
+export const EXECUTION_LIMITS_DESCRIPTION = `To execute a remediation plan using Red Hat Lightspeed, the plan must be limited to no more than ${MAX_SYSTEMS} systems and ${MAX_ACTIONS} action points. ${ACTION_POINTS_BREAKDOWN}.`;
+
+export const EXECUTION_LIMITS_HEADER_DESCRIPTION = `Execution limits: ${MAX_SYSTEMS} systems and ${MAX_ACTIONS} action points. ${ACTION_POINTS_BREAKDOWN}`;
+
 /**
  * Calculate execution limits status
  *  @param   {object} details      - Remediation details object
@@ -120,7 +127,7 @@ export const getExecutionLimitsMessage = (limits) => {
     return 'Within limits';
   }
 
-  let message = `Exceeds limits. To execute in Red Hat Lightspeed remove `;
+  let message = `Exceeds limits of ${MAX_SYSTEMS} systems and ${MAX_ACTIONS} action points. To execute in Red Hat Lightspeed remove `;
 
   if (exceedsSystemsLimit && exceedsActionsLimit) {
     message += `${systemsToRemove} or more systems, as well as ${actionsToRemove} or more action points from the plan.`;

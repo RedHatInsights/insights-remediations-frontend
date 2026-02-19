@@ -1,6 +1,7 @@
 import React from 'react';
 import { Flex, FlexItem, Title, Switch, Content } from '@patternfly/react-core';
 import propTypes from 'prop-types';
+import { EXECUTION_LIMITS_HEADER_DESCRIPTION } from '../../routes/RemediationDetailsComponents/helpers';
 
 export const PlanSummaryHeader = ({ autoReboot, onAutoRebootChange }) => {
   return (
@@ -17,9 +18,7 @@ export const PlanSummaryHeader = ({ autoReboot, onAutoRebootChange }) => {
           Plan summary
         </Title>
         <Content component="p">
-          Execution limits: 100 systems and 1000 action points. Action points
-          (pts) per issue type: Advisor: 20 pts, Vulnerability: 20 pts, Patch: 2
-          pts, and Compliance: 5 pts
+          {EXECUTION_LIMITS_HEADER_DESCRIPTION}
         </Content>
       </FlexItem>
       <FlexItem>

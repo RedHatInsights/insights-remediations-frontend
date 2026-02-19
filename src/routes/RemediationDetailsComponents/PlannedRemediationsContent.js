@@ -10,6 +10,7 @@ import {
 } from '@patternfly/react-core';
 import { PlanSummaryCharts } from '../../components/RemediationWizardV2/PlanSummaryCharts';
 import { calculateActionPointsFromSummary } from '../../components/helpers';
+import { EXECUTION_LIMITS_DESCRIPTION } from './helpers';
 import ActionsContent from './ActionsContent/ActionsContent';
 import SystemsTable from '../../components/SystemsTable/SystemsTable';
 import './PlannedRemediationsContent.scss';
@@ -66,7 +67,7 @@ const PlannedRemediationsContent = ({
         }}
       >
         <Content component="h2" className="pf-v6-u-ml-md pf-v6-u-mt-md">
-          Planned remediation action and systems{' '}
+          Planned remediations{' '}
           {exceedsLimits && (
             <Label status="warning" variant="outline" className="pf-v6-u-ml-sm">
               Exceeds limits
@@ -75,10 +76,7 @@ const PlannedRemediationsContent = ({
         </Content>
 
         <Content component="p" className="pf-v6-u-ml-md">
-          To execute a remediation plan using Lightspeed, it must be within the
-          limit of 100 systems and 1000 action points. Action points (pts) per
-          issue type: Advisor: 20 pts, Vulnerability: 20 pts, Patch: 2 pts, and
-          Compliance: 5 pts
+          {EXECUTION_LIMITS_DESCRIPTION}
         </Content>
         <PlanSummaryCharts
           actionsCount={actionsCount}

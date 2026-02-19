@@ -71,13 +71,13 @@ export const renderExceedsLimitsAlert = ({
     >
       <p>
         To preview or execute a remediation plan using Red Hat Lightspeed, the
-        plan must be limited to a maximum of 100 systems or 1000 action points.
+        plan must be limited to no more than 100 systems and 1000 action points.
       </p>
       <ul className="pf-v6-c-list pf-v6-u-my-sm">
         <li>
           Remove{' '}
           {exceededSystems && exceededActions
-            ? `at least ${systemsToRemove} systems or ${actionsToRemove} action points`
+            ? `at least ${systemsToRemove} systems and ${actionsToRemove} action points`
             : exceededSystems
               ? `at least ${systemsToRemove} systems`
               : `at least ${actionsToRemove} action points`}{' '}

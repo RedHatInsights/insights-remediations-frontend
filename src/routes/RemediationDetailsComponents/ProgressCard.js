@@ -22,6 +22,7 @@ import { calculateActionPointsFromSummary } from '../../components/helpers';
 import { pluralize } from '../../Utilities/utils';
 import {
   calculateExecutionLimits,
+  EXECUTION_LIMITS_DESCRIPTION,
   getExecutionLimitsMessage,
   getExecutionLimitsPopoverMessage,
   calculateReadinessErrorCount,
@@ -95,12 +96,7 @@ const ProgressCard = ({
     >
       <Title headingLevel="h4">Red Hat Lightspeed execution limits</Title>
       <Content>
-        <p>
-          To execute a remediation plan using Insights, it must be within the
-          limit of 100 systems or 1000 action points. Action points (pts) per
-          issue type: Advisor: 20 pts, Vulnerability: 20 pts, Patch: 2 pts, and
-          Compliance: 5 pts.
-        </p>
+        <p>{EXECUTION_LIMITS_DESCRIPTION}</p>
       </Content>
       <Flex
         direction={{ default: 'column' }}
@@ -134,7 +130,7 @@ const ProgressCard = ({
       <Content>
         <p>
           To execute remediation plans on connected remote host systems from
-          within Red Hat Lightspeed , ensure that you have the Remediations
+          within Red Hat Lightspeed, ensure that you have the Remediations
           administrator RBAC role. You can check your role settings in the
           console in Settings (⚙) &gt; User Access &gt; Groups. You might need
           to contact your organization administrator to confirm your user access
@@ -315,7 +311,7 @@ const ProgressCard = ({
             <span className="pf-v6-u-color-100">
               {renderStepTitleWithPopover(
                 'executionLimitsStep',
-                'Red Hat Lightspeed execution limits',
+                'Execution limits',
                 executionLimitsPopoverContent,
                 popoverState,
                 exceedsLimits,
