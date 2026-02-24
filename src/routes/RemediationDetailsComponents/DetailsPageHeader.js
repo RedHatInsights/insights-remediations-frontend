@@ -11,6 +11,7 @@ import ExecuteButton from '../../components/ExecuteButton';
 import { download } from '../../Utilities/DownloadPlaybookButton';
 import ButtonWithToolTip from '../../Utilities/ButtonWithToolTip';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
+import { MAX_SYSTEMS, MAX_ACTIONS } from './helpers';
 
 const RemediationDetailsPageHeader = ({
   remediation,
@@ -27,6 +28,7 @@ const RemediationDetailsPageHeader = ({
   onNavigateToTab,
   remediationPlaybookRuns,
   isPlaybookRunsLoading,
+  actionPoints = 0,
 }) => {
   const addNotification = useAddNotification();
   const handleDownload = useCallback(() => {
@@ -47,6 +49,25 @@ const RemediationDetailsPageHeader = ({
     }
     return message;
   };
+
+  const hasZeroSystems = remediation?.system_count === 0;
+  const hasSystemsButAllDisconnected =
+    remediation?.system_count >= 1 &&
+    remediation?.system_count <= MAX_SYSTEMS &&
+    remediationStatus?.connectedSystems === 0;
+  const hasMoreThanMaxSystems = remediation?.system_count > MAX_SYSTEMS;
+  const hasZeroActions = !remediation?.issue_count;
+  const exceedsActionPointsLimit = actionPoints > MAX_ACTIONS;
+
+  const isExecuteDisabled =
+    hasZeroSystems ||
+    hasSystemsButAllDisconnected ||
+    hasMoreThanMaxSystems ||
+    hasZeroActions ||
+    exceedsActionPointsLimit ||
+    !permissions?.execute ||
+    isFedramp ||
+    !isExecutable;
 
   return (
     <PageHeader>
@@ -82,12 +103,7 @@ const RemediationDetailsPageHeader = ({
             >
               <FlexItem>
                 <ExecuteButton
-                  isDisabled={
-                    remediationStatus.connectedSystems === 0 ||
-                    !permissions?.execute ||
-                    isFedramp ||
-                    !isExecutable
-                  }
+                  isDisabled={isExecuteDisabled}
                   issueCount={remediation?.issue_count}
                   remediationStatus={remediationStatus}
                   remediation={remediation}
@@ -166,6 +182,7 @@ RemediationDetailsPageHeader.propTypes = {
   onNavigateToTab: PropTypes.func,
   remediationPlaybookRuns: PropTypes.object,
   isPlaybookRunsLoading: PropTypes.bool,
+  actionPoints: PropTypes.number,
 };
 
 export default RemediationDetailsPageHeader;

@@ -60,14 +60,14 @@ const ConnectionStatusModal = ({
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              textDecoration: 'none',
-              color: 'var(--pf-v6-global--link--Color)',
+              textDecoration: 'underline',
+              color: 'var(--pf-t--global--text--color--link--default, #0066cc)',
             }}
           >
             https://console.redhat.com/settings/integrations
           </a>{' '}
-          and ensure the satellite is available; if not, execute systemctl{' '}
-          restart rhcd.service on the satellite.
+          and ensure the satellite is available; if not, execute{' '}
+          <strong>systemctl restart rhcd.service</strong> on the satellite.
         </>
       );
       icon = <DisconnectedIcon />;
@@ -84,32 +84,33 @@ const ConnectionStatusModal = ({
   ) {
     title = 'Not configured';
     description =
-      'The Remote Host Configuration (rhc) client has not been configured for this system.';
+      'The Remote Host Configuration (rhc) client is not configured for this system. Please apply the fix below that corresponds to your subscription type:';
     body = (
       <>
         <p>
-          If this system is registered to Red Hat Subscription Management (RHSM)
-          with subscription-manager, execute <strong>rhc connect</strong> on the
-          system.
+          <strong>Red Hat Subscription Management</strong>
+          <br />
+          Run <strong>rhc connect</strong> on the system.
         </p>
+        <strong>Satellite</strong>
         <p>
-          If the system is registered to a satellite with subscription-manager,
-          ask your satellite administrator to navigate to the satellite&apos;s
-          Inventory Upload page and execute the Configure Cloud Connector, Sync
-          inventory status, and Restart jobs. In addition, visit{' '}
+          Ask your Satellite administrator to navigate to the Inventory Upload
+          page and execute the Configure Cloud Connector, Sync inventory status,
+          and Restart jobs. Then, verify the Satellite is available in your
+          Integrations settings at{' '}
           <a
             href="https://console.redhat.com/settings/integrations"
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              textDecoration: 'none',
-              color: 'var(--pf-v6-global--link--Color)',
+              textDecoration: 'underline',
+              color: 'var(--pf-t--global--text--color--link--default, #0066cc)',
             }}
           >
             https://console.redhat.com/settings/integrations
-          </a>{' '}
-          and ensure that the satellite is available; if not, execute systemctl{' '}
-          restart rhcd.service on the satellite.
+          </a>
+          . If it is not, run <strong>systemctl restart rhcd.service</strong> on
+          the Satellite server.
         </p>
       </>
     );

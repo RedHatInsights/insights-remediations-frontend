@@ -85,13 +85,13 @@ export const renderExceedsLimitsAlert = ({
         </li>
         <li>
           Otherwise, create and download the plan to run with Red Hat Ansible
-          Automation Platform (AAP) or execute using a{' '}
+          Automation Platform (AAP) or execute using{' '}
           <a
             href="https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/using_automation_execution/controller-setting-up-insights"
             target="_blank"
             rel="noopener noreferrer"
           >
-            connected AAP integration
+            a connected AAP integration
           </a>
           .
         </li>

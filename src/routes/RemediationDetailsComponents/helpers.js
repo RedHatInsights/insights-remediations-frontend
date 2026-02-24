@@ -124,7 +124,7 @@ export const getExecutionLimitsMessage = (limits) => {
   } = limits;
 
   if (!exceedsExecutionLimits) {
-    return 'Within limits';
+    return 'Within limits of 100 systems and 1000 action points.';
   }
 
   let message = `Exceeds limits of ${MAX_SYSTEMS} systems and ${MAX_ACTIONS} action points. To execute in Red Hat Lightspeed remove `;

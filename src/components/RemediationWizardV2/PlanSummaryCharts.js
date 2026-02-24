@@ -57,7 +57,7 @@ export const PlanSummaryCharts = ({
                         return `${pluralize(
                           issuesCount,
                           'action',
-                        )} ${pluralize(actionsCount, 'point')}`;
+                        )}, ${pluralize(actionsCount, 'point')}`;
                       }
                       if (datum.name === 'Execution limit') {
                         return `${datum.name}: ${datum.y} pts`;

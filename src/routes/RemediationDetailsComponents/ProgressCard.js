@@ -35,13 +35,19 @@ const ProgressCard = ({
   readyOrNot,
   onNavigateToTab,
   details,
+  actionPoints: actionPointsProp,
 }) => {
   const [openPopover, setOpenPopover] = useState(null);
   const { quickStarts } = useChrome();
 
-  const actionPoints = useMemo(() => {
+  const actionPointsComputed = useMemo(() => {
     return calculateActionPointsFromSummary(details?.issue_count_details);
   }, [details?.issue_count_details]);
+
+  const actionPoints =
+    typeof actionPointsProp === 'number'
+      ? actionPointsProp
+      : actionPointsComputed;
 
   const executionLimits = useMemo(() => {
     return calculateExecutionLimits(details, actionPoints);
@@ -94,7 +100,7 @@ const ProgressCard = ({
       direction={{ default: 'column' }}
       spaceItems={{ default: 'spaceItemsMd' }}
     >
-      <Title headingLevel="h4">Red Hat Lightspeed execution limits</Title>
+      <Title headingLevel="h4">Planned remediations</Title>
       <Content>
         <p>{EXECUTION_LIMITS_DESCRIPTION}</p>
       </Content>
@@ -172,11 +178,11 @@ const ProgressCard = ({
       <Content>
         <p>
           To execute a remediation plan from Red Hat Lightspeed , your RHEL
-          systems must be connected either directly via the &quot;rhc
-          connect&quot; command or through a properly configured Red Hat
-          Satellite server. For detailed troubleshooting guidance, review the{' '}
-          <strong>Connection status</strong> details for each disconnected
-          system.{' '}
+          systems must be connected either directly via the{' '}
+          <strong>rhc connect</strong> command or through a properly configured
+          Red Hat Satellite server. For detailed troubleshooting guidance,
+          review the <strong>Connection status</strong> details for each
+          disconnected system.{' '}
           <Button
             type="button"
             variant="link"
@@ -311,7 +317,7 @@ const ProgressCard = ({
             <span className="pf-v6-u-color-100">
               {renderStepTitleWithPopover(
                 'executionLimitsStep',
-                'Execution limits',
+                'Planned remediations',
                 executionLimitsPopoverContent,
                 popoverState,
                 exceedsLimits,
@@ -357,8 +363,9 @@ const ProgressCard = ({
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{
-                        textDecoration: 'none',
-                        color: 'var(--pf-v6-global--link--Color)',
+                        textDecoration: 'underline',
+                        color:
+                          'var(--pf-t--global--text--color--link--default, #0066cc)',
                       }}
                     >
                       Remote Host Configuration
@@ -445,6 +452,7 @@ ProgressCard.propTypes = {
   readyOrNot: PropTypes.bool,
   onNavigateToTab: PropTypes.func,
   details: PropTypes.object,
+  actionPoints: PropTypes.number,
 };
 
 export default ProgressCard;

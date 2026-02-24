@@ -23,10 +23,16 @@ const DetailsGeneralContent = ({
   remediationPlaybookRuns,
   refetchAllRemediations,
   isPlaybookRunsLoading,
+  actionPoints: actionPointsProp,
 }) => {
-  const actionPoints = useMemo(() => {
+  const actionPointsComputed = useMemo(() => {
     return calculateActionPointsFromSummary(details?.issue_count_details);
   }, [details?.issue_count_details]);
+
+  const actionPoints =
+    typeof actionPointsProp === 'number'
+      ? actionPointsProp
+      : actionPointsComputed;
 
   const executionLimits = useMemo(() => {
     return calculateExecutionLimits(details, actionPoints);
@@ -76,8 +82,15 @@ const DetailsGeneralContent = ({
           <p>
             We recommend executing this plan with Red Hat® Ansible® Automation
             Platform for at-scale automation. Download the plan to run with Red
-            Hat® Ansible® Automation Platform (AAP) or execute using a
-            connected AAP integration.
+            Hat® Ansible® Automation Platform (AAP) or execute using{' '}
+            <a
+              href="https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/using_automation_execution/controller-setting-up-insights#controller-setting-up-insights"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              a connected AAP integration
+            </a>
+            .
           </p>
           <p>
             <a
@@ -113,6 +126,7 @@ const DetailsGeneralContent = ({
             readyOrNot={canExecute}
             onNavigateToTab={onNavigateToTab}
             details={details}
+            actionPoints={actionPoints}
           />
         </GridItem>
       </Grid>
@@ -133,6 +147,7 @@ DetailsGeneralContent.propTypes = {
   refetchAllRemediations: PropTypes.func,
   detailsLoading: PropTypes.bool,
   isPlaybookRunsLoading: PropTypes.bool,
+  actionPoints: PropTypes.number,
 };
 
 export default DetailsGeneralContent;

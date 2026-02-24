@@ -1,3 +1,6 @@
+import React from 'react';
+import { Spinner } from '@patternfly/react-core';
+
 export const calculateChecked = (rows = [], selected) =>
   rows.every(({ id }) => selected?.has(id))
     ? rows.length > 0
@@ -36,6 +39,49 @@ export const normalizeConnectedData = (connectedData) => {
   return connectionMap;
 };
 
+const buildFilter = (config) => {
+  const filter = {};
+  if (config?.filters?.hostnameOrId) {
+    filter.display_name = config.filters.hostnameOrId;
+  }
+  return filter;
+};
+
+/**
+ * Fetches all systems for a remediation (all pages), respecting current filters.
+ * Used for "Select all" in the bulk select dropdown.
+ *  @param fetchSystems
+ *  @param remediationId
+ *  @param config
+ */
+export const fetchAllRemediationSystems = async (
+  fetchSystems,
+  remediationId,
+  config = {},
+) => {
+  const filter = buildFilter(config);
+  const limit = 100;
+  let offset = 0;
+  const all = [];
+  let total = 0;
+
+  do {
+    const response = await fetchSystems({
+      id: remediationId,
+      limit,
+      offset,
+      sort: 'display_name',
+      ...(Object.keys(filter).length > 0 && { filter }),
+    });
+    const systems = calculateSystems(response?.data);
+    total = response?.meta?.total ?? 0;
+    all.push(...systems);
+    offset += limit;
+  } while (total > 0 && all.length < total);
+
+  return all;
+};
+
 export const fetchInventoryData = async (
   { page = 1, per_page = 50, ...config } = {},
   fetchSystems,
@@ -46,12 +92,7 @@ export const fetchInventoryData = async (
   // Calculate offset from page and per_page
   const offset = (page - 1) * per_page;
 
-  // Build filter object for remediation systems API
-  const filter = {};
-  if (config.filters?.hostnameOrId) {
-    // Use display_name filter to search across all systems
-    filter.display_name = config.filters.hostnameOrId;
-  }
+  const filter = buildFilter(config);
 
   // Fetch systems from API with pagination and filtering
   const systemsResponse = await fetchSystems({
@@ -59,7 +100,7 @@ export const fetchInventoryData = async (
     limit: per_page,
     offset: offset,
     sort: 'display_name', // Default sort
-    ...(Object.keys(filter).length > 0 && { filter }), // Only add filter if not empty
+    ...(Object.keys(filter).length > 0 && { filter }),
   });
 
   const systems = calculateSystems(systemsResponse?.data);
@@ -137,4 +178,11 @@ export const mergedColumns = (defaultColumns = [], customColumns = []) => {
 
     return inventoryColumn ? { ...inventoryColumn, ...column } : column;
   });
+};
+
+export const compileTitle = (itemsTotal, loading) => {
+  if (loading === true) {
+    return <Spinner size="sm" />;
+  }
+  return `${itemsTotal} selected`;
 };

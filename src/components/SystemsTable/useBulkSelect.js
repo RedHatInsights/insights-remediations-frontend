@@ -1,15 +1,20 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { selectEntity } from '../../actions';
+import { compileTitle } from './helpers';
 
+//TODO: Replace with bastillian table tools hook
 const useBulkSelect = ({
   systemsRef,
   rows,
   selected,
   loaded,
   calculateChecked,
+  totalCount = 0,
+  fetchAllSystems,
 }) => {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const bulkSelectCheck = useCallback(
     (data) => data?.filter((system) => system.selected === true),
@@ -20,35 +25,44 @@ const useBulkSelect = ({
     (selection) => {
       switch (selection) {
         case 'none':
-          systemsRef.current.map((system) =>
-            dispatch(selectEntity(system.id, false)),
-          );
+        case 'deselect all':
+          dispatch(selectEntity(-1, false));
           break;
         case 'page':
           dispatch(selectEntity(0, true));
           break;
         case 'deselect page':
-          rows.map(() => dispatch(selectEntity(0, false)));
-          break;
-        case 'all':
-          systemsRef.current.map((system) =>
-            dispatch(selectEntity(system.id, true)),
-          );
-          break;
-        case 'deselect all':
-          systemsRef.current.map((system) =>
-            dispatch(selectEntity(system.id, false)),
-          );
+          dispatch(selectEntity(0, false));
           break;
       }
     },
-    [dispatch, rows, systemsRef],
+    [dispatch],
   );
 
-  return useMemo(
-    () => ({
+  const handleSelectAll = useCallback(async () => {
+    if (!fetchAllSystems) return;
+    setLoading(true);
+    try {
+      const allSystems = await fetchAllSystems();
+      allSystems.forEach((system) => dispatch(selectEntity(system.id, true)));
+    } finally {
+      setLoading(false);
+    }
+  }, [dispatch, fetchAllSystems]);
+
+  return useMemo(() => {
+    const systems = systemsRef.current || [];
+    const isPageSelected =
+      rows && rows.length > 0 && bulkSelectCheck(rows).length === rows.length;
+    const isAllSelected = totalCount > 0 && selected?.size === totalCount;
+    const selectedIdsTotal = selected ? selected.size : 0;
+    const title = compileTitle(selectedIdsTotal, loading);
+
+    return {
       isDisabled: !rows,
-      count: selected ? selected.size : 0,
+      ...(loading
+        ? { toggleProps: { children: [title] } }
+        : { count: selectedIdsTotal }),
       items: [
         {
           title: 'Select none (0)',
@@ -57,49 +71,61 @@ const useBulkSelect = ({
         ...(loaded && rows && rows.length > 0
           ? [
               {
-                title: `Select page (${rows.length})`,
+                title: isPageSelected
+                  ? `Deselect page (${rows.length})`
+                  : `Select page (${rows.length})`,
                 onClick: () => {
                   !selected
                     ? bulkSelectorSwitch('page')
                     : bulkSelectCheck(rows).length === rows.length
                       ? bulkSelectorSwitch('deselect page')
-                      : systemsRef.current.length > selected.size
+                      : systems.length > selected.size
                         ? bulkSelectorSwitch('page')
                         : bulkSelectorSwitch('deselect page');
                 },
               },
             ]
           : []),
-        ...(loaded && rows && rows.length > 0
+        ...(loaded && fetchAllSystems
           ? [
               {
-                title: `Select all (${systemsRef.current.length})`,
+                title: isAllSelected
+                  ? `Deselect all (${totalCount})`
+                  : `Select all (${totalCount})`,
                 onClick: () => {
-                  calculateChecked(systemsRef.current, selected)
-                    ? bulkSelectorSwitch('deselect all')
-                    : bulkSelectorSwitch('all');
+                  if (isAllSelected) {
+                    bulkSelectorSwitch('deselect all');
+                  } else {
+                    return handleSelectAll();
+                  }
                 },
               },
             ]
           : []),
       ],
-      checked: calculateChecked(rows, selected),
+      checked:
+        selected?.size > 0 && (!loaded || !rows || rows.length === 0)
+          ? true
+          : calculateChecked(rows, selected),
       onSelect: () => {
         bulkSelectCheck(rows).length === rows.length
           ? bulkSelectorSwitch('deselect page')
           : bulkSelectorSwitch('page');
       },
-    }),
-    [
-      rows,
-      selected,
-      loaded,
-      calculateChecked,
-      systemsRef,
-      bulkSelectorSwitch,
-      bulkSelectCheck,
-    ],
-  );
+    };
+  }, [
+    rows,
+    selected,
+    loaded,
+    totalCount,
+    fetchAllSystems,
+    calculateChecked,
+    systemsRef,
+    bulkSelectorSwitch,
+    bulkSelectCheck,
+    handleSelectAll,
+    loading,
+  ]);
 };
 
 export default useBulkSelect;

@@ -13,6 +13,7 @@ import PlannedRemediationsContent from './RemediationDetailsComponents/PlannedRe
 import ExecutionHistoryTab from './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent';
 import PlanNotFound from './RemediationDetailsComponents/PlanNotFound';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
+import { calculateActionPointsFromSummary } from '../components/helpers';
 const RemediationDetails = () => {
   const chrome = useChrome();
   const { id } = useParams();
@@ -96,6 +97,12 @@ const RemediationDetails = () => {
     connectionError,
   };
 
+  const actionPoints = useMemo(() => {
+    return calculateActionPointsFromSummary(
+      remediationDetailsSummary?.issue_count_details,
+    );
+  }, [remediationDetailsSummary?.issue_count_details]);
+
   const handleTabClick = (_event, tabName) => {
     // Support nested tab navigation format: 'plannedRemediations:systems' or 'plannedRemediations:actions'
     const [mainTab, nestedTab] = tabName?.split(':') || [];
@@ -141,6 +148,7 @@ const RemediationDetails = () => {
             onNavigateToTab={handleTabClick}
             remediationPlaybookRuns={remediationPlaybookRuns}
             isPlaybookRunsLoading={isPlaybookRunsLoading}
+            actionPoints={actionPoints}
           />
           <Tabs
             activeKey={searchParams.get('activeTab') || 'general'}
@@ -175,6 +183,7 @@ const RemediationDetails = () => {
                 remediationPlaybookRuns={remediationPlaybookRuns?.data[0]}
                 detailsLoading={detailsLoading}
                 isPlaybookRunsLoading={isPlaybookRunsLoading}
+                actionPoints={actionPoints}
               />
             </Tab>
             <Tab
