@@ -1,7 +1,8 @@
 import axiosInstance from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import { remediationsApi } from '../api';
+import { API_BASE } from '../constants';
 
-export const API_BASE = '/api/remediations/v1';
+export { API_BASE };
 
 /**
  * Delete systems from a remediation.

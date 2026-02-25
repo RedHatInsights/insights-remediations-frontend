@@ -27,7 +27,6 @@ import {
   KESSEL_REMEDIATIONS_EXECUTE,
   KESSEL_REMEDIATIONS_VIEW,
 } from './constants';
-import { useRbacV1RemediationPermissions } from './Utilities/Hooks/useRemediationPermissions';
 
 export const PermissionContext = createContext();
 
@@ -70,7 +69,71 @@ PermissionsLayout.propTypes = {
 };
 
 const RbacPermissionsGate = () => {
-  const { permissions, isLoading } = useRbacV1RemediationPermissions();
+  // RBAC v1 path: call `chrome.getUserPermissions('remediations')` once and get booleans.
+  const chrome = useChrome();
+  const [permissions, setPermissions] = useState({
+    read: false,
+    write: false,
+    execute: false,
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const didLoadRef = useRef(false);
+
+  useEffect(() => {
+    if (didLoadRef.current) return;
+    if (!chrome) return;
+    didLoadRef.current = true;
+
+    if (typeof chrome.getUserPermissions !== 'function') {
+      console.error('Chrome getUserPermissions method not available');
+      return;
+    }
+
+    let cancelled = false;
+
+    chrome
+      .getUserPermissions('remediations')
+      .then((list) => {
+        if (cancelled) return;
+
+        const permissionList = (list || [])
+          .map(({ permission }) => permission)
+          .filter((p) => typeof p === 'string');
+
+        const hasAll =
+          permissionList.includes('remediations:*:*') ||
+          permissionList.includes('remediations:remediation:*');
+
+        setPermissions({
+          read:
+            hasAll ||
+            permissionList.includes('remediations:remediation:read') ||
+            permissionList.includes('remediations:*:read'),
+          write:
+            hasAll ||
+            permissionList.includes('remediations:remediation:write') ||
+            permissionList.includes('remediations:*:write'),
+          execute:
+            hasAll ||
+            permissionList.includes('remediations:remediation:execute') ||
+            permissionList.includes('remediations:*:execute'),
+        });
+
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error loading user permissions:', error);
+        if (!cancelled) {
+          setPermissions({ read: false, write: false, execute: false });
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [chrome]);
+
   return <PermissionsLayout isLoading={isLoading} permissions={permissions} />;
 };
 

@@ -2,7 +2,7 @@ const SOURCES_BASE = '/api/sources/v2.0';
 
 import { doGet } from '../Utilities/http';
 
-import { API_BASE } from '../routes/api';
+import { API_BASE } from '../constants';
 
 import { APIFactory } from '@redhat-cloud-services/javascript-clients-shared';
 import axiosInstance from '@redhat-cloud-services/frontend-components-utilities/interceptors';
