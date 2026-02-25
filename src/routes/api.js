@@ -2,8 +2,6 @@ import axiosInstance from '@redhat-cloud-services/frontend-components-utilities/
 import { remediationsApi } from '../api';
 import { API_BASE } from '../constants';
 
-export { API_BASE };
-
 /**
  * Delete systems from a remediation.
  * IMPORTANT: This wrapper exists to work around a bug in the API client.

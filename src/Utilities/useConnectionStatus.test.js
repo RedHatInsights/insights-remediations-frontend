@@ -3,7 +3,7 @@ import { renderHook, act } from '@testing-library/react';
 
 import { useConnectionStatus } from './useConnectionStatus';
 
-jest.mock('../routes/api', () => ({
+jest.mock('../constants', () => ({
   API_BASE: '',
 }));
 
