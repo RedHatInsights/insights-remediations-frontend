@@ -22,10 +22,12 @@ jest.mock('./Routes', () => {
 jest.mock(
   '@redhat-cloud-services/frontend-components-notifications/NotificationsProvider',
   () => {
-    // eslint-disable-next-line react/prop-types
-    return function MockNotificationsProvider({ children }) {
-      return <div>{children}</div>;
+    const PropTypes = require('prop-types');
+    const MockNotificationsProvider = ({ children }) => <div>{children}</div>;
+    MockNotificationsProvider.propTypes = {
+      children: PropTypes.node,
     };
+    return MockNotificationsProvider;
   },
 );
 
@@ -33,17 +35,28 @@ jest.mock('@redhat-cloud-services/frontend-components/NotAuthorized', () => ({
   NotAuthorized: () => <div data-testid="not-authorized">Not Authorized</div>,
 }));
 
-jest.mock('@redhat-cloud-services/frontend-components/RBACProvider', () => ({
-  RBACProvider: ({ children }) => <div>{children}</div>,
-}));
+jest.mock('@redhat-cloud-services/frontend-components/RBACProvider', () => {
+  const PropTypes = require('prop-types');
+  const RBACProvider = ({ children }) => <div>{children}</div>;
+  RBACProvider.propTypes = {
+    children: PropTypes.node,
+  };
+  return { RBACProvider };
+});
 
-jest.mock('@project-kessel/react-kessel-access-check', () => ({
-  AccessCheck: {
-    Provider: ({ children }) => <div>{children}</div>,
-  },
-  fetchDefaultWorkspace: jest.fn(),
-  useSelfAccessCheck: jest.fn(),
-}));
+jest.mock('@project-kessel/react-kessel-access-check', () => {
+  const PropTypes = require('prop-types');
+  const Provider = ({ children }) => <div>{children}</div>;
+  Provider.propTypes = { children: PropTypes.node };
+
+  return {
+    AccessCheck: {
+      Provider,
+    },
+    fetchDefaultWorkspace: jest.fn(),
+    useSelfAccessCheck: jest.fn(),
+  };
+});
 
 const mockStore = createStore(() => ({}));
 
