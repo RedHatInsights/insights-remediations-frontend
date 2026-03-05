@@ -74,7 +74,7 @@ const RemediationDetailsPageHeader = ({
       <Flex
         justifyContent={{ default: 'justifyContentSpaceBetween' }}
         alignItems={{ default: 'alignItemsFlexStart' }}
-        flexWrap={{ default: 'wrap' }}
+        flexWrap={{ default: 'nowrap' }}
       >
         <FlexItem grow={{ default: 'grow' }} style={{ minWidth: 0 }}>
           <PageHeaderTitle
@@ -99,7 +99,7 @@ const RemediationDetailsPageHeader = ({
           ) : (
             <Flex
               spaceItems={{ default: 'spaceItemsSm' }}
-              flexWrap={{ default: 'wrap' }}
+              flexWrap={{ default: 'nowrap' }}
             >
               <FlexItem>
                 <ExecuteButton
