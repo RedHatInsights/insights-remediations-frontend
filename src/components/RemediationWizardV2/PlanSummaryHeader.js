@@ -17,9 +17,7 @@ export const PlanSummaryHeader = ({ autoReboot, onAutoRebootChange }) => {
         <Title headingLevel="h3" size="md">
           Plan summary
         </Title>
-        <Content component="p">
-          {EXECUTION_LIMITS_HEADER_DESCRIPTION}
-        </Content>
+        <Content component="p">{EXECUTION_LIMITS_HEADER_DESCRIPTION}</Content>
       </FlexItem>
       <FlexItem>
         <Switch
