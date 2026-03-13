@@ -17,7 +17,13 @@ export const formatDate = (dateStr) => {
   if (isNaN(date.getTime())) {
     return 'Invalid Date';
   }
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  // Always format in UTC to avoid timezone-dependent date shifts (tests and UI expect stable dates).
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC',
+  };
   return date.toLocaleDateString('en-US', options);
 };
 export const Name = ({ name, id }) => {

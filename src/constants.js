@@ -41,3 +41,12 @@ export const SEARCH_DEBOUNCE_DELAY = 500;
 
 export const FETCH_SELECTED_HOSTS = 'FETCH_SELECTED_HOSTS';
 export const FETCH_RESOLUTIONS = 'FETCH_RESOLUTIONS';
+
+/** Remediations service base path (RBAC v1 / legacy client) */
+export const API_BASE = '/api/remediations/v1';
+
+export const KESSEL_API_BASE_URL = '/api/kessel/v1beta2';
+
+export const KESSEL_REMEDIATIONS_VIEW = 'remediations_view_remediation';
+export const KESSEL_REMEDIATIONS_EDIT = 'remediations_edit_remediation';
+export const KESSEL_REMEDIATIONS_EXECUTE = 'remediations_execute_remediation';

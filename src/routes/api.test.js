@@ -1,6 +1,6 @@
 import { remediationsApi } from '../api';
+import { API_BASE } from '../constants';
 import {
-  API_BASE,
   deleteRemediationSystems,
   getRemediationPlaybookSystemsList,
   getPlaybookLogs,

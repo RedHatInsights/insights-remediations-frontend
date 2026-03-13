@@ -5,28 +5,29 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import App from './App';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
-import { getIsReceptorConfigured } from './api';
 
 jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
   __esModule: true,
   default: jest.fn(),
+}));
+jest.mock('./Utilities/Hooks/useFeatureFlag', () => ({
+  useFeatureFlag: jest.fn(() => false),
 }));
 jest.mock('./Routes', () => {
   return function MockRoutes() {
     return <div data-testid="routes">Routes Component</div>;
   };
 });
-jest.mock('./api', () => ({
-  getIsReceptorConfigured: jest.fn(),
-}));
 
 jest.mock(
   '@redhat-cloud-services/frontend-components-notifications/NotificationsProvider',
   () => {
-    // eslint-disable-next-line react/prop-types
-    return function MockNotificationsProvider({ children }) {
-      return <div>{children}</div>;
+    const PropTypes = require('prop-types');
+    const MockNotificationsProvider = ({ children }) => <div>{children}</div>;
+    MockNotificationsProvider.propTypes = {
+      children: PropTypes.node,
     };
+    return MockNotificationsProvider;
   },
 );
 
@@ -34,21 +35,51 @@ jest.mock('@redhat-cloud-services/frontend-components/NotAuthorized', () => ({
   NotAuthorized: () => <div data-testid="not-authorized">Not Authorized</div>,
 }));
 
+jest.mock('@redhat-cloud-services/frontend-components/RBACProvider', () => {
+  const PropTypes = require('prop-types');
+  const RBACProvider = ({ children }) => <div>{children}</div>;
+  RBACProvider.propTypes = {
+    children: PropTypes.node,
+  };
+  return { RBACProvider };
+});
+
+jest.mock('@project-kessel/react-kessel-access-check', () => {
+  const PropTypes = require('prop-types');
+  const Provider = ({ children }) => <div>{children}</div>;
+  Provider.propTypes = { children: PropTypes.node };
+
+  return {
+    AccessCheck: {
+      Provider,
+    },
+    fetchDefaultWorkspace: jest.fn(),
+    useSelfAccessCheck: jest.fn(),
+  };
+});
+
 const mockStore = createStore(() => ({}));
+
+const { useFeatureFlag } = require('./Utilities/Hooks/useFeatureFlag');
+const {
+  fetchDefaultWorkspace,
+  useSelfAccessCheck,
+} = require('@project-kessel/react-kessel-access-check');
 
 describe('App Component', () => {
   let mockChrome;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    useFeatureFlag.mockReturnValue(false);
 
     mockChrome = {
       hideGlobalFilter: jest.fn(),
-      getUserPermissions: jest.fn(),
+      getUserPermissions: jest.fn().mockResolvedValue([]),
     };
 
     useChrome.mockReturnValue(mockChrome);
-    getIsReceptorConfigured.mockResolvedValue({ data: [{ id: 'test' }] });
+    fetchDefaultWorkspace.mockResolvedValue({ id: 'default-ws-id' });
   });
 
   const renderApp = () => {
@@ -80,18 +111,6 @@ describe('App Component', () => {
 
       await waitFor(() => {
         expect(mockChrome.hideGlobalFilter).toHaveBeenCalled();
-      });
-    });
-
-    it('should fetch receptor configuration on mount', async () => {
-      mockChrome.getUserPermissions.mockResolvedValue([
-        { permission: 'remediations:*:*' },
-      ]);
-
-      renderApp();
-
-      await waitFor(() => {
-        expect(getIsReceptorConfigured).toHaveBeenCalled();
       });
     });
   });
@@ -331,55 +350,6 @@ describe('App Component', () => {
     });
   });
 
-  describe('Receptor Configuration', () => {
-    it('should set isReceptorConfigured to true when data exists', async () => {
-      getIsReceptorConfigured.mockResolvedValue({
-        data: [{ id: 'receptor1' }],
-      });
-      mockChrome.getUserPermissions.mockResolvedValue([
-        { permission: 'remediations:*:*' },
-      ]);
-
-      renderApp();
-
-      await waitFor(() => {
-        expect(screen.getByTestId('routes')).toBeInTheDocument();
-      });
-    });
-
-    it('should set isReceptorConfigured to false when no data', async () => {
-      getIsReceptorConfigured.mockResolvedValue({ data: [] });
-      mockChrome.getUserPermissions.mockResolvedValue([
-        { permission: 'remediations:*:*' },
-      ]);
-
-      renderApp();
-
-      await waitFor(() => {
-        expect(screen.getByTestId('routes')).toBeInTheDocument();
-      });
-    });
-
-    it('should handle getIsReceptorConfigured error', async () => {
-      const consoleSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
-
-      getIsReceptorConfigured.mockRejectedValue(new Error('Receptor error'));
-      mockChrome.getUserPermissions.mockResolvedValue([
-        { permission: 'remediations:*:*' },
-      ]);
-
-      renderApp();
-
-      await waitFor(() => {
-        expect(screen.getByTestId('routes')).toBeInTheDocument();
-      });
-
-      consoleSpy.mockRestore();
-    });
-  });
-
   describe('Chrome Integration', () => {
     it('should handle missing chrome object', async () => {
       useChrome.mockReturnValue(null);
@@ -473,7 +443,6 @@ describe('App Component', () => {
 
       // Mocks should only be called once from initial mount
       expect(mockChrome.hideGlobalFilter).toHaveBeenCalledTimes(1);
-      expect(getIsReceptorConfigured).toHaveBeenCalledTimes(1);
     });
 
     it('should handle rapid re-renders gracefully', async () => {
@@ -499,27 +468,6 @@ describe('App Component', () => {
   });
 
   describe('Error Handling', () => {
-    it('should handle async errors gracefully', async () => {
-      const consoleSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
-
-      mockChrome.getUserPermissions.mockResolvedValue([
-        { permission: 'remediations:*:*' },
-      ]);
-
-      // Simulate an error in getIsReceptorConfigured
-      getIsReceptorConfigured.mockRejectedValue(new Error('Network error'));
-
-      renderApp();
-
-      await waitFor(() => {
-        expect(screen.getByTestId('routes')).toBeInTheDocument();
-      });
-
-      consoleSpy.mockRestore();
-    });
-
     it('should handle malformed permission data', async () => {
       mockChrome.getUserPermissions.mockResolvedValue([
         { permission: null },
@@ -534,18 +482,71 @@ describe('App Component', () => {
         expect(screen.getByTestId('routes')).toBeInTheDocument();
       });
     });
+  });
 
-    it('should handle malformed receptor data', async () => {
-      getIsReceptorConfigured.mockResolvedValue({ data: [] }); // Use empty array instead of null
-      mockChrome.getUserPermissions.mockResolvedValue([
-        { permission: 'remediations:*:*' },
-      ]);
+  describe('when kessel-for-remediations is enabled', () => {
+    beforeEach(() => {
+      useFeatureFlag.mockReturnValue(true);
+      mockChrome.appObjectId = jest.fn(() => 'test-workspace-id');
+      useSelfAccessCheck.mockReturnValue({
+        data: [
+          {
+            relation: 'remediations_view_remediation',
+            allowed: true,
+          },
+          {
+            relation: 'remediations_edit_remediation',
+            allowed: true,
+          },
+          {
+            relation: 'remediations_execute_remediation',
+            allowed: true,
+          },
+        ],
+        loading: false,
+        error: undefined,
+      });
+    });
 
+    it('should use AccessCheck.Provider and show routes when Kessel allows access', async () => {
       renderApp();
 
       await waitFor(() => {
         expect(screen.getByTestId('routes')).toBeInTheDocument();
       });
+      expect(screen.queryByTestId('not-authorized')).not.toBeInTheDocument();
+    });
+
+    it('should show NotAuthorized when Kessel returns no read/write', async () => {
+      useSelfAccessCheck.mockReturnValue({
+        data: [
+          { relation: 'remediations_view_remediation', allowed: false },
+          { relation: 'remediations_edit_remediation', allowed: false },
+          { relation: 'remediations_execute_remediation', allowed: true },
+        ],
+        loading: false,
+        error: undefined,
+      });
+
+      renderApp();
+
+      await waitFor(() => {
+        expect(screen.getByTestId('not-authorized')).toBeInTheDocument();
+      });
+      expect(screen.queryByTestId('routes')).not.toBeInTheDocument();
+    });
+
+    it('should show spinner while Kessel is loading', () => {
+      useSelfAccessCheck.mockReturnValue({
+        data: undefined,
+        loading: true,
+        error: undefined,
+      });
+
+      renderApp();
+
+      expect(screen.getByRole('progressbar')).toBeInTheDocument();
+      expect(screen.queryByTestId('routes')).not.toBeInTheDocument();
     });
   });
 });
