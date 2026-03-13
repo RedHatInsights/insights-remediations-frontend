@@ -30,12 +30,7 @@ const useRunSystems = (run, shouldFetch, remId, fetchSystems) => {
 
     fetchSystems({ remId, playbook_run_id: run.id })
       .then(({ data }) => {
-        const exec = run.executors.find((e) => e.executor_id === run.id);
-        setSystems(
-          (data ?? [])
-            .filter((s) => s.playbook_run_executor_id === run.id)
-            .map((s) => ({ ...s, executor_name: exec?.executor_name })),
-        );
+        setSystems(data ?? []);
       })
       .catch((error) => {
         console.error('Failed to fetch systems:', error);
@@ -52,16 +47,10 @@ const useRunSystems = (run, shouldFetch, remId, fetchSystems) => {
     prevStatusRef.current = run.status;
     if (!hasJustFinished) return;
 
-    const exec = run.executors.find((e) => e.executor_id === run.id);
-
     setLoading(true);
     fetchSystems({ remId, playbook_run_id: run.id })
       .then(({ data }) => {
-        setSystems(
-          (data ?? [])
-            .filter((s) => s.playbook_run_executor_id === run.id)
-            .map((s) => ({ ...s, executor_name: exec?.executor_name })),
-        );
+        setSystems(data ?? []);
       })
       .catch((error) => {
         console.error('Failed to fetch systems:', error);

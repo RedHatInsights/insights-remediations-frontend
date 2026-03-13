@@ -79,9 +79,69 @@ describe('useConnectionStatus', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(errorObj);
     expect(result.current[2]).toBe(false); // areDetailsLoading
-    expect(result.current[3]).toBe(403); // detailsError
-    expect(result.current[4]).toBe(403); // connectedData
+    expect(result.current[3]).toBe(403); // connectedData
+    expect(result.current[5]).toEqual(errorObj); // connectionError
 
     consoleErrorSpy.mockRestore();
+  });
+
+  test('refetch function can be called to retrigger data fetch', async () => {
+    const initialData = {
+      data: [
+        {
+          system_count: 1,
+          system_ids: ['826473e9-a5b9-4db7-99d6-d9f271bd8f4d'],
+          connection_status: 'connected',
+        },
+      ],
+    };
+
+    const updatedData = {
+      data: [
+        {
+          system_count: 2,
+          system_ids: ['826473e9-a5b9-4db7-99d6-d9f271bd8f4d'],
+          connection_status: 'connected',
+        },
+      ],
+    };
+
+    const mockAxios = {
+      get: jest
+        .fn()
+        .mockResolvedValueOnce(initialData)
+        .mockResolvedValueOnce(updatedData),
+    };
+
+    let hook;
+    await act(async () => {
+      hook = renderHook(() => useConnectionStatus(remediation.id, mockAxios));
+    });
+
+    const { result } = hook;
+
+    // Wait for initial load
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(result.current[0]).toBe(1); // connectedSystems
+    expect(result.current[1]).toBe(1); // totalSystems
+    expect(mockAxios.get).toHaveBeenCalledTimes(1);
+
+    // Call refetch function (fetchData is at index 4)
+    const refetch = result.current[4];
+    await act(async () => {
+      refetch();
+    });
+
+    // Wait for refetch to complete
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(result.current[0]).toBe(2); // connectedSystems updated
+    expect(result.current[1]).toBe(2); // totalSystems updated
+    expect(mockAxios.get).toHaveBeenCalledTimes(2);
   });
 });

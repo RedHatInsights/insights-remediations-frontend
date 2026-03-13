@@ -111,6 +111,16 @@ describe('urls utilities', () => {
       expect(result).toBe('patch');
     });
 
+    it('should return patch tab for patch-package issues', () => {
+      getIssuePrefix.mockReturnValue('patch-package');
+
+      const result = getInventoryTabForIssue({
+        id: 'patch-package:bind-export-libs-32:9.11.36-16.el8_10.6.x86_64',
+      });
+
+      expect(result).toBe('patch');
+    });
+
     it('should return general_information for unknown issue types', () => {
       getIssuePrefix.mockReturnValue('unknown');
 
@@ -219,6 +229,14 @@ describe('urls utilities', () => {
 
     it('should build patch advisory URLs with colon in advisory ID', () => {
       const id = 'patch-advisory:RHSA:2021-1234';
+
+      const result = buildIssueUrl(id);
+
+      expect(result).toBe('https://console.redhat.com/app/url');
+    });
+
+    it('should build patch package URLs', () => {
+      const id = 'patch-package:bind-export-libs-32:9.11.36-16.el8_10.6.x86_64';
 
       const result = buildIssueUrl(id);
 

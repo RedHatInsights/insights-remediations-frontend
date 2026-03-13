@@ -2,23 +2,14 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import columns from './Columns';
+import createColumns from './Columns';
 
-// Mock the column components
+const columns = createColumns('test-remediation-id');
+
 jest.mock('./IssuesColumn', () => {
   return function MockIssuesColumn({ issues, display_name }) {
     return (
       <div data-testid="issues-column">{`${issues.length} issues for ${display_name}`}</div>
-    );
-  };
-});
-
-jest.mock('./RebootColumn', () => {
-  return function MockRebootColumn({ rebootRequired }) {
-    return (
-      <div data-testid="reboot-column">
-        {rebootRequired ? 'Reboot required' : 'No reboot'}
-      </div>
     );
   };
 });
@@ -47,7 +38,7 @@ jest.mock('@redhat-cloud-services/frontend-components/InsightsLink', () => {
 describe('SystemsTable Columns', () => {
   it('should export an array of column configurations', () => {
     expect(Array.isArray(columns)).toBe(true);
-    expect(columns).toHaveLength(6);
+    expect(columns).toHaveLength(5);
   });
 
   describe('display_name column', () => {
@@ -125,7 +116,7 @@ describe('SystemsTable Columns', () => {
     const issuesColumn = columns[3];
 
     it('should have correct configuration', () => {
-      expect(issuesColumn.key).toBe('issues');
+      expect(issuesColumn.key).toBe('issue_count');
       expect(issuesColumn.title).toBe('Actions');
       expect(typeof issuesColumn.renderFunc).toBe('function');
       expect(issuesColumn.props).toEqual({
@@ -169,39 +160,6 @@ describe('SystemsTable Columns', () => {
 
       const issuesCol = screen.getByTestId('issues-column');
       expect(issuesCol).toHaveTextContent('1 issues for undefined');
-    });
-  });
-
-  describe('rebootRequired column', () => {
-    const rebootColumn = columns[4];
-
-    it('should have correct configuration', () => {
-      expect(rebootColumn.key).toBe('rebootRequired');
-      expect(rebootColumn.title).toBe('Reboot required');
-      expect(typeof rebootColumn.renderFunc).toBe('function');
-      expect(rebootColumn.props).toEqual({
-        width: 15,
-        isStatic: true,
-      });
-    });
-
-    it('should render RebootColumn with reboot required', () => {
-      const component = rebootColumn.renderFunc(true);
-
-      render(<div>{component}</div>);
-
-      const rebootCol = screen.getByTestId('reboot-column');
-      expect(rebootCol).toBeInTheDocument();
-      expect(rebootCol).toHaveTextContent('Reboot required');
-    });
-
-    it('should render RebootColumn without reboot required', () => {
-      const component = rebootColumn.renderFunc(false);
-
-      render(<div>{component}</div>);
-
-      const rebootCol = screen.getByTestId('reboot-column');
-      expect(rebootCol).toHaveTextContent('No reboot');
     });
   });
 
@@ -270,7 +228,7 @@ describe('SystemsTable Columns', () => {
     it('should have correct static column configurations', () => {
       const staticColumns = columns.filter((col) => col.props?.isStatic);
 
-      expect(staticColumns).toHaveLength(3);
+      expect(staticColumns).toHaveLength(2); // issue_count and connection_status
       staticColumns.forEach((column) => {
         expect(column.props.width).toBe(15);
         expect(column.props.isStatic).toBe(true);
@@ -287,7 +245,7 @@ describe('SystemsTable Columns', () => {
 
     it('should have render functions for complex columns', () => {
       const complexColumns = columns.filter((col) => col.renderFunc);
-      expect(complexColumns).toHaveLength(4); // display_name, issues, rebootRequired, connection_status
+      expect(complexColumns).toHaveLength(3); // display_name, issue_count, connection_status
 
       complexColumns.forEach((column) => {
         expect(typeof column.renderFunc).toBe('function');

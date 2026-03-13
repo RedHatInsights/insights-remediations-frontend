@@ -1,5 +1,6 @@
 import { ACTION_TYPES } from './constants';
-import { deleteSystemsFromRemediation, remediationsApi } from './api';
+import { remediationsApi } from './api';
+import { deleteRemediationSystems } from './routes/api';
 
 export const loadRemediation = (id) => ({
   type: ACTION_TYPES.LOAD_REMEDIATION,
@@ -26,5 +27,5 @@ export const selectEntity = (id, selected) => ({
 
 export const deleteSystems = (systems, remediation) => ({
   type: ACTION_TYPES.DELTE_SYSTEMS,
-  payload: deleteSystemsFromRemediation(systems, remediation),
+  payload: deleteRemediationSystems(systems, remediation),
 });

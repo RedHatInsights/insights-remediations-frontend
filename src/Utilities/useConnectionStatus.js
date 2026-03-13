@@ -1,52 +1,66 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { API_BASE } from '../routes/api';
 
 export const useConnectionStatus = (remediationId, axios) => {
   const [connectedSystems, setConnectedSystems] = useState(0);
   const [totalSystems, setTotalSystems] = useState(0);
   const [areDetailsLoading, setAreDetailsLoading] = useState(true);
-  const [detailsError, setDetailsError] = useState();
   const [connectedData, setConnectedData] = useState([]);
+  const [connectionError, setConnectionError] = useState(null);
   const mounted = useRef(false);
-  useEffect(() => {
-    mounted.current = true;
+
+  const fetchData = useCallback(async () => {
+    if (!remediationId) {
+      return;
+    }
+
+    setAreDetailsLoading(true);
+    setConnectionError(null);
     let connectedSystemCount = 0;
     let totalSystemsCount = 0;
-    const fetchData = async () => {
-      try {
-        const connection_status = await axios.get(
-          `${API_BASE}/remediations/${remediationId}/connection_status`,
-        );
-        (mounted.current &&
-          (connection_status.data.forEach((connected_group) => {
-            ((totalSystemsCount += connected_group.system_count),
-              connected_group.connection_status === 'connected' &&
-                (connectedSystemCount = connected_group.system_count));
-          }),
-          setConnectedSystems(connectedSystemCount)),
-          setTotalSystems(totalSystemsCount),
-          setConnectedData(connection_status.data));
-      } catch (error) {
-        console.error(error);
-        setDetailsError(error?.errors[0].status || '');
-        setConnectedData(error?.errors[0].status);
-        //When backend endpoint fails, it will stop here and not continue - forever loading
+
+    try {
+      const connection_status = await axios.get(
+        `${API_BASE}/remediations/${remediationId}/connection_status`,
+      );
+      if (mounted.current) {
+        connection_status.data.forEach((connected_group) => {
+          totalSystemsCount += connected_group.system_count;
+          if (connected_group.connection_status === 'connected') {
+            connectedSystemCount = connected_group.system_count;
+          }
+        });
+        setConnectedSystems(connectedSystemCount);
+        setTotalSystems(totalSystemsCount);
+        setConnectedData(connection_status.data);
+      }
+    } catch (error) {
+      console.error(error);
+      if (mounted.current) {
+        setConnectedData(error?.errors?.[0]?.status);
+        setConnectionError(error);
+      }
+    } finally {
+      if (mounted.current) {
         setAreDetailsLoading(false);
       }
-      setAreDetailsLoading(false);
-    };
+    }
+  }, [remediationId, axios]);
 
-    remediationId && fetchData();
+  useEffect(() => {
+    mounted.current = true;
+    fetchData();
     return () => {
       mounted.current = false;
     };
-  }, [axios, remediationId]);
+  }, [fetchData]);
 
   return [
     connectedSystems,
     totalSystems,
     areDetailsLoading,
-    detailsError,
     connectedData,
+    fetchData,
+    connectionError,
   ];
 };

@@ -21,11 +21,10 @@ import { LogViewer, LogViewerSearch } from '@patternfly/react-log-viewer';
 import LogCards from './LogCards';
 import RunTabContent from './RunTabContent';
 import { formatUtc } from './helpers';
-import { getPlaybookLogs, getRemediationPlaybookSystemsList } from '../../api';
-
-import useRemediationsQuery from '../../../api/useRemediationsQuery';
+import useRemediations from '../../../Utilities/Hooks/api/useRemediations';
 import { StatusIcon } from '../../helpers';
 import NoExecutions from './NoExections';
+import { getRemediationPlaybookSystemsList, getPlaybookLogs } from '../../api';
 
 const ExecutionHistoryTab = ({
   remediationPlaybookRuns,
@@ -41,7 +40,6 @@ const ExecutionHistoryTab = ({
   const [manualRefreshClicked, setManualRefreshClicked] = useState(false);
 
   const { id: remId } = useParams();
-
   //Whenever runs is altered, copy that array to local state -> Execute button wont require a refresh down the line
   useEffect(() => setRunsState(runs), [runs]);
 
@@ -60,9 +58,11 @@ const ExecutionHistoryTab = ({
     );
   }, []);
 
-  const { fetch: fetchSystems } = useRemediationsQuery(
+  const { fetch: fetchSystems } = useRemediations(
     getRemediationPlaybookSystemsList,
-    { skip: true },
+    {
+      skip: true,
+    },
   );
 
   const logParams =
@@ -78,7 +78,7 @@ const ExecutionHistoryTab = ({
     result: logData,
     loading: logsLoading,
     refetch: refetchLogs,
-  } = useRemediationsQuery(getPlaybookLogs, {
+  } = useRemediations(getPlaybookLogs, {
     params: logParams,
     skip: !logParams,
   });
@@ -130,7 +130,7 @@ const ExecutionHistoryTab = ({
       systemId: system.system_id,
       systemName: system.system_name,
       status: system.status,
-      executor_name: system.executor_name,
+      executor_type: system.executor_type,
     });
     setIsLogOpen(true);
   };
@@ -199,7 +199,7 @@ const ExecutionHistoryTab = ({
             <LogCards
               systemName={meta?.systemName}
               status={meta?.status}
-              connectionType={meta?.executor_name}
+              connectionType={meta?.executor_type}
               executedBy={
                 runsState?.find((r) => r.id === meta?.runId)?.created_by
                   ?.username ?? '-'

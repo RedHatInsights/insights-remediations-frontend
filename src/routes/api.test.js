@@ -1,36 +1,32 @@
 import { remediationsApi } from '../api';
 import {
   API_BASE,
-  getRemediationDetails,
-  getRemediations,
-  getRemediationPlaybook,
-  checkExecutableStatus,
+  deleteRemediationSystems,
   getRemediationPlaybookSystemsList,
   getPlaybookLogs,
-  getRemediationsList,
-  updateRemediationPlans,
-  deleteRemediation,
-  deleteRemediationList,
-  executeRemediation,
-  deleteIssues,
+  updateRemediationWrapper,
 } from './api';
+import axiosInstance from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 
 // Mock the remediations API
 jest.mock('../api', () => ({
   remediationsApi: {
-    getRemediation: jest.fn(),
-    getRemediations: jest.fn(),
-    listPlaybookRuns: jest.fn(),
-    checkExecutable: jest.fn(),
     getPlaybookRunSystems: jest.fn(),
     getPlaybookRunSystemDetails: jest.fn(),
     updateRemediation: jest.fn(),
-    deleteRemediation: jest.fn(),
-    deleteRemediations: jest.fn(),
-    runRemediation: jest.fn(),
-    deleteRemediationIssues: jest.fn(),
   },
 }));
+
+// Mock axios instance
+jest.mock(
+  '@redhat-cloud-services/frontend-components-utilities/interceptors',
+  () => ({
+    __esModule: true,
+    default: {
+      delete: jest.fn(),
+    },
+  }),
+);
 
 describe('Routes API', () => {
   beforeEach(() => {
@@ -43,65 +39,38 @@ describe('Routes API', () => {
     });
   });
 
-  describe('getRemediationDetails', () => {
-    it('should call remediationsApi.getRemediation with correct parameters', async () => {
-      const remId = 'remediation-123';
-      const mockResponse = { id: remId, name: 'Test Remediation' };
-      remediationsApi.getRemediation.mockResolvedValue(mockResponse);
+  describe('deleteRemediationSystems', () => {
+    it('should call axios delete with correct URL and data', async () => {
+      const systems = [{ id: 'system-1' }, { id: 'system-2' }];
+      const remediation = { id: 'remediation-123' };
+      const mockResponse = { success: true };
+      axiosInstance.delete.mockResolvedValue(mockResponse);
 
-      const result = await getRemediationDetails({ remId });
+      const result = await deleteRemediationSystems(systems, remediation);
 
-      expect(remediationsApi.getRemediation).toHaveBeenCalledWith(remId);
-      expect(result).toBe(mockResponse);
-    });
-  });
-
-  describe('getRemediations', () => {
-    it('should call remediationsApi.getRemediations with parameters', async () => {
-      const params = { limit: 10, offset: 0 };
-      const mockResponse = { data: [], meta: {} };
-      remediationsApi.getRemediations.mockResolvedValue(mockResponse);
-
-      const result = await getRemediations(params);
-
-      expect(remediationsApi.getRemediations).toHaveBeenCalledWith(params);
+      expect(axiosInstance.delete).toHaveBeenCalledWith(
+        '/api/remediations/v1/remediations/remediation-123/systems',
+        {
+          data: { system_ids: ['system-1', 'system-2'] },
+        },
+      );
       expect(result).toBe(mockResponse);
     });
 
-    it('should call remediationsApi.getRemediations without parameters', async () => {
-      const mockResponse = { data: [], meta: {} };
-      remediationsApi.getRemediations.mockResolvedValue(mockResponse);
+    it('should handle empty systems array', async () => {
+      const systems = [];
+      const remediation = { id: 'remediation-123' };
+      const mockResponse = { success: true };
+      axiosInstance.delete.mockResolvedValue(mockResponse);
 
-      const result = await getRemediations();
+      await deleteRemediationSystems(systems, remediation);
 
-      expect(remediationsApi.getRemediations).toHaveBeenCalledWith(undefined);
-      expect(result).toBe(mockResponse);
-    });
-  });
-
-  describe('getRemediationPlaybook', () => {
-    it('should call remediationsApi.listPlaybookRuns with correct parameters', async () => {
-      const remId = 'remediation-123';
-      const mockResponse = { runs: [] };
-      remediationsApi.listPlaybookRuns.mockResolvedValue(mockResponse);
-
-      const result = await getRemediationPlaybook({ remId });
-
-      expect(remediationsApi.listPlaybookRuns).toHaveBeenCalledWith(remId);
-      expect(result).toBe(mockResponse);
-    });
-  });
-
-  describe('checkExecutableStatus', () => {
-    it('should call remediationsApi.checkExecutable with correct parameters', async () => {
-      const remId = 'remediation-123';
-      const mockResponse = { executable: true };
-      remediationsApi.checkExecutable.mockResolvedValue(mockResponse);
-
-      const result = await checkExecutableStatus({ remId });
-
-      expect(remediationsApi.checkExecutable).toHaveBeenCalledWith(remId);
-      expect(result).toBe(mockResponse);
+      expect(axiosInstance.delete).toHaveBeenCalledWith(
+        '/api/remediations/v1/remediations/remediation-123/systems',
+        {
+          data: { system_ids: [] },
+        },
+      );
     });
   });
 
@@ -132,7 +101,7 @@ describe('Routes API', () => {
         playbook_run_id: 'run-456',
         system_id: 'system-789',
       };
-      const mockResponse = { logs: 'test logs' };
+      const mockResponse = { logs: [] };
       remediationsApi.getPlaybookRunSystemDetails.mockResolvedValue(
         mockResponse,
       );
@@ -146,132 +115,84 @@ describe('Routes API', () => {
       );
       expect(result).toBe(mockResponse);
     });
-  });
 
-  describe('getRemediationsList', () => {
-    it('should call remediationsApi.getRemediations with fieldsData filter', async () => {
-      const mockResponse = { data: [] };
-      remediationsApi.getRemediations.mockResolvedValue(mockResponse);
-
-      const result = await getRemediationsList();
-
-      expect(remediationsApi.getRemediations).toHaveBeenCalledWith({
-        fieldsData: ['name'],
-      });
-      expect(result).toBe(mockResponse);
-    });
-  });
-
-  describe('updateRemediationPlans', () => {
-    it('should call remediationsApi.updateRemediation with correct parameters', async () => {
+    it('should handle all parameters being passed correctly', async () => {
       const params = {
-        id: 'remediation-123',
-        name: 'Updated Name',
-        description: 'Updated Description',
+        remId: 'rem-1',
+        playbook_run_id: 'run-1',
+        system_id: 'sys-1',
       };
-      const mockResponse = { id: params.id, name: params.name };
-      remediationsApi.updateRemediation.mockResolvedValue(mockResponse);
+      remediationsApi.getPlaybookRunSystemDetails.mockResolvedValue({});
 
-      const result = await updateRemediationPlans(params);
+      await getPlaybookLogs(params);
 
-      expect(remediationsApi.updateRemediation).toHaveBeenCalledWith(
-        params.id,
-        { name: params.name, description: params.description },
+      expect(remediationsApi.getPlaybookRunSystemDetails).toHaveBeenCalledWith(
+        'rem-1',
+        'run-1',
+        'sys-1',
       );
-      expect(result).toBe(mockResponse);
-    });
-
-    it('should handle params with only id', async () => {
-      const params = { id: 'remediation-123' };
-      const mockResponse = { id: params.id };
-      remediationsApi.updateRemediation.mockResolvedValue(mockResponse);
-
-      const result = await updateRemediationPlans(params);
-
-      expect(remediationsApi.updateRemediation).toHaveBeenCalledWith(
-        params.id,
-        {},
-      );
-      expect(result).toBe(mockResponse);
     });
   });
 
-  describe('deleteRemediation', () => {
-    it('should call remediationsApi.deleteRemediation with correct parameters', async () => {
-      const id = 'remediation-123';
+  describe('updateRemediationWrapper', () => {
+    it('should call updateRemediation with extracted id and data', async () => {
       const mockResponse = { success: true };
-      remediationsApi.deleteRemediation.mockResolvedValue(mockResponse);
+      remediationsApi.updateRemediation.mockResolvedValue(mockResponse);
 
-      const result = await deleteRemediation({ id });
+      const params = {
+        id: 'remediation-1',
+        name: 'Updated Name',
+        auto_reboot: true,
+      };
 
-      expect(remediationsApi.deleteRemediation).toHaveBeenCalledWith(id);
-      expect(result).toBe(mockResponse);
-    });
-  });
+      const result = await updateRemediationWrapper(params);
 
-  describe('deleteRemediationList', () => {
-    it('should call remediationsApi.deleteRemediations with correct parameters', async () => {
-      const remediation_ids = ['rem-1', 'rem-2', 'rem-3'];
-      const mockResponse = { deleted: 3 };
-      remediationsApi.deleteRemediations.mockResolvedValue(mockResponse);
-
-      const result = await deleteRemediationList({ remediation_ids });
-
-      expect(remediationsApi.deleteRemediations).toHaveBeenCalledWith({
-        remediation_ids,
-      });
-      expect(result).toBe(mockResponse);
-    });
-  });
-
-  describe('executeRemediation', () => {
-    it('should call remediationsApi.runRemediation with correct parameters', async () => {
-      const id = 'remediation-123';
-      const etag = 'etag-456';
-      const exclude = ['system-1', 'system-2'];
-      const mockResponse = { execution_id: 'exec-789' };
-      remediationsApi.runRemediation.mockResolvedValue(mockResponse);
-
-      const result = await executeRemediation({ id, etag, exclude });
-
-      expect(remediationsApi.runRemediation).toHaveBeenCalledWith(
-        id,
-        { exclude },
-        { headers: { 'If-Match': etag } },
+      expect(remediationsApi.updateRemediation).toHaveBeenCalledWith(
+        'remediation-1',
+        {
+          name: 'Updated Name',
+          auto_reboot: true,
+        },
       );
       expect(result).toBe(mockResponse);
     });
 
-    it('should handle execution without exclude parameter', async () => {
-      const id = 'remediation-123';
-      const etag = 'etag-456';
-      const mockResponse = { execution_id: 'exec-789' };
-      remediationsApi.runRemediation.mockResolvedValue(mockResponse);
+    it('should handle only name update', async () => {
+      const mockResponse = { success: true };
+      remediationsApi.updateRemediation.mockResolvedValue(mockResponse);
 
-      const result = await executeRemediation({ id, etag });
+      const params = {
+        id: 'remediation-2',
+        name: 'New Name Only',
+      };
 
-      expect(remediationsApi.runRemediation).toHaveBeenCalledWith(
-        id,
-        { exclude: undefined },
-        { headers: { 'If-Match': etag } },
+      await updateRemediationWrapper(params);
+
+      expect(remediationsApi.updateRemediation).toHaveBeenCalledWith(
+        'remediation-2',
+        {
+          name: 'New Name Only',
+        },
       );
-      expect(result).toBe(mockResponse);
     });
-  });
 
-  describe('deleteIssues', () => {
-    it('should call remediationsApi.deleteRemediationIssues with correct parameters', async () => {
-      const id = 'remediation-123';
-      const issue_ids = ['issue-1', 'issue-2'];
-      const mockResponse = { deleted: 2 };
-      remediationsApi.deleteRemediationIssues.mockResolvedValue(mockResponse);
+    it('should handle only auto_reboot update', async () => {
+      const mockResponse = { success: true };
+      remediationsApi.updateRemediation.mockResolvedValue(mockResponse);
 
-      const result = await deleteIssues({ id, issue_ids });
+      const params = {
+        id: 'remediation-3',
+        auto_reboot: false,
+      };
 
-      expect(remediationsApi.deleteRemediationIssues).toHaveBeenCalledWith(id, {
-        issue_ids,
-      });
-      expect(result).toBe(mockResponse);
+      await updateRemediationWrapper(params);
+
+      expect(remediationsApi.updateRemediation).toHaveBeenCalledWith(
+        'remediation-3',
+        {
+          auto_reboot: false,
+        },
+      );
     });
   });
 });

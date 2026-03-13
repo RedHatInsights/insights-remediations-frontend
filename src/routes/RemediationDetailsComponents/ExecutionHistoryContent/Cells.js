@@ -7,6 +7,7 @@ import {
   ExclamationCircleIcon,
   InProgressIcon,
 } from '@patternfly/react-icons';
+import { formatConnectionType } from './helpers';
 
 export const SystemNameCell = ({ system_name, system_id }) => (
   <InsightsLink
@@ -18,12 +19,12 @@ export const SystemNameCell = ({ system_name, system_id }) => (
   </InsightsLink>
 );
 
-export const InsightsConnectCell = ({ executor_name }) => {
-  return <p data-testid="text">{executor_name ?? ''}</p>;
+export const InsightsConnectCell = ({ executor_type }) => {
+  return <p data-testid="text">{formatConnectionType(executor_type)}</p>;
 };
 
-export const RedHatLightSpeedCell = ({ executor_name }) => {
-  return <p data-testid="text">{executor_name ?? ''}</p>;
+export const RedHatLightSpeedCell = ({ executor_type }) => {
+  return <p data-testid="text">{formatConnectionType(executor_type)}</p>;
 };
 export const ExecutionStatusCell = ({ status }) => {
   let icon;
@@ -63,10 +64,10 @@ SystemNameCell.propTypes = {
   system_name: PropTypes.string.isRequired,
 };
 InsightsConnectCell.propTypes = {
-  executor_name: PropTypes.string,
+  executor_type: PropTypes.string,
 };
 RedHatLightSpeedCell.propTypes = {
-  executor_name: PropTypes.string,
+  executor_type: PropTypes.string,
 };
 ExecutionStatusCell.propTypes = {
   status: PropTypes.string,

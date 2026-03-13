@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import useNavigate from '@redhat-cloud-services/frontend-components-utilities/useInsightsNavigate';
 
 import {
@@ -10,22 +9,17 @@ import {
   MenuToggle,
 } from '@patternfly/react-core';
 import { EllipsisVIcon } from '@patternfly/react-icons';
-import TextInputDialog from './Dialogs/TextInputDialog';
+import RenameModal from './RenameModal';
 import ConfirmationDialog from './ConfirmationDialog';
-import { deleteRemediation, patchRemediation } from '../actions';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 
 import { PermissionContext } from '../App';
-
-const EMPTY_NAME = 'Unnamed Playbook';
+import useRemediations from '../Utilities/Hooks/api/useRemediations';
 
 function RemediationDetailsDropdown({
   remediation,
-  onRename,
-  onDelete,
   remediationsList,
-  updateRemPlan,
-  refetch,
+  refetchRemediationDetails,
   refetchAllRemediations,
 }) {
   const [open, setOpen] = useState(false);
@@ -35,31 +29,40 @@ function RemediationDetailsDropdown({
   const navigate = useNavigate();
   const addNotification = useAddNotification();
 
+  const { fetch: deleteRemediation } = useRemediations('deleteRemediation', {
+    skip: true,
+  });
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteRemediation({ id });
+      addNotification({
+        title: `Deleted remediation plan ${remediation.name}`,
+        variant: 'success',
+        dismissable: true,
+        autoDismiss: true,
+      });
+      navigate('/');
+    } catch (error) {
+      console.error(error);
+      addNotification({
+        title: `Failed to delete remediation plan`,
+        variant: 'danger',
+        dismissable: true,
+        autoDismiss: true,
+      });
+    }
+  };
+
   return (
     <React.Fragment>
       {renameDialogOpen && (
-        <TextInputDialog
-          title="Rename remediation plan?"
-          ariaLabel="RenameModal"
-          value={remediation.name}
-          onCancel={() => setRenameDialogOpen(false)}
-          onSubmit={(name) => {
-            setRenameDialogOpen(false);
-            updateRemPlan
-              ? updateRemPlan({ id: remediation.id, name: name }).then(() => {
-                  (refetch(), refetchAllRemediations());
-                })
-              : onRename(remediation.id, name);
-
-            addNotification({
-              title: `Updated playbook name to ${name}`,
-              description: '',
-              variant: 'success',
-              dismissable: true,
-              autoDismiss: true,
-            });
-          }}
+        <RenameModal
+          remediation={remediation}
+          setIsRenameModalOpen={setRenameDialogOpen}
           remediationsList={remediationsList}
+          fetch={refetchRemediationDetails}
+          refetch={refetchAllRemediations}
         />
       )}
 
@@ -71,14 +74,7 @@ function RemediationDetailsDropdown({
         onClose={(confirm) => {
           setDeleteDialogOpen(false);
           if (confirm) {
-            onDelete(remediation.id);
-            addNotification({
-              title: `Deleted remediation plan ${remediation.name}`,
-              variant: 'success',
-              dismissable: true,
-              autoDismiss: true,
-            });
-            navigate('/');
+            handleDelete(remediation.id);
           }
         }}
       />
@@ -122,23 +118,9 @@ function RemediationDetailsDropdown({
 
 RemediationDetailsDropdown.propTypes = {
   remediation: PropTypes.object.isRequired,
-  onRename: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
   remediationsList: PropTypes.array,
-  updateRemPlan: PropTypes.func,
-  refetch: PropTypes.func,
+  refetchRemediationDetails: PropTypes.func,
   refetchAllRemediations: PropTypes.func,
 };
 
-const connected = connect(null, (dispatch) => ({
-  onRename: (id, name) => {
-    if (!name) {
-      name = EMPTY_NAME;
-    }
-    const trimmedName = name.trim();
-    dispatch(patchRemediation(id, { name: trimmedName }));
-  },
-  onDelete: (id) => dispatch(deleteRemediation(id)),
-}))(RemediationDetailsDropdown);
-
-export default connected;
+export default RemediationDetailsDropdown;

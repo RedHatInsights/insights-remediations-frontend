@@ -95,7 +95,7 @@ describe('SelectPlaybook', () => {
     renderWithProviders(<RendererWrapper schema={createSchema()} />, store);
 
     expect(screen.getByLabelText('Add to existing playbook')).toBeVisible();
-    expect(screen.getByLabelText('Create new playbook')).toBeVisible();
+    expect(screen.getByLabelText('Create new plan')).toBeVisible();
     expect(
       screen.queryByLabelText('Select an existing playbook'),
     ).not.toBeInTheDocument();

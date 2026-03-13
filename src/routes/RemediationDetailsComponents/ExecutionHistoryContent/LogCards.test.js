@@ -3,6 +3,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import LogCards from './LogCards';
+import { capitalize } from '../../../Utilities/utils';
 
 // Mock PatternFly components
 jest.mock('@patternfly/react-core', () => ({
@@ -302,7 +303,7 @@ describe('LogCards', () => {
       render(<LogCards {...defaultProps} connectionType="satellite" />);
 
       const cardBodies = screen.getAllByTestId('card-body');
-      expect(cardBodies[2]).toHaveTextContent('satellite');
+      expect(cardBodies[2]).toHaveTextContent('Satellite connected');
     });
 
     it('should display dash when connection type is null', () => {
@@ -498,7 +499,10 @@ describe('LogCards', () => {
         />,
       );
 
-      expect(screen.getAllByText(longValue)).toHaveLength(3); // Appears in 3 cards
+      expect(screen.getAllByText(longValue)).toHaveLength(2); // Appears in 2 cards
+      expect(
+        screen.getAllByText(capitalize(longValue) + ' connected'),
+      ).toHaveLength(1); // Appears in connection type card
       expect(screen.getByText('Success')).toBeInTheDocument();
     });
 
@@ -513,7 +517,10 @@ describe('LogCards', () => {
         />,
       );
 
-      expect(screen.getAllByText(specialChars)).toHaveLength(3); // Appears in 3 cards
+      expect(screen.getAllByText(specialChars)).toHaveLength(2); // Appears in 2 cards
+      expect(
+        screen.getAllByText(capitalize(specialChars) + ' connected'),
+      ).toHaveLength(1); // Appears in connection type card
     });
   });
 
@@ -523,7 +530,7 @@ describe('LogCards', () => {
         <LogCards
           systemName="prod-web-server-01.company.com"
           status="success"
-          connectionType="rhc"
+          connectionType="direct"
           executedBy="sysadmin@company.com"
         />,
       );
@@ -533,7 +540,7 @@ describe('LogCards', () => {
       ).toBeInTheDocument();
       expect(screen.getByText('Success')).toBeInTheDocument();
       expect(screen.getByTestId('check-circle-icon')).toBeInTheDocument();
-      expect(screen.getByText('rhc')).toBeInTheDocument();
+      expect(screen.getByText('Direct connected')).toBeInTheDocument();
       expect(screen.getByText('sysadmin@company.com')).toBeInTheDocument();
     });
 
@@ -549,7 +556,7 @@ describe('LogCards', () => {
 
       expect(screen.getByText('test-system')).toBeInTheDocument();
       expect(screen.getByTestId('question-circle-icon')).toBeInTheDocument();
-      expect(screen.getByText('satellite')).toBeInTheDocument();
+      expect(screen.getByText('Satellite connected')).toBeInTheDocument();
 
       const cardBodies = screen.getAllByTestId('card-body');
       expect(cardBodies[3]).toHaveTextContent('-'); // Executed by should show dash

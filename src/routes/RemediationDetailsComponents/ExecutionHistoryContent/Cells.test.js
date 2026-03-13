@@ -112,54 +112,36 @@ describe('ExecutionHistoryContent Cells', () => {
   });
 
   describe('RedHatLightSpeedCell', () => {
-    it('should render executor name', () => {
-      render(<RedHatLightSpeedCell executor_name="rhc" />);
+    it('should handle direct executor type', () => {
+      render(<RedHatLightSpeedCell executor_type="direct" />);
 
-      const text = screen.getByTestId('text');
-      expect(text).toBeInTheDocument();
-      expect(text).toHaveTextContent('rhc');
+      expect(screen.getByTestId('text')).toHaveTextContent('Direct connected');
     });
 
-    it('should handle different executor names', () => {
-      render(<RedHatLightSpeedCell executor_name="ansible" />);
+    it('should handle satellite executor type', () => {
+      render(<RedHatLightSpeedCell executor_type="satellite" />);
 
-      expect(screen.getByTestId('text')).toHaveTextContent('ansible');
+      expect(screen.getByTestId('text')).toHaveTextContent(
+        'Satellite connected',
+      );
     });
 
-    it('should handle null executor name', () => {
-      render(<RedHatLightSpeedCell executor_name={null} />);
+    it('should handle null executor type', () => {
+      render(<RedHatLightSpeedCell executor_type={null} />);
 
       expect(screen.getByTestId('text')).toHaveTextContent('');
     });
 
-    it('should handle undefined executor name', () => {
-      render(<RedHatLightSpeedCell executor_name={undefined} />);
+    it('should handle undefined executor type', () => {
+      render(<RedHatLightSpeedCell executor_type={undefined} />);
 
       expect(screen.getByTestId('text')).toHaveTextContent('');
     });
 
-    it('should handle empty string executor name', () => {
-      render(<RedHatLightSpeedCell executor_name="" />);
+    it('should handle empty string executor type', () => {
+      render(<RedHatLightSpeedCell executor_type="" />);
 
       expect(screen.getByTestId('text')).toHaveTextContent('');
-    });
-
-    it('should handle various executor types', () => {
-      const executorTypes = ['rhc', 'ansible', 'satellite', 'direct'];
-
-      executorTypes.forEach((executor) => {
-        const { unmount } = render(
-          <RedHatLightSpeedCell executor_name={executor} />,
-        );
-        expect(screen.getByTestId('text')).toHaveTextContent(executor);
-        unmount();
-      });
-    });
-
-    it('should handle executor names with special characters', () => {
-      render(<RedHatLightSpeedCell executor_name="rhc-satellite-v2" />);
-
-      expect(screen.getByTestId('text')).toHaveTextContent('rhc-satellite-v2');
     });
   });
 

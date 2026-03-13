@@ -94,6 +94,7 @@ export const LastModifiedCell = ({ updated_at }) => {
 
   const date = new Date(updated_at);
   const timeAgo = getTimeAgo(date);
+  const displayTimeAgo = timeAgo || 'Just now';
 
   // Build the date part, e.g. "March 29, 2025"
   const datePart = date.toLocaleDateString('en-US', {
@@ -115,7 +116,7 @@ export const LastModifiedCell = ({ updated_at }) => {
 
   return (
     <Tooltip content={tooltipText}>
-      <Content component="p">{timeAgo}</Content>
+      <Content component="p">{displayTimeAgo}</Content>
     </Tooltip>
   );
 };

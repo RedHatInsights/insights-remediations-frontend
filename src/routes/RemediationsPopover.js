@@ -42,7 +42,7 @@ export const RemediationsPopover = () => {
             <span>
               <a
                 href={
-                  'https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide/index'
+                  'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/red_hat_lightspeed_remediations_guide/index'
                 }
                 target="_blank"
                 rel="noreferrer"
@@ -59,7 +59,9 @@ export const RemediationsPopover = () => {
                 target="_blank"
                 rel="noreferrer"
               >
-                Setting up Insights for AAP remediations
+                Setting up{' '}
+                {isLightspeedRebrandEnabled ? 'Red Hat Lightspeed' : 'Insights'}{' '}
+                for AAP remediations
                 <ExternalLinkAltIcon className="pf-v6-u-ml-xs" />
               </a>
             </span>
@@ -71,7 +73,11 @@ export const RemediationsPopover = () => {
                 target="_blank"
                 rel="noreferrer"
               >
-                Creating an Insights remediation plan for hosts in Satellite
+                Creating{' '}
+                {isLightspeedRebrandEnabled
+                  ? 'a Red Hat Lightspeed'
+                  : 'an Insights'}{' '}
+                remediation plan for hosts in Satellite
                 <ExternalLinkAltIcon className="pf-v6-u-ml-xs" />
               </a>
             </span>
@@ -83,7 +89,6 @@ export const RemediationsPopover = () => {
         icon={<OutlinedQuestionCircleIcon />}
         variant="plain"
         aria-label="Open Remediations popover"
-        style={{ padding: 0 }}
         ouiaId="AboutRemediationsPopover"
       />
     </Popover>

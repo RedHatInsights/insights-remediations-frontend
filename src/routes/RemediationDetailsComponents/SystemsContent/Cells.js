@@ -58,11 +58,31 @@ export const ConnectionStatusCell = ({ connection_status, executor_type }) => {
   }
 
   if (status === 'connected') {
-    return (
+    let tooltipContent = '';
+    if (execType === 'rhc') {
+      tooltipContent =
+        'This system is registered to RHSM, and the system is configured for use with remediations.';
+    } else if (execType === 'rhc-satellite') {
+      tooltipContent =
+        'This system is registered to a satellite, and the satellite is configured for use with remediations.';
+    }
+
+    const connectedContent = (
       <span>
         <ConnectedIcon className="pf-v6-u-mr-xs" /> Connected
       </span>
     );
+
+    // Only show tooltip if we have content for it
+    if (tooltipContent) {
+      return (
+        <Tooltip content={tooltipContent} position="top">
+          {connectedContent}
+        </Tooltip>
+      );
+    }
+
+    return connectedContent;
     //When execType === 'none' connection_status is no_rhc
   } else if (execType === 'none') {
     return (

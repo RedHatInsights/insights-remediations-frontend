@@ -63,6 +63,8 @@ describe('DetailsCard', () => {
     },
     updated_at: '2024-01-20T15:45:00Z',
     resolved_count: 5,
+    issue_count: 2,
+    system_count: 10,
     issues: [
       {
         id: 'issue-1',
@@ -115,9 +117,10 @@ describe('DetailsCard', () => {
     updated_at: '2024-01-20T16:00:00Z',
   };
 
-  const mockAllRemediations = {
-    data: [{ name: 'Existing Plan 1' }, { name: 'Existing Plan 2' }],
-  };
+  const mockAllRemediations = [
+    { id: 'rem-1', name: 'Existing Plan 1' },
+    { id: 'rem-2', name: 'Existing Plan 2' },
+  ];
 
   beforeEach(() => {
     mockUpdateRemPlan = jest.fn().mockResolvedValue();
@@ -152,7 +155,7 @@ describe('DetailsCard', () => {
       remediationStatus: mockRemediationStatus,
       updateRemPlan: mockUpdateRemPlan,
       onNavigateToTab: mockOnNavigateToTab,
-      allRemediations: mockAllRemediations, // Keep as object with data property as component expects
+      allRemediations: mockAllRemediations, // Now an array as component expects
       refetch: mockRefetch,
       remediationPlaybookRuns: mockRemediationPlaybookRuns,
       refetchAllRemediations: mockRefetchAllRemediations,
@@ -169,17 +172,13 @@ describe('DetailsCard', () => {
   describe('Component Rendering', () => {
     it('renders without crashing', () => {
       renderComponent();
-      expect(
-        screen.getByText('Remediation plan details and status'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('displays loading spinner when no details provided', () => {
       renderComponent({ details: null });
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
-      expect(
-        screen.queryByText('Remediation plan details and status'),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText('Details')).not.toBeInTheDocument();
     });
 
     it('displays all required information when details are provided', () => {
@@ -192,7 +191,7 @@ describe('DetailsCard', () => {
       expect(screen.getByText('Latest execution status')).toBeInTheDocument();
       expect(screen.getByText('Actions')).toBeInTheDocument();
       expect(screen.getByText('Systems')).toBeInTheDocument();
-      expect(screen.getByText('Auto-reboot')).toBeInTheDocument();
+      expect(screen.getByText(/Auto-reboot/)).toBeInTheDocument();
     });
 
     it('displays correct action and system counts', () => {
@@ -205,7 +204,9 @@ describe('DetailsCard', () => {
     it('displays singular form for single action/system', () => {
       const singleDetails = {
         ...mockDetails,
-        issues: [mockDetails.issues[0]], // Only one issue
+        issue_count: 1,
+        system_count: 1,
+        issues: [mockDetails.issues[0]],
       };
       const singleStatus = { totalSystems: 1 };
 
@@ -432,6 +433,8 @@ describe('DetailsCard', () => {
       const toggle = screen.getByRole('switch');
       expect(toggle).toBeInTheDocument();
       expect(toggle).toBeChecked(); // auto_reboot is true in mockDetails
+      expect(screen.queryByText(/Auto-reboot:\s*Off/i)).not.toBeInTheDocument();
+      expect(screen.getByText(/Auto-reboot:\s*On/i)).toBeInTheDocument();
     });
 
     it('displays switch as unchecked when auto_reboot is false', () => {
@@ -440,6 +443,8 @@ describe('DetailsCard', () => {
 
       const toggle = screen.getByRole('switch');
       expect(toggle).not.toBeChecked();
+      expect(screen.getByText(/Auto-reboot:\s*Off/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Auto-reboot:\s*On/i)).not.toBeInTheDocument();
     });
 
     it('calls updateRemPlan when toggle is changed', () => {
@@ -476,7 +481,10 @@ describe('DetailsCard', () => {
       const actionsLink = screen.getByText('2 actions');
       fireEvent.click(actionsLink);
 
-      expect(mockOnNavigateToTab).toHaveBeenCalledWith(null, 'actions');
+      expect(mockOnNavigateToTab).toHaveBeenCalledWith(
+        null,
+        'plannedRemediations:actions',
+      );
     });
 
     it('navigates to systems tab when systems link is clicked', () => {
@@ -485,7 +493,10 @@ describe('DetailsCard', () => {
       const systemsLink = screen.getByText('10 systems');
       fireEvent.click(systemsLink);
 
-      expect(mockOnNavigateToTab).toHaveBeenCalledWith(null, 'systems');
+      expect(mockOnNavigateToTab).toHaveBeenCalledWith(
+        null,
+        'plannedRemediations:systems',
+      );
     });
 
     it('navigates to execution history when status link is clicked', () => {
@@ -506,10 +517,10 @@ describe('DetailsCard', () => {
     it('displays learn more link with correct URL', () => {
       renderComponent();
 
-      const learnMoreLink = screen.getByTestId('insights-link');
+      const learnMoreLink = screen.getByRole('link', { name: /learn more/i });
       expect(learnMoreLink).toHaveAttribute(
         'href',
-        'https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index#creating-managing-playbooks_red-hat-insights-remediation-guide',
+        'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide',
       );
       expect(learnMoreLink).toHaveAttribute('target', '_blank');
     });
@@ -526,18 +537,14 @@ describe('DetailsCard', () => {
       renderComponent({ remediationStatus: null });
 
       // Should handle null remediationStatus without crashing
-      expect(
-        screen.getByText('Remediation plan details and status'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('handles missing playbook runs gracefully', () => {
       renderComponent({ remediationPlaybookRuns: null });
 
       // Should still render the component
-      expect(
-        screen.getByText('Remediation plan details and status'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
   });
 
@@ -546,42 +553,39 @@ describe('DetailsCard', () => {
       renderComponent({ onNavigateToTab: undefined });
 
       // Should render without crashing
-      expect(
-        screen.getByText('Remediation plan details and status'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('handles missing updateRemPlan prop', () => {
       renderComponent({ updateRemPlan: undefined });
 
       // Should render without crashing
-      expect(
-        screen.getByText('Remediation plan details and status'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('handles missing allRemediations prop', () => {
       renderComponent({ allRemediations: undefined });
 
       // Should render without crashing
-      expect(
-        screen.getByText('Remediation plan details and status'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('handles undefined remediationStatus totalSystems', () => {
       renderComponent({ remediationStatus: {} });
 
       // Should handle undefined totalSystems
-      expect(
-        screen.getByText('Remediation plan details and status'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
   });
 
   describe('Edge Cases', () => {
     it('handles details with empty issues array', () => {
-      const emptyDetails = { ...mockDetails, issues: [] };
+      const emptyDetails = {
+        ...mockDetails,
+        issues: [],
+        issue_count: 0,
+        system_count: 0,
+      };
       renderComponent({ details: emptyDetails });
 
       expect(screen.getByText('0 actions')).toBeInTheDocument();
@@ -592,9 +596,7 @@ describe('DetailsCard', () => {
       renderComponent({ details: detailsWithoutDate });
 
       // Should still render without crashing
-      expect(
-        screen.getByText('Remediation plan details and status'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('handles very long remediation names', () => {
@@ -641,9 +643,10 @@ describe('DetailsCard', () => {
     it('calls useVerifyName with correct parameters', () => {
       renderComponent();
 
+      // Should be called with filtered list (excluding current remediation)
       expect(useVerifyName.useVerifyName).toHaveBeenCalledWith(
         'Test Remediation Plan',
-        mockAllRemediations.data,
+        mockAllRemediations,
       );
     });
 
@@ -659,7 +662,7 @@ describe('DetailsCard', () => {
       // useVerifyName should be called with the new value
       expect(useVerifyName.useVerifyName).toHaveBeenCalledWith(
         'New Name',
-        mockAllRemediations.data,
+        mockAllRemediations,
       );
     });
 

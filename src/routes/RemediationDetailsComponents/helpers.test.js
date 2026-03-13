@@ -24,6 +24,9 @@ jest.mock('@patternfly/react-core', () => ({
       </span>
     );
   },
+  Spinner: function MockSpinner({ size, ...props }) {
+    return <span data-testid="spinner" data-size={size} {...props} />;
+  },
   TextContent: function MockTextContent({ children, ...props }) {
     return (
       <div data-testid="text-content" {...props}>
@@ -40,11 +43,6 @@ jest.mock('@patternfly/react-icons', () => ({
   },
   ExclamationCircleIcon: function MockExclamationCircleIcon(props) {
     return <span data-testid="exclamation-circle-icon" {...props} />;
-  },
-  InProgressIcon: function MockInProgressIcon({ color, ...props }) {
-    return (
-      <span data-testid="in-progress-icon" data-color={color} {...props} />
-    );
   },
 }));
 
@@ -129,27 +127,26 @@ describe('RemediationDetailsComponents helpers', () => {
         expect(screen.getByText('Succeeded 1 hour ago')).toBeInTheDocument();
       });
 
-      it('should render success status with "Just now" for recent date', () => {
+      it('should render success status with "Succeedded" for recent date', () => {
         const date = new Date('2023-12-01T11:59:30Z'); // 30 seconds ago
         const result = execStatus('success', date);
         render(result);
 
-        expect(screen.getByText('Succeeded Just now')).toBeInTheDocument();
+        expect(screen.getByText('Succeeded')).toBeInTheDocument();
       });
     });
 
     describe('Running status', () => {
-      it('should render running status with in-progress icon', () => {
+      it('should render running status with spinner', () => {
         const date = new Date('2023-12-01T11:30:00Z');
         const result = execStatus('running', date);
         render(result);
 
         expect(screen.getByTestId('flex')).toBeInTheDocument();
-        expect(screen.getByTestId('icon')).toBeInTheDocument();
-        expect(screen.queryByTestId('icon')).not.toHaveAttribute('data-status');
-        expect(screen.getByTestId('in-progress-icon')).toHaveAttribute(
-          'data-color',
-          'var(--pf-v6-global--icon--Color--light--dark)',
+        expect(screen.getByTestId('spinner')).toBeInTheDocument();
+        expect(screen.getByTestId('spinner')).toHaveAttribute(
+          'data-size',
+          'sm',
         );
         expect(
           screen.getByText('In progress 30 minutes ago'),
@@ -252,19 +249,19 @@ describe('RemediationDetailsComponents helpers', () => {
     });
 
     describe('Recent times', () => {
-      it('should return "Just now" for times less than 1 minute ago', () => {
+      it('should return empty string for times less than 1 minute ago', () => {
         const date = new Date('2023-12-01T11:59:30Z'); // 30 seconds ago
-        expect(getTimeAgo(date)).toBe('Just now');
+        expect(getTimeAgo(date)).toBe('');
       });
 
-      it('should return "Just now" for current time', () => {
+      it('should return empty string for current time', () => {
         const date = new Date('2023-12-01T12:00:00Z'); // exact current time
-        expect(getTimeAgo(date)).toBe('Just now');
+        expect(getTimeAgo(date)).toBe('');
       });
 
-      it('should return "Just now" for times 59 seconds ago', () => {
+      it('should return empty string for times 59 seconds ago', () => {
         const date = new Date('2023-12-01T11:59:01Z'); // 59 seconds ago
-        expect(getTimeAgo(date)).toBe('Just now');
+        expect(getTimeAgo(date)).toBe('');
       });
     });
 

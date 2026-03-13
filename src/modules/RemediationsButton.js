@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import propTypes from 'prop-types';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
@@ -7,21 +7,31 @@ import validate from './RemediationsModal/validate';
 import { CAN_REMEDIATE, matchPermissions } from '../Utilities/utils';
 import { Button, Tooltip } from '@patternfly/react-core';
 import RemediationWizard from './RemediationsModal';
+import RemediationWizardV2 from '../components/RemediationWizardV2/RemediationWizardV2';
 import NoDataModal from './RemediationsModal/NoDataModal';
+import { getTooltipContent } from '../Utilities/helpers';
+import { useFeatureFlag } from '../Utilities/Hooks/useFeatureFlag';
 
 const RemediationButton = ({
-  isDisabled,
-  children,
+  isDisabled = false,
+  children = 'Remediate with Ansible',
   dataProvider,
-  onRemediationCreated,
+  onRemediationCreated = (f) => f,
   buttonProps,
   patchNoAdvisoryText,
+  hasSelected,
 }) => {
   const [hasPermissions, setHasPermissions] = useState(false);
   const [remediationsData, setRemediationsData] = useState();
   const [isNoDataModalOpen, setNoDataModalOpen] = useState(false);
+  const tooltipContent = useMemo(() => {
+    return getTooltipContent(hasPermissions, hasSelected);
+  }, [hasSelected, hasPermissions]);
   const chrome = useChrome();
-
+  const isNewModalEnabled = useFeatureFlag('newModal');
+  const isCompliancePrecedenceEnabled = useFeatureFlag(
+    'remediations.precedence',
+  );
   useEffect(() => {
     chrome.getUserPermissions('remediations').then((permissions) => {
       setHasPermissions(
@@ -32,14 +42,14 @@ const RemediationButton = ({
     });
   }, []);
 
-  if (!hasPermissions) {
+  if (!hasPermissions || !hasSelected) {
     return (
-      <Tooltip content="You do not have correct permissions to remediate this entity.">
+      <Tooltip content={tooltipContent}>
         <span>
           <Button
             isDisabled
             {...buttonProps}
-            data-testid="remediationButton-no-permissions"
+            data-testid="remediationButton-no-permissions-or-selected"
           >
             {children}
           </Button>
@@ -52,7 +62,7 @@ const RemediationButton = ({
     <React.Fragment>
       <Button
         isDisabled={isDisabled}
-        data-testid="remediationButton-with-permissions"
+        data-testid="remediationButton-with-permissions-and-selected"
         onClick={() => {
           Promise.resolve(dataProvider()).then((data) => {
             if (!data) {
@@ -60,20 +70,25 @@ const RemediationButton = ({
               return;
             }
 
-            validate(data);
-            setRemediationsData(data);
+            try {
+              validate(data);
+              setRemediationsData(data);
+            } catch {
+              setNoDataModalOpen(true);
+            }
           });
         }}
         {...buttonProps}
       >
         {children}
       </Button>
+
       <NoDataModal
         isOpen={isNoDataModalOpen}
         setOpen={setNoDataModalOpen}
         patchNoAdvisoryText={patchNoAdvisoryText}
       />
-      {remediationsData && (
+      {remediationsData && !isNewModalEnabled && (
         <RemediationWizard
           setOpen={(isOpen) =>
             setRemediationsData((prevData) =>
@@ -84,6 +99,21 @@ const RemediationButton = ({
             onRemediationCreated,
             ...(remediationsData || {}),
           }}
+          isCompliancePrecedenceEnabled={isCompliancePrecedenceEnabled}
+        />
+      )}
+      {remediationsData && isNewModalEnabled && (
+        <RemediationWizardV2
+          setOpen={(isOpen) =>
+            setRemediationsData((prevData) =>
+              isOpen === false ? null : prevData,
+            )
+          }
+          data={{
+            onRemediationCreated,
+            ...(remediationsData || {}),
+          }}
+          isCompliancePrecedenceEnabled={isCompliancePrecedenceEnabled}
         />
       )}
     </React.Fragment>
@@ -99,12 +129,7 @@ RemediationButton.propTypes = {
     [propTypes.string]: propTypes.any,
   }),
   patchNoAdvisoryText: propTypes.string,
-};
-
-RemediationButton.defaultProps = {
-  isDisabled: false,
-  onRemediationCreated: (f) => f,
-  children: 'Remediate with Ansible',
+  hasSelected: propTypes.bool.isRequired,
 };
 
 export default RemediationButton;

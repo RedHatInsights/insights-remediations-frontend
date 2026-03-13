@@ -17,6 +17,7 @@ import {
   OutlinedQuestionCircleIcon,
 } from '@patternfly/react-icons';
 import { useFeatureFlag } from '../../../Utilities/Hooks/useFeatureFlag';
+import { formatConnectionType } from './helpers';
 
 const statusIcon = (status) => {
   const map = {
@@ -121,7 +122,9 @@ const LogCards = ({ systemName, status, connectionType, executedBy }) => {
               </span>
             </Flex>
           </CardTitle>
-          <CardBody data-testid="card-body">{connectionType ?? '-'}</CardBody>
+          <CardBody data-testid="card-body">
+            {connectionType ? formatConnectionType(connectionType) : '-'}
+          </CardBody>
         </Card>
       </FlexItem>
 

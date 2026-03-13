@@ -36,6 +36,26 @@ jest.mock('@patternfly/react-core', () => ({
       </div>
     );
   },
+  Button: function MockButton({
+    children,
+    onClick,
+    variant,
+    isInline,
+    style,
+    ...props
+  }) {
+    return (
+      <button
+        onClick={onClick}
+        data-variant={variant}
+        data-inline={isInline}
+        style={style}
+        {...props}
+      >
+        {children}
+      </button>
+    );
+  },
 }));
 
 const { useFeatureFlag } = require('../../Utilities/Hooks/useFeatureFlag');

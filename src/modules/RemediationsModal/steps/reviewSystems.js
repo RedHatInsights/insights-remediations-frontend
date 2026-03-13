@@ -30,10 +30,18 @@ const ReviewSystems = ({ issues, systems, allSystems, registry, ...props }) => {
         .map((r) => r.id) || [],
   );
   const loaded = useSelector(({ entities }) => entities?.loaded);
-  const allSystemsNamed = useSelector(
-    ({ hostReducer: { hosts } }) =>
-      hosts?.map((host) => ({ id: host.id, name: host.display_name })) || [],
+  const hostsFromReducer = useSelector(
+    ({ hostReducer: { hosts } }) => hosts || [],
   );
+  const hostsMap = new Map(hostsFromReducer.map((host) => [host.id, host]));
+  // Build allSystemsNamed, ensuring all systems from allSystems are included
+  const allSystemsNamed = allSystems.map((systemId) => {
+    const host = hostsMap.get(systemId);
+    return {
+      id: systemId,
+      name: host?.display_name || systemId,
+    };
+  });
 
   useEffect(() => {
     const hasBootc = selected.some((s) => bootcIds.includes(s));

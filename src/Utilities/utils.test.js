@@ -334,6 +334,279 @@ describe('utils', () => {
       });
     });
 
+    describe('createRemediationBatches', () => {
+      it('should create single batch for small datasets', () => {
+        const issues = [
+          { id: 'issue1', systems: ['sys1', 'sys2'] },
+          { id: 'issue2', systems: ['sys3'] },
+        ];
+
+        const result = utils.createRemediationBatches(issues);
+
+        expect(result).toEqual([issues]);
+      });
+
+      it('should split issues into multiple batches when exceeding limit', () => {
+        const issues = Array.from({ length: 75 }, (_, i) => ({
+          id: `issue${i + 1}`,
+          systems: [`sys${i + 1}`],
+        }));
+
+        const result = utils.createRemediationBatches(issues, 50);
+
+        expect(result).toHaveLength(2);
+        expect(result[0]).toHaveLength(50);
+        expect(result[1]).toHaveLength(25);
+      });
+
+      it('should split systems within issues when exceeding system limit', () => {
+        const issues = [
+          {
+            id: 'issue1',
+            systems: Array.from({ length: 75 }, (_, i) => `sys${i + 1}`),
+          },
+        ];
+
+        const result = utils.createRemediationBatches(issues, 50, 50);
+
+        expect(result).toHaveLength(2);
+        expect(result[0][0].systems).toHaveLength(50);
+        expect(result[1][0].systems).toHaveLength(25);
+        expect(result[0][0].id).toBe('issue1');
+        expect(result[1][0].id).toBe('issue1');
+      });
+
+      it('should handle complex batching with both issue and system limits', () => {
+        const issues = [
+          {
+            id: 'issue1',
+            systems: Array.from({ length: 75 }, (_, i) => `sys${i + 1}`),
+          },
+          {
+            id: 'issue2',
+            systems: Array.from({ length: 30 }, (_, i) => `sys${i + 76}`),
+          },
+        ];
+
+        const result = utils.createRemediationBatches(issues, 50, 50);
+
+        // issue1 should be split into 2 batches (75 systems)
+        // issue2 should fit in one batch (30 systems)
+        // Total: 3 batches
+        expect(result).toHaveLength(3);
+        expect(result[0][0].id).toBe('issue1');
+        expect(result[0][0].systems).toHaveLength(50);
+        expect(result[1][0].id).toBe('issue1');
+        expect(result[1][0].systems).toHaveLength(25);
+        expect(result[2][0].id).toBe('issue2');
+        expect(result[2][0].systems).toHaveLength(30);
+      });
+
+      it('should use custom batch sizes', () => {
+        const issues = Array.from({ length: 15 }, (_, i) => ({
+          id: `issue${i + 1}`,
+          systems: [`sys${i + 1}`],
+        }));
+
+        const result = utils.createRemediationBatches(issues, 10, 5);
+
+        expect(result).toHaveLength(2);
+        expect(result[0]).toHaveLength(10);
+        expect(result[1]).toHaveLength(5);
+      });
+
+      it('should respect maxTotalSystemsPerBatch limit - single issue with 50 systems', () => {
+        const issues = [
+          {
+            id: 'issue1',
+            systems: Array.from({ length: 50 }, (_, i) => `sys${i + 1}`),
+          },
+        ];
+
+        const result = utils.createRemediationBatches(issues, 50, 50, 50);
+
+        // Should be split into 1 batch (50 systems exactly at limit)
+        expect(result).toHaveLength(1);
+        expect(result[0]).toHaveLength(1); // One issue in the batch
+        expect(result[0][0].systems).toHaveLength(50);
+        expect(result[0][0].id).toBe('issue1');
+      });
+
+      it('should respect maxTotalSystemsPerBatch limit - multiple issues scenario', () => {
+        const issues = [
+          {
+            id: 'issue1',
+            systems: Array.from({ length: 100 }, (_, i) => `sys${i + 1}`),
+          },
+          {
+            id: 'issue2',
+            systems: Array.from({ length: 100 }, (_, i) => `sys${i + 101}`),
+          },
+          {
+            id: 'issue3',
+            systems: Array.from({ length: 100 }, (_, i) => `sys${i + 201}`),
+          },
+        ];
+
+        const result = utils.createRemediationBatches(issues, 50, 50, 50);
+
+        // Each issue (100 systems) gets split into 2 parts (50 systems each)
+        // Each split part gets its own batch for safety
+        // So we get 6 batches total (2 per issue)
+        expect(result).toHaveLength(6);
+
+        // Verify each batch has exactly one issue with 50 systems
+        result.forEach((batch, index) => {
+          expect(batch).toHaveLength(1);
+          expect(batch[0].systems).toHaveLength(50);
+
+          // Verify correct issue IDs
+          if (index < 2) {
+            expect(batch[0].id).toBe('issue1');
+          } else if (index < 4) {
+            expect(batch[0].id).toBe('issue2');
+          } else {
+            expect(batch[0].id).toBe('issue3');
+          }
+        });
+
+        // Verify total systems constraint is respected
+        result.forEach((batch) => {
+          const totalSystems = batch.reduce(
+            (sum, issue) => sum + issue.systems.length,
+            0,
+          );
+          expect(totalSystems).toBeLessThanOrEqual(50);
+        });
+      });
+
+      it('should combine small issues respecting maxTotalSystemsPerBatch limit', () => {
+        const issues = [
+          {
+            id: 'issue1',
+            systems: Array.from({ length: 25 }, (_, i) => `sys${i + 1}`),
+          },
+          {
+            id: 'issue2',
+            systems: Array.from({ length: 25 }, (_, i) => `sys${i + 26}`),
+          },
+          {
+            id: 'issue3',
+            systems: Array.from({ length: 25 }, (_, i) => `sys${i + 51}`),
+          },
+          {
+            id: 'issue4',
+            systems: Array.from({ length: 25 }, (_, i) => `sys${i + 76}`),
+          },
+        ];
+
+        const result = utils.createRemediationBatches(issues, 50, 50, 50);
+
+        // Should combine issues efficiently respecting the 50 total systems limit
+        // Batch 1: issue1 + issue2 = 50 systems
+        // Batch 2: issue3 + issue4 = 50 systems
+        expect(result).toHaveLength(2);
+
+        // First batch should have 2 issues with 50 total systems
+        expect(result[0]).toHaveLength(2);
+        const firstBatchSystems = result[0].reduce(
+          (sum, issue) => sum + issue.systems.length,
+          0,
+        );
+        expect(firstBatchSystems).toBe(50);
+
+        // Second batch should have 2 issues with 50 systems
+        expect(result[1]).toHaveLength(2);
+        const secondBatchSystems = result[1].reduce(
+          (sum, issue) => sum + issue.systems.length,
+          0,
+        );
+        expect(secondBatchSystems).toBe(50);
+      });
+
+      it('should handle mixed small and large issues with total systems limit', () => {
+        const issues = [
+          {
+            id: 'issue1',
+            systems: Array.from({ length: 150 }, (_, i) => `sys${i + 1}`),
+          },
+          {
+            id: 'issue2',
+            systems: Array.from({ length: 30 }, (_, i) => `sys${i + 151}`),
+          },
+          {
+            id: 'issue3',
+            systems: Array.from({ length: 20 }, (_, i) => `sys${i + 181}`),
+          },
+        ];
+
+        const result = utils.createRemediationBatches(issues, 50, 50, 50);
+
+        // issue1 (150 systems) gets split into 3 batches of 50 each
+        // issue2 (30 systems) and issue3 (20 systems) can be combined = 50 systems total
+        expect(result).toHaveLength(4);
+
+        // First batch: issue1 part 1 (50 systems)
+        expect(result[0][0].id).toBe('issue1');
+        expect(result[0][0].systems).toHaveLength(50);
+
+        // Second batch: issue1 part 2 (50 systems)
+        expect(result[1][0].id).toBe('issue1');
+        expect(result[1][0].systems).toHaveLength(50);
+
+        // Third batch: issue1 part 3 (50 systems)
+        expect(result[2][0].id).toBe('issue1');
+        expect(result[2][0].systems).toHaveLength(50);
+
+        // Fourth batch: issue2 (30 systems) and issue3 (20 systems) = 50 systems total
+        expect(result[3]).toHaveLength(2);
+        expect(result[3][0].id).toBe('issue2');
+        expect(result[3][0].systems).toHaveLength(30);
+        expect(result[3][1].id).toBe('issue3');
+        expect(result[3][1].systems).toHaveLength(20);
+      });
+
+      it('should respect all limits simultaneously', () => {
+        const issues = [
+          {
+            id: 'issue1',
+            systems: Array.from({ length: 200 }, (_, i) => `sys${i + 1}`),
+          },
+          {
+            id: 'issue2',
+            systems: Array.from({ length: 40 }, (_, i) => `sys${i + 201}`),
+          },
+          {
+            id: 'issue3',
+            systems: Array.from({ length: 40 }, (_, i) => `sys${i + 241}`),
+          },
+        ];
+
+        const result = utils.createRemediationBatches(issues, 2, 50, 50);
+
+        // Verify no batch exceeds 50 total systems
+        result.forEach((batch) => {
+          const totalSystems = batch.reduce(
+            (sum, issue) => sum + issue.systems.length,
+            0,
+          );
+          expect(totalSystems).toBeLessThanOrEqual(50);
+        });
+
+        // Verify no batch exceeds 2 issues (maxIssuesPerBatch)
+        result.forEach((batch) => {
+          expect(batch.length).toBeLessThanOrEqual(2);
+        });
+
+        // Verify no issue has more than 50 systems (maxSystemsPerIssue)
+        result.forEach((batch) => {
+          batch.forEach((issue) => {
+            expect(issue.systems.length).toBeLessThanOrEqual(50);
+          });
+        });
+      });
+    });
+
     describe('buildRows', () => {
       const mockRecords = [
         {
@@ -654,7 +927,6 @@ describe('utils', () => {
 
         expect(mockSetState).toHaveBeenCalledWith({ id: '123', percent: 100 });
         expect(mockData.onRemediationCreated).toHaveBeenCalled();
-        expect(mockSetInterval).toHaveBeenCalled();
       });
 
       it('updates existing remediation successfully', async () => {
@@ -692,7 +964,6 @@ describe('utils', () => {
         await promise;
 
         expect(mockSetState).toHaveBeenCalledWith({ id: '456', percent: 100 });
-        expect(mockSetInterval).toHaveBeenCalled();
       });
 
       it('handles API failure', () => {
@@ -700,9 +971,8 @@ describe('utils', () => {
 
         utils.submitRemediation(mockFormValues, mockData, '/api', mockSetState);
 
-        // Timer starts and initial setState call is made
+        // Initial setState call is made
         expect(mockSetState).toHaveBeenCalledWith({ percent: 1 });
-        expect(mockSetInterval).toHaveBeenCalled();
         // Note: The catch block runs asynchronously, so we focus on initial behavior
       });
 
@@ -803,6 +1073,183 @@ describe('utils', () => {
         );
 
         await promise;
+      });
+
+      it('handles large datasets with batching for new remediation', async () => {
+        // Create mock data with 75 issues (exceeds 50 limit)
+        const largeIssues = Array.from({ length: 75 }, (_, i) => ({
+          id: `issue${i + 1}`,
+        }));
+
+        const largeSystems = {};
+        largeIssues.forEach((issue, i) => {
+          largeSystems[issue.id] = [`sys${i + 1}`];
+        });
+
+        const largeResolutions = largeIssues.map((issue) => ({
+          id: issue.id,
+          resolutions: [{ id: `res${issue.id}` }],
+        }));
+
+        const largeFormValues = {
+          ...mockFormValues,
+          [utils.SYSTEMS]: largeSystems,
+          [utils.RESOLUTIONS]: largeResolutions,
+        };
+
+        const largeData = {
+          ...mockData,
+          issues: largeIssues,
+        };
+
+        api.createRemediation.mockResolvedValue({ id: '123' });
+        api.patchRemediation.mockResolvedValue({});
+
+        await utils.submitRemediation(
+          largeFormValues,
+          largeData,
+          '/api',
+          mockSetState,
+        );
+
+        // Should call createRemediation once (first batch)
+        expect(api.createRemediation).toHaveBeenCalledTimes(1);
+        expect(api.createRemediation).toHaveBeenCalledWith(
+          expect.objectContaining({
+            add: {
+              issues: expect.arrayContaining([
+                expect.objectContaining({ id: 'issue1' }),
+              ]),
+              systems: [],
+            },
+          }),
+          '/api',
+        );
+
+        // Should call patchRemediation once (second batch)
+        expect(api.patchRemediation).toHaveBeenCalledTimes(1);
+        expect(api.patchRemediation).toHaveBeenCalledWith(
+          '123',
+          expect.objectContaining({
+            add: {
+              issues: expect.arrayContaining([
+                expect.objectContaining({ id: 'issue51' }),
+              ]),
+              systems: [],
+            },
+          }),
+        );
+
+        // Verify final state
+        expect(mockSetState).toHaveBeenCalledWith({ id: '123', percent: 100 });
+      });
+
+      it('handles large datasets with batching for existing remediation update', async () => {
+        // Create mock data with many systems for one issue
+        const issueWithManySystems = Array.from(
+          { length: 75 },
+          (_, i) => `sys${i + 1}`,
+        );
+
+        const largeFormValues = {
+          ...mockFormValues,
+          [utils.EXISTING_PLAYBOOK_SELECTED]: true,
+          [utils.EXISTING_PLAYBOOK]: { id: '456' },
+          [utils.SYSTEMS]: { issue1: issueWithManySystems },
+        };
+
+        api.patchRemediation.mockResolvedValue({});
+
+        await utils.submitRemediation(
+          largeFormValues,
+          mockData,
+          '/api',
+          mockSetState,
+        );
+
+        // Should call patchRemediation twice (issue split into 2 batches due to system count)
+        expect(api.patchRemediation).toHaveBeenCalledTimes(2);
+
+        // First call should have first 50 systems
+        expect(api.patchRemediation).toHaveBeenNthCalledWith(
+          1,
+          '456',
+          expect.objectContaining({
+            add: {
+              issues: [
+                expect.objectContaining({
+                  id: 'issue1',
+                  systems: expect.arrayContaining(['sys1', 'sys50']),
+                }),
+              ],
+              systems: [],
+            },
+          }),
+        );
+
+        // Second call should have remaining 25 systems
+        expect(api.patchRemediation).toHaveBeenNthCalledWith(
+          2,
+          '456',
+          expect.objectContaining({
+            add: {
+              issues: [
+                expect.objectContaining({
+                  id: 'issue1',
+                  systems: expect.arrayContaining(['sys51', 'sys75']),
+                }),
+              ],
+              systems: [],
+            },
+          }),
+        );
+
+        expect(mockSetState).toHaveBeenCalledWith({ id: '456', percent: 100 });
+      });
+
+      it('handles batching error gracefully', async () => {
+        const largeIssues = Array.from({ length: 60 }, (_, i) => ({
+          id: `issue${i + 1}`,
+        }));
+
+        const largeSystems = {};
+        largeIssues.forEach((issue, i) => {
+          largeSystems[issue.id] = [`sys${i + 1}`];
+        });
+
+        const largeResolutions = largeIssues.map((issue) => ({
+          id: issue.id,
+          resolutions: [{ id: `res${issue.id}` }],
+        }));
+
+        const largeFormValues = {
+          ...mockFormValues,
+          [utils.SYSTEMS]: largeSystems,
+          [utils.RESOLUTIONS]: largeResolutions,
+        };
+
+        const largeData = {
+          ...mockData,
+          issues: largeIssues,
+        };
+
+        // First call succeeds, second call fails
+        api.createRemediation.mockResolvedValue({ id: '123' });
+        api.patchRemediation.mockRejectedValue(new Error('Batch failed'));
+
+        await utils.submitRemediation(
+          largeFormValues,
+          largeData,
+          '/api',
+          mockSetState,
+        );
+
+        // Should have tried both calls
+        expect(api.createRemediation).toHaveBeenCalledTimes(1);
+        expect(api.patchRemediation).toHaveBeenCalledTimes(1);
+
+        // Should set failed state
+        expect(mockSetState).toHaveBeenCalledWith({ failed: true });
       });
     });
 

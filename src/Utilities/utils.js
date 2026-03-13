@@ -182,17 +182,108 @@ export function createNotification(id, name, isNewSwitch) {
   };
 }
 
-export const submitRemediation = (formValues, data, basePath, setState) => {
+// Helper function to create batches of issues and systems with limits to help BE handle large remediations
+export const createRemediationBatches = (
+  issues,
+  maxIssuesPerBatch = 50,
+  maxSystemsPerIssue = 50,
+  maxTotalSystemsPerBatch = 50,
+) => {
+  if (!issues || issues.length === 0) {
+    return [];
+  }
+
+  const batches = [];
+  let currentBatch = [];
+  let currentBatchSystemCount = 0;
+
+  issues.forEach((issue) => {
+    if (issue?.systems.length <= maxSystemsPerIssue) {
+      // Issue has acceptable number of systems per issue
+      const issueSystemCount = issue?.systems?.length || 0;
+
+      // Check if adding this issue would exceed total systems limit
+      if (
+        currentBatchSystemCount + issueSystemCount >
+        maxTotalSystemsPerBatch
+      ) {
+        // Start a new batch if current one would exceed total systems limit
+        if (currentBatch.length > 0) {
+          batches.push(currentBatch);
+          currentBatch = [];
+          currentBatchSystemCount = 0;
+        }
+      }
+
+      // Add issue to current batch
+      currentBatch.push(issue);
+      currentBatchSystemCount += issueSystemCount;
+
+      // If current batch is full by issue count, start a new one
+      if (currentBatch.length >= maxIssuesPerBatch) {
+        batches.push(currentBatch);
+        currentBatch = [];
+        currentBatchSystemCount = 0;
+      }
+    } else {
+      // Issue has too many systems, split into multiple entries
+      const systemBatches = splitArray(issue?.systems, maxSystemsPerIssue);
+
+      systemBatches.forEach((systemBatch) => {
+        const splitIssue = {
+          ...issue,
+          systems: systemBatch,
+        };
+
+        const splitIssueSystemCount = systemBatch.length;
+
+        // For system-split issues, check if we need to start a new batch
+        if (
+          currentBatch.length > 0 &&
+          currentBatchSystemCount + splitIssueSystemCount >
+            maxTotalSystemsPerBatch
+        ) {
+          batches.push(currentBatch);
+          currentBatch = [];
+          currentBatchSystemCount = 0;
+        }
+
+        currentBatch.push(splitIssue);
+        currentBatchSystemCount += splitIssueSystemCount;
+
+        // Each system-split issue gets its own batch to maintain safety
+        batches.push(currentBatch);
+        currentBatch = [];
+        currentBatchSystemCount = 0;
+      });
+    }
+  });
+
+  // Add any remaining issues in the current batch
+  if (currentBatch.length > 0) {
+    batches.push(currentBatch);
+  }
+
+  return batches;
+};
+
+export const submitRemediation = async (
+  formValues,
+  data,
+  basePath,
+  setState,
+  enablePrecedence = false,
+) => {
   let percent = 1;
   setState({ percent });
 
   const issues = data.issues
-    .map(({ id }) => {
+    .map(({ id, precedence }) => {
       const playbookSystems =
         formValues[EXISTING_PLAYBOOK]?.issues
           ?.find((i) => i.id === id)
           ?.systems?.map((s) => s.id) || [];
-      return {
+      const issuePayload = {
         id,
         resolution: getResolution(id, formValues)?.[0]?.id,
         systems: dedupeArray([
@@ -200,54 +291,110 @@ export const submitRemediation = (formValues, data, basePath, setState) => {
           ...(formValues[SYSTEMS][id] || []),
         ]),
       };
+
+      if (enablePrecedence) {
+        issuePayload.precedence = precedence;
+      }
+
+      return issuePayload;
     })
     .filter((issue) => issue.systems.length > 0);
 
-  const interval = setInterval(
-    () => {
-      percent < 99 && setState({ percent: ++percent });
-    },
-    (issues.length + Object.keys(formValues[SYSTEMS]).length) / 10,
-  );
-
-  const add = { issues, systems: [] };
+  // Create batches of issues and systems (max 50 each) per BE safety measures
+  const batches = createRemediationBatches(issues);
+  const totalBatches = Math.max(batches.length, 1); // Ensure at least 1 to avoid division by zero
 
   const { id: existing_id } = formValues[EXISTING_PLAYBOOK] || {};
   const isUpdate = formValues[EXISTING_PLAYBOOK_SELECTED];
 
-  (
-    (isUpdate &&
-      api.patchRemediation(existing_id, {
-        add,
-        auto_reboot: formValues[AUTO_REBOOT],
-      })) ||
-    api.createRemediation(
-      {
-        name: formValues[SELECT_PLAYBOOK].trim(),
-        add,
-        auto_reboot: formValues[AUTO_REBOOT],
-      },
-      basePath,
-    )
-  )
-    // watch out, id is only returned from createRemediation endpoint,
-    // not patchRemediation, thus we use existing_id as well
-    .then(({ id }) => {
-      setState({ id: id ?? existing_id, percent: 100 });
-      data?.onRemediationCreated?.({
-        remediation: { id, name },
-        getNotification: () =>
-          createNotification(
-            id ?? existing_id,
-            formValues[SELECT_PLAYBOOK],
-            !isUpdate,
-          ),
-      });
-    })
-    .catch(() => {
-      setState({ failed: true });
-    })
-    .finally(() => clearInterval(interval));
+  try {
+    let remediationId = existing_id;
+
+    // If no batches (no issues with systems), still need to create/update with empty data - super edge case
+    if (batches.length === 0) {
+      setState({ percent: 50 }); // Mid-progress for the single operation
+
+      const add = { issues: [], systems: [] };
+
+      const response = await ((isUpdate &&
+        api.patchRemediation(existing_id, {
+          add,
+          auto_reboot: formValues[AUTO_REBOOT],
+        })) ||
+        api.createRemediation(
+          {
+            name: formValues[SELECT_PLAYBOOK].trim(),
+            add,
+            auto_reboot: formValues[AUTO_REBOOT],
+          },
+          basePath,
+        ));
+
+      remediationId = response?.id ?? existing_id;
+    } else {
+      // Process first batch - create or update remediation
+      const firstBatch = batches[0];
+      const add = { issues: firstBatch, systems: [] };
+
+      // Update progress for first batch (takes more time as it creates/updates the remediation)
+      const firstBatchProgress =
+        totalBatches === 1 ? 90 : Math.floor(60 / totalBatches);
+      setState({ percent: Math.min(percent + firstBatchProgress, 90) });
+
+      const response = await ((isUpdate &&
+        api.patchRemediation(existing_id, {
+          add,
+          auto_reboot: formValues[AUTO_REBOOT],
+        })) ||
+        api.createRemediation(
+          {
+            name: formValues[SELECT_PLAYBOOK].trim(),
+            add,
+            auto_reboot: formValues[AUTO_REBOOT],
+          },
+          basePath,
+        ));
+
+      // Get the remediation ID (only returned from createRemediation)
+      remediationId = response?.id ?? existing_id;
+
+      // Update progress after first batch completion
+      const progressAfterFirst =
+        totalBatches === 1 ? 95 : Math.floor(70 / totalBatches);
+      setState({ percent: Math.min(progressAfterFirst, 95) });
+
+      // Process remaining batches - update remediation
+      for (let i = 1; i < batches.length; i++) {
+        const batch = batches[i];
+        const add = { issues: batch, systems: [] };
+
+        await api.patchRemediation(remediationId, {
+          add,
+          auto_reboot: formValues[AUTO_REBOOT],
+        });
+
+        // Update progress for each additional batch
+        const progressPerBatch = Math.floor(25 / (totalBatches - 1));
+        const currentProgress = progressAfterFirst + progressPerBatch * i;
+        setState({ percent: Math.min(currentProgress, 95) });
+      }
+    }
+
+    // Final success state
+    setState({ id: remediationId, percent: 100 });
+    data?.onRemediationCreated?.({
+      remediation: { id: remediationId, name: formValues[SELECT_PLAYBOOK] },
+      getNotification: () =>
+        createNotification(
+          remediationId,
+          formValues[SELECT_PLAYBOOK],
+          !isUpdate,
+        ),
+    });
+  } catch (error) {
+    console.error('Error submitting remediation:', error);
+    setState({ failed: true });
+  }
 };
 
 export const entitySelected = (state, { payload }) => {
@@ -336,15 +483,19 @@ export const fetchSystemsInfo = async (
     : undefined;
   allSystemsNamed = sortByAttr(allSystemsNamed, 'name', config.orderDirection);
   const hostnameOrId = config?.filters?.hostnameOrId?.toLowerCase();
-  const systems = hostnameOrId
-    ? allSystemsNamed.reduce(
-        (acc, curr) => [
-          ...acc,
-          ...(curr.name.toLowerCase().includes(hostnameOrId) ? [curr.id] : []),
-        ],
-        [],
-      )
-    : allSystemsNamed.map((system) => system.id);
+  const systems = dedupeArray(
+    hostnameOrId
+      ? allSystemsNamed.reduce(
+          (acc, curr) => [
+            ...acc,
+            ...(curr.name.toLowerCase().includes(hostnameOrId)
+              ? [curr.id]
+              : []),
+          ],
+          [],
+        )
+      : allSystemsNamed.map((system) => system.id),
+  );
   const sliced = systems.slice(
     (config.page - 1) * config.per_page,
     config.page * config.per_page,
@@ -364,6 +515,7 @@ export const fetchSystemsInfo = async (
       : {};
   return {
     ...data,
+    total: systems.length,
     results: sortByAttr(data.results, 'display_name', config.orderDirection),
     page: config.page,
     per_page: config.per_page,

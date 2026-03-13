@@ -5,6 +5,8 @@ import { Flex } from '@patternfly/react-core';
 import { ExecuteModal } from './Modals/ExecuteModal';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import ButtonWithToolTip from '../Utilities/ButtonWithToolTip';
+import { useFeatureFlag } from '../Utilities/Hooks/useFeatureFlag';
+import { ExecuteModalV2 } from './Modals/ExecuteModalV2';
 
 const ExecuteButton = ({
   isDisabled,
@@ -12,8 +14,13 @@ const ExecuteButton = ({
   remediationStatus,
   remediation,
   refetchRemediationPlaybookRuns,
+  detailsLoading,
+  onNavigateToExecutionHistory,
+  remediationPlaybookRuns,
+  isPlaybookRunsLoading,
 }) => {
   const [open, setOpen] = useState(false);
+  const isNewModalEnabled = useFeatureFlag('newModal');
 
   return (
     <React.Fragment>
@@ -39,7 +46,7 @@ const ExecuteButton = ({
       >
         {isDisabled && <ExclamationTriangleIcon />} Execute
       </ButtonWithToolTip>
-      {open && (
+      {open && !isNewModalEnabled && (
         <ExecuteModal
           isOpen={open}
           onClose={() => {
@@ -51,16 +58,33 @@ const ExecuteButton = ({
           refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
         />
       )}
+      {open && isNewModalEnabled && (
+        <ExecuteModalV2
+          isOpen={open}
+          onClose={() => setOpen(false)}
+          remediation={remediation}
+          remediationStatus={remediationStatus}
+          refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
+          detailsLoading={detailsLoading}
+          onNavigateToExecutionHistory={onNavigateToExecutionHistory}
+          remediationPlaybookRuns={remediationPlaybookRuns}
+          isPlaybookRunsLoading={isPlaybookRunsLoading}
+        />
+      )}
     </React.Fragment>
   );
 };
 
 ExecuteButton.propTypes = {
-  remediation: PropTypes.string,
-  remediationStatus: PropTypes.string,
+  remediation: PropTypes.object,
+  remediationStatus: PropTypes.object,
   issueCount: PropTypes.number,
   isDisabled: PropTypes.bool,
   refetchRemediationPlaybookRuns: PropTypes.func,
+  detailsLoading: PropTypes.bool,
+  onNavigateToExecutionHistory: PropTypes.func,
+  remediationPlaybookRuns: PropTypes.object,
+  isPlaybookRunsLoading: PropTypes.bool,
 };
 
 export default ExecuteButton;

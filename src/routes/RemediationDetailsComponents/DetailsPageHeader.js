@@ -11,6 +11,7 @@ import ExecuteButton from '../../components/ExecuteButton';
 import { download } from '../../Utilities/DownloadPlaybookButton';
 import ButtonWithToolTip from '../../Utilities/ButtonWithToolTip';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
+import { MAX_SYSTEMS, MAX_ACTIONS } from './helpers';
 
 const RemediationDetailsPageHeader = ({
   remediation,
@@ -19,22 +20,61 @@ const RemediationDetailsPageHeader = ({
   allRemediations,
   refetchAllRemediations,
   updateRemPlan,
-  refetch,
+  refetchRemediationDetails,
   permissions,
   refetchRemediationPlaybookRuns,
   isExecutable,
+  detailsLoading,
+  onNavigateToTab,
+  remediationPlaybookRuns,
+  isPlaybookRunsLoading,
+  actionPoints = 0,
 }) => {
   const addNotification = useAddNotification();
   const handleDownload = useCallback(() => {
     download([remediation.id], [remediation], addNotification);
   }, [remediation, addNotification]);
 
+  const getDownloadTooltipMessage = () => {
+    const hasNoActions = !remediation?.issue_count;
+    const hasNoSystems = remediation?.system_count === 0;
+    let message =
+      'The remediation plan cannot be downloaded because it does not include any';
+    if (hasNoActions && hasNoSystems) {
+      message += ' actions or systems.';
+    } else if (hasNoActions) {
+      message += ' actions.';
+    } else if (hasNoSystems) {
+      message += ' systems.';
+    }
+    return message;
+  };
+
+  const hasZeroSystems = remediation?.system_count === 0;
+  const hasSystemsButAllDisconnected =
+    remediation?.system_count >= 1 &&
+    remediation?.system_count <= MAX_SYSTEMS &&
+    remediationStatus?.connectedSystems === 0;
+  const hasMoreThanMaxSystems = remediation?.system_count > MAX_SYSTEMS;
+  const hasZeroActions = !remediation?.issue_count;
+  const exceedsActionPointsLimit = actionPoints > MAX_ACTIONS;
+
+  const isExecuteDisabled =
+    hasZeroSystems ||
+    hasSystemsButAllDisconnected ||
+    hasMoreThanMaxSystems ||
+    hasZeroActions ||
+    exceedsActionPointsLimit ||
+    !permissions?.execute ||
+    isFedramp ||
+    !isExecutable;
+
   return (
     <PageHeader>
       <Flex
         justifyContent={{ default: 'justifyContentSpaceBetween' }}
         alignItems={{ default: 'alignItemsFlexStart' }}
-        flexWrap={{ default: 'wrap' }}
+        flexWrap={{ default: 'nowrap' }}
       >
         <FlexItem grow={{ default: 'grow' }} style={{ minWidth: 0 }}>
           <PageHeaderTitle
@@ -59,34 +99,30 @@ const RemediationDetailsPageHeader = ({
           ) : (
             <Flex
               spaceItems={{ default: 'spaceItemsSm' }}
-              flexWrap={{ default: 'wrap' }}
+              flexWrap={{ default: 'nowrap' }}
             >
               <FlexItem>
                 <ExecuteButton
-                  isDisabled={
-                    remediationStatus.connectedSystems === 0 ||
-                    !permissions?.execute ||
-                    isFedramp ||
-                    !isExecutable
-                  }
-                  issueCount={remediation?.issues.length}
+                  isDisabled={isExecuteDisabled}
+                  issueCount={remediation?.issue_count}
                   remediationStatus={remediationStatus}
                   remediation={remediation}
                   refetchRemediationPlaybookRuns={
                     refetchRemediationPlaybookRuns
                   }
+                  detailsLoading={detailsLoading}
+                  onNavigateToExecutionHistory={onNavigateToTab}
+                  remediationPlaybookRuns={remediationPlaybookRuns}
+                  isPlaybookRunsLoading={isPlaybookRunsLoading}
                 />
               </FlexItem>
               <FlexItem>
                 <ButtonWithToolTip
-                  isDisabled={!remediation?.issues.length}
-                  onClick={handleDownload}
-                  tooltipContent={
-                    <div>
-                      The remediation plan cannot be downloaded because it does
-                      not include any actions or systems.
-                    </div>
+                  isDisabled={
+                    !remediation?.issue_count || remediation.system_count === 0
                   }
+                  onClick={handleDownload}
+                  tooltipContent={<div>{getDownloadTooltipMessage()}</div>}
                 >
                   Download
                 </ButtonWithToolTip>
@@ -97,7 +133,7 @@ const RemediationDetailsPageHeader = ({
                   remediationsList={allRemediations}
                   refetchAllRemediations={refetchAllRemediations}
                   updateRemPlan={updateRemPlan}
-                  refetch={refetch}
+                  refetchRemediationDetails={refetchRemediationDetails}
                 />
               </FlexItem>
             </Flex>
@@ -111,24 +147,42 @@ RemediationDetailsPageHeader.propTypes = {
   remediation: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    issues: PropTypes.array,
-  }).isRequired,
+    auto_reboot: PropTypes.bool,
+    archived: PropTypes.bool,
+    created_by: PropTypes.shape({
+      username: PropTypes.string,
+      first_name: PropTypes.string,
+      last_name: PropTypes.string,
+    }),
+    created_at: PropTypes.string,
+    updated_by: PropTypes.shape({
+      username: PropTypes.string,
+      first_name: PropTypes.string,
+      last_name: PropTypes.string,
+    }),
+    updated_at: PropTypes.string,
+    issue_count: PropTypes.number,
+    system_count: PropTypes.number,
+  }),
   remediationStatus: PropTypes.shape({
     connectedSystems: PropTypes.number.isRequired,
     totalSystems: PropTypes.number.isRequired,
     areDetailsLoading: PropTypes.bool.isRequired,
-    detailsError: PropTypes.any,
+    connectionError: PropTypes.any,
   }).isRequired,
   isFedramp: PropTypes.bool,
-  allRemediations: PropTypes.shape({
-    data: PropTypes.array.isRequired,
-  }).isRequired,
+  allRemediations: PropTypes.array,
   updateRemPlan: PropTypes.func,
-  refetch: PropTypes.func,
-  permissions: PropTypes.obj,
+  refetchRemediationDetails: PropTypes.func,
   isExecutable: PropTypes.any,
   refetchAllRemediations: PropTypes.func,
   refetchRemediationPlaybookRuns: PropTypes.func,
+  permissions: PropTypes.object.isRequired,
+  detailsLoading: PropTypes.bool,
+  onNavigateToTab: PropTypes.func,
+  remediationPlaybookRuns: PropTypes.object,
+  isPlaybookRunsLoading: PropTypes.bool,
+  actionPoints: PropTypes.number,
 };
 
 export default RemediationDetailsPageHeader;

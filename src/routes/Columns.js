@@ -7,11 +7,12 @@ import {
   CreatedCell,
   LastModifiedCell,
 } from './Cells.js';
-import { wrappable, nowrap } from '@patternfly/react-table';
+import { wrappable, breakWord } from '@patternfly/react-table';
 
 export const Name = {
   title: 'Name',
   transforms: [wrappable],
+  cellTransforms: [wrappable, breakWord],
   sortable: 'name',
   exportKey: 'name',
   Component: NameCell,
@@ -28,7 +29,7 @@ export const LastExecuted = {
 
 export const ExecutionStatus = {
   title: 'Execution status',
-  transforms: [nowrap],
+  transforms: [wrappable],
   sortable: 'status',
   exportKey: 'status',
   Component: ExecutionStatusCell,

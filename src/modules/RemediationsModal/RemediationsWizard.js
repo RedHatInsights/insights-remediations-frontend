@@ -1,5 +1,6 @@
 import React, {
   Fragment,
+  useCallback,
   useEffect,
   useReducer,
   useRef,
@@ -66,7 +67,13 @@ const reducer = (state, action) => {
   }
 };
 
-export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
+export const RemediationWizard = ({
+  setOpen,
+  data,
+  basePath,
+  registry,
+  isCompliancePrecedenceEnabled = false,
+}) => {
   const allSystems = useRef(
     dedupeArray(
       data.issues?.reduce(
@@ -83,13 +90,17 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
 
   const issuesById = keyBy(data.issues, (issue) => issue.id);
 
-  const fetchHostNames = (systems = []) => {
-    const perChunk = 50;
-    const chunks = splitArray(systems, perChunk);
-    chunks.forEach((chunk) => {
-      dispatch(fetchHostsById(chunk, { page: 1, perPage: perChunk }));
-    });
-  };
+  const fetchHostNames = useCallback(
+    (systems = []) => {
+      const perChunk = 25;
+      const uniqueSystems = dedupeArray(systems);
+      const chunks = splitArray(uniqueSystems, perChunk);
+      chunks.forEach((chunk) => {
+        dispatch(fetchHostsById(chunk, { page: 1, perPage: perChunk }));
+      });
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     remediationsList &&
@@ -106,7 +117,7 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
     });
     dispatch(fetchResolutions(data.issues));
     fetchHostNames(allSystems.current);
-  }, [remediationsList]);
+  }, [remediationsList, fetchHostNames, data.issues, dispatch, registry]);
 
   const mapperExtension = {
     'select-playbook': {
@@ -178,8 +189,12 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
               type: 'state',
               payload: { submitted: true, formValues: formValues },
             });
-            submitRemediation(formValues, data, basePath, (payload) =>
-              setState({ type: 'state', payload: payload }),
+            submitRemediation(
+              formValues,
+              data,
+              basePath,
+              (payload) => setState({ type: 'state', payload: payload }),
+              isCompliancePrecedenceEnabled,
             );
           }}
           onCancel={() => setOpen(false)}
@@ -224,6 +239,7 @@ export const RemediationWizard = ({ setOpen, data, basePath, registry }) => {
                         basePath,
                         (payload) =>
                           setState({ type: 'state', payload: payload }),
+                        isCompliancePrecedenceEnabled,
                       )
                     }
                     setState={(payload) =>
@@ -271,6 +287,7 @@ RemediationWizard.propTypes = {
     register: propTypes.func,
   }).isRequired,
   remediationsList: propTypes.array,
+  isCompliancePrecedenceEnabled: propTypes.bool,
 };
 
 const RemediationWizardWithContext = (props) => {

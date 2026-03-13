@@ -6,6 +6,7 @@ export default [
     title: 'Name',
     transforms: [wrappable],
     exportKey: 'display_name',
+    sortable: 'display_name',
     Component: SystemNameCell,
   },
 ];

@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import TextInputDialog from './Dialogs/TextInputDialog';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
-import { patchRemediation } from '../api';
+import useRemediations from '../Utilities/Hooks/api/useRemediations';
+import { updateRemediationWrapper } from '../routes/api';
 
 const EMPTY_NAME = 'Unnamed Playbook';
 
@@ -14,6 +15,12 @@ const RenameModal = ({
   refetch,
 }) => {
   const addNotification = useAddNotification();
+  const { fetch: updateRemediation } = useRemediations(
+    updateRemediationWrapper,
+    {
+      skip: true,
+    },
+  );
 
   const handleRename = async (id, name) => {
     if (!name) {
@@ -22,7 +29,7 @@ const RenameModal = ({
     const trimmedName = name.trim();
 
     try {
-      await patchRemediation(id, { name: trimmedName });
+      await updateRemediation({ id, name: trimmedName });
       addNotification({
         title: `Remediation plan renamed`,
         variant: 'success',
