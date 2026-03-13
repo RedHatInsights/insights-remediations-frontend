@@ -43,7 +43,10 @@ export const PlanSummaryCharts = ({
               renderChartSkeleton()
             ) : (
               <>
-                <div id="actions-chart-container">
+                <div
+                  id="actions-chart-container"
+                  style={{ maxWidth: 'fit-content' }}
+                >
                   <ChartBullet
                     ariaDesc="Action points bullet chart"
                     ariaTitle="Action points"
@@ -116,7 +119,10 @@ export const PlanSummaryCharts = ({
             {detailsLoading && isExistingPlanSelected ? (
               renderChartSkeleton()
             ) : (
-              <div id="systems-chart-container">
+              <div
+                id="systems-chart-container"
+                style={{ maxWidth: 'fit-content' }}
+              >
                 <ChartBullet
                   ariaDesc="Systems bullet chart"
                   ariaTitle="Systems"
