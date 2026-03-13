@@ -205,8 +205,8 @@ const SelectPlaybook = (props) => {
         <Grid hasGutter>
           <GridItem sm={12} md={6} lg={4}>
             <Radio
-              label="Create new playbook"
-              aria-label="Create new playbook"
+              label="Create new plan"
+              aria-label="Create new plan"
               id="new"
               name="radio"
               defaultChecked={!existingPlaybookSelected}

@@ -43,6 +43,8 @@ export function getIssueApplication({ id }) {
       return 'Vulnerability';
     case 'patch-advisory':
       return 'Patch';
+    case 'patch-package':
+      return 'Patch';
     default:
       return 'Unknown';
   }

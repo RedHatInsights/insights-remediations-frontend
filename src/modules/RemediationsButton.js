@@ -29,6 +29,9 @@ const RemediationButton = ({
   }, [hasSelected, hasPermissions]);
   const chrome = useChrome();
   const isNewModalEnabled = useFeatureFlag('newModal');
+  const isCompliancePrecedenceEnabled = useFeatureFlag(
+    'remediations.precedence',
+  );
   useEffect(() => {
     chrome.getUserPermissions('remediations').then((permissions) => {
       setHasPermissions(
@@ -67,8 +70,12 @@ const RemediationButton = ({
               return;
             }
 
-            validate(data);
-            setRemediationsData(data);
+            try {
+              validate(data);
+              setRemediationsData(data);
+            } catch {
+              setNoDataModalOpen(true);
+            }
           });
         }}
         {...buttonProps}
@@ -92,6 +99,7 @@ const RemediationButton = ({
             onRemediationCreated,
             ...(remediationsData || {}),
           }}
+          isCompliancePrecedenceEnabled={isCompliancePrecedenceEnabled}
         />
       )}
       {remediationsData && isNewModalEnabled && (
@@ -105,6 +113,7 @@ const RemediationButton = ({
             onRemediationCreated,
             ...(remediationsData || {}),
           }}
+          isCompliancePrecedenceEnabled={isCompliancePrecedenceEnabled}
         />
       )}
     </React.Fragment>

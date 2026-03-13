@@ -79,8 +79,8 @@ describe('useConnectionStatus', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(errorObj);
     expect(result.current[2]).toBe(false); // areDetailsLoading
-    expect(result.current[3]).toBe(403); // detailsError
-    expect(result.current[4]).toBe(403); // connectedData
+    expect(result.current[3]).toBe(403); // connectedData
+    expect(result.current[5]).toEqual(errorObj); // connectionError
 
     consoleErrorSpy.mockRestore();
   });
@@ -129,8 +129,8 @@ describe('useConnectionStatus', () => {
     expect(result.current[1]).toBe(1); // totalSystems
     expect(mockAxios.get).toHaveBeenCalledTimes(1);
 
-    // Call refetch function
-    const refetch = result.current[5];
+    // Call refetch function (fetchData is at index 4)
+    const refetch = result.current[4];
     await act(async () => {
       refetch();
     });

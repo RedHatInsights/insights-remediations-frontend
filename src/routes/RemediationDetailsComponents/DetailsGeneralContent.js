@@ -1,6 +1,13 @@
-import React from 'react';
-import { Alert, Grid, GridItem } from '@patternfly/react-core';
+import React, { useMemo, useState, useEffect } from 'react';
+import {
+  Alert,
+  AlertActionCloseButton,
+  Grid,
+  GridItem,
+} from '@patternfly/react-core';
 import PropTypes from 'prop-types';
+import { calculateActionPointsFromSummary } from '../../components/helpers';
+import { calculateExecutionLimits } from './helpers';
 import DetailsCard from './DetailsCard';
 import ProgressCard from './ProgressCard';
 
@@ -15,30 +22,84 @@ const DetailsGeneralContent = ({
   permissions,
   remediationPlaybookRuns,
   refetchAllRemediations,
-  detailsLoading,
+  isPlaybookRunsLoading,
+  actionPoints: actionPointsProp,
 }) => {
+  const actionPointsComputed = useMemo(() => {
+    return calculateActionPointsFromSummary(details?.issue_count_details);
+  }, [details?.issue_count_details]);
+
+  const actionPoints =
+    typeof actionPointsProp === 'number'
+      ? actionPointsProp
+      : actionPointsComputed;
+
+  const executionLimits = useMemo(() => {
+    return calculateExecutionLimits(details, actionPoints);
+  }, [details, actionPoints]);
+
+  const exceedsExecutionLimits =
+    executionLimits?.exceedsExecutionLimits || false;
+  const shouldShowAapAlert = exceedsExecutionLimits;
+
   const canExecute =
     permissions?.execute &&
-    remediationStatus?.detailsError !== 403 &&
-    remediationStatus?.connectedSystems !== 0;
+    remediationStatus?.connectionError?.errors?.[0]?.status !== 403 &&
+    remediationStatus?.connectionError?.errors?.[0]?.status !== 503 &&
+    remediationStatus?.connectionError?.errors?.[0]?.code !==
+      'DEPENDENCY_UNAVAILABLE' &&
+    remediationStatus?.connectedSystems !== 0 &&
+    !exceedsExecutionLimits;
 
-  const isStillLoading =
-    detailsLoading || remediationStatus?.areDetailsLoading || !permissions;
-  const shouldShowAlert = !isStillLoading && !canExecute;
+  const [isAapAlertDismissed, setIsAapAlertDismissed] = useState(false);
+
+  // Reset dismissed state when exceedsExecutionLimits changes from false to true
+  useEffect(() => {
+    if (exceedsExecutionLimits) {
+      setIsAapAlertDismissed(false);
+    }
+  }, [exceedsExecutionLimits]);
+
+  const handleAapAlertClose = () => {
+    setIsAapAlertDismissed(true);
+  };
 
   return (
     <section className="pf-v6-l-page__main-section pf-v6-c-page__main-section">
-      {shouldShowAlert && (
+      {shouldShowAapAlert && !isAapAlertDismissed && (
         <Alert
           isInline
-          variant="danger"
-          title="Remediation plan cannot be executed"
+          variant="info"
+          title="Remediate at scale with Red Hat Ansible Automation Platform (AAP)"
           className="pf-v6-u-mb-md"
+          actionClose={
+            <AlertActionCloseButton
+              title="Close alert"
+              onClose={handleAapAlertClose}
+            />
+          }
         >
           <p>
-            One or more prerequisites for executing this remediation plan were
-            not met. See the <strong>Execution readiness</strong> section for
-            more information.
+            We recommend executing this plan with Red Hat® Ansible® Automation
+            Platform for at-scale automation. Download the plan to run with Red
+            Hat® Ansible® Automation Platform (AAP) or execute using{' '}
+            <a
+              href="https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/using_automation_execution/controller-setting-up-insights#controller-setting-up-insights"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              a connected AAP integration
+            </a>
+            .
+          </p>
+          <p>
+            <a
+              href="http://sandbox.redhat.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Get a 30-day free trial of Red Hat Ansible Automation Platform
+            </a>
           </p>
         </Alert>
       )}
@@ -55,6 +116,7 @@ const DetailsGeneralContent = ({
             allRemediations={allRemediations}
             remediationPlaybookRuns={remediationPlaybookRuns}
             refetchAllRemediations={refetchAllRemediations}
+            isPlaybookRunsLoading={isPlaybookRunsLoading}
           />
         </GridItem>
         <GridItem span={12} md={6}>
@@ -63,6 +125,8 @@ const DetailsGeneralContent = ({
             permissions={permissions}
             readyOrNot={canExecute}
             onNavigateToTab={onNavigateToTab}
+            details={details}
+            actionPoints={actionPoints}
           />
         </GridItem>
       </Grid>
@@ -82,6 +146,8 @@ DetailsGeneralContent.propTypes = {
   remediationPlaybookRuns: PropTypes.any,
   refetchAllRemediations: PropTypes.func,
   detailsLoading: PropTypes.bool,
+  isPlaybookRunsLoading: PropTypes.bool,
+  actionPoints: PropTypes.number,
 };
 
 export default DetailsGeneralContent;

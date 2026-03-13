@@ -1,17 +1,23 @@
 import React from 'react';
 import { Flex, FlexItem, Title, Switch, Content } from '@patternfly/react-core';
 import propTypes from 'prop-types';
+import { EXECUTION_LIMITS_HEADER_DESCRIPTION } from '../../routes/RemediationDetailsComponents/helpers';
 
 export const PlanSummaryHeader = ({ autoReboot, onAutoRebootChange }) => {
   return (
-    <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
-      <FlexItem>
+    <Flex
+      justifyContent={{
+        default: 'justifyContentSpaceBetween',
+      }}
+      alignItems={{
+        default: 'alignItemsCenter',
+      }}
+    >
+      <FlexItem style={{ maxWidth: '75%' }}>
         <Title headingLevel="h3" size="md">
           Plan summary
         </Title>
-        <Content component="p">
-          Execution limits: 100 systems and 1000 action points*
-        </Content>
+        <Content component="p">{EXECUTION_LIMITS_HEADER_DESCRIPTION}</Content>
       </FlexItem>
       <FlexItem>
         <Switch

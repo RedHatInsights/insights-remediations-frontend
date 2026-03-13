@@ -69,11 +69,20 @@ jest.mock('@patternfly/react-core', () => ({
 
 describe('DetailsGeneralContent', () => {
   const defaultProps = {
-    details: jest.fn(),
+    details: {
+      id: 'rem-1',
+      name: 'Test Remediation',
+      issue_count: 0,
+      system_count: 5,
+      issue_count_details: {},
+      auto_reboot: true,
+      created_at: '2023-01-01T00:00:00Z',
+      updated_at: '2023-01-01T00:00:00Z',
+    },
     onRename: jest.fn(),
     refetch: jest.fn(),
     remediationStatus: {
-      detailsError: null,
+      connectionError: null,
       connectedSystems: 5,
     },
     updateRemPlan: jest.fn(),
@@ -140,7 +149,7 @@ describe('DetailsGeneralContent', () => {
         ...defaultProps,
         permissions: { execute: true },
         remediationStatus: {
-          detailsError: null,
+          connectionError: null,
           connectedSystems: 5,
         },
       };
@@ -162,15 +171,12 @@ describe('DetailsGeneralContent', () => {
         ...defaultProps,
         permissions: { execute: false },
         remediationStatus: {
-          detailsError: null,
+          connectionError: null,
           connectedSystems: 5,
         },
       };
 
       render(<DetailsGeneralContent {...props} />);
-
-      // Should show alert because permissions.execute is false
-      expect(screen.getByTestId('alert')).toBeInTheDocument();
 
       // Check that ProgressCard receives correct canExecute value
       const progressCardProps = JSON.parse(
@@ -179,22 +185,71 @@ describe('DetailsGeneralContent', () => {
       expect(progressCardProps.readyOrNot).toBe(false); // Should be false when execute permission is false
     });
 
-    it('should calculate readyOrNot as false when detailsError is 403', () => {
+    it('should calculate readyOrNot as false when connectionError status is 403', () => {
       const props = {
         ...defaultProps,
         permissions: { execute: true },
         remediationStatus: {
-          detailsError: 403,
+          connectionError: { errors: [{ status: 403 }] },
           connectedSystems: 5,
         },
       };
 
       render(<DetailsGeneralContent {...props} />);
 
-      // Should show alert when not ready
-      expect(screen.getByTestId('alert')).toBeInTheDocument();
-
       // Check that ProgressCard receives correct readyOrNot value
+      const progressCardProps = JSON.parse(
+        screen.getByTestId('progress-card-props').textContent,
+      );
+      expect(progressCardProps.readyOrNot).toBe(false);
+    });
+
+    it('should calculate readyOrNot as false when connectionError status is 503', () => {
+      const props = {
+        ...defaultProps,
+        permissions: { execute: true },
+        remediationStatus: {
+          connectionError: {
+            errors: [
+              {
+                id: '2bb8b920fe07464ea020c1454e7b29f4',
+                status: 503,
+                code: 'DEPENDENCY_UNAVAILABLE',
+                title:
+                  'Internal service dependency is temporarily unavailable.  If the issue persists please contact Red Hat support: https://access.redhat.com/support/cases/',
+                details: {
+                  name: 'configManager',
+                  impl: 'impl',
+                },
+              },
+            ],
+          },
+          connectedSystems: 5,
+        },
+      };
+
+      render(<DetailsGeneralContent {...props} />);
+
+      const progressCardProps = JSON.parse(
+        screen.getByTestId('progress-card-props').textContent,
+      );
+      expect(progressCardProps.readyOrNot).toBe(false);
+    });
+
+    it('should calculate readyOrNot as false when connectionError code is DEPENDENCY_UNAVAILABLE', () => {
+      const props = {
+        ...defaultProps,
+        permissions: { execute: true },
+        remediationStatus: {
+          connectionError: {
+            errors: [{ code: 'DEPENDENCY_UNAVAILABLE' }],
+          },
+          connectedSystems: 5,
+        },
+      };
+
+      render(<DetailsGeneralContent {...props} />);
+
       const progressCardProps = JSON.parse(
         screen.getByTestId('progress-card-props').textContent,
       );
@@ -206,15 +261,12 @@ describe('DetailsGeneralContent', () => {
         ...defaultProps,
         permissions: { execute: true },
         remediationStatus: {
-          detailsError: null,
+          connectionError: null,
           connectedSystems: 0,
         },
       };
 
       render(<DetailsGeneralContent {...props} />);
-
-      // Should show alert when not ready
-      expect(screen.getByTestId('alert')).toBeInTheDocument();
 
       // Check that ProgressCard receives correct readyOrNot value
       const progressCardProps = JSON.parse(
@@ -228,7 +280,7 @@ describe('DetailsGeneralContent', () => {
         ...defaultProps,
         permissions: undefined,
         remediationStatus: {
-          detailsError: null,
+          connectionError: null,
           connectedSystems: 5,
         },
       };
@@ -248,12 +300,12 @@ describe('DetailsGeneralContent', () => {
       const props = {
         ...defaultProps,
         permissions: { execute: true },
-        remediationStatus: {}, // Missing detailsError and connectedSystems
+        remediationStatus: {}, // Missing connectionError and connectedSystems
       };
 
       render(<DetailsGeneralContent {...props} />);
 
-      // Should NOT show alert because undefined !== 403 and undefined !== 0 are both true
+      // Should NOT show alert because connectionError?.errors?.[0]?.status !== 403 and undefined !== 0 are both true
       expect(screen.queryByTestId('alert')).not.toBeInTheDocument();
 
       const progressCardProps = JSON.parse(
@@ -264,29 +316,18 @@ describe('DetailsGeneralContent', () => {
   });
 
   describe('Alert rendering', () => {
-    it('should render alert with correct props when not ready', () => {
+    it('should not render readiness alert - readiness is handled by ProgressCard', () => {
       const props = {
         ...defaultProps,
         remediationStatus: {
-          detailsError: 403,
+          connectionError: { errors: [{ status: 403 }] },
           connectedSystems: 5,
         },
       };
 
       render(<DetailsGeneralContent {...props} />);
 
-      const alert = screen.getByTestId('alert');
-      expect(alert).toHaveAttribute('data-inline', 'true');
-      expect(alert).toHaveAttribute('data-variant', 'danger');
-      expect(alert).toHaveClass('pf-v6-u-mb-md');
-
-      expect(screen.getByTestId('alert-title')).toHaveTextContent(
-        'Remediation plan cannot be executed',
-      );
-      expect(
-        screen.getByText(/One or more prerequisites for executing/),
-      ).toBeInTheDocument();
-      expect(screen.getByText('Execution readiness')).toBeInTheDocument();
+      expect(screen.queryByTestId('alert')).not.toBeInTheDocument();
     });
 
     it('should not render alert when ready', () => {
@@ -342,7 +383,7 @@ describe('DetailsGeneralContent', () => {
         onRename: jest.fn(),
         refetch: jest.fn(),
         remediationStatus: {
-          detailsError: null,
+          connectionError: null,
           connectedSystems: 5,
         },
       };
@@ -385,15 +426,12 @@ describe('DetailsGeneralContent', () => {
         ...defaultProps,
         permissions: { execute: false },
         remediationStatus: {
-          detailsError: 403,
+          connectionError: { errors: [{ status: 403 }] },
           connectedSystems: 0,
         },
       };
 
       render(<DetailsGeneralContent {...props} />);
-
-      // Should show alert
-      expect(screen.getByTestId('alert')).toBeInTheDocument();
 
       const progressCardProps = JSON.parse(
         screen.getByTestId('progress-card-props').textContent,
@@ -409,36 +447,57 @@ describe('DetailsGeneralContent', () => {
 
       render(<DetailsGeneralContent {...props} />);
 
-      // Should NOT show alert because null?.detailsError !== 403 and null?.connectedSystems !== 0 are both true
+      // Should NOT show alert because null?.connectionError?.errors?.[0]?.status !== 403 and null?.connectedSystems !== 0 are both true
       expect(screen.queryByTestId('alert')).not.toBeInTheDocument();
     });
 
-    it('should handle different detailsError values', () => {
+    it('should handle different connectionError values', () => {
       const testCases = [
-        { detailsError: 500, shouldShowAlert: false },
-        { detailsError: 404, shouldShowAlert: false },
-        { detailsError: 403, shouldShowAlert: true },
-        { detailsError: 0, shouldShowAlert: false },
-        { detailsError: null, shouldShowAlert: false },
-        { detailsError: undefined, shouldShowAlert: false },
+        {
+          connectionError: { errors: [{ status: 500 }] },
+          expectedReadyOrNot: true,
+        },
+        {
+          connectionError: { errors: [{ status: 404 }] },
+          expectedReadyOrNot: true,
+        },
+        {
+          connectionError: { errors: [{ status: 403 }] },
+          expectedReadyOrNot: false,
+        },
+        {
+          connectionError: { errors: [{ status: 503 }] },
+          expectedReadyOrNot: false,
+        },
+        {
+          connectionError: {
+            errors: [{ code: 'DEPENDENCY_UNAVAILABLE' }],
+          },
+          expectedReadyOrNot: false,
+        },
+        {
+          connectionError: { errors: [{ status: 0 }] },
+          expectedReadyOrNot: true,
+        },
+        { connectionError: null, expectedReadyOrNot: true },
+        { connectionError: undefined, expectedReadyOrNot: true },
       ];
 
-      testCases.forEach(({ detailsError, shouldShowAlert }) => {
+      testCases.forEach(({ connectionError, expectedReadyOrNot }) => {
         const props = {
           ...defaultProps,
           remediationStatus: {
-            detailsError,
+            connectionError,
             connectedSystems: 5,
           },
         };
 
         const { unmount } = render(<DetailsGeneralContent {...props} />);
 
-        if (shouldShowAlert) {
-          expect(screen.getByTestId('alert')).toBeInTheDocument();
-        } else {
-          expect(screen.queryByTestId('alert')).not.toBeInTheDocument();
-        }
+        const progressCardProps = JSON.parse(
+          screen.getByTestId('progress-card-props').textContent,
+        );
+        expect(progressCardProps.readyOrNot).toBe(expectedReadyOrNot);
 
         unmount();
       });
@@ -446,29 +505,28 @@ describe('DetailsGeneralContent', () => {
 
     it('should handle different connectedSystems values', () => {
       const testCases = [
-        { connectedSystems: 1, shouldShowAlert: false },
-        { connectedSystems: 5, shouldShowAlert: false },
-        { connectedSystems: 0, shouldShowAlert: true },
-        { connectedSystems: null, shouldShowAlert: false }, // null !== 0 is true
-        { connectedSystems: undefined, shouldShowAlert: false }, // undefined !== 0 is true
+        { connectedSystems: 1, expectedReadyOrNot: true },
+        { connectedSystems: 5, expectedReadyOrNot: true },
+        { connectedSystems: 0, expectedReadyOrNot: false },
+        { connectedSystems: null, expectedReadyOrNot: true }, // null !== 0 is true
+        { connectedSystems: undefined, expectedReadyOrNot: true }, // undefined !== 0 is true
       ];
 
-      testCases.forEach(({ connectedSystems, shouldShowAlert }) => {
+      testCases.forEach(({ connectedSystems, expectedReadyOrNot }) => {
         const props = {
           ...defaultProps,
           remediationStatus: {
-            detailsError: null,
+            connectionError: null,
             connectedSystems,
           },
         };
 
         const { unmount } = render(<DetailsGeneralContent {...props} />);
 
-        if (shouldShowAlert) {
-          expect(screen.getByTestId('alert')).toBeInTheDocument();
-        } else {
-          expect(screen.queryByTestId('alert')).not.toBeInTheDocument();
-        }
+        const progressCardProps = JSON.parse(
+          screen.getByTestId('progress-card-props').textContent,
+        );
+        expect(progressCardProps.readyOrNot).toBe(expectedReadyOrNot);
 
         unmount();
       });

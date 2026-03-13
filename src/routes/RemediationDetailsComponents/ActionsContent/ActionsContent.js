@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import columns from './Columns';
 import { Button } from '@patternfly/react-core';
@@ -10,6 +10,7 @@ import chunk from 'lodash/chunk';
 import ConfirmationDialog from '../../../components/ConfirmationDialog';
 // import { actionNameFilter } from '../Filters';
 import SystemsModal from './SystemsModal/SystemsModal';
+import ResolutionOptionsModal from './ResolutionOptionsModal';
 import {
   useRawTableState,
   useStateCallbacks,
@@ -18,7 +19,11 @@ import {
 import TableEmptyState from '../../OverViewPage/TableEmptyState';
 import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
 
-const ActionsContent = ({ refetch }) => {
+const ActionsContent = ({
+  refetch,
+  remediationId,
+  refetchRemediationDetails,
+}) => {
   const { id } = useParams();
   const tableState = useRawTableState();
   const currentlySelected = tableState?.selected;
@@ -28,6 +33,9 @@ const ActionsContent = ({ refetch }) => {
   const [isSystemsModalOpen, setIsSystemsModalOpen] = useState(false);
   const [actionToShow, setActionToShow] = useState('');
   const [selectedIssueId, setSelectedIssueId] = useState('');
+  const [isResolutionModalOpen, setIsResolutionModalOpen] = useState(false);
+  const [selectedIssueForResolution, setSelectedIssueForResolution] =
+    useState(null);
 
   const {
     result: issuesResult,
@@ -90,8 +98,34 @@ const ActionsContent = ({ refetch }) => {
     return await fetchQueue(queue);
   };
 
-  const allIssues = issuesResult?.data ?? [];
+  const allIssues = useMemo(
+    () => issuesResult?.data ?? [],
+    [issuesResult?.data],
+  );
   const totalIssues = issuesResult?.meta?.total ?? allIssues?.length ?? 0;
+
+  const handleViewResolutionOptions = useCallback(
+    (issueId) => {
+      const issue = allIssues.find((i) => i.id === issueId);
+      if (issue) {
+        setSelectedIssueForResolution(issue);
+        setIsResolutionModalOpen(true);
+      }
+    },
+    [allIssues],
+  );
+
+  const handleResolutionUpdated = useCallback(() => {
+    if (refetchRemediationDetails) {
+      refetchRemediationDetails();
+    }
+    refetchIssues();
+  }, [refetchRemediationDetails, refetchIssues]);
+
+  const handleModalClose = useCallback(() => {
+    setIsResolutionModalOpen(false);
+    setSelectedIssueForResolution(null);
+  }, []);
 
   const columnsWithSystemsButton = useMemo(() => {
     return columns.map((col) => {
@@ -113,9 +147,26 @@ const ActionsContent = ({ refetch }) => {
           },
         };
       }
+      if (col.exportKey === 'action') {
+        return {
+          ...col,
+          Component: (props) => {
+            const rowData = props;
+            return (
+              <col.Component
+                {...rowData}
+                onViewResolutionOptions={handleViewResolutionOptions}
+                selectedIssueForResolutionId={
+                  selectedIssueForResolution?.id || null
+                }
+              />
+            );
+          },
+        };
+      }
       return col;
     });
-  }, []);
+  }, [handleViewResolutionOptions, selectedIssueForResolution]);
 
   return (
     <section className="pf-v6-l-page__main-section pf-v6-c-page__main-section">
@@ -126,6 +177,17 @@ const ActionsContent = ({ refetch }) => {
           isOpen={isSystemsModalOpen}
           onClose={() => setIsSystemsModalOpen(false)}
           actionName={actionToShow}
+        />
+      )}
+      {isResolutionModalOpen && selectedIssueForResolution && (
+        <ResolutionOptionsModal
+          isOpen={isResolutionModalOpen}
+          onClose={handleModalClose}
+          issueId={selectedIssueForResolution.id}
+          issueDescription={selectedIssueForResolution.description}
+          currentResolution={selectedIssueForResolution.resolution}
+          remediationId={remediationId || id}
+          onResolutionUpdated={handleResolutionUpdated}
         />
       )}
       {isDeleteModalOpen && (
@@ -231,6 +293,8 @@ const ActionsContent = ({ refetch }) => {
 
 ActionsContent.propTypes = {
   refetch: PropTypes.func,
+  remediationId: PropTypes.string,
+  refetchRemediationDetails: PropTypes.func,
 };
 
 const ActionsContentProvider = (props) => (

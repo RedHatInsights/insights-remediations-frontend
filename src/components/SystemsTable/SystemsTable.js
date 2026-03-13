@@ -15,7 +15,12 @@ import { Provider, useSelector, useDispatch } from 'react-redux';
 import { Button } from '@patternfly/react-core';
 import './SystemsTable.scss';
 import RemoveSystemModal from './RemoveSystemModal';
-import { fetchInventoryData, mergedColumns, calculateChecked } from './helpers';
+import {
+  fetchInventoryData,
+  fetchAllRemediationSystems,
+  mergedColumns,
+  calculateChecked,
+} from './helpers';
 import systemsColumns from './Columns';
 import useBulkSelect from './useBulkSelect';
 import useOnConfirm from './useOnConfirm';
@@ -35,8 +40,10 @@ const SystemsTableWrapper = ({
   const inventory = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const systemsRef = useRef();
+  const configRef = useRef({});
   const activeSystem = useRef(undefined);
   const [refreshKey, setRefreshKey] = useState(0); // Used as key prop for InventoryTable
+  const [totalCount, setTotalCount] = useState(0);
   const addNotification = useAddNotification();
   const dispatch = useDispatch();
   const selected = useSelector(
@@ -62,11 +69,12 @@ const SystemsTableWrapper = ({
   }, []);
 
   useEffect(() => {
-    systemsRef.current = {
-      data: [],
-      total: 0,
-    };
+    systemsRef.current = [];
   }, []);
+
+  useEffect(() => {
+    systemsRef.current = rows || [];
+  }, [rows]);
 
   const onConfirm = useOnConfirm({
     selected,
@@ -83,12 +91,24 @@ const SystemsTableWrapper = ({
     reloadTable,
   });
 
+  const fetchAllSystems = useCallback(
+    () =>
+      fetchAllRemediationSystems(
+        fetchSystems,
+        remediation.id,
+        configRef.current,
+      ),
+    [fetchSystems, remediation.id],
+  );
+
   const bulkSelect = useBulkSelect({
-    systemsRef: { current: systemsRef.current?.data },
+    systemsRef,
     rows,
     selected,
     loaded,
     calculateChecked,
+    totalCount,
+    fetchAllSystems,
   });
 
   const actions = useMemo(
@@ -131,15 +151,18 @@ const SystemsTableWrapper = ({
         }}
         columns={columns}
         bulkSelect={bulkSelect}
-        getEntities={async (_i, config, _hasItems, defaultGetEntities) =>
-          await fetchInventoryData(
+        getEntities={async (_i, config, _hasItems, defaultGetEntities) => {
+          configRef.current = config || {};
+          const result = await fetchInventoryData(
             config,
             fetchSystems,
             remediation.id,
             defaultGetEntities,
             connectedData,
-          )
-        }
+          );
+          setTotalCount(result?.total ?? 0);
+          return result;
+        }}
         onLoad={({ INVENTORY_ACTION_TYPES, mergeWithEntities }) => {
           registry?.register?.({
             ...mergeWithEntities(remediationSystems(INVENTORY_ACTION_TYPES)),

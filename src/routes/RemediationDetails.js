@@ -2,20 +2,18 @@ import React, { useContext, useEffect, useState, useMemo } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import useRemediations from '../Utilities/Hooks/api/useRemediations';
 import { updateRemediationWrapper } from './api';
-import { Tab, Tabs, TabTitleText } from '@patternfly/react-core';
+import { Spinner, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import DetailsGeneralContent from './RemediationDetailsComponents/DetailsGeneralContent';
 import RenameModal from '../components/RenameModal';
 import { useConnectionStatus } from '../Utilities/useConnectionStatus';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import RemediationDetailsPageHeader from './RemediationDetailsComponents/DetailsPageHeader';
 import { PermissionContext } from '../App';
-import ActionsContent from './RemediationDetailsComponents/ActionsContent/ActionsContent';
-// import SystemsContent from './RemediationDetailsComponents/SystemsContent/SystemsContent';
-import SystemsTable from '../components/SystemsTable/SystemsTable';
+import PlannedRemediationsContent from './RemediationDetailsComponents/PlannedRemediationsContent';
 import ExecutionHistoryTab from './RemediationDetailsComponents/ExecutionHistoryContent/ExecutionHistoryContent';
 import PlanNotFound from './RemediationDetailsComponents/PlanNotFound';
 import { useAxiosWithPlatformInterceptors } from '@redhat-cloud-services/frontend-components-utilities/interceptors';
-
+import { calculateActionPointsFromSummary } from '../components/helpers';
 const RemediationDetails = () => {
   const chrome = useChrome();
   const { id } = useParams();
@@ -86,24 +84,42 @@ const RemediationDetails = () => {
     connectedSystems,
     totalSystems,
     areDetailsLoading,
-    detailsError,
     connectedData,
     refetchConnectionStatus,
+    connectionError,
   ] = useConnectionStatus(remediationDetailsSummary?.id, axios);
 
   const remediationStatus = {
     connectedSystems,
     totalSystems,
     areDetailsLoading,
-    detailsError,
     connectedData,
+    connectionError,
   };
 
-  const handleTabClick = (_event, tabName) =>
-    setSearchParams({
+  const actionPoints = useMemo(() => {
+    return calculateActionPointsFromSummary(
+      remediationDetailsSummary?.issue_count_details,
+    );
+  }, [remediationDetailsSummary?.issue_count_details]);
+
+  const handleTabClick = (_event, tabName) => {
+    // Support nested tab navigation format: 'plannedRemediations:systems' or 'plannedRemediations:actions'
+    const [mainTab, nestedTab] = tabName?.split(':') || [];
+    const newParams = {
       ...Object.fromEntries(searchParams),
-      activeTab: tabName,
-    });
+      activeTab: mainTab || tabName,
+    };
+
+    if (mainTab === 'plannedRemediations' && nestedTab) {
+      newParams.nestedTab = nestedTab;
+    } else if (mainTab !== 'plannedRemediations') {
+      // Remove nestedTab param when navigating away from plannedRemediations
+      delete newParams.nestedTab;
+    }
+
+    setSearchParams(newParams);
+  };
 
   const getIsExecutable = (item) => String(item).trim().toUpperCase() === 'OK';
 
@@ -111,97 +127,95 @@ const RemediationDetails = () => {
     return <PlanNotFound planId={id} />;
   }
 
-  return (
-    remediationDetailsSummary && (
-      <>
-        <RemediationDetailsPageHeader
-          remediation={remediationDetailsSummary}
-          remediationStatus={remediationStatus}
-          isFedramp={isFedramp}
-          allRemediations={allRemediationsData}
-          refetchAllRemediations={refetchAllRemediations}
-          updateRemPlan={updateRemPlan}
-          refetchRemediationDetails={refetchRemediationDetails}
-          permissions={context.permissions}
-          isExecutable={getIsExecutable(isExecutable)}
-          refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
-          detailsLoading={detailsLoading}
-        />
-        <Tabs
-          activeKey={searchParams.get('activeTab') || 'general'}
-          onSelect={handleTabClick}
-          aria-label="Details Page Tabs"
-          role="region"
-        >
-          {isRenameModalOpen && (
-            <RenameModal
-              remediation={remediationDetailsSummary}
-              isRenameModalOpen={isRenameModalOpen}
-              setIsRenameModalOpen={setIsRenameModalOpen}
-              remediationsList={allRemediationsData}
-              fetch={refetchRemediationDetails}
-            />
-          )}
-
-          <Tab
-            eventKey={'general'}
-            title={<TabTitleText>General</TabTitleText>}
-            aria-label="GeneralTab"
+  return detailsLoading ? (
+    <Spinner size="xl" />
+  ) : (
+    <>
+      {remediationDetailsSummary && (
+        <>
+          <RemediationDetailsPageHeader
+            remediation={remediationDetailsSummary}
+            remediationStatus={remediationStatus}
+            isFedramp={isFedramp}
+            allRemediations={allRemediationsData}
+            refetchAllRemediations={refetchAllRemediations}
+            updateRemPlan={updateRemPlan}
+            refetchRemediationDetails={refetchRemediationDetails}
+            permissions={context.permissions}
+            isExecutable={getIsExecutable(isExecutable)}
+            refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
+            detailsLoading={detailsLoading}
+            onNavigateToTab={handleTabClick}
+            remediationPlaybookRuns={remediationPlaybookRuns}
+            isPlaybookRunsLoading={isPlaybookRunsLoading}
+            actionPoints={actionPoints}
+          />
+          <Tabs
+            activeKey={searchParams.get('activeTab') || 'general'}
+            onSelect={handleTabClick}
+            aria-label="Details Page Tabs"
           >
-            <DetailsGeneralContent
-              details={remediationDetailsSummary}
-              refetchAllRemediations={refetchAllRemediations}
-              onRename={setIsRenameModalOpen}
-              refetch={refetchRemediationDetails}
-              remediationStatus={remediationStatus}
-              updateRemPlan={updateRemPlan}
-              onNavigateToTab={handleTabClick}
-              allRemediations={allRemediationsData}
-              permissions={context.permissions}
-              remediationPlaybookRuns={remediationPlaybookRuns?.data[0]}
-              detailsLoading={detailsLoading}
-            />
-          </Tab>
-          <Tab
-            eventKey={'actions'}
-            aria-label="ActionTab"
-            title={<TabTitleText>Actions</TabTitleText>}
-          >
-            <ActionsContent refetch={refetchRemediationDetails} />
-          </Tab>
-          <Tab
-            eventKey={'systems'}
-            aria-label="SystemTab"
-            title={<TabTitleText>Systems</TabTitleText>}
-          >
-            <section
-              className={
-                'pf-v6-l-page__main-section pf-v6-c-page__main-section'
-              }
-            >
-              <SystemsTable
+            {isRenameModalOpen && (
+              <RenameModal
                 remediation={remediationDetailsSummary}
-                connectedData={remediationStatus?.connectedData}
-                areDetailsLoading={remediationStatus?.areDetailsLoading}
-                refreshRemediation={refetchRemediationDetails}
-                refetchConnectionStatus={refetchConnectionStatus}
+                isRenameModalOpen={isRenameModalOpen}
+                setIsRenameModalOpen={setIsRenameModalOpen}
+                remediationsList={allRemediationsData}
+                fetch={refetchRemediationDetails}
               />
-            </section>
-          </Tab>
-          <Tab
-            eventKey={'executionHistory'}
-            aria-label="ExecutionHistoryTab"
-            title={<TabTitleText>Execution History</TabTitleText>}
-          >
-            <ExecutionHistoryTab
-              remediationPlaybookRuns={remediationPlaybookRuns}
-              isPlaybookRunsLoading={isPlaybookRunsLoading}
-              refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
-            />
-          </Tab>
-        </Tabs>
-      </>
-    )
+            )}
+
+            <Tab
+              eventKey={'general'}
+              title={<TabTitleText>General</TabTitleText>}
+              aria-label="GeneralTab"
+            >
+              <DetailsGeneralContent
+                details={remediationDetailsSummary}
+                refetchAllRemediations={refetchAllRemediations}
+                onRename={setIsRenameModalOpen}
+                refetch={refetchRemediationDetails}
+                remediationStatus={remediationStatus}
+                updateRemPlan={updateRemPlan}
+                onNavigateToTab={handleTabClick}
+                allRemediations={allRemediationsData}
+                permissions={context.permissions}
+                remediationPlaybookRuns={remediationPlaybookRuns?.data[0]}
+                detailsLoading={detailsLoading}
+                isPlaybookRunsLoading={isPlaybookRunsLoading}
+                actionPoints={actionPoints}
+              />
+            </Tab>
+            <Tab
+              eventKey={'plannedRemediations'}
+              aria-label="PlannedRemediationsTab"
+              title={<TabTitleText>Planned remediations</TabTitleText>}
+            >
+              <PlannedRemediationsContent
+                remediationDetailsSummary={remediationDetailsSummary}
+                remediationStatus={remediationStatus}
+                refetchRemediationDetails={refetchRemediationDetails}
+                refetchConnectionStatus={refetchConnectionStatus}
+                detailsLoading={detailsLoading}
+                initialNestedTab={searchParams.get('nestedTab') || 'actions'}
+                remediationId={id}
+              />
+            </Tab>
+            <Tab
+              eventKey={'executionHistory'}
+              aria-label="ExecutionHistoryTab"
+              title={<TabTitleText>Execution History</TabTitleText>}
+            >
+              <ExecutionHistoryTab
+                remediationPlaybookRuns={remediationPlaybookRuns}
+                isPlaybookRunsLoading={isPlaybookRunsLoading}
+                refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
+              />
+            </Tab>
+          </Tabs>
+        </>
+      )}
+    </>
   );
 };
 

@@ -41,12 +41,14 @@ describe('useBulkSelect', () => {
   const getDefaultProps = () => ({
     systemsRef: mockSystemsRef,
     rows: [{ id: 'row-1' }, { id: 'row-2' }],
-    selected: new Set([
+    selected: new Map([
       ['system-1', { id: 'system-1', name: 'System 1' }],
       ['system-2', { id: 'system-2', name: 'System 2' }],
     ]),
     loaded: true,
     calculateChecked: jest.fn().mockReturnValue(false),
+    totalCount: 3,
+    fetchAllSystems: jest.fn().mockResolvedValue(mockSystemsRef.current),
   });
 
   it('should return the correct initial structure', () => {
@@ -72,7 +74,10 @@ describe('useBulkSelect', () => {
   it('should have correct count based on selected size', () => {
     const props = {
       ...getDefaultProps(),
-      selected: new Set(['system-1', 'system-2']),
+      selected: new Map([
+        ['system-1', {}],
+        ['system-2', {}],
+      ]),
     };
     const { result } = renderHook(() => useBulkSelect(props));
 
@@ -101,10 +106,8 @@ describe('useBulkSelect', () => {
       result.current.items[0].onClick();
     });
 
-    expect(mockDispatch).toHaveBeenCalledTimes(3); // Once per system in systemsRef.current
-    expect(selectEntity).toHaveBeenCalledWith('system-1', false);
-    expect(selectEntity).toHaveBeenCalledWith('system-2', false);
-    expect(selectEntity).toHaveBeenCalledWith('system-3', false);
+    expect(mockDispatch).toHaveBeenCalledTimes(1);
+    expect(selectEntity).toHaveBeenCalledWith(-1, false);
   });
 
   it('should include page selection items when loaded and rows exist', () => {
@@ -137,14 +140,14 @@ describe('useBulkSelect', () => {
     expect(pageItem).toBeUndefined();
   });
 
-  it('should include "Select all" item when loaded and rows exist', () => {
+  it('should include "Select all" item when loaded and fetchAllSystems provided', () => {
     const { result } = renderHook(() => useBulkSelect(getDefaultProps()));
 
     const allItem = result.current.items.find((item) =>
       item.title.includes('Select all'),
     );
     expect(allItem).toBeDefined();
-    expect(allItem.title).toBe('Select all (3)'); // systemsRef.current.length
+    expect(allItem.title).toBe('Select all (3)'); // totalCount
   });
 
   it('should dispatch select page action when page is not fully selected', () => {
@@ -169,10 +172,11 @@ describe('useBulkSelect', () => {
     });
   });
 
-  it('should dispatch select all action when not all systems are selected', () => {
+  it('should dispatch select all action when not all systems are selected', async () => {
     const props = {
       ...getDefaultProps(),
-      calculateChecked: jest.fn().mockReturnValue(false), // Not all selected
+      totalCount: 3,
+      fetchAllSystems: jest.fn().mockResolvedValue(mockSystemsRef.current),
     };
     const { result } = renderHook(() => useBulkSelect(props));
 
@@ -180,10 +184,11 @@ describe('useBulkSelect', () => {
       item.title.includes('Select all'),
     );
 
-    act(() => {
-      allItem.onClick();
+    await act(async () => {
+      await allItem.onClick();
     });
 
+    expect(props.fetchAllSystems).toHaveBeenCalled();
     expect(mockDispatch).toHaveBeenCalledTimes(3);
     expect(selectEntity).toHaveBeenCalledWith('system-1', true);
     expect(selectEntity).toHaveBeenCalledWith('system-2', true);
@@ -193,22 +198,25 @@ describe('useBulkSelect', () => {
   it('should dispatch deselect all action when all systems are selected', () => {
     const props = {
       ...getDefaultProps(),
-      calculateChecked: jest.fn().mockReturnValue(true), // All selected
+      selected: new Map([
+        ['system-1', {}],
+        ['system-2', {}],
+        ['system-3', {}],
+      ]),
+      totalCount: 3,
     };
     const { result } = renderHook(() => useBulkSelect(props));
 
     const allItem = result.current.items.find((item) =>
-      item.title.includes('Select all'),
+      item.title.includes('Deselect all'),
     );
 
     act(() => {
       allItem.onClick();
     });
 
-    expect(mockDispatch).toHaveBeenCalledTimes(3);
-    expect(selectEntity).toHaveBeenCalledWith('system-1', false);
-    expect(selectEntity).toHaveBeenCalledWith('system-2', false);
-    expect(selectEntity).toHaveBeenCalledWith('system-3', false);
+    expect(mockDispatch).toHaveBeenCalledTimes(1);
+    expect(selectEntity).toHaveBeenCalledWith(-1, false);
   });
 
   it('should handle onSelect for page selection when page is not fully selected', () => {
@@ -249,10 +257,12 @@ describe('useBulkSelect', () => {
     expect(mockDispatch).toHaveBeenCalled();
   });
 
-  it('should handle edge case with empty systemsRef', () => {
+  it('should handle edge case with empty systemsRef and totalCount 0', () => {
     const props = {
       ...getDefaultProps(),
       systemsRef: { current: [] },
+      totalCount: 0,
+      fetchAllSystems: jest.fn().mockResolvedValue([]),
     };
 
     const { result } = renderHook(() => useBulkSelect(props));
@@ -262,6 +272,7 @@ describe('useBulkSelect', () => {
     const allItem = result.current.items.find((item) =>
       item.title.includes('Select all'),
     );
+    expect(allItem).toBeDefined();
     expect(allItem.title).toBe('Select all (0)');
   });
 
@@ -282,7 +293,12 @@ describe('useBulkSelect', () => {
   });
 
   it('should handle null/undefined rows gracefully', () => {
-    const props = { ...getDefaultProps(), rows: null };
+    const props = {
+      ...getDefaultProps(),
+      rows: null,
+      fetchAllSystems: undefined,
+      totalCount: 0,
+    };
     const { result } = renderHook(() => useBulkSelect(props));
 
     expect(result.current.isDisabled).toBe(true);
@@ -316,7 +332,11 @@ describe('useBulkSelect', () => {
     // Scenario 2: Selected size equals systemsRef length
     const props2 = {
       ...getDefaultProps(),
-      selected: new Set(['system-1', 'system-2', 'system-3']), // All systems selected
+      selected: new Map([
+        ['system-1', {}],
+        ['system-2', {}],
+        ['system-3', {}],
+      ]),
     };
 
     const { result: result2 } = renderHook(() => useBulkSelect(props2));
@@ -356,8 +376,6 @@ describe('useBulkSelect', () => {
       result.current.items[0].onClick(); // Select none item
     });
 
-    expect(selectEntity).toHaveBeenCalledWith('system-1', false);
-    expect(selectEntity).toHaveBeenCalledWith('system-2', false);
-    expect(selectEntity).toHaveBeenCalledWith('system-3', false);
+    expect(selectEntity).toHaveBeenCalledWith(-1, false);
   });
 });

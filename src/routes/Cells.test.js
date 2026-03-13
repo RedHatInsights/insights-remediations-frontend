@@ -357,6 +357,13 @@ describe('routes/Cells', () => {
       expect(getTimeAgo).toHaveBeenCalledWith(new Date('2023-12-25T23:59:00Z'));
     });
 
+    it('should display "Just now" when getTimeAgo returns empty string', () => {
+      getTimeAgo.mockReturnValue('');
+      render(<LastModifiedCell updated_at="2023-03-15T10:28:00Z" />);
+
+      expect(screen.getByText('Just now')).toBeInTheDocument();
+    });
+
     it('should handle empty string updated_at', () => {
       render(<LastModifiedCell updated_at="" />);
 

@@ -172,17 +172,13 @@ describe('DetailsCard', () => {
   describe('Component Rendering', () => {
     it('renders without crashing', () => {
       renderComponent();
-      expect(
-        screen.getByText('Remediation plan details and status'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('displays loading spinner when no details provided', () => {
       renderComponent({ details: null });
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
-      expect(
-        screen.queryByText('Remediation plan details and status'),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText('Details')).not.toBeInTheDocument();
     });
 
     it('displays all required information when details are provided', () => {
@@ -195,7 +191,7 @@ describe('DetailsCard', () => {
       expect(screen.getByText('Latest execution status')).toBeInTheDocument();
       expect(screen.getByText('Actions')).toBeInTheDocument();
       expect(screen.getByText('Systems')).toBeInTheDocument();
-      expect(screen.getByText('Auto-reboot')).toBeInTheDocument();
+      expect(screen.getByText(/Auto-reboot/)).toBeInTheDocument();
     });
 
     it('displays correct action and system counts', () => {
@@ -437,8 +433,8 @@ describe('DetailsCard', () => {
       const toggle = screen.getByRole('switch');
       expect(toggle).toBeInTheDocument();
       expect(toggle).toBeChecked(); // auto_reboot is true in mockDetails
-      expect(screen.queryByText('Off')).not.toBeInTheDocument();
-      expect(screen.getByText('On')).toBeInTheDocument();
+      expect(screen.queryByText(/Auto-reboot:\s*Off/i)).not.toBeInTheDocument();
+      expect(screen.getByText(/Auto-reboot:\s*On/i)).toBeInTheDocument();
     });
 
     it('displays switch as unchecked when auto_reboot is false', () => {
@@ -447,8 +443,8 @@ describe('DetailsCard', () => {
 
       const toggle = screen.getByRole('switch');
       expect(toggle).not.toBeChecked();
-      expect(screen.getByText('Off')).toBeInTheDocument();
-      expect(screen.queryByText('On')).not.toBeInTheDocument();
+      expect(screen.getByText(/Auto-reboot:\s*Off/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Auto-reboot:\s*On/i)).not.toBeInTheDocument();
     });
 
     it('calls updateRemPlan when toggle is changed', () => {
@@ -485,7 +481,10 @@ describe('DetailsCard', () => {
       const actionsLink = screen.getByText('2 actions');
       fireEvent.click(actionsLink);
 
-      expect(mockOnNavigateToTab).toHaveBeenCalledWith(null, 'actions');
+      expect(mockOnNavigateToTab).toHaveBeenCalledWith(
+        null,
+        'plannedRemediations:actions',
+      );
     });
 
     it('navigates to systems tab when systems link is clicked', () => {
@@ -494,7 +493,10 @@ describe('DetailsCard', () => {
       const systemsLink = screen.getByText('10 systems');
       fireEvent.click(systemsLink);
 
-      expect(mockOnNavigateToTab).toHaveBeenCalledWith(null, 'systems');
+      expect(mockOnNavigateToTab).toHaveBeenCalledWith(
+        null,
+        'plannedRemediations:systems',
+      );
     });
 
     it('navigates to execution history when status link is clicked', () => {
@@ -535,18 +537,14 @@ describe('DetailsCard', () => {
       renderComponent({ remediationStatus: null });
 
       // Should handle null remediationStatus without crashing
-      expect(
-        screen.getByText('Remediation plan details and status'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('handles missing playbook runs gracefully', () => {
       renderComponent({ remediationPlaybookRuns: null });
 
       // Should still render the component
-      expect(
-        screen.getByText('Remediation plan details and status'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
   });
 
@@ -555,36 +553,28 @@ describe('DetailsCard', () => {
       renderComponent({ onNavigateToTab: undefined });
 
       // Should render without crashing
-      expect(
-        screen.getByText('Remediation plan details and status'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('handles missing updateRemPlan prop', () => {
       renderComponent({ updateRemPlan: undefined });
 
       // Should render without crashing
-      expect(
-        screen.getByText('Remediation plan details and status'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('handles missing allRemediations prop', () => {
       renderComponent({ allRemediations: undefined });
 
       // Should render without crashing
-      expect(
-        screen.getByText('Remediation plan details and status'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('handles undefined remediationStatus totalSystems', () => {
       renderComponent({ remediationStatus: {} });
 
       // Should handle undefined totalSystems
-      expect(
-        screen.getByText('Remediation plan details and status'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
   });
 
@@ -606,9 +596,7 @@ describe('DetailsCard', () => {
       renderComponent({ details: detailsWithoutDate });
 
       // Should still render without crashing
-      expect(
-        screen.getByText('Remediation plan details and status'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Details')).toBeInTheDocument();
     });
 
     it('handles very long remediation names', () => {

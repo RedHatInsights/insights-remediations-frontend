@@ -52,8 +52,8 @@ export const PlaybookSelect = ({
           autoComplete="off"
           placeholder={
             isLoadingRemediationsList
-              ? 'Loading playbooks...'
-              : 'Select or create a playbook'
+              ? 'Loading remediation plans...'
+              : 'Enter or select'
           }
           innerRef={textInputRef}
           isDisabled={isLoadingRemediationsList}
@@ -87,12 +87,13 @@ export const PlaybookSelect = ({
       }}
       toggle={toggle}
       variant="typeahead"
+      isScrollable
     >
       <SelectList id="select-create-typeahead-listbox">
         {isLoadingRemediationsList ? (
-          <SelectOption isDisabled>Loading playbooks...</SelectOption>
+          <SelectOption isDisabled>Loading plans...</SelectOption>
         ) : selectOptions.length === 0 ? (
-          <SelectOption isDisabled>No playbooks found</SelectOption>
+          <SelectOption isDisabled>No plans found</SelectOption>
         ) : (
           selectOptions.map((option, index) => (
             <SelectOption
