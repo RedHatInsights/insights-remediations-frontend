@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { ExecuteModalV2 } from '../ExecuteModalV2';
+import { ExecuteModal } from '../ExecuteModal';
 import { mockRemediationStatus } from '../../../__mocks__/remediationStatus';
 
 // Mock hooks
@@ -43,7 +43,7 @@ jest.mock('../../../Utilities/Hooks/api/useRemediations', () => ({
   }),
 }));
 
-describe('ExecuteModalV2', () => {
+describe('ExecuteModal', () => {
   const defaultProps = {
     isOpen: true,
     onClose: jest.fn(),
@@ -71,7 +71,7 @@ describe('ExecuteModalV2', () => {
 
   describe('Rendering', () => {
     it('should render all modal content correctly', () => {
-      render(<ExecuteModalV2 {...defaultProps} />);
+      render(<ExecuteModal {...defaultProps} />);
 
       expect(
         screen.getByText('Plan execution cannot be stopped or rolled back'),
@@ -102,7 +102,7 @@ describe('ExecuteModalV2', () => {
     });
 
     it('should not render modal when isOpen is false', () => {
-      render(<ExecuteModalV2 {...defaultProps} isOpen={false} />);
+      render(<ExecuteModal {...defaultProps} isOpen={false} />);
 
       expect(
         screen.queryByText('Plan execution cannot be stopped or rolled back'),
@@ -123,7 +123,7 @@ describe('ExecuteModalV2', () => {
       };
 
       render(
-        <ExecuteModalV2
+        <ExecuteModal
           {...defaultProps}
           remediationStatus={singleSystemStatus}
         />,
@@ -148,7 +148,7 @@ describe('ExecuteModalV2', () => {
       };
 
       render(
-        <ExecuteModalV2
+        <ExecuteModal
           {...defaultProps}
           remediationStatus={noConnectedStatus}
         />,
@@ -161,7 +161,7 @@ describe('ExecuteModalV2', () => {
 
     it('should display auto-reboot enabled message when auto_reboot is true', () => {
       render(
-        <ExecuteModalV2
+        <ExecuteModal
           {...defaultProps}
           remediation={{ ...defaultProps.remediation, auto_reboot: true }}
         />,
@@ -176,7 +176,7 @@ describe('ExecuteModalV2', () => {
 
     it('should default to disabled when auto_reboot is undefined', () => {
       render(
-        <ExecuteModalV2
+        <ExecuteModal
           {...defaultProps}
           remediation={{ id: '123', name: 'Test Remediation' }}
         />,
@@ -205,7 +205,7 @@ describe('ExecuteModalV2', () => {
       };
 
       render(
-        <ExecuteModalV2
+        <ExecuteModal
           {...defaultProps}
           remediationStatus={noConnectedStatus}
         />,
@@ -216,7 +216,7 @@ describe('ExecuteModalV2', () => {
     });
 
     it('should enable Execute button when connected systems exist', () => {
-      render(<ExecuteModalV2 {...defaultProps} />);
+      render(<ExecuteModal {...defaultProps} />);
 
       const executeButton = screen.getByRole('button', { name: 'Execute' });
       expect(executeButton).toBeEnabled();
@@ -229,7 +229,7 @@ describe('ExecuteModalV2', () => {
       const mockRefetch = jest.fn();
 
       render(
-        <ExecuteModalV2
+        <ExecuteModal
           {...defaultProps}
           onClose={mockOnClose}
           refetchRemediationPlaybookRuns={mockRefetch}
@@ -279,7 +279,7 @@ describe('ExecuteModalV2', () => {
       const footerCloseButton = closeButtons.find(
         (btn) =>
           btn.getAttribute('data-ouia-component-id') ===
-          'close-execution-modal-v2',
+          'close-execution-modal',
       );
       expect(footerCloseButton).toBeInTheDocument();
 
@@ -292,7 +292,7 @@ describe('ExecuteModalV2', () => {
       const errorMessage = 'Execution failed';
       mockExecuteRun.mockRejectedValueOnce(new Error(errorMessage));
 
-      render(<ExecuteModalV2 {...defaultProps} onClose={mockOnClose} />);
+      render(<ExecuteModal {...defaultProps} onClose={mockOnClose} />);
 
       fireEvent.click(screen.getByRole('button', { name: 'Execute' }));
 
@@ -311,7 +311,7 @@ describe('ExecuteModalV2', () => {
     });
 
     it('should exclude disconnected systems from execution', async () => {
-      render(<ExecuteModalV2 {...defaultProps} />);
+      render(<ExecuteModal {...defaultProps} />);
 
       fireEvent.click(screen.getByRole('button', { name: 'Execute' }));
 
@@ -343,7 +343,7 @@ describe('ExecuteModalV2', () => {
       };
 
       render(
-        <ExecuteModalV2
+        <ExecuteModal
           {...defaultProps}
           remediationStatus={allConnectedStatus}
         />,
@@ -368,7 +368,7 @@ describe('ExecuteModalV2', () => {
       };
 
       render(
-        <ExecuteModalV2 {...defaultProps} remediationStatus={emptyStatus} />,
+        <ExecuteModal {...defaultProps} remediationStatus={emptyStatus} />,
       );
 
       expect(
@@ -383,7 +383,7 @@ describe('ExecuteModalV2', () => {
       };
 
       render(
-        <ExecuteModalV2
+        <ExecuteModal
           {...defaultProps}
           remediationStatus={undefinedStatus}
         />,
@@ -395,7 +395,7 @@ describe('ExecuteModalV2', () => {
     });
 
     it('should handle null remediationStatus', () => {
-      render(<ExecuteModalV2 {...defaultProps} remediationStatus={null} />);
+      render(<ExecuteModal {...defaultProps} remediationStatus={null} />);
 
       expect(
         screen.getByText(/Executing this plan will remediate 0 systems/),

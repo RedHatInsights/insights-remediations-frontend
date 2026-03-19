@@ -14,7 +14,7 @@ import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import { pluralize } from '../../Utilities/utils';
 import { formatUtc } from '../../routes/RemediationDetailsComponents/ExecutionHistoryContent/helpers';
 
-export const ExecuteModalV2 = ({
+export const ExecuteModal = ({
   isOpen,
   onClose,
   refetchRemediationPlaybookRuns,
@@ -240,7 +240,7 @@ export const ExecuteModalV2 = ({
 
   return (
     <Modal
-      data-testid="execute-modal-v2"
+      data-testid="execute-modal"
       variant={ModalVariant.medium}
       title={
         isExecuting
@@ -257,7 +257,7 @@ export const ExecuteModalV2 = ({
               <Button
                 key="view-details"
                 variant="primary"
-                ouiaId="view-execution-details-v2"
+                ouiaId="view-execution-details"
                 onClick={handleViewDetails}
               >
                 View details
@@ -265,7 +265,7 @@ export const ExecuteModalV2 = ({
               <Button
                 key="close"
                 variant="link"
-                ouiaId="close-execution-modal-v2"
+                ouiaId="close-execution-modal"
                 onClick={onClose}
               >
                 Close
@@ -275,7 +275,7 @@ export const ExecuteModalV2 = ({
               <Button
                 key="execute"
                 variant="primary"
-                ouiaId="execute-playbook-v2"
+                ouiaId="execute-playbook"
                 isDisabled={
                   connected.length === 0 ||
                   detailsLoading ||
@@ -289,7 +289,7 @@ export const ExecuteModalV2 = ({
               <Button
                 key="cancel"
                 variant="link"
-                ouiaId="cancel-execute-v2"
+                ouiaId="cancel-execute"
                 onClick={onClose}
               >
                 Cancel
@@ -302,7 +302,7 @@ export const ExecuteModalV2 = ({
   );
 };
 
-ExecuteModalV2.propTypes = {
+ExecuteModal.propTypes = {
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
   remediation: PropTypes.object,

@@ -129,7 +129,7 @@ describe('Execute button', () => {
 
     await userEvent.click(screen.getByTestId('execute-button-enabled'));
     await waitFor(() =>
-      expect(screen.getByTestId('execute-modal-v2')).toBeVisible(),
+      expect(screen.getByTestId('execute-modal')).toBeVisible(),
     );
   });
 });

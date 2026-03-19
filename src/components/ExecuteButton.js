@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Flex } from '@patternfly/react-core';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import ButtonWithToolTip from '../Utilities/ButtonWithToolTip';
-import { ExecuteModalV2 } from './Modals/ExecuteModalV2';
+import { ExecuteModal } from './Modals/ExecuteModal';
 
 const ExecuteButton = ({
   isDisabled,
@@ -43,7 +43,7 @@ const ExecuteButton = ({
         {isDisabled && <ExclamationTriangleIcon />} Execute
       </ButtonWithToolTip>
       {open && (
-        <ExecuteModalV2
+        <ExecuteModal
           isOpen={open}
           onClose={() => setOpen(false)}
           remediation={remediation}

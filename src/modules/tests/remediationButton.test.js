@@ -16,7 +16,7 @@ jest.mock('../../Utilities/Hooks/useFeatureFlag', () => ({
   useFeatureFlag: jest.fn(),
 }));
 
-jest.mock('../../components/RemediationWizardV2/RemediationWizardV2', () => ({
+jest.mock('../../components/RemediationWizard/RemediationWizard', () => ({
   __esModule: true,
   default: jest.fn((props) => (
     <div {...props} data-testid="remediation-wizard-mock">
