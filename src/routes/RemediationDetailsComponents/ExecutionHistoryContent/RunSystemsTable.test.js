@@ -8,10 +8,6 @@ jest.mock('bastilian-tabletools', () => ({
   useRawTableState: jest.fn(),
 }));
 
-jest.mock('../../../Utilities/Hooks/useFeatureFlag', () => ({
-  useFeatureFlag: jest.fn(),
-}));
-
 jest.mock('./Columns', () => {
   const mockUseColumns = jest.fn(() => [
     {
@@ -20,7 +16,7 @@ jest.mock('./Columns', () => {
       Component: ({ item }) => <div>{item.system_name}</div>,
     },
     {
-      title: 'Insights connection',
+      title: 'Red Hat Lightspeed connection',
       key: 'connection',
       Component: ({ item }) => <div>{item.status}</div>,
     },
@@ -76,14 +72,10 @@ jest.mock('../../OverViewPage/TableEmptyState', () => {
   return MockTableEmptyState;
 });
 
-const { useFeatureFlag } = require('../../../Utilities/Hooks/useFeatureFlag');
-
 describe('RunSystemsTable', () => {
   const mockUseRawTableState = require('bastilian-tabletools').useRawTableState;
 
   beforeEach(() => {
-    // Default to feature flag disabled
-    useFeatureFlag.mockReturnValue(false);
     jest.clearAllMocks();
   });
 

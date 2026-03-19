@@ -1,17 +1,11 @@
 import { wrappable } from '@patternfly/react-table';
 import {
   SystemNameCell,
-  InsightsConnectCell,
   RedHatLightSpeedCell,
   ExecutionStatusCell,
 } from './Cells';
-import { useFeatureFlag } from '../../../Utilities/Hooks/useFeatureFlag';
 
 const useColumns = () => {
-  const isLightspeedRebrandEnabled = useFeatureFlag(
-    'platform.lightspeed-rebrand',
-  );
-
   return [
     {
       title: 'System name',
@@ -21,15 +15,11 @@ const useColumns = () => {
       Component: SystemNameCell,
     },
     {
-      title: isLightspeedRebrandEnabled
-        ? 'Red Hat Lightspeed connection'
-        : 'Insights connection',
+      title: 'Red Hat Lightspeed connection',
       transforms: [wrappable],
       // sortable: 'reboot',
       exportKey: 'reboot',
-      Component: isLightspeedRebrandEnabled
-        ? RedHatLightSpeedCell
-        : InsightsConnectCell,
+      Component: RedHatLightSpeedCell,
     },
     {
       title: 'Execution status',

@@ -2,13 +2,11 @@ export function capitalize(string) {
   return `${string.charAt(0).toUpperCase() + string.slice(1)}`;
 }
 
-import React, { Fragment } from 'react';
-import { Bullseye, Spinner } from '@patternfly/react-core';
+import React from 'react';
 import * as api from '../api';
 import uniqWith from 'lodash/uniqWith';
 import isEqual from 'lodash/isEqual';
 import { applyReducerHash } from '@redhat-cloud-services/frontend-components-utilities/ReducerRegistry/ReducerRegistry';
-import { SystemsTableWithContext } from '../modules/RemediationsModal/common/SystemsTable';
 
 export const CAN_REMEDIATE = 'remediations:remediation:write';
 export const AUTO_REBOOT = 'auto-reboot';
@@ -45,102 +43,6 @@ export const remediationUrl = (id) =>
   `${getBaseUri()}${getGroup()}/remediations${id ? `/${id}` : ''}`;
 
 export const dedupeArray = (array) => [...new Set(array)];
-
-const sortRecords = (records, sortByState) =>
-  [...records].sort((a, b) => {
-    const key = Object.keys(a)[sortByState.index - 1];
-    return (
-      (a[key] > b[key] ? 1 : a[key] < b[key] ? -1 : 0) *
-      (sortByState.direction === 'desc' ? -1 : 1)
-    );
-  });
-
-export const buildRows = (
-  records,
-  sortByState,
-  showAlternate,
-  allSystemsNamed,
-) =>
-  sortRecords(records, sortByState).reduce(
-    (acc, curr, index) => [
-      ...acc,
-      {
-        isOpen: false,
-        cells: [
-          { title: curr.action },
-          {
-            title: (
-              <Fragment key={`${index}-description`}>
-                <p key={`${index}-resolution`}>{curr.resolution}</p>
-                {showAlternate && curr.alternate > 0 && (
-                  <p key={`${index}-alternate`}>
-                    {curr.alternate} alternate{' '}
-                    {pluralize(curr.alternate, 'resolution')}
-                  </p>
-                )}
-              </Fragment>
-            ),
-          },
-          {
-            title: curr.needsReboot ? (
-              <div>Required</div>
-            ) : (
-              <div>Not required</div>
-            ),
-          },
-          {
-            title: curr.systems?.length || 0,
-            props: { isOpen: false },
-          },
-        ],
-      },
-      ...(curr.systems?.length > 0
-        ? [
-            {
-              parent: index * 2,
-              fullWidth: true,
-              allSystemsNamed: allSystemsNamed.filter((system) =>
-                curr.systems.includes(system.id),
-              ),
-              allSystems: curr.systems,
-              cells: [
-                {
-                  title: (
-                    <Bullseye>
-                      <Spinner />
-                    </Bullseye>
-                  ),
-                  props: { colSpan: 6, className: 'pf-m-no-padding' },
-                },
-              ],
-            },
-          ]
-        : []),
-    ],
-    [],
-  );
-
-const buildSystemRow = (allSystemsNamed = [], allSystems = []) => (
-  <SystemsTableWithContext
-    allSystemsNamed={allSystemsNamed}
-    allSystems={allSystems}
-    disabledColumns={['updated']}
-  />
-);
-
-export const onCollapse = (event, rowKey, isOpen, rows, setRows) => {
-  let temp = [...rows];
-  rows[rowKey].isOpen = isOpen;
-  temp[rowKey + 1].cells = [
-    {
-      title: buildSystemRow(
-        rows[rowKey + 1].allSystemsNamed,
-        rows[rowKey + 1].allSystems,
-      ),
-    },
-  ];
-  setRows(temp);
-};
 
 export const getResolution = (issueId, formValues) => {
   const issueResolutions =

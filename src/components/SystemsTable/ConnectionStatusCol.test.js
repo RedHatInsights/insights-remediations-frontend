@@ -16,10 +16,6 @@ jest.mock('@patternfly/react-icons', () => ({
   },
 }));
 
-jest.mock('../../Utilities/Hooks/useFeatureFlag', () => ({
-  useFeatureFlag: jest.fn(),
-}));
-
 jest.mock('@patternfly/react-core', () => ({
   Flex: function MockFlex({ children, direction, spaceItems, ...props }) {
     return (
@@ -58,13 +54,7 @@ jest.mock('@patternfly/react-core', () => ({
   },
 }));
 
-const { useFeatureFlag } = require('../../Utilities/Hooks/useFeatureFlag');
-
 describe('ConnectionStatusColumn', () => {
-  beforeEach(() => {
-    // Default to feature flag disabled
-    useFeatureFlag.mockReturnValue(false);
-  });
   it('should render connected status correctly', () => {
     render(
       <ConnectionStatusColumn
@@ -146,25 +136,7 @@ describe('ConnectionStatusColumn', () => {
     expect(screen.getByText('Disconnected')).toBeInTheDocument();
   });
 
-  it('should render RHC-Satellite disconnected status correctly with feature flag disabled', () => {
-    useFeatureFlag.mockReturnValue(false);
-    render(
-      <ConnectionStatusColumn
-        connection_status="disconnected"
-        executor_type="rhc-satellite"
-      />,
-    );
-
-    expect(screen.getByTestId('disconnected-icon')).toBeInTheDocument();
-    expect(screen.getByText('Disconnected')).toBeInTheDocument();
-    expect(screen.getByTestId('tooltip')).toBeInTheDocument();
-    expect(screen.getByTestId('tooltip-content')).toHaveTextContent(
-      'The Red Hat Satellite instance that this system is registered to is disconnected from Red Hat Insights.',
-    );
-  });
-
-  it('should render RHC-Satellite disconnected status correctly with feature flag enabled', () => {
-    useFeatureFlag.mockReturnValue(true);
+  it('should render RHC-Satellite disconnected status correctly', () => {
     render(
       <ConnectionStatusColumn
         connection_status="disconnected"

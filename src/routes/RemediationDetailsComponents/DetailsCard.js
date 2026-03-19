@@ -34,7 +34,6 @@ import { useVerifyName } from '../../Utilities/useVerifyName';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import { execStatus } from './helpers';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
-import { useFeatureFlag } from '../../Utilities/Hooks/useFeatureFlag';
 import { pluralize } from '../../Utilities/utils';
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 
@@ -48,9 +47,6 @@ const DetailsCard = ({
   refetchAllRemediations,
   isPlaybookRunsLoading,
 }) => {
-  const isLightspeedRebrandEnabled = useFeatureFlag(
-    'platform.lightspeed-rebrand',
-  );
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(details?.name);
   const [rebootToggle, setRebootToggle] = useState(details?.auto_reboot);
@@ -223,8 +219,7 @@ const DetailsCard = ({
             component="p"
             style={{ wordBreak: 'break-word', fontWeight: 'normal' }}
           >
-            New to remediating through{' '}
-            {isLightspeedRebrandEnabled ? 'Red Hat Lightspeed' : 'Insights'}?{' '}
+            New to remediating through Red Hat Lightspeed?{' '}
             <InsightsLink
               to={
                 'https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#creating-remediation-plans_red-hat-lightspeed-remediation-guide'

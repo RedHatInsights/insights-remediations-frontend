@@ -8,7 +8,6 @@ import {
   BanIcon,
 } from '@patternfly/react-icons';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
-import { useFeatureFlag } from '../Utilities/Hooks/useFeatureFlag';
 
 const STATUS_META = {
   success: {
@@ -75,10 +74,6 @@ StatusIcon.propTypes = {
 };
 
 export const ConnectionStatus = ({ status }) => {
-  const isLightspeedRebrandEnabled = useFeatureFlag(
-    'platform.lightspeed-rebrand',
-  );
-
   const plain = (text) => (
     <p className="pf-v6-u-mb-0" data-testid="text">
       {text}
@@ -124,10 +119,8 @@ export const ConnectionStatus = ({ status }) => {
         <div data-testid="text-content">
           {plain('Cannot remediate ‒ Cloud Connector not defined')}
           <small>
-            Remediation from{' '}
-            {isLightspeedRebrandEnabled ? ' Red Hat Lightspeed' : 'Insights'}{' '}
-            requires Cloud Connector. Cloud Connector can be enabled via
-            Satellite, or through&nbsp;
+            Remediation from Red Hat Lightspeed requires Cloud Connector. Cloud
+            Connector can be enabled via Satellite, or through&nbsp;
             <InsightsLink app="connector" to="/">
               RHC
             </InsightsLink>

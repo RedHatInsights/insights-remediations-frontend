@@ -16,7 +16,6 @@ import {
   QuestionCircleIcon,
   OutlinedQuestionCircleIcon,
 } from '@patternfly/react-icons';
-import { useFeatureFlag } from '../../../Utilities/Hooks/useFeatureFlag';
 import { formatConnectionType } from './helpers';
 
 const statusIcon = (status) => {
@@ -53,21 +52,12 @@ const cardStyle = {
   flex: '1 1 0',
 };
 const LogCards = ({ systemName, status, connectionType, executedBy }) => {
-  const isLightspeedRebrandEnabled = useFeatureFlag(
-    'platform.lightspeed-rebrand',
-  );
+  const connectionTypeTitle = 'Red Hat Lightspeed connection type';
 
-  const connectionTypeTitle = isLightspeedRebrandEnabled
-    ? 'Red Hat Lightspeed connection type'
-    : 'Insights connection type';
+  const connectionTypeTooltipContent =
+    'Red Hat Enterprise Linux systems are connected to Red Hat Lightspeed directly via RHC, or through Satellite via Cloud Connector.';
 
-  const connectionTypeTooltipContent = isLightspeedRebrandEnabled
-    ? 'Red Hat Enterprise Linux systems are connected to Red Hat Lightspeed directly via RHC, or through Satellite via Cloud Connector.'
-    : 'Red Hat Enterprise Linux systems are connected to Insights directly via RHC, or through Satellite via Cloud Connector.';
-
-  const connectionTypeAriaLabel = isLightspeedRebrandEnabled
-    ? 'Red Hat Lightspeed connection type info'
-    : 'Insights connection type info';
+  const connectionTypeAriaLabel = 'Red Hat Lightspeed connection type info';
 
   return (
     <Flex

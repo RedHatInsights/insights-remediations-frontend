@@ -14,12 +14,8 @@ import {
 import { RemediationsPopover } from '../RemediationsPopover';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import PropTypes from 'prop-types';
-import { useFeatureFlag } from '../../Utilities/Hooks/useFeatureFlag';
 
 export const OverViewPageHeader = ({ hasRemediations }) => {
-  const isLightspeedRebrandEnabled = useFeatureFlag(
-    'platform.lightspeed-rebrand',
-  );
   const { quickStarts } = useChrome();
 
   return (
@@ -49,8 +45,7 @@ export const OverViewPageHeader = ({ hasRemediations }) => {
             <StackItem>
               <p>
                 Remediation plans use Ansible playbooks to resolve issues
-                identified by Red Hat{' '}
-                {isLightspeedRebrandEnabled ? 'Lightspeed' : 'Insights'}.
+                identified by Red Hat Lightspeed.
               </p>
             </StackItem>
           </Stack>

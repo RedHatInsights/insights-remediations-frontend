@@ -6,7 +6,6 @@ import {
   DisconnectedIcon,
   UnknownIcon,
 } from '@patternfly/react-icons';
-import { useFeatureFlag } from '../../../Utilities/Hooks/useFeatureFlag';
 
 export const NameCell = ({ hostname }) => {
   return <Content>{hostname}</Content>;
@@ -44,9 +43,6 @@ export const SystemsCell = ({ systems }) => (
 );
 
 export const ConnectionStatusCell = ({ connection_status, executor_type }) => {
-  const isLightspeedRebrandEnabled = useFeatureFlag(
-    'platform.lightspeed-rebrand',
-  );
   let status = connection_status;
   let execType = executor_type;
   // Convert to lowercase if connection_status is a string
@@ -122,7 +118,7 @@ export const ConnectionStatusCell = ({ connection_status, executor_type }) => {
       return (
         <Tooltip
           position="left"
-          content={`The Red Hat Satellite instance that this system is registered to is disconnected from ${isLightspeedRebrandEnabled ? 'Red Hat Lightspeed' : 'Red Hat Insights'}.`}
+          content={`The Red Hat Satellite instance that this system is registered to is disconnected from Red Hat Lightspeed.`}
         >
           <Flex spaceItems={{ default: 'spaceItemsXs' }}>
             <DisconnectedIcon className="pf-v6-u-mr-xs" />

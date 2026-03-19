@@ -6,14 +6,10 @@ import {
   UnknownIcon,
 } from '@patternfly/react-icons';
 import { Button, Flex, Tooltip } from '@patternfly/react-core';
-import { useFeatureFlag } from '../../Utilities/Hooks/useFeatureFlag';
 import ConnectionStatusModal from './ConnectionStatusModal';
 
 const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const isLightspeedRebrandEnabled = useFeatureFlag(
-    'platform.lightspeed-rebrand',
-  );
   let status = connection_status;
   let execType = executor_type;
   // Convert to lowercase if connection_status is a string
@@ -84,7 +80,8 @@ const ConnectionStatusColumn = ({ connection_status, executor_type }) => {
     } else if (execType === 'rhc-satellite') {
       displayText = 'Disconnected';
       icon = <DisconnectedIcon className="pf-v6-u-mr-xs" />;
-      tooltipContent = `The Red Hat Satellite instance that this system is registered to is disconnected from ${isLightspeedRebrandEnabled ? 'Red Hat Lightspeed' : 'Red Hat Insights'}.`;
+      tooltipContent =
+        'The Red Hat Satellite instance that this system is registered to is disconnected from Red Hat Lightspeed.';
     } else {
       // Unknown executor type for disconnected status
       displayText = 'Unknown';
