@@ -6,7 +6,6 @@ import validate from './RemediationsModal/validate';
 
 import { CAN_REMEDIATE, matchPermissions } from '../Utilities/utils';
 import { Button, Tooltip } from '@patternfly/react-core';
-import RemediationWizard from './RemediationsModal';
 import RemediationWizardV2 from '../components/RemediationWizardV2/RemediationWizardV2';
 import NoDataModal from './RemediationsModal/NoDataModal';
 import { getTooltipContent } from '../Utilities/helpers';
@@ -28,7 +27,6 @@ const RemediationButton = ({
     return getTooltipContent(hasPermissions, hasSelected);
   }, [hasSelected, hasPermissions]);
   const chrome = useChrome();
-  const isNewModalEnabled = useFeatureFlag('newModal');
   const isCompliancePrecedenceEnabled = useFeatureFlag(
     'remediations.precedence',
   );
@@ -88,21 +86,7 @@ const RemediationButton = ({
         setOpen={setNoDataModalOpen}
         patchNoAdvisoryText={patchNoAdvisoryText}
       />
-      {remediationsData && !isNewModalEnabled && (
-        <RemediationWizard
-          setOpen={(isOpen) =>
-            setRemediationsData((prevData) =>
-              isOpen === false ? null : prevData,
-            )
-          }
-          data={{
-            onRemediationCreated,
-            ...(remediationsData || {}),
-          }}
-          isCompliancePrecedenceEnabled={isCompliancePrecedenceEnabled}
-        />
-      )}
-      {remediationsData && isNewModalEnabled && (
+      {remediationsData && (
         <RemediationWizardV2
           setOpen={(isOpen) =>
             setRemediationsData((prevData) =>

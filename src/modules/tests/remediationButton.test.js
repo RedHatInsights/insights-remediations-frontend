@@ -16,7 +16,7 @@ jest.mock('../../Utilities/Hooks/useFeatureFlag', () => ({
   useFeatureFlag: jest.fn(),
 }));
 
-jest.mock('../../modules/RemediationsModal/RemediationsWizard', () => ({
+jest.mock('../../components/RemediationWizardV2/RemediationWizardV2', () => ({
   __esModule: true,
   default: jest.fn((props) => (
     <div {...props} data-testid="remediation-wizard-mock">
@@ -44,7 +44,6 @@ describe('RemediationButton', () => {
   let tmpInsights;
   beforeEach(() => {
     tmpInsights = global.insights;
-    // Default to feature flag disabled
     useFeatureFlag.mockReturnValue(false);
     jest.clearAllMocks();
   });
