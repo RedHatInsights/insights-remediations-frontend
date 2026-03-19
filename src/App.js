@@ -138,7 +138,6 @@ const RbacPermissionsGate = () => {
 };
 
 const KesselPermissionsGate = ({ baseUrl }) => {
-  const chrome = useChrome();
   const [workspaceId, setWorkspaceId] = useState(undefined);
   const [workspaceLoading, setWorkspaceLoading] = useState(true);
   const didResolveWorkspaceRef = useRef(false);
@@ -148,15 +147,6 @@ const KesselPermissionsGate = ({ baseUrl }) => {
     didResolveWorkspaceRef.current = true;
 
     let cancelled = false;
-
-    const chromeWorkspaceId = chrome?.appObjectId?.();
-    if (chromeWorkspaceId) {
-      setWorkspaceId(chromeWorkspaceId);
-      setWorkspaceLoading(false);
-      return () => {
-        cancelled = true;
-      };
-    }
 
     fetchDefaultWorkspace(baseUrl)
       .then((ws) => {
@@ -182,7 +172,7 @@ const KesselPermissionsGate = ({ baseUrl }) => {
     return () => {
       cancelled = true;
     };
-  }, [chrome, baseUrl]);
+  }, [baseUrl]);
 
   const params = useMemo(
     () =>

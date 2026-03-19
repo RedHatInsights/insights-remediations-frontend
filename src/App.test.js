@@ -487,7 +487,6 @@ describe('App Component', () => {
   describe('when kessel-for-remediations is enabled', () => {
     beforeEach(() => {
       useFeatureFlag.mockReturnValue(true);
-      mockChrome.appObjectId = jest.fn(() => 'test-workspace-id');
       useSelfAccessCheck.mockReturnValue({
         data: [
           {
