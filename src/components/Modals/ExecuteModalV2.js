@@ -192,9 +192,6 @@ export const ExecuteModalV2 = ({
           History tab of this plan to view more information about the execution,
           or review the execution log file for each system in the plan.
         </Content>
-        <div className="pf-v6-u-text-align-center pf-v6-u-my-lg">
-          <Spinner size="xl" />
-        </div>
       </Content>
     </>
   );
