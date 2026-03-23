@@ -1,48 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Button,
   Content,
-  ContentVariants,
-  ExpandableSection,
   List,
   ListItem,
+  Spinner,
 } from '@patternfly/react-core';
 import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
-import { downloadPlaybook } from '../../api';
-import { Skeleton } from '@redhat-cloud-services/frontend-components/Skeleton';
-import { ExternalLinkAltIcon } from '@patternfly/react-icons';
-import EmptyExecutePlaybookState from '../EmptyExecutePlaybookState';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
-import RemediationsTable from '../RemediationsTable/RemediationsTable';
-import { TableStateProvider } from 'bastilian-tabletools';
-import columns from './Columns';
 import { pluralize } from '../../Utilities/utils';
-import { useFeatureFlag } from '../../Utilities/Hooks/useFeatureFlag';
+import { formatUtc } from '../../routes/RemediationDetailsComponents/ExecutionHistoryContent/helpers';
 
 export const ExecuteModal = ({
   isOpen,
   onClose,
-  remediation,
-  issueCount,
   refetchRemediationPlaybookRuns,
   remediationStatus,
+  remediation,
+  detailsLoading,
+  onNavigateToExecutionHistory,
+  remediationPlaybookRuns,
+  isPlaybookRunsLoading,
 }) => {
-  const [connected, setConnected] = useState([]);
-  const [disconnected, setDisconnected] = useState([]);
   const addNotification = useAddNotification();
-  const isLightspeedRebrandEnabled = useFeatureFlag(
-    'platform.lightspeed-rebrand',
-  );
-  useEffect(() => {
-    if (!remediationStatus?.connectedData?.length) {
-      setConnected([]);
-      setDisconnected([]);
-      return;
+  const chrome = useChrome();
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [executionTimestamp, setExecutionTimestamp] = useState(null);
+  const [executionUsername, setExecutionUsername] = useState(null);
+
+  const { connected, disconnected } = useMemo(() => {
+    const connectedData = remediationStatus?.connectedData;
+
+    if (!connectedData?.length) {
+      return { connected: [], disconnected: [] };
     }
 
-    const [con, dis] = remediationStatus.connectedData.reduce(
+    const [con, dis] = connectedData.reduce(
       ([pass, fail], e) =>
         e.connection_status === 'connected'
           ? [[...pass, e], fail]
@@ -50,22 +46,94 @@ export const ExecuteModal = ({
       [[], []],
     );
 
-    setConnected(con);
-    setDisconnected(dis);
-  }, [remediationStatus]);
+    return { connected: con, disconnected: dis };
+  }, [remediationStatus?.connectedData]);
 
-  const connectedCount = connected.reduce((acc, e) => acc + e.system_count, 0);
-  const systemCount = (remediationStatus?.connectedData ?? []).reduce(
-    (acc, e) => acc + e.system_count,
-    0,
+  const connectedCount = useMemo(
+    () => connected.reduce((acc, e) => acc + e.system_count, 0),
+    [connected],
   );
 
   const { fetch: executeRun } = useRemediations('runRemediation', {
     skip: true,
   });
 
+  // Get username from chrome when component mounts or chrome becomes available
+  useEffect(() => {
+    // Check if there's a running execution with a username first
+    const hasRunningExecutionWithUsername = () => {
+      if (isOpen && remediationPlaybookRuns?.data) {
+        const runs = remediationPlaybookRuns.data;
+        const runningRun = runs.find((run) => run.status === 'running');
+        return !!runningRun?.created_by?.username;
+      }
+      return false;
+    };
+
+    // Don't fetch chrome username if there's already a running execution with username
+    if (hasRunningExecutionWithUsername()) {
+      return;
+    }
+
+    if (chrome && chrome.auth && typeof chrome.auth.getUser === 'function') {
+      chrome.auth
+        .getUser()
+        .then((user) => {
+          // Double-check there's still no running execution before setting
+          if (hasRunningExecutionWithUsername()) {
+            return;
+          }
+
+          if (user) {
+            const username = user.identity?.user?.username || 'Unknown user';
+            setExecutionUsername(username);
+          } else {
+            setExecutionUsername('Unknown user');
+          }
+        })
+        .catch(() => {
+          // Only set fallback if no running execution with username
+          if (!hasRunningExecutionWithUsername()) {
+            setExecutionUsername('Unknown user');
+          }
+        });
+    } else {
+      // Only set fallback if no running execution with username
+      if (!hasRunningExecutionWithUsername()) {
+        setExecutionUsername('Unknown user');
+      }
+    }
+  }, [chrome, isOpen, remediationPlaybookRuns]);
+
+  // Check for running execution when modal opens
+  useEffect(() => {
+    if (isOpen && remediationPlaybookRuns?.data) {
+      const runs = remediationPlaybookRuns.data;
+      const runningRun = runs.find((run) => run.status === 'running');
+      if (runningRun) {
+        setIsExecuting(true);
+        setExecutionTimestamp(runningRun.created_at || runningRun.updated_at);
+        // Get username from the run if available
+        if (runningRun.created_by?.username) {
+          setExecutionUsername(runningRun.created_by.username);
+        }
+      } else {
+        // Only reset if there's no running execution
+        setIsExecuting(false);
+        setExecutionTimestamp(null);
+      }
+    } else if (!isOpen) {
+      setIsExecuting(false);
+      setExecutionTimestamp(null);
+    }
+  }, [isOpen, remediationPlaybookRuns]);
+
   const handleExecute = () => {
     const exclude = disconnected.map((e) => e.executor_id).filter(Boolean);
+    const timestamp = new Date().toISOString();
+    setExecutionTimestamp(timestamp);
+    setIsExecuting(true);
+
     executeRun({
       id: remediation.id,
       playbookRunsInput: { exclude },
@@ -83,9 +151,10 @@ export const ExecuteModal = ({
           dismissable: true,
           autoDismiss: true,
         });
-        onClose();
       })
       .catch((err) => {
+        setIsExecuting(false);
+        setExecutionTimestamp(null);
         addNotification({
           title: 'Failed to execute playbook',
           description: err.message || 'Unknown error',
@@ -96,159 +165,139 @@ export const ExecuteModal = ({
       });
   };
 
+  const handleViewDetails = () => {
+    onClose();
+    if (onNavigateToExecutionHistory) {
+      onNavigateToExecutionHistory(null, 'executionHistory');
+    }
+  };
+
+  const autoRebootEnabled = remediation?.auto_reboot ?? false;
+
+  const renderExecutionInProgress = () => (
+    <>
+      <Content>
+        <Content
+          component="p"
+          className="pf-v6-u-mb-md pf-v6-u-text-color-subtle"
+        >
+          {executionTimestamp && (
+            <>
+              {formatUtc(executionTimestamp)}, initiated by {executionUsername}
+            </>
+          )}
+        </Content>
+        <Content component="p" className="pf-v6-u-mb-md">
+          Changes are in progress and cannot be rolled back. Go to the Execution
+          History tab of this plan to view more information about the execution,
+          or review the execution log file for each system in the plan.
+        </Content>
+      </Content>
+    </>
+  );
+
+  const renderMainContent = () => {
+    const isLoading =
+      detailsLoading ||
+      remediationStatus?.areDetailsLoading ||
+      isPlaybookRunsLoading;
+
+    return (
+      <>
+        {isLoading ? (
+          <Spinner size="lg" />
+        ) : (
+          <Content>
+            <Content component="p">
+              Once you execute this plan, changes will be pushed immediately and
+              cannot be rolled back.
+            </Content>
+
+            <List className="pf-v6-u-mt-md">
+              <ListItem>
+                Executing this plan will remediate{' '}
+                {pluralize(connectedCount, 'system')}.
+              </ListItem>
+              <ListItem>
+                {autoRebootEnabled ? (
+                  <>
+                    Auto-reboot is enabled for this plan. All of the included
+                    systems that require a reboot will reboot automatically.
+                  </>
+                ) : (
+                  <>
+                    Auto-reboot is disabled for this plan. None of the included
+                    systems will reboot automatically.
+                  </>
+                )}
+              </ListItem>
+            </List>
+          </Content>
+        )}
+      </>
+    );
+  };
+
   return (
     <Modal
       data-testid="execute-modal"
-      variant={ModalVariant.small}
-      title="Execute playbook"
+      variant={ModalVariant.medium}
+      title={
+        isExecuting
+          ? `Execution is in progress for plan ${remediation?.name || ''}`
+          : 'Plan execution cannot be stopped or rolled back'
+      }
+      titleIconVariant={isExecuting ? 'info' : 'warning'}
       isOpen={isOpen}
       onClose={onClose}
       isFooterLeftAligned
       actions={
-        systemCount !== 0
+        isExecuting
           ? [
               <Button
-                key="confirm"
+                key="view-details"
                 variant="primary"
-                ouiaId="execute-playbook"
-                isDisabled={connected.length === 0}
-                onClick={handleExecute}
+                ouiaId="view-execution-details"
+                onClick={handleViewDetails}
               >
-                {remediationStatus?.areDetailsLoading
-                  ? 'Execute playbook'
-                  : `Execute playbook on ${pluralize(
-                      connectedCount,
-                      'system',
-                    )}`}
+                View details
               </Button>,
               <Button
-                key="download"
-                variant="secondary"
-                ouiaId="download-playbook"
-                onClick={() => {
-                  downloadPlaybook(remediation?.id);
-                  addNotification({
-                    title: 'Preparing playbook for download',
-                    description:
-                      'Once complete, your download will start automatically.',
-                    variant: 'info',
-                    dismissable: true,
-                    autoDismiss: true,
-                  });
-                }}
+                key="close"
+                variant="link"
+                ouiaId="close-execution-modal"
+                onClick={onClose}
               >
-                Download playbook
+                Close
               </Button>,
             ]
           : [
-              <Button key="close-modal" onClick={onClose} variant="primary">
-                Close
+              <Button
+                key="execute"
+                variant="primary"
+                ouiaId="execute-playbook"
+                isDisabled={
+                  connected.length === 0 ||
+                  detailsLoading ||
+                  remediationStatus?.areDetailsLoading ||
+                  isPlaybookRunsLoading
+                }
+                onClick={handleExecute}
+              >
+                Execute
+              </Button>,
+              <Button
+                key="cancel"
+                variant="link"
+                ouiaId="cancel-execute"
+                onClick={onClose}
+              >
+                Cancel
               </Button>,
             ]
       }
     >
-      <div>
-        <Content>
-          {remediationStatus?.areDetailsLoading ? (
-            <Skeleton size="lg" />
-          ) : (
-            <Content component={ContentVariants.p}>
-              Playbook contains <b>{pluralize(issueCount, 'action')}</b>
-              &nbsp;affecting
-              <b>&nbsp;{pluralize(systemCount, 'system')}.</b>
-            </Content>
-          )}
-
-          <Content component="p">
-            <ExpandableSection toggleText="About remote execution with Cloud connector">
-              Playbooks can be executed on systems which:
-              <List>
-                <ListItem>
-                  Are connected to{' '}
-                  {isLightspeedRebrandEnabled
-                    ? ' Red Hat Lightspeed'
-                    : ' Insights'}{' '}
-                  via a Satellite instance which has Receptor/Cloud Connector
-                  enabled, or <br />
-                  <Button
-                    icon={<ExternalLinkAltIcon />}
-                    className="pf-v6-u-p-0"
-                    variant="link"
-                    isInline
-                    component="a"
-                    href="https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/red_hat_lightspeed_remediations_guide/index"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    How to configure Receptor/Cloud Connector on Red Hat
-                    Satellite&nbsp;
-                  </Button>
-                </ListItem>
-                <ListItem>
-                  Are directly connected to{' '}
-                  {isLightspeedRebrandEnabled
-                    ? ' Red Hat Lightspeed'
-                    : ' Insights'}{' '}
-                  via Red Hat connector, and Cloud Connector is enabled <br />
-                  <Button
-                    icon={<ExternalLinkAltIcon />}
-                    className="pf-v6-u-p-0"
-                    variant="link"
-                    isInline
-                    component="a"
-                    href="https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/red_hat_lightspeed_remediations_guide/index"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    How to enable Cloud Connector with Red Hat connector&nbsp;
-                  </Button>
-                </ListItem>
-              </List>
-            </ExpandableSection>
-          </Content>
-
-          <Content component={ContentVariants.p}>
-            Executed Ansible Playbooks run on eligible systems with Cloud
-            Connector. The playbook will be pushed immediately after selecting
-            “Execute playbook”. If the playbook has “Auto reboot” on, systems
-            requiring reboot to complete an action will reboot.
-          </Content>
-
-          <Button
-            icon={<ExternalLinkAltIcon />}
-            className="pf-v6-u-p-0"
-            variant="link"
-            isInline
-            component="a"
-            href="https://access.redhat.com/articles/rhc"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Learn more about Cloud Connector&nbsp;
-          </Button>
-
-          {systemCount > 0 && (
-            <Content component={ContentVariants.h4} className="pf-v6-u-mt-md">
-              Connection status of systems
-            </Content>
-          )}
-        </Content>
-        {systemCount === 0 ? (
-          <EmptyExecutePlaybookState />
-        ) : (
-          <TableStateProvider tableId="execute-modal-table">
-            <RemediationsTable
-              aria-label="ExecutionModalTable"
-              ouiaId="ExecutionModalTable"
-              options={{ pagination: false }}
-              variant="compact"
-              loading={remediationStatus?.areDetailsLoading}
-              items={remediationStatus?.connectedData || []}
-              columns={[...columns]}
-            />
-          </TableStateProvider>
-        )}
-      </div>
+      {isExecuting ? renderExecutionInProgress() : renderMainContent()}
     </Modal>
   );
 };
@@ -257,7 +306,22 @@ ExecuteModal.propTypes = {
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
   remediation: PropTypes.object,
-  issueCount: PropTypes.number,
   refetchRemediationPlaybookRuns: PropTypes.func,
   remediationStatus: PropTypes.object,
+  detailsLoading: PropTypes.bool,
+  onNavigateToExecutionHistory: PropTypes.func,
+  remediationPlaybookRuns: PropTypes.shape({
+    data: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string,
+        status: PropTypes.string,
+        created_at: PropTypes.string,
+        updated_at: PropTypes.string,
+        created_by: PropTypes.shape({
+          username: PropTypes.string,
+        }),
+      }),
+    ),
+  }),
+  isPlaybookRunsLoading: PropTypes.bool,
 };

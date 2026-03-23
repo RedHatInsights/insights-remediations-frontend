@@ -2,15 +2,12 @@ import React, { useState } from 'react';
 
 import PropTypes from 'prop-types';
 import { Flex } from '@patternfly/react-core';
-import { ExecuteModal } from './Modals/ExecuteModal';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import ButtonWithToolTip from '../Utilities/ButtonWithToolTip';
-import { useFeatureFlag } from '../Utilities/Hooks/useFeatureFlag';
-import { ExecuteModalV2 } from './Modals/ExecuteModalV2';
+import { ExecuteModal } from './Modals/ExecuteModal';
 
 const ExecuteButton = ({
   isDisabled,
-  issueCount,
   remediationStatus,
   remediation,
   refetchRemediationPlaybookRuns,
@@ -20,7 +17,6 @@ const ExecuteButton = ({
   isPlaybookRunsLoading,
 }) => {
   const [open, setOpen] = useState(false);
-  const isNewModalEnabled = useFeatureFlag('newModal');
 
   return (
     <React.Fragment>
@@ -46,20 +42,8 @@ const ExecuteButton = ({
       >
         {isDisabled && <ExclamationTriangleIcon />} Execute
       </ButtonWithToolTip>
-      {open && !isNewModalEnabled && (
+      {open && (
         <ExecuteModal
-          isOpen={open}
-          onClose={() => {
-            setOpen(false);
-          }}
-          remediation={remediation}
-          remediationStatus={remediationStatus}
-          issueCount={issueCount}
-          refetchRemediationPlaybookRuns={refetchRemediationPlaybookRuns}
-        />
-      )}
-      {open && isNewModalEnabled && (
-        <ExecuteModalV2
           isOpen={open}
           onClose={() => setOpen(false)}
           remediation={remediation}
@@ -78,7 +62,6 @@ const ExecuteButton = ({
 ExecuteButton.propTypes = {
   remediation: PropTypes.object,
   remediationStatus: PropTypes.object,
-  issueCount: PropTypes.number,
   isDisabled: PropTypes.bool,
   refetchRemediationPlaybookRuns: PropTypes.func,
   detailsLoading: PropTypes.bool,

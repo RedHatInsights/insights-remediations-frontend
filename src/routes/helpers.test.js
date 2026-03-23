@@ -11,12 +11,6 @@ import {
   renderConnectionStatus,
 } from './helpers';
 
-jest.mock('../Utilities/Hooks/useFeatureFlag', () => ({
-  useFeatureFlag: jest.fn(),
-}));
-
-const { useFeatureFlag } = require('../Utilities/Hooks/useFeatureFlag');
-
 // Mock PatternFly components
 jest.mock('@patternfly/react-core', () => ({
   Icon: (props) => <div data-testid="icon">{props.children}</div>,
@@ -360,10 +354,6 @@ describe('routes/helpers', () => {
   });
 
   describe('renderConnectionStatus', () => {
-    beforeEach(() => {
-      useFeatureFlag.mockReturnValue(false);
-    });
-
     it('should render connected status correctly', () => {
       const view = renderConnectionStatus('connected');
       const { container } = render(view);
@@ -418,24 +408,7 @@ describe('routes/helpers', () => {
       expect(screen.getByTestId('text-content')).toBeInTheDocument();
     });
 
-    it('should render no_rhc status correctly when feature flag is disabled', () => {
-      useFeatureFlag.mockReturnValue(false);
-      const view = renderConnectionStatus('no_rhc');
-      const { container } = render(view);
-
-      expect(container).toHaveTextContent(
-        'Cannot remediate ‒ Cloud Connector not defined',
-      );
-      expect(container).toHaveTextContent(
-        'Remediation from Insights requires Cloud Connector',
-      );
-      expect(container).toHaveTextContent('RHC');
-      expect(screen.getByTestId('text-content')).toBeInTheDocument();
-      expect(screen.getByTestId('insights-link')).toBeInTheDocument();
-    });
-
-    it('should render no_rhc status correctly when feature flag is enabled', () => {
-      useFeatureFlag.mockReturnValue(true);
+    it('should render no_rhc status correctly', () => {
       const view = renderConnectionStatus('no_rhc');
       const { container } = render(view);
 

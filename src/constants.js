@@ -38,6 +38,3 @@ const actions = [
 export const ACTION_TYPES = keyBy([...asyncActions, ...actions], (k) => k);
 
 export const SEARCH_DEBOUNCE_DELAY = 500;
-
-export const FETCH_SELECTED_HOSTS = 'FETCH_SELECTED_HOSTS';
-export const FETCH_RESOLUTIONS = 'FETCH_RESOLUTIONS';

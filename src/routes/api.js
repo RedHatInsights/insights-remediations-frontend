@@ -77,7 +77,7 @@ export const updateRemediationWrapper = (params) => {
 
 /**
  * POST request to /playbook endpoint to generate playbook preview.
- * Used by RemediationWizardV2 preview functionality.
+ * Used by RemediationWizard preview functionality.
  *
  *  @param   {object}  payload             - Payload object
  *  @param   {Array}   payload.issues      - Array of issues with id, systems, and optional resolution

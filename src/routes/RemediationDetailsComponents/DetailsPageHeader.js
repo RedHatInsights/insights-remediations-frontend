@@ -104,7 +104,6 @@ const RemediationDetailsPageHeader = ({
               <FlexItem>
                 <ExecuteButton
                   isDisabled={isExecuteDisabled}
-                  issueCount={remediation?.issue_count}
                   remediationStatus={remediationStatus}
                   remediation={remediation}
                   refetchRemediationPlaybookRuns={

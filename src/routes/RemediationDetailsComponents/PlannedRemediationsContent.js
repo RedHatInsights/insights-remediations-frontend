@@ -8,7 +8,7 @@ import {
   Tabs,
   TabTitleText,
 } from '@patternfly/react-core';
-import { PlanSummaryCharts } from '../../components/RemediationWizardV2/PlanSummaryCharts';
+import { PlanSummaryCharts } from '../../components/RemediationWizard/PlanSummaryCharts';
 import { calculateActionPointsFromSummary } from '../../components/helpers';
 import { EXECUTION_LIMITS_DESCRIPTION } from './helpers';
 import ActionsContent from './ActionsContent/ActionsContent';

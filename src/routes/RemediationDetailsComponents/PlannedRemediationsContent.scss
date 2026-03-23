@@ -1,8 +1,13 @@
-// Override for nested tabs current state styling - override Chrome insights styles
-// Target only the nested tabs in PlannedRemediationsContent to set white background
-.ins-c-planned-remediations-tabs .pf-v6-c-tabs__item.pf-m-current {
-  background: #ffffff;
-}
-div[aria-label="Planned Remediations Nested Tabs"] {
-  background:#f2f2f2;
+// Override for nested tabs current state styling (Chrome / insights conflicts).
+// Use PatternFly theme tokens so surfaces follow light and dark mode.
+.ins-c-planned-remediations-tabs {
+  // Tab container strip — secondary canvas (replaces hardcoded #f2f2f2)
+  .pf-v6-c-tabs {
+    background-color: var(--pf-t--global--background--color--secondary--default);
+  }
+
+  // Active tab — primary canvas (replaces hardcoded #ffffff)
+  .pf-v6-c-tabs__item.pf-m-current {
+    background-color: var(--pf-t--global--background--color--primary--default);
+  }
 }

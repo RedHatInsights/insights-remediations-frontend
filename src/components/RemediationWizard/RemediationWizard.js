@@ -41,7 +41,7 @@ import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLin
 import { postPlaybookPreview } from '../../routes/api';
 import { downloadFile } from '../../Utilities/helpers';
 
-export const RemediationWizardV2 = ({
+export const RemediationWizard = ({
   setOpen,
   data,
   isCompliancePrecedenceEnabled = false,
@@ -501,7 +501,7 @@ export const RemediationWizardV2 = ({
   );
 };
 
-RemediationWizardV2.propTypes = {
+RemediationWizard.propTypes = {
   setOpen: propTypes.func.isRequired,
   data: propTypes.shape({
     issues: propTypes.arrayOf(
@@ -517,4 +517,4 @@ RemediationWizardV2.propTypes = {
   isCompliancePrecedenceEnabled: propTypes.bool,
 };
 
-export default RemediationWizardV2;
+export default RemediationWizard;

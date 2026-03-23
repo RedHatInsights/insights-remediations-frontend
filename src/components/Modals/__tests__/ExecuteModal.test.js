@@ -1,48 +1,405 @@
 import React from 'react';
-import { ExecuteModal } from '../ExecuteModal';
-import { queryHelpers, render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { withTableState } from '../../../__testUtils__/withTableState';
+import { ExecuteModal } from '../ExecuteModal';
 import { mockRemediationStatus } from '../../../__mocks__/remediationStatus';
 
-jest.mock('../../../Utilities/Hooks/useFeatureFlag', () => ({
-  useFeatureFlag: jest.fn(),
+// Mock hooks
+const mockAddNotification = jest.fn();
+jest.mock(
+  '@redhat-cloud-services/frontend-components-notifications/hooks',
+  () => ({
+    useAddNotification: () => mockAddNotification,
+  }),
+);
+
+const mockChrome = {
+  auth: {
+    getUser: jest.fn().mockResolvedValue({
+      identity: {
+        user: {
+          username: 'testuser',
+        },
+      },
+    }),
+  },
+};
+
+jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
+  __esModule: true,
+  default: () => mockChrome,
 }));
 
-const { useFeatureFlag } = require('../../../Utilities/Hooks/useFeatureFlag');
+const mockExecuteRun = jest.fn();
+jest.mock('../../../Utilities/Hooks/api/useRemediations', () => ({
+  __esModule: true,
+  default: jest.fn((endpoint, options) => {
+    if (endpoint === 'runRemediation' && options?.skip) {
+      return {
+        fetch: mockExecuteRun,
+      };
+    }
+    return {};
+  }),
+}));
 
-describe('Execute modal', () => {
+describe('ExecuteModal', () => {
+  const defaultProps = {
+    isOpen: true,
+    onClose: jest.fn(),
+    remediation: {
+      id: '123',
+      name: 'Test Remediation',
+      auto_reboot: false,
+    },
+    refetchRemediationPlaybookRuns: jest.fn(),
+    remediationStatus: mockRemediationStatus,
+    remediationPlaybookRuns: { data: [] },
+  };
+
   beforeEach(() => {
-    useFeatureFlag.mockReturnValue(false);
+    jest.clearAllMocks();
+    mockExecuteRun.mockResolvedValue({});
+    mockChrome.auth.getUser.mockResolvedValue({
+      identity: {
+        user: {
+          username: 'testuser',
+        },
+      },
+    });
   });
 
-  it('renders ExecuteModal component with correct connection type when given data', () => {
-    render(
-      withTableState(
+  describe('Rendering', () => {
+    it('should render all modal content correctly', () => {
+      render(<ExecuteModal {...defaultProps} />);
+
+      expect(
+        screen.getByText('Plan execution cannot be stopped or rolled back'),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          'Once you execute this plan, changes will be pushed immediately and cannot be rolled back.',
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(/Executing this plan will remediate 2 systems/),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          'Auto-reboot is disabled for this plan. None of the included systems will reboot automatically.',
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByRole('button', { name: 'Execute' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Cancel' }),
+      ).toBeInTheDocument();
+    });
+
+    it('should not render modal when isOpen is false', () => {
+      render(<ExecuteModal {...defaultProps} isOpen={false} />);
+
+      expect(
+        screen.queryByText('Plan execution cannot be stopped or rolled back'),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should display singular form for single system', () => {
+      const singleSystemStatus = {
+        ...mockRemediationStatus,
+        connectedData: [
+          {
+            executor_name: 'Satellite 1 (connected)',
+            executor_id: 'sat-1',
+            connection_status: 'connected',
+            system_count: 1,
+          },
+        ],
+      };
+
+      render(
         <ExecuteModal
-          isOpen
-          remediation={{ id: '1', name: 'foo' }}
-          remediationStatus={mockRemediationStatus}
-          issueCount={3}
-          refetchRemediationPlaybookRuns={() => {}}
-          onClose={() => {}}
+          {...defaultProps}
+          remediationStatus={singleSystemStatus}
         />,
-      ),
-    );
+      );
 
-    expect(screen.getByTestId('execute-modal')).toBeVisible();
+      expect(
+        screen.getByText(/Executing this plan will remediate 1 system/),
+      ).toBeInTheDocument();
+    });
 
-    const connectionTypeCells = queryHelpers
-      .queryAllByAttribute(
-        'data-label',
-        screen.getByTestId('execute-modal'),
-        'Connection type',
-      )
-      .filter((el) => el.tagName.toLowerCase() === 'td');
+    it('should display 0 systems when no connected systems', () => {
+      const noConnectedStatus = {
+        ...mockRemediationStatus,
+        connectedData: [
+          {
+            executor_name: null,
+            executor_id: 'edge-42',
+            connection_status: 'disconnected',
+            system_count: 1,
+          },
+        ],
+      };
 
-    expect(connectionTypeCells).toHaveLength(3);
-    expect(connectionTypeCells[0]).toHaveTextContent('Satellite 1 (connected)');
-    expect(connectionTypeCells[1]).toHaveTextContent('Direct connection');
-    expect(connectionTypeCells[2]).toHaveTextContent('Not available');
+      render(
+        <ExecuteModal
+          {...defaultProps}
+          remediationStatus={noConnectedStatus}
+        />,
+      );
+
+      expect(
+        screen.getByText(/Executing this plan will remediate 0 systems/),
+      ).toBeInTheDocument();
+    });
+
+    it('should display auto-reboot enabled message when auto_reboot is true', () => {
+      render(
+        <ExecuteModal
+          {...defaultProps}
+          remediation={{ ...defaultProps.remediation, auto_reboot: true }}
+        />,
+      );
+
+      expect(
+        screen.getByText(
+          'Auto-reboot is enabled for this plan. All of the included systems that require a reboot will reboot automatically.',
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('should default to disabled when auto_reboot is undefined', () => {
+      render(
+        <ExecuteModal
+          {...defaultProps}
+          remediation={{ id: '123', name: 'Test Remediation' }}
+        />,
+      );
+
+      expect(
+        screen.getByText(
+          'Auto-reboot is disabled for this plan. None of the included systems will reboot automatically.',
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe('Buttons', () => {
+    it('should disable Execute button when no connected systems', () => {
+      const noConnectedStatus = {
+        ...mockRemediationStatus,
+        connectedData: [
+          {
+            executor_name: null,
+            executor_id: 'edge-42',
+            connection_status: 'disconnected',
+            system_count: 1,
+          },
+        ],
+      };
+
+      render(
+        <ExecuteModal
+          {...defaultProps}
+          remediationStatus={noConnectedStatus}
+        />,
+      );
+
+      const executeButton = screen.getByRole('button', { name: 'Execute' });
+      expect(executeButton).toBeDisabled();
+    });
+
+    it('should enable Execute button when connected systems exist', () => {
+      render(<ExecuteModal {...defaultProps} />);
+
+      const executeButton = screen.getByRole('button', { name: 'Execute' });
+      expect(executeButton).toBeEnabled();
+    });
+  });
+
+  describe('User interactions', () => {
+    it('should execute remediation when Execute button is clicked', async () => {
+      const mockOnClose = jest.fn();
+      const mockRefetch = jest.fn();
+
+      render(
+        <ExecuteModal
+          {...defaultProps}
+          onClose={mockOnClose}
+          refetchRemediationPlaybookRuns={mockRefetch}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'Execute' }));
+
+      await waitFor(() => {
+        expect(mockExecuteRun).toHaveBeenCalledWith({
+          id: '123',
+          playbookRunsInput: { exclude: ['edge-42'] },
+        });
+      });
+
+      await waitFor(() => {
+        expect(mockRefetch).toHaveBeenCalledTimes(1);
+      });
+
+      await waitFor(() => {
+        expect(mockAddNotification).toHaveBeenCalledWith({
+          title: 'Executing playbook Test Remediation',
+          description: expect.any(Object),
+          variant: 'success',
+          dismissable: true,
+          autoDismiss: true,
+        });
+      });
+
+      // Modal should show execution in progress state instead of closing
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            /Execution is in progress for plan Test Remediation/,
+          ),
+        ).toBeInTheDocument();
+      });
+
+      // Modal should show View details and Close buttons
+      expect(
+        screen.getByRole('button', { name: 'View details' }),
+      ).toBeInTheDocument();
+      // Get all Close buttons (X button and footer Close button) and verify footer Close exists
+      const closeButtons = screen.getAllByRole('button', { name: 'Close' });
+      expect(closeButtons.length).toBeGreaterThan(0);
+      // Verify the footer Close button by checking it has the ouiaId
+      const footerCloseButton = closeButtons.find(
+        (btn) =>
+          btn.getAttribute('data-ouia-component-id') ===
+          'close-execution-modal',
+      );
+      expect(footerCloseButton).toBeInTheDocument();
+
+      // Modal should not close after execution
+      expect(mockOnClose).not.toHaveBeenCalled();
+    });
+
+    it('should handle execution error and show error notification', async () => {
+      const mockOnClose = jest.fn();
+      const errorMessage = 'Execution failed';
+      mockExecuteRun.mockRejectedValueOnce(new Error(errorMessage));
+
+      render(<ExecuteModal {...defaultProps} onClose={mockOnClose} />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Execute' }));
+
+      await waitFor(() => {
+        expect(mockAddNotification).toHaveBeenCalledWith({
+          title: 'Failed to execute playbook',
+          description: errorMessage,
+          variant: 'danger',
+          dismissable: true,
+          autoDismiss: true,
+        });
+      });
+
+      // Should not close modal on error
+      expect(mockOnClose).not.toHaveBeenCalled();
+    });
+
+    it('should exclude disconnected systems from execution', async () => {
+      render(<ExecuteModal {...defaultProps} />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Execute' }));
+
+      await waitFor(() => {
+        expect(mockExecuteRun).toHaveBeenCalledWith({
+          id: '123',
+          playbookRunsInput: { exclude: ['edge-42'] },
+        });
+      });
+    });
+
+    it('should handle empty exclude array when all systems are connected', async () => {
+      const allConnectedStatus = {
+        ...mockRemediationStatus,
+        connectedData: [
+          {
+            executor_name: 'Satellite 1 (connected)',
+            executor_id: 'sat-1',
+            connection_status: 'connected',
+            system_count: 1,
+          },
+          {
+            executor_name: null,
+            executor_id: null,
+            connection_status: 'connected',
+            system_count: 1,
+          },
+        ],
+      };
+
+      render(
+        <ExecuteModal
+          {...defaultProps}
+          remediationStatus={allConnectedStatus}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'Execute' }));
+
+      await waitFor(() => {
+        expect(mockExecuteRun).toHaveBeenCalledWith({
+          id: '123',
+          playbookRunsInput: { exclude: [] },
+        });
+      });
+    });
+  });
+
+  describe('Edge cases', () => {
+    it('should handle empty connectedData', () => {
+      const emptyStatus = {
+        ...mockRemediationStatus,
+        connectedData: [],
+      };
+
+      render(
+        <ExecuteModal {...defaultProps} remediationStatus={emptyStatus} />,
+      );
+
+      expect(
+        screen.getByText(/Executing this plan will remediate 0 systems/),
+      ).toBeInTheDocument();
+    });
+
+    it('should handle undefined connectedData', () => {
+      const undefinedStatus = {
+        ...mockRemediationStatus,
+        connectedData: undefined,
+      };
+
+      render(
+        <ExecuteModal
+          {...defaultProps}
+          remediationStatus={undefinedStatus}
+        />,
+      );
+
+      expect(
+        screen.getByText(/Executing this plan will remediate 0 systems/),
+      ).toBeInTheDocument();
+    });
+
+    it('should handle null remediationStatus', () => {
+      render(<ExecuteModal {...defaultProps} remediationStatus={null} />);
+
+      expect(
+        screen.getByText(/Executing this plan will remediate 0 systems/),
+      ).toBeInTheDocument();
+    });
   });
 });
