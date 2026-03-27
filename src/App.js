@@ -2,6 +2,8 @@ import React, { createContext, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { connect } from 'react-redux';
+import Routes from './Routes';
+
 import NotificationsProvider from '@redhat-cloud-services/frontend-components-notifications/NotificationsProvider';
 import { Spinner } from '@patternfly/react-core';
 import { NotAuthorized } from '@redhat-cloud-services/frontend-components/NotAuthorized';

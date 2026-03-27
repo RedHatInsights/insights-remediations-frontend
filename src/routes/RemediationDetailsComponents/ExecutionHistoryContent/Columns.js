@@ -5,12 +5,15 @@ import {
   ExecutionStatusCell,
 } from './Cells';
 
+/** Default API `sort` for playbook run systems; must match TableTools default (column 0 asc). */
+export const RUN_SYSTEMS_DEFAULT_SORT = 'system_name';
+
 const useColumns = () => {
   return [
     {
       title: 'System name',
       transforms: [wrappable],
-      // sortable: 'action',
+      sortable: RUN_SYSTEMS_DEFAULT_SORT,
       exportKey: 'action',
       Component: SystemNameCell,
     },

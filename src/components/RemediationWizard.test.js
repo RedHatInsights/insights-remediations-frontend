@@ -64,7 +64,6 @@ jest.mock('../api', () => ({
   sourcesApi: {},
   getHosts: jest.fn(),
   downloadPlaybook: jest.fn(),
-  getIsReceptorConfigured: jest.fn(),
   deleteSystemsFromRemediation: jest.fn(),
   createRemediation: jest.fn(),
   patchRemediation: jest.fn(),
@@ -429,10 +428,7 @@ describe('RemediationWizard', () => {
       };
 
       renderWithRouter(
-        <RemediationWizard
-          setOpen={mockSetOpen}
-          data={dataExceedingSystems}
-        />,
+        <RemediationWizard setOpen={mockSetOpen} data={dataExceedingSystems} />,
       );
 
       expect(
@@ -453,10 +449,7 @@ describe('RemediationWizard', () => {
       };
 
       renderWithRouter(
-        <RemediationWizard
-          setOpen={mockSetOpen}
-          data={dataExceedingActions}
-        />,
+        <RemediationWizard setOpen={mockSetOpen} data={dataExceedingActions} />,
       );
 
       expect(
@@ -485,10 +478,7 @@ describe('RemediationWizard', () => {
       };
 
       renderWithRouter(
-        <RemediationWizard
-          setOpen={mockSetOpen}
-          data={dataExceedingSystems}
-        />,
+        <RemediationWizard setOpen={mockSetOpen} data={dataExceedingSystems} />,
       );
 
       const alerts = screen.getAllByText(/Remediation plan exceeds limits/i);
@@ -1334,9 +1324,7 @@ describe('RemediationWizard', () => {
 
   describe('Edge cases', () => {
     it('should handle null data gracefully', () => {
-      renderWithRouter(
-        <RemediationWizard setOpen={mockSetOpen} data={null} />,
-      );
+      renderWithRouter(<RemediationWizard setOpen={mockSetOpen} data={null} />);
 
       // Check for chart titles which are more reliably queryable than SVG labels
       expect(screen.getAllByText(/0 System/i).length).toBeGreaterThan(0);

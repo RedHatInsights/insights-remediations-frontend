@@ -46,12 +46,6 @@ export const downloadPlaybook = async (selectedIds) => {
   }
 };
 
-export function getIsReceptorConfigured() {
-  return doGet(
-    `${window.location.origin}/api/sources/v2.0/endpoints?filter[receptor_node][not_nil]`,
-  );
-}
-
 export function deleteSystemsFromRemediation(systems, remediation) {
   const systemIds = systems.map((system) => system.id);
   return remediationsApi.deleteRemediationSystems(remediation.id, {

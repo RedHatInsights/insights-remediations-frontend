@@ -27,16 +27,41 @@ export const deleteRemediationSystems = (systems, remediation) => {
 /**
  * Used by ExecutionHistoryContent for fetching playbook run systems.
  *
- *  @param   {object}  params                 - Parameters object
- *  @param   {string}  params.remId           - Remediation ID
- *  @param   {string}  params.playbook_run_id - Playbook run ID
- *  @returns {Promise}                        API response promise
+ *  @param   {object}  rawParams                 - Parameters object (pass-through from useRemediations / table state)
+ *  @param   {string}  rawParams.remId           - Remediation ID
+ *  @param   {string}  rawParams.playbook_run_id - Playbook run ID
+ *  @param   {number}  [rawParams.limit]         - Page size
+ *  @param   {number}  [rawParams.offset]        - Page offset
+ *  @param   {string}  [rawParams.sort]          - e.g. system_name or -system_name
+ *  @param   {object}  [rawParams.filter]        - { ansible_host } from table filters
+ *  @param   {object}  [rawParams.options]       - Axios options (filter[…] query params)
+ *  @returns {Promise}                           API response promise
  */
-export const getRemediationPlaybookSystemsList = ({
-  remId,
-  playbook_run_id,
-}) => {
-  return remediationsApi.getPlaybookRunSystems(remId, playbook_run_id);
+export const getRemediationPlaybookSystemsList = (rawParams) => {
+  const params = Array.isArray(rawParams) ? rawParams[0] : rawParams;
+  const { remId, playbook_run_id, limit, offset, sort, filter, options } =
+    params || {};
+
+  let ansibleHost = filter?.ansible_host;
+  if (ansibleHost === undefined || ansibleHost === null || ansibleHost === '') {
+    const fromQuery = options?.params?.['filter[ansible_host]'];
+    if (fromQuery !== undefined && fromQuery !== null && fromQuery !== '') {
+      ansibleHost = fromQuery;
+    }
+  }
+
+  const clientParams = {
+    id: remId,
+    playbookRunId: playbook_run_id,
+    ...(limit !== undefined && limit !== null && { limit }),
+    ...(offset !== undefined && offset !== null && { offset }),
+    ...(sort !== undefined && sort !== null && sort !== '' && { sort }),
+    ...(ansibleHost !== undefined &&
+      ansibleHost !== null &&
+      ansibleHost !== '' && { ansibleHost }),
+  };
+
+  return remediationsApi.getPlaybookRunSystems(clientParams);
 };
 
 /**

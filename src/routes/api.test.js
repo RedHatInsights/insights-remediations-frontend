@@ -86,10 +86,10 @@ describe('Routes API', () => {
         playbook_run_id,
       });
 
-      expect(remediationsApi.getPlaybookRunSystems).toHaveBeenCalledWith(
-        remId,
-        playbook_run_id,
-      );
+      expect(remediationsApi.getPlaybookRunSystems).toHaveBeenCalledWith({
+        id: remId,
+        playbookRunId: playbook_run_id,
+      });
       expect(result).toBe(mockResponse);
     });
   });
