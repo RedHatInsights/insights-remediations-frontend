@@ -10,7 +10,6 @@ import { NotAuthorized } from '@redhat-cloud-services/frontend-components/NotAut
 import { RBACProvider } from '@redhat-cloud-services/frontend-components/RBACProvider';
 import { AccessCheck } from '@project-kessel/react-kessel-access-check';
 
-import Routes from './Routes';
 import { useFeatureFlag } from './Utilities/Hooks/useFeatureFlag';
 import { useKesselRemediationPermissionState } from './Utilities/Hooks/useKesselRemediationPermissionState';
 import { getChromePerms } from './Utilities/remediationsPermissions';

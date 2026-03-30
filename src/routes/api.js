@@ -33,35 +33,22 @@ export const deleteRemediationSystems = (systems, remediation) => {
  *  @param   {number}  [rawParams.limit]         - Page size
  *  @param   {number}  [rawParams.offset]        - Page offset
  *  @param   {string}  [rawParams.sort]          - e.g. system_name or -system_name
- *  @param   {object}  [rawParams.filter]        - { ansible_host } from table filters
- *  @param   {object}  [rawParams.options]       - Axios options (filter[…] query params)
+ *  @param   {object}  [rawParams.options]       - After useRemediations, table filters live in options.params['filter[ansible_host]']
  *  @returns {Promise}                           API response promise
  */
 export const getRemediationPlaybookSystemsList = (rawParams) => {
   const params = Array.isArray(rawParams) ? rawParams[0] : rawParams;
-  const { remId, playbook_run_id, limit, offset, sort, filter, options } =
-    params || {};
+  const { remId, playbook_run_id, limit, offset, sort, options } = params || {};
+  const ansibleHost = options?.params?.['filter[ansible_host]'];
 
-  let ansibleHost = filter?.ansible_host;
-  if (ansibleHost === undefined || ansibleHost === null || ansibleHost === '') {
-    const fromQuery = options?.params?.['filter[ansible_host]'];
-    if (fromQuery !== undefined && fromQuery !== null && fromQuery !== '') {
-      ansibleHost = fromQuery;
-    }
-  }
-
-  const clientParams = {
+  return remediationsApi.getPlaybookRunSystems({
     id: remId,
     playbookRunId: playbook_run_id,
-    ...(limit !== undefined && limit !== null && { limit }),
-    ...(offset !== undefined && offset !== null && { offset }),
-    ...(sort !== undefined && sort !== null && sort !== '' && { sort }),
-    ...(ansibleHost !== undefined &&
-      ansibleHost !== null &&
-      ansibleHost !== '' && { ansibleHost }),
-  };
-
-  return remediationsApi.getPlaybookRunSystems(clientParams);
+    limit: limit ?? undefined,
+    offset: offset ?? undefined,
+    sort: sort ? sort : undefined,
+    ansibleHost: ansibleHost ? ansibleHost : undefined,
+  });
 };
 
 /**

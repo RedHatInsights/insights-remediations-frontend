@@ -89,8 +89,35 @@ describe('Routes API', () => {
       expect(remediationsApi.getPlaybookRunSystems).toHaveBeenCalledWith({
         id: remId,
         playbookRunId: playbook_run_id,
+        limit: undefined,
+        offset: undefined,
+        sort: undefined,
+        ansibleHost: undefined,
       });
       expect(result).toBe(mockResponse);
+    });
+
+    it('should pass ansibleHost from useRemediations-style options.params', async () => {
+      const remId = 'remediation-123';
+      const playbook_run_id = 'run-456';
+      remediationsApi.getPlaybookRunSystems.mockResolvedValue({});
+
+      await getRemediationPlaybookSystemsList({
+        remId,
+        playbook_run_id,
+        options: {
+          params: { 'filter[ansible_host]': 'my-host' },
+        },
+      });
+
+      expect(remediationsApi.getPlaybookRunSystems).toHaveBeenCalledWith({
+        id: remId,
+        playbookRunId: playbook_run_id,
+        limit: undefined,
+        offset: undefined,
+        sort: undefined,
+        ansibleHost: 'my-host',
+      });
     });
   });
 

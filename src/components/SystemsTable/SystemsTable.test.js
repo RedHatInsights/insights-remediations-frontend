@@ -54,13 +54,14 @@ jest.mock(
 jest.mock(
   '@redhat-cloud-services/frontend-components-utilities/ReducerRegistry',
   () => {
+    const state = {
+      entities: { selected: new Map(), loaded: true, rows: [] },
+    };
     return jest.fn().mockImplementation(() => ({
       store: {
-        getState: () => ({
-          entities: { selected: new Map(), loaded: true, rows: [] },
-        }),
+        getState: () => state,
         dispatch: jest.fn(),
-        subscribe: jest.fn(),
+        subscribe: jest.fn(() => jest.fn()),
       },
       register: jest.fn(),
     }));
@@ -82,6 +83,18 @@ jest.mock('./helpers', () => ({
 jest.mock('./Columns', () => []);
 jest.mock('./useBulkSelect', () => jest.fn(() => ({})));
 jest.mock('./useOnConfirm', () => jest.fn(() => jest.fn()));
+
+jest.mock('../../Utilities/Hooks/api/useRemediations', () => {
+  const fetchSystems = jest.fn();
+  return {
+    __esModule: true,
+    default: jest.fn(() => ({
+      result: null,
+      loading: false,
+      fetch: fetchSystems,
+    })),
+  };
+});
 
 describe('SystemsTable', () => {
   const defaultProps = {

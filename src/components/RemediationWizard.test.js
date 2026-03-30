@@ -3,6 +3,21 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
+
+jest.mock('@patternfly/react-charts', () => {
+  const React = require('react');
+  const PropTypes = require('prop-types');
+  const ChartBullet = (props) =>
+    props.title != null ? React.createElement('span', null, props.title) : null;
+  ChartBullet.propTypes = {
+    title: PropTypes.node,
+  };
+  return {
+    ChartAxis: () => null,
+    ChartBullet,
+  };
+});
+
 import { RemediationWizard } from './RemediationWizard/RemediationWizard';
 import { EXECUTION_LIMITS_HEADER_DESCRIPTION } from '../routes/RemediationDetailsComponents/helpers';
 
