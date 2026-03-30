@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { createContext, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { connect } from 'react-redux';
@@ -12,34 +6,17 @@ import NotificationsProvider from '@redhat-cloud-services/frontend-components-no
 import { Spinner } from '@patternfly/react-core';
 import { NotAuthorized } from '@redhat-cloud-services/frontend-components/NotAuthorized';
 import { RBACProvider } from '@redhat-cloud-services/frontend-components/RBACProvider';
-import {
-  AccessCheck,
-  fetchDefaultWorkspace,
-  useSelfAccessCheck,
-} from '@project-kessel/react-kessel-access-check';
-import { getKesselAccessCheckParams } from '@redhat-cloud-services/frontend-components-utilities/kesselPermissions';
+import { AccessCheck } from '@project-kessel/react-kessel-access-check';
 
 import Routes from './Routes';
 import { useFeatureFlag } from './Utilities/Hooks/useFeatureFlag';
-import {
-  KESSEL_API_BASE_URL,
-  KESSEL_REMEDIATIONS_EDIT,
-  KESSEL_REMEDIATIONS_EXECUTE,
-  KESSEL_REMEDIATIONS_VIEW,
-} from './constants';
+import { useKesselRemediationPermissionState } from './Utilities/Hooks/useKesselRemediationPermissionState';
+import { getChromePerms } from './Utilities/remediationsPermissions';
+import { KESSEL_API_BASE_URL } from './constants';
 
 export const PermissionContext = createContext();
 
 const SERVICE_NAME = 'Remediation Plans';
-
-const KESSEL_RELATIONS = [
-  KESSEL_REMEDIATIONS_VIEW,
-  KESSEL_REMEDIATIONS_EDIT,
-  KESSEL_REMEDIATIONS_EXECUTE,
-];
-
-const getAllowed = (checks, relation) =>
-  checks?.find((check) => check.relation === relation)?.allowed ?? false;
 
 const PermissionsLayout = ({ isLoading, permissions }) => {
   if (isLoading) {
@@ -96,28 +73,7 @@ const RbacPermissionsGate = () => {
       .then((list) => {
         if (cancelled) return;
 
-        const permissionList = (list || [])
-          .map(({ permission }) => permission)
-          .filter((p) => typeof p === 'string');
-
-        const hasAll =
-          permissionList.includes('remediations:*:*') ||
-          permissionList.includes('remediations:remediation:*');
-
-        setPermissions({
-          read:
-            hasAll ||
-            permissionList.includes('remediations:remediation:read') ||
-            permissionList.includes('remediations:*:read'),
-          write:
-            hasAll ||
-            permissionList.includes('remediations:remediation:write') ||
-            permissionList.includes('remediations:*:write'),
-          execute:
-            hasAll ||
-            permissionList.includes('remediations:remediation:execute') ||
-            permissionList.includes('remediations:*:execute'),
-        });
+        setPermissions(getChromePerms(list));
 
         setIsLoading(false);
       })
@@ -138,63 +94,8 @@ const RbacPermissionsGate = () => {
 };
 
 const KesselPermissionsGate = ({ baseUrl }) => {
-  const [workspaceId, setWorkspaceId] = useState(undefined);
-  const [workspaceLoading, setWorkspaceLoading] = useState(true);
-  const didResolveWorkspaceRef = useRef(false);
-
-  useEffect(() => {
-    if (didResolveWorkspaceRef.current) return;
-    didResolveWorkspaceRef.current = true;
-
-    let cancelled = false;
-
-    fetchDefaultWorkspace(baseUrl)
-      .then((ws) => {
-        if (!cancelled) {
-          setWorkspaceId(ws.id);
-        }
-      })
-      .catch((error) => {
-        console.error(
-          'Unable to resolve default workspace for Kessel checks:',
-          error,
-        );
-        if (!cancelled) {
-          setWorkspaceId(undefined);
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setWorkspaceLoading(false);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [baseUrl]);
-
-  const params = useMemo(
-    () =>
-      getKesselAccessCheckParams({
-        requiredPermissions: KESSEL_RELATIONS,
-        resourceIdOrIds: workspaceId,
-      }),
-    [workspaceId],
-  );
-
-  const { data: checks, loading: checksLoading } = useSelfAccessCheck(
-    workspaceId ? params : { resources: [] },
-  );
-
-  const permissions = useMemo(() => {
-    const read = getAllowed(checks, KESSEL_REMEDIATIONS_VIEW);
-    const write = getAllowed(checks, KESSEL_REMEDIATIONS_EDIT);
-    const execute = getAllowed(checks, KESSEL_REMEDIATIONS_EXECUTE);
-    return { read, write, execute };
-  }, [checks]);
-
-  const isLoading = workspaceLoading || (workspaceId ? checksLoading : false);
+  const { permissions, isLoading } =
+    useKesselRemediationPermissionState(baseUrl);
 
   return <PermissionsLayout isLoading={isLoading} permissions={permissions} />;
 };
