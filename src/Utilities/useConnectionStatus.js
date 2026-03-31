@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { API_BASE } from '../routes/api';
+import { API_BASE } from '../constants';
 
 export const useConnectionStatus = (remediationId, axios) => {
   const [connectedSystems, setConnectedSystems] = useState(0);
