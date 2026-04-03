@@ -1,7 +1,13 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import ActionsContent from './ActionsContent';
@@ -84,11 +90,16 @@ jest.mock('bastilian-tabletools', () => {
   return {
     ...actualModule,
     useRawTableState: () => {
-      // Access the mockTableState from the test scope
-      const testContext = expect.getState();
-      return testContext.currentTestName?.includes('bulk delete')
-        ? { selected: ['issue-1', 'issue-2'] }
-        : { selected: [] };
+      const testName = expect.getState().currentTestName ?? '';
+      if (testName.includes('bulk delete')) {
+        return { selected: ['issue-1', 'issue-2'] };
+      }
+      if (testName.includes('chunks large delete')) {
+        return {
+          selected: Array.from({ length: 250 }, (_, i) => `bulk-issue-${i}`),
+        };
+      }
+      return { selected: [] };
     },
     TableStateProvider: ({ children }) => <div>{children}</div>,
     StaticTableToolsTable: ({
@@ -592,17 +603,25 @@ describe('ActionsContent', () => {
 
       renderComponent({ issues: manyIssues });
 
-      fireEvent.click(screen.getByTestId('action-remove-0'));
+      fireEvent.click(
+        within(screen.getByTestId('bulk-remove-button')).getByRole('button', {
+          name: 'Remove',
+        }),
+      );
+
+      await screen.findByTestId('confirm-button');
       fireEvent.click(screen.getByTestId('confirm-button'));
 
-      await waitFor(() => {
-        expect(mockFetchQueue).toHaveBeenCalledWith([
-          {
-            id: 'test-remediation-id',
-            issuesList: { issue_ids: ['issue-0'] }, // Fixed structure
-          },
-        ]);
+      await waitFor(() => expect(mockFetchQueue).toHaveBeenCalledTimes(1), {
+        timeout: 3000,
       });
+
+      const [queue] = mockFetchQueue.mock.calls[0];
+      expect(queue).toHaveLength(3);
+      expect(queue[0].issuesList.issue_ids).toHaveLength(100);
+      expect(queue[1].issuesList.issue_ids).toHaveLength(100);
+      expect(queue[2].issuesList.issue_ids).toHaveLength(50);
+      expect(queue[0].id).toBe('test-remediation-id');
     });
   });
 
