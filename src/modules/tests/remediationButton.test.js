@@ -145,6 +145,43 @@ describe('RemediationButton', () => {
       expect(button).toBeEnabled();
     });
 
+    it('should show buttonTooltipContent when user has permissions, selection, and buttonTooltipContent is set', async () => {
+      useChrome.mockImplementation(() => ({
+        getUserPermissions: jest.fn(
+          () =>
+            new Promise((resolve) => resolve([{ permission: CAN_REMEDIATE }])),
+        ),
+      }));
+
+      const message =
+        'The remediation plan includes only supported systems that failed compliance.';
+
+      render(
+        <RemediationButton
+          {...initialProps}
+          hasSelected={true}
+          buttonTooltipContent={message}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(
+          screen.getByTestId('remediationButton-with-permissions-and-selected'),
+        ).toBeInTheDocument();
+      });
+
+      const button = screen.getByTestId(
+        'remediationButton-with-permissions-and-selected',
+      );
+      expect(button).toBeEnabled();
+
+      await user.hover(button);
+
+      await waitFor(() => {
+        expect(screen.getByText(message)).toBeInTheDocument();
+      });
+    });
+
     it('should show btn with selection tooltip when user has permissions but no items selected', async () => {
       useChrome.mockImplementation(() => ({
         getUserPermissions: jest.fn(
