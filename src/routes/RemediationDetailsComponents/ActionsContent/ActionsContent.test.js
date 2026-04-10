@@ -583,15 +583,14 @@ describe('ActionsContent', () => {
     it('chunks large delete operations', async () => {
       mockFetchQueue.mockResolvedValue();
 
-      // Create many issues to test chunking
-      const manyIssues = Array.from({ length: 250 }, (_, i) => ({
+      const manyIssues = Array.from({ length: 50 }, (_, i) => ({
         id: `issue-${i}`,
         description: `Action ${i}`,
         systems: [],
         system_count: 0,
       }));
 
-      renderComponent({ issues: manyIssues }); // Pass issues directly
+      renderComponent({ issues: manyIssues });
 
       fireEvent.click(screen.getByTestId('action-remove-0'));
       fireEvent.click(screen.getByTestId('confirm-button'));

@@ -5,6 +5,6 @@ export const systemFilter = [
     type: conditionalFilterType.text,
     label: 'System',
     placeholder: 'Search',
-    filterAttribute: 'description',
+    filterAttribute: 'ansible_host',
   },
 ];

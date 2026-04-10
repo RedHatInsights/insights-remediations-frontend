@@ -51,7 +51,7 @@ describe('ExecutionHistoryContent Filter', () => {
 
     it('should have correct filter attribute', () => {
       const filter = systemFilter[0];
-      expect(filter.filterAttribute).toBe('description');
+      expect(filter.filterAttribute).toBe('ansible_host');
     });
 
     it('should have all required properties defined', () => {
@@ -172,7 +172,7 @@ describe('ExecutionHistoryContent Filter', () => {
       const filter = systemFilter[0];
 
       // filterAttribute should be a valid property name
-      expect(filter.filterAttribute).toBe('description');
+      expect(filter.filterAttribute).toBe('ansible_host');
       expect(typeof filter.filterAttribute).toBe('string');
       expect(filter.filterAttribute.length).toBeGreaterThan(0);
     });

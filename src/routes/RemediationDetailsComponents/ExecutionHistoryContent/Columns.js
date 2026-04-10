@@ -5,12 +5,14 @@ import {
   ExecutionStatusCell,
 } from './Cells';
 
+export const RUN_SYSTEMS_DEFAULT_SORT = 'system_name';
+
 const useColumns = () => {
   return [
     {
       title: 'System name',
       transforms: [wrappable],
-      // sortable: 'action',
+      sortable: RUN_SYSTEMS_DEFAULT_SORT,
       exportKey: 'action',
       Component: SystemNameCell,
     },

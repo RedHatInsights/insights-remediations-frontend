@@ -27,16 +27,28 @@ export const deleteRemediationSystems = (systems, remediation) => {
 /**
  * Used by ExecutionHistoryContent for fetching playbook run systems.
  *
- *  @param   {object}  params                 - Parameters object
- *  @param   {string}  params.remId           - Remediation ID
- *  @param   {string}  params.playbook_run_id - Playbook run ID
- *  @returns {Promise}                        API response promise
+ *  @param   {object}  rawParams                 - Parameters object (pass-through from useRemediations / table state)
+ *  @param   {string}  rawParams.remId           - Remediation ID
+ *  @param   {string}  rawParams.playbook_run_id - Playbook run ID
+ *  @param   {number}  [rawParams.limit]         - Page size
+ *  @param   {number}  [rawParams.offset]        - Page offset
+ *  @param   {string}  [rawParams.sort]          - e.g. system_name or -system_name
+ *  @param   {object}  [rawParams.options]       - After useRemediations, table filters live in options.params['filter[ansible_host]']
+ *  @returns {Promise}                           API response promise
  */
-export const getRemediationPlaybookSystemsList = ({
-  remId,
-  playbook_run_id,
-}) => {
-  return remediationsApi.getPlaybookRunSystems(remId, playbook_run_id);
+export const getRemediationPlaybookSystemsList = (rawParams) => {
+  const params = Array.isArray(rawParams) ? rawParams[0] : rawParams;
+  const { remId, playbook_run_id, limit, offset, sort, options } = params || {};
+  const ansibleHost = options?.params?.['filter[ansible_host]'];
+
+  return remediationsApi.getPlaybookRunSystems({
+    id: remId,
+    playbookRunId: playbook_run_id,
+    limit: limit ?? undefined,
+    offset: offset ?? undefined,
+    sort: sort ? sort : undefined,
+    ansibleHost: ansibleHost ? ansibleHost : undefined,
+  });
 };
 
 /**

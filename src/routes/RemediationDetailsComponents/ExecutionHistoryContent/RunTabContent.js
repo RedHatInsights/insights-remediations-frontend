@@ -10,9 +10,8 @@ import useRunSystems from './hooks/useRunSystems';
 import { StatusLabel } from '../../helpers';
 import { RedoIcon } from '@patternfly/react-icons';
 
-const RunTabContent = ({
+const RunTabBody = ({
   run,
-  idx,
   isActive,
   remId,
   fetchSystems,
@@ -22,12 +21,11 @@ const RunTabContent = ({
   manualRefreshClicked,
   isPlaybookRunsLoading,
 }) => {
-  const { systems = [], loading } = useRunSystems(
-    run,
-    isActive,
-    remId,
-    fetchSystems,
-  );
+  const {
+    systems = [],
+    loading,
+    total,
+  } = useRunSystems(run, isActive, remId, fetchSystems);
 
   const handleClick = async () => {
     setManualRefreshClicked(true);
@@ -37,12 +35,7 @@ const RunTabContent = ({
   const isLoading = isPlaybookRunsLoading || loading || manualRefreshClicked;
 
   return (
-    <TabContent
-      eventKey={idx}
-      id={`run-${idx}`}
-      activeKey={isActive ? idx : -1}
-      hidden={!isActive}
-    >
+    <>
       <Flex
         className="pf-v6-u-mb-lg pf-v6-u-mt-lg"
         justifyContent={{ default: 'justifyContentSpaceBetween' }}
@@ -74,26 +67,54 @@ const RunTabContent = ({
         canceledAt={run.updated_at}
       />
 
+      <RunSystemsTable
+        run={{ ...run, systems }}
+        loading={isLoading}
+        total={total}
+        viewLogColumn={{
+          title: '',
+          props: { screenReaderText: 'View log' },
+          exportKey: 'viewLog',
+          Component: (system) => (
+            <Button
+              variant="link"
+              style={{ padding: 0 }}
+              onClick={() => openLogModal(run, system)}
+              data-testid="view-log-button"
+            >
+              View log
+            </Button>
+          ),
+        }}
+      />
+    </>
+  );
+};
+
+RunTabBody.propTypes = {
+  run: PropTypes.object.isRequired,
+  isActive: PropTypes.bool.isRequired,
+  remId: PropTypes.string.isRequired,
+  fetchSystems: PropTypes.func.isRequired,
+  openLogModal: PropTypes.func.isRequired,
+  refetchRemediationPlaybookRuns: PropTypes.func.isRequired,
+  setManualRefreshClicked: PropTypes.func.isRequired,
+  manualRefreshClicked: PropTypes.bool.isRequired,
+  isPlaybookRunsLoading: PropTypes.bool.isRequired,
+};
+
+const RunTabContent = (props) => {
+  const { idx, isActive } = props;
+
+  return (
+    <TabContent
+      eventKey={idx}
+      id={`run-${idx}`}
+      activeKey={isActive ? idx : -1}
+      hidden={!isActive}
+    >
       <TableStateProvider>
-        <RunSystemsTable
-          run={{ ...run, systems }}
-          loading={isLoading}
-          viewLogColumn={{
-            title: '',
-            props: { screenReaderText: 'View log' },
-            exportKey: 'viewLog',
-            Component: (system) => (
-              <Button
-                variant="link"
-                style={{ padding: 0 }}
-                onClick={() => openLogModal(run, system)}
-                data-testid="view-log-button"
-              >
-                View log
-              </Button>
-            ),
-          }}
-        />
+        <RunTabBody {...props} />
       </TableStateProvider>
     </TabContent>
   );

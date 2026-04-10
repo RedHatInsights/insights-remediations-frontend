@@ -1,5 +1,22 @@
+import React from 'react';
 import { renderHook, act } from '@testing-library/react';
+import { TableStateProvider } from 'bastilian-tabletools';
+
 import useRunSystems from './useRunSystems';
+
+const hookWrapper = ({ children }) => (
+  <TableStateProvider>{children}</TableStateProvider>
+);
+
+const expectPagedFetch = (mockFn, remId, playbookRunId) =>
+  expect(mockFn).toHaveBeenCalledWith(
+    expect.objectContaining({
+      remId,
+      playbook_run_id: playbookRunId,
+      limit: 10,
+      offset: 0,
+    }),
+  );
 
 describe('useRunSystems Hook', () => {
   let mockFetchSystems;
@@ -44,8 +61,9 @@ describe('useRunSystems Hook', () => {
 
   describe('Initial render and basic functionality', () => {
     it('should return initial state', () => {
-      const { result } = renderHook(() =>
-        useRunSystems(null, false, 'rem-123', mockFetchSystems),
+      const { result } = renderHook(
+        () => useRunSystems(null, false, 'rem-123', mockFetchSystems),
+        { wrapper: hookWrapper },
       );
 
       expect(result.current.systems).toBeUndefined();
@@ -55,20 +73,25 @@ describe('useRunSystems Hook', () => {
     it('should not fetch when shouldFetch is false', () => {
       const run = createMockRun();
 
-      renderHook(() => useRunSystems(run, false, 'rem-123', mockFetchSystems));
+      renderHook(() => useRunSystems(run, false, 'rem-123', mockFetchSystems), {
+        wrapper: hookWrapper,
+      });
 
       expect(mockFetchSystems).not.toHaveBeenCalled();
     });
 
     it('should not fetch when run is null', () => {
-      renderHook(() => useRunSystems(null, true, 'rem-123', mockFetchSystems));
+      renderHook(() => useRunSystems(null, true, 'rem-123', mockFetchSystems), {
+        wrapper: hookWrapper,
+      });
 
       expect(mockFetchSystems).not.toHaveBeenCalled();
     });
 
     it('should not fetch when run is undefined', () => {
-      renderHook(() =>
-        useRunSystems(undefined, true, 'rem-123', mockFetchSystems),
+      renderHook(
+        () => useRunSystems(undefined, true, 'rem-123', mockFetchSystems),
+        { wrapper: hookWrapper },
       );
 
       expect(mockFetchSystems).not.toHaveBeenCalled();
@@ -82,14 +105,12 @@ describe('useRunSystems Hook', () => {
 
       mockFetchSystems.mockResolvedValue({ data: mockData });
 
-      const { result } = renderHook(() =>
-        useRunSystems(run, true, 'rem-123', mockFetchSystems),
+      const { result } = renderHook(
+        () => useRunSystems(run, true, 'rem-123', mockFetchSystems),
+        { wrapper: hookWrapper },
       );
 
-      expect(mockFetchSystems).toHaveBeenCalledWith({
-        remId: 'rem-123',
-        playbook_run_id: 'run-123',
-      });
+      expectPagedFetch(mockFetchSystems, 'rem-123', 'run-123');
 
       // Should be loading initially
       expect(result.current.loading).toBe(true);
@@ -116,8 +137,9 @@ describe('useRunSystems Hook', () => {
 
       mockFetchSystems.mockRejectedValue(new Error('Fetch failed'));
 
-      const { result } = renderHook(() =>
-        useRunSystems(run, true, 'rem-123', mockFetchSystems),
+      const { result } = renderHook(
+        () => useRunSystems(run, true, 'rem-123', mockFetchSystems),
+        { wrapper: hookWrapper },
       );
 
       expect(result.current.loading).toBe(true);
@@ -135,8 +157,9 @@ describe('useRunSystems Hook', () => {
 
       mockFetchSystems.mockResolvedValue({ data: null });
 
-      const { result } = renderHook(() =>
-        useRunSystems(run, true, 'rem-123', mockFetchSystems),
+      const { result } = renderHook(
+        () => useRunSystems(run, true, 'rem-123', mockFetchSystems),
+        { wrapper: hookWrapper },
       );
 
       await act(async () => {
@@ -152,8 +175,9 @@ describe('useRunSystems Hook', () => {
 
       mockFetchSystems.mockResolvedValue({ data: undefined });
 
-      const { result } = renderHook(() =>
-        useRunSystems(run, true, 'rem-123', mockFetchSystems),
+      const { result } = renderHook(
+        () => useRunSystems(run, true, 'rem-123', mockFetchSystems),
+        { wrapper: hookWrapper },
       );
 
       await act(async () => {
@@ -170,8 +194,9 @@ describe('useRunSystems Hook', () => {
 
       mockFetchSystems.mockResolvedValue({ data: mockData });
 
-      const { rerender } = renderHook(() =>
-        useRunSystems(run, true, 'rem-123', mockFetchSystems),
+      const { rerender } = renderHook(
+        () => useRunSystems(run, true, 'rem-123', mockFetchSystems),
+        { wrapper: hookWrapper },
       );
 
       await act(async () => {
@@ -194,8 +219,9 @@ describe('useRunSystems Hook', () => {
 
       mockFetchSystems.mockResolvedValue({ data: mockData });
 
-      const { result } = renderHook(() =>
-        useRunSystems(run, true, 'rem-123', mockFetchSystems),
+      const { result } = renderHook(
+        () => useRunSystems(run, true, 'rem-123', mockFetchSystems),
+        { wrapper: hookWrapper },
       );
 
       await act(async () => {
@@ -216,14 +242,61 @@ describe('useRunSystems Hook', () => {
       );
     });
 
+    it('should expose meta.total for paged Axios body { data: { meta, data } }', async () => {
+      const run = createMockRun();
+      const pageRows = createMockSystemsData().slice(0, 2);
+
+      mockFetchSystems.mockResolvedValue({
+        data: {
+          meta: { count: 2, total: 56 },
+          data: pageRows,
+        },
+      });
+
+      const { result } = renderHook(
+        () => useRunSystems(run, true, 'rem-123', mockFetchSystems),
+        { wrapper: hookWrapper },
+      );
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(result.current.systems).toHaveLength(2);
+      expect(result.current.total).toBe(56);
+    });
+
+    it('should expose meta.total when response is bare list DTO { meta, data }', async () => {
+      const run = createMockRun();
+      const pageRows = createMockSystemsData().slice(0, 2);
+
+      mockFetchSystems.mockResolvedValue({
+        meta: { count: 2, total: 56 },
+        data: pageRows,
+      });
+
+      const { result } = renderHook(
+        () => useRunSystems(run, true, 'rem-123', mockFetchSystems),
+        { wrapper: hookWrapper },
+      );
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(result.current.systems).toHaveLength(2);
+      expect(result.current.total).toBe(56);
+    });
+
     it('should handle missing executor type', async () => {
       const run = createMockRun();
       const mockData = createMockSystemsData();
 
       mockFetchSystems.mockResolvedValue({ data: mockData });
 
-      const { result } = renderHook(() =>
-        useRunSystems(run, true, 'rem-123', mockFetchSystems),
+      const { result } = renderHook(
+        () => useRunSystems(run, true, 'rem-123', mockFetchSystems),
+        { wrapper: hookWrapper },
       );
 
       await act(async () => {
@@ -246,6 +319,7 @@ describe('useRunSystems Hook', () => {
         ({ run, shouldFetch, remId, fetchSystems }) =>
           useRunSystems(run, shouldFetch, remId, fetchSystems),
         {
+          wrapper: hookWrapper,
           initialProps: {
             run,
             shouldFetch: true,
@@ -290,6 +364,7 @@ describe('useRunSystems Hook', () => {
         ({ run, shouldFetch, remId, fetchSystems }) =>
           useRunSystems(run, shouldFetch, remId, fetchSystems),
         {
+          wrapper: hookWrapper,
           initialProps: {
             run,
             shouldFetch: true,
@@ -334,6 +409,7 @@ describe('useRunSystems Hook', () => {
         ({ run, shouldFetch, remId, fetchSystems }) =>
           useRunSystems(run, shouldFetch, remId, fetchSystems),
         {
+          wrapper: hookWrapper,
           initialProps: {
             run,
             shouldFetch: true,
@@ -378,6 +454,7 @@ describe('useRunSystems Hook', () => {
         ({ run, shouldFetch, remId, fetchSystems }) =>
           useRunSystems(run, shouldFetch, remId, fetchSystems),
         {
+          wrapper: hookWrapper,
           initialProps: {
             run,
             shouldFetch: true,
@@ -391,10 +468,7 @@ describe('useRunSystems Hook', () => {
         await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
-      expect(mockFetchSystems).toHaveBeenCalledWith({
-        remId: 'rem-123',
-        playbook_run_id: 'run-123',
-      });
+      expectPagedFetch(mockFetchSystems, 'rem-123', 'run-123');
 
       // Change remId - should trigger new fetch due to useEffect dependency
       rerender({
@@ -408,10 +482,7 @@ describe('useRunSystems Hook', () => {
         await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
-      expect(mockFetchSystems).toHaveBeenCalledWith({
-        remId: 'rem-456',
-        playbook_run_id: 'run-123',
-      });
+      expectPagedFetch(mockFetchSystems, 'rem-456', 'run-123');
     });
 
     it('should handle fetchSystems function change', async () => {
@@ -427,6 +498,7 @@ describe('useRunSystems Hook', () => {
         ({ run, shouldFetch, remId, fetchSystems }) =>
           useRunSystems(run, shouldFetch, remId, fetchSystems),
         {
+          wrapper: hookWrapper,
           initialProps: {
             run,
             shouldFetch: true,
@@ -442,7 +514,7 @@ describe('useRunSystems Hook', () => {
 
       expect(mockFetchSystems).toHaveBeenCalledTimes(1);
 
-      // Change fetchSystems function
+      // Swap fetch implementation (stable deps — no automatic refetch from fetch identity alone)
       rerender({
         run,
         shouldFetch: true,
@@ -454,10 +526,21 @@ describe('useRunSystems Hook', () => {
         await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
-      expect(newMockFetchSystems).toHaveBeenCalledWith({
-        remId: 'rem-123',
-        playbook_run_id: 'run-123',
+      expect(newMockFetchSystems).not.toHaveBeenCalled();
+
+      // Next param-driven fetch uses the updated ref
+      rerender({
+        run,
+        shouldFetch: true,
+        remId: 'rem-789',
+        fetchSystems: newMockFetchSystems,
       });
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expectPagedFetch(newMockFetchSystems, 'rem-789', 'run-123');
     });
 
     it('should handle run object change', async () => {
@@ -470,6 +553,7 @@ describe('useRunSystems Hook', () => {
         ({ run, shouldFetch, remId, fetchSystems }) =>
           useRunSystems(run, shouldFetch, remId, fetchSystems),
         {
+          wrapper: hookWrapper,
           initialProps: {
             run,
             shouldFetch: true,
@@ -499,14 +583,11 @@ describe('useRunSystems Hook', () => {
         await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
-      expect(mockFetchSystems).toHaveBeenCalledWith({
-        remId: 'rem-123',
-        playbook_run_id: 'run-456',
-      });
+      expectPagedFetch(mockFetchSystems, 'rem-123', 'run-456');
     });
 
     it('should handle loading state correctly during concurrent fetches', async () => {
-      const run = createMockRun({ status: 'running' });
+      let run = createMockRun({ status: 'running' });
       let resolvePromise;
       const promise = new Promise((resolve) => {
         resolvePromise = resolve;
@@ -514,24 +595,34 @@ describe('useRunSystems Hook', () => {
 
       mockFetchSystems.mockReturnValue(promise);
 
-      const { result, rerender } = renderHook(() =>
-        useRunSystems(run, true, 'rem-123', mockFetchSystems),
+      const { result, rerender } = renderHook(
+        ({ run: r, shouldFetch, remId, fetchSystems }) =>
+          useRunSystems(r, shouldFetch, remId, fetchSystems),
+        {
+          wrapper: hookWrapper,
+          initialProps: {
+            run,
+            shouldFetch: true,
+            remId: 'rem-123',
+            fetchSystems: mockFetchSystems,
+          },
+        },
       );
 
       expect(result.current.loading).toBe(true);
 
-      // Change status to trigger refetch while first fetch is still pending
-      createMockRun({ status: 'success' });
-      rerender();
+      run = createMockRun({ status: 'success' });
+      rerender({
+        run,
+        shouldFetch: true,
+        remId: 'rem-123',
+        fetchSystems: mockFetchSystems,
+      });
 
       expect(result.current.loading).toBe(true);
 
-      // Resolve the promise
-      act(() => {
-        resolvePromise({ data: createMockSystemsData() });
-      });
-
       await act(async () => {
+        resolvePromise({ data: createMockSystemsData() });
         await new Promise((resolve) => setTimeout(resolve, 0));
       });
 

@@ -4,10 +4,6 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import RunSystemsTable from './RunSystemsTable';
 
-jest.mock('bastilian-tabletools', () => ({
-  useRawTableState: jest.fn(),
-}));
-
 jest.mock('./Columns', () => {
   const mockUseColumns = jest.fn(() => [
     {
@@ -73,12 +69,6 @@ jest.mock('../../OverViewPage/TableEmptyState', () => {
 });
 
 describe('RunSystemsTable', () => {
-  const mockUseRawTableState = require('bastilian-tabletools').useRawTableState;
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   const mockRun = {
     id: 'run-123',
     systems: [
@@ -95,12 +85,6 @@ describe('RunSystemsTable', () => {
   };
 
   beforeEach(() => {
-    mockUseRawTableState.mockReturnValue({
-      filters: {},
-    });
-  });
-
-  afterEach(() => {
     jest.clearAllMocks();
   });
 
@@ -110,6 +94,7 @@ describe('RunSystemsTable', () => {
         <RunSystemsTable
           run={mockRun}
           loading={false}
+          total={3}
           viewLogColumn={mockViewLogColumn}
         />,
       );
@@ -129,6 +114,7 @@ describe('RunSystemsTable', () => {
         <RunSystemsTable
           run={mockRun}
           loading={true}
+          total={3}
           viewLogColumn={mockViewLogColumn}
         />,
       );
@@ -141,6 +127,7 @@ describe('RunSystemsTable', () => {
         <RunSystemsTable
           run={mockRun}
           loading={false}
+          total={3}
           viewLogColumn={mockViewLogColumn}
         />,
       );
@@ -150,17 +137,18 @@ describe('RunSystemsTable', () => {
   });
 
   describe('Data handling', () => {
-    it('should display all systems when no filter is applied', () => {
+    it('should display systems and total from props (server-driven)', () => {
       render(
         <RunSystemsTable
           run={mockRun}
           loading={false}
+          total={56}
           viewLogColumn={mockViewLogColumn}
         />,
       );
 
       expect(screen.getByTestId('items-count')).toHaveTextContent('3');
-      expect(screen.getByTestId('total')).toHaveTextContent('3');
+      expect(screen.getByTestId('total')).toHaveTextContent('56');
     });
 
     it('should include viewLogColumn in columns', () => {
@@ -168,11 +156,11 @@ describe('RunSystemsTable', () => {
         <RunSystemsTable
           run={mockRun}
           loading={false}
+          total={3}
           viewLogColumn={mockViewLogColumn}
         />,
       );
 
-      // Base columns (2) + viewLogColumn (1) = 3
       expect(screen.getByTestId('columns-count')).toHaveTextContent('3');
     });
 
@@ -181,6 +169,7 @@ describe('RunSystemsTable', () => {
         <RunSystemsTable
           run={mockRun}
           loading={false}
+          total={100}
           viewLogColumn={mockViewLogColumn}
         />,
       );
@@ -189,7 +178,7 @@ describe('RunSystemsTable', () => {
       const options = JSON.parse(optionsText);
 
       expect(options.itemIdsOnPage).toEqual(['sys1', 'sys2', 'sys3']);
-      expect(options.total).toBe(3);
+      expect(options.total).toBe(100);
       expect(options.EmptyState).toBe('TableEmptyState');
     });
 
@@ -200,87 +189,7 @@ describe('RunSystemsTable', () => {
         <RunSystemsTable
           run={emptyRun}
           loading={false}
-          viewLogColumn={mockViewLogColumn}
-        />,
-      );
-
-      expect(screen.getByTestId('items-count')).toHaveTextContent('0');
-      expect(screen.getByTestId('total')).toHaveTextContent('0');
-    });
-  });
-
-  describe('Filtering functionality', () => {
-    it('should filter systems by name when filter is applied', () => {
-      mockUseRawTableState.mockReturnValue({
-        filters: {
-          system: ['Server'],
-        },
-      });
-
-      render(
-        <RunSystemsTable
-          run={mockRun}
-          loading={false}
-          viewLogColumn={mockViewLogColumn}
-        />,
-      );
-
-      // Should show only systems with 'Server' in name (Server-1, Server-2)
-      expect(screen.getByTestId('items-count')).toHaveTextContent('2');
-      expect(screen.getByTestId('total')).toHaveTextContent('2');
-    });
-
-    it('should handle case-insensitive filtering', () => {
-      mockUseRawTableState.mockReturnValue({
-        filters: {
-          system: ['server'],
-        },
-      });
-
-      render(
-        <RunSystemsTable
-          run={mockRun}
-          loading={false}
-          viewLogColumn={mockViewLogColumn}
-        />,
-      );
-
-      // Should still match 'Server-1' and 'Server-2'
-      expect(screen.getByTestId('items-count')).toHaveTextContent('2');
-      expect(screen.getByTestId('total')).toHaveTextContent('2');
-    });
-
-    it('should filter by partial matches', () => {
-      mockUseRawTableState.mockReturnValue({
-        filters: {
-          system: ['base'],
-        },
-      });
-
-      render(
-        <RunSystemsTable
-          run={mockRun}
-          loading={false}
-          viewLogColumn={mockViewLogColumn}
-        />,
-      );
-
-      // Should match 'Database-1'
-      expect(screen.getByTestId('items-count')).toHaveTextContent('1');
-      expect(screen.getByTestId('total')).toHaveTextContent('1');
-    });
-
-    it('should return no results for non-matching filter', () => {
-      mockUseRawTableState.mockReturnValue({
-        filters: {
-          system: ['NonExistent'],
-        },
-      });
-
-      render(
-        <RunSystemsTable
-          run={mockRun}
-          loading={false}
+          total={0}
           viewLogColumn={mockViewLogColumn}
         />,
       );
@@ -289,131 +198,17 @@ describe('RunSystemsTable', () => {
       expect(screen.getByTestId('total')).toHaveTextContent('0');
     });
 
-    it('should handle empty filter string', () => {
-      mockUseRawTableState.mockReturnValue({
-        filters: {
-          system: [''],
-        },
-      });
-
+    it('should treat missing run.systems as empty list', () => {
       render(
         <RunSystemsTable
-          run={mockRun}
+          run={{ id: 'run-1' }}
           loading={false}
+          total={0}
           viewLogColumn={mockViewLogColumn}
         />,
       );
 
-      // Empty filter should show all systems
-      expect(screen.getByTestId('items-count')).toHaveTextContent('3');
-      expect(screen.getByTestId('total')).toHaveTextContent('3');
-    });
-
-    it('should handle filter with multiple entries (uses first)', () => {
-      mockUseRawTableState.mockReturnValue({
-        filters: {
-          system: ['Server', 'Database'],
-        },
-      });
-
-      render(
-        <RunSystemsTable
-          run={mockRun}
-          loading={false}
-          viewLogColumn={mockViewLogColumn}
-        />,
-      );
-
-      // Should use first filter 'Server'
-      expect(screen.getByTestId('items-count')).toHaveTextContent('2');
-      expect(screen.getByTestId('total')).toHaveTextContent('2');
-    });
-  });
-
-  describe('Edge cases and null handling', () => {
-    it('should handle null tableState', () => {
-      mockUseRawTableState.mockReturnValue(null);
-
-      render(
-        <RunSystemsTable
-          run={mockRun}
-          loading={false}
-          viewLogColumn={mockViewLogColumn}
-        />,
-      );
-
-      // Should show all systems when tableState is null
-      expect(screen.getByTestId('items-count')).toHaveTextContent('3');
-      expect(screen.getByTestId('total')).toHaveTextContent('3');
-    });
-
-    it('should handle undefined tableState', () => {
-      mockUseRawTableState.mockReturnValue(undefined);
-
-      render(
-        <RunSystemsTable
-          run={mockRun}
-          loading={false}
-          viewLogColumn={mockViewLogColumn}
-        />,
-      );
-
-      // Should show all systems when tableState is undefined
-      expect(screen.getByTestId('items-count')).toHaveTextContent('3');
-      expect(screen.getByTestId('total')).toHaveTextContent('3');
-    });
-
-    it('should handle tableState without filters', () => {
-      mockUseRawTableState.mockReturnValue({});
-
-      render(
-        <RunSystemsTable
-          run={mockRun}
-          loading={false}
-          viewLogColumn={mockViewLogColumn}
-        />,
-      );
-
-      expect(screen.getByTestId('items-count')).toHaveTextContent('3');
-      expect(screen.getByTestId('total')).toHaveTextContent('3');
-    });
-
-    it('should handle tableState with filters but no system filter', () => {
-      mockUseRawTableState.mockReturnValue({
-        filters: {
-          other: ['someValue'],
-        },
-      });
-
-      render(
-        <RunSystemsTable
-          run={mockRun}
-          loading={false}
-          viewLogColumn={mockViewLogColumn}
-        />,
-      );
-
-      expect(screen.getByTestId('items-count')).toHaveTextContent('3');
-      expect(screen.getByTestId('total')).toHaveTextContent('3');
-    });
-
-    it('should handle system filter as empty array', () => {
-      mockUseRawTableState.mockReturnValue({
-        filters: {
-          system: [],
-        },
-      });
-
-      render(
-        <RunSystemsTable
-          run={mockRun}
-          loading={false}
-          viewLogColumn={mockViewLogColumn}
-        />,
-      );
-
-      expect(screen.getByTestId('items-count')).toHaveTextContent('3');
-      expect(screen.getByTestId('total')).toHaveTextContent('3');
+      expect(screen.getByTestId('items-count')).toHaveTextContent('0');
     });
   });
 
@@ -423,6 +218,7 @@ describe('RunSystemsTable', () => {
         <RunSystemsTable
           run={mockRun}
           loading={false}
+          total={3}
           viewLogColumn={mockViewLogColumn}
         />,
       );
@@ -445,6 +241,7 @@ describe('RunSystemsTable', () => {
         <RunSystemsTable
           run={customRun}
           loading={false}
+          total={3}
           viewLogColumn={mockViewLogColumn}
         />,
       );
@@ -467,6 +264,7 @@ describe('RunSystemsTable', () => {
         <RunSystemsTable
           run={customRun}
           loading={false}
+          total={2}
           viewLogColumn={mockViewLogColumn}
         />,
       );
@@ -497,12 +295,13 @@ describe('RunSystemsTable', () => {
         <RunSystemsTable
           run={runWithVariedSystems}
           loading={false}
+          total={42}
           viewLogColumn={mockViewLogColumn}
         />,
       );
 
       expect(screen.getByTestId('items-count')).toHaveTextContent('2');
-      expect(screen.getByTestId('total')).toHaveTextContent('2');
+      expect(screen.getByTestId('total')).toHaveTextContent('42');
     });
 
     it('should handle systems with special characters in names', () => {
@@ -527,21 +326,15 @@ describe('RunSystemsTable', () => {
         ],
       };
 
-      mockUseRawTableState.mockReturnValue({
-        filters: {
-          system: ['with'],
-        },
-      });
-
       render(
         <RunSystemsTable
           run={runWithSpecialNames}
           loading={false}
+          total={3}
           viewLogColumn={mockViewLogColumn}
         />,
       );
 
-      // Should match all three systems (case-insensitive 'with')
       expect(screen.getByTestId('items-count')).toHaveTextContent('3');
       expect(screen.getByTestId('total')).toHaveTextContent('3');
     });
