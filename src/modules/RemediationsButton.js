@@ -25,54 +25,67 @@ const RemediationButtonContent = ({
   hasSelected,
   hasPermissions,
   isCompliancePrecedenceEnabled,
+  buttonTooltipContent,
 }) => {
   const [remediationsData, setRemediationsData] = useState();
   const [isNoDataModalOpen, setNoDataModalOpen] = useState(false);
 
   const tooltipContent = useMemo(() => {
-    return getTooltipContent(hasPermissions, hasSelected);
-  }, [hasSelected, hasPermissions]);
+    const base = getTooltipContent(hasPermissions, hasSelected);
+    if (base != null) {
+      return base;
+    }
+    if (buttonTooltipContent != null && buttonTooltipContent !== '') {
+      return buttonTooltipContent;
+    }
+    return null;
+  }, [hasSelected, hasPermissions, buttonTooltipContent]);
 
-  if (!hasPermissions || !hasSelected) {
-    return (
-      <Tooltip content={tooltipContent}>
-        <span>
-          <Button
-            isDisabled
-            {...buttonProps}
-            data-testid="remediationButton-no-permissions-or-selected"
-          >
-            {children}
-          </Button>
-        </span>
-      </Tooltip>
-    );
-  }
+  const isInteractionBlocked = !hasPermissions || !hasSelected;
+  const isButtonDisabled = isInteractionBlocked || isDisabled;
+
+  const button = (
+    <Button
+      isDisabled={isButtonDisabled}
+      {...buttonProps}
+      data-testid={
+        isInteractionBlocked
+          ? 'remediationButton-no-permissions-or-selected'
+          : 'remediationButton-with-permissions-and-selected'
+      }
+      onClick={
+        isInteractionBlocked
+          ? undefined
+          : () => {
+              Promise.resolve(dataProvider()).then((data) => {
+                if (!data) {
+                  setNoDataModalOpen(true);
+                  return;
+                }
+
+                try {
+                  validate(data);
+                  setRemediationsData(data);
+                } catch {
+                  setNoDataModalOpen(true);
+                }
+              });
+            }
+      }
+    >
+      {children}
+    </Button>
+  );
 
   return (
     <React.Fragment>
-      <Button
-        isDisabled={isDisabled}
-        data-testid="remediationButton-with-permissions-and-selected"
-        onClick={() => {
-          Promise.resolve(dataProvider()).then((data) => {
-            if (!data) {
-              setNoDataModalOpen(true);
-              return;
-            }
-
-            try {
-              validate(data);
-              setRemediationsData(data);
-            } catch {
-              setNoDataModalOpen(true);
-            }
-          });
-        }}
-        {...buttonProps}
-      >
-        {children}
-      </Button>
+      {tooltipContent != null ? (
+        <Tooltip content={tooltipContent}>
+          <span>{button}</span>
+        </Tooltip>
+      ) : (
+        button
+      )}
 
       <NoDataModal
         isOpen={isNoDataModalOpen}
@@ -109,6 +122,7 @@ RemediationButtonContent.propTypes = {
   hasSelected: propTypes.bool.isRequired,
   hasPermissions: propTypes.bool.isRequired,
   isCompliancePrecedenceEnabled: propTypes.bool,
+  buttonTooltipContent: propTypes.string,
 };
 
 const RemediationButtonRbacFallback = (props) => {
@@ -216,6 +230,7 @@ RemediationButton.propTypes = {
   }),
   patchNoAdvisoryText: propTypes.string,
   hasSelected: propTypes.bool.isRequired,
+  buttonTooltipContent: propTypes.string,
 };
 
 export default RemediationButton;
