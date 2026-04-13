@@ -13,6 +13,7 @@ jest.mock('./hooks/useRunSystems', () =>
   jest.fn(() => ({
     systems: [],
     loading: false,
+    total: 0,
   })),
 );
 
@@ -29,10 +30,11 @@ jest.mock('../DetailsBanners', () => {
 });
 
 jest.mock('./RunSystemsTable', () => {
-  const MockRunSystemsTable = ({ run, loading, viewLogColumn }) => (
+  const MockRunSystemsTable = ({ run, loading, total, viewLogColumn }) => (
     <div data-testid="mock-run-systems-table">
       <span data-testid="table-run-id">{run.id}</span>
       <span data-testid="table-loading">{loading.toString()}</span>
+      <span data-testid="table-total">{total}</span>
       <span data-testid="table-systems-count">{run.systems?.length || 0}</span>
       {viewLogColumn && (
         <button
@@ -156,6 +158,7 @@ describe('RunTabContent', () => {
     mockUseRunSystems.mockReturnValue({
       systems: [],
       loading: false,
+      total: 0,
     });
   });
 

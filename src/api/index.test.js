@@ -5,10 +5,6 @@ jest.mock('../Utilities/http', () => ({
   doGet: jest.fn(),
 }));
 
-jest.mock('../routes/api', () => ({
-  API_BASE: '/api/remediations/v1',
-}));
-
 jest.mock('../Utilities/helpers.js', () => ({
   downloadFile: jest.fn(),
 }));
@@ -176,49 +172,6 @@ describe('API Module', () => {
 
       await expect(apiModule.downloadPlaybook(selectedIds)).rejects.toThrow(
         'Playbook fetch failed',
-      );
-    });
-  });
-
-  describe('getIsReceptorConfigured', () => {
-    it('should call doGet with correct sources endpoint', () => {
-      doGet.mockResolvedValue({ data: 'receptor-status' });
-
-      apiModule.getIsReceptorConfigured();
-
-      expect(doGet).toHaveBeenCalledWith(
-        'http://localhost/api/sources/v2.0/endpoints?filter[receptor_node][not_nil]',
-      );
-    });
-
-    it('should return the result from doGet', async () => {
-      const mockReceptorStatus = { data: { configured: true } };
-      doGet.mockResolvedValue(mockReceptorStatus);
-
-      const result = await apiModule.getIsReceptorConfigured();
-
-      expect(result).toEqual(mockReceptorStatus);
-    });
-
-    it('should handle errors from doGet', async () => {
-      const error = new Error('Receptor check failed');
-      doGet.mockRejectedValue(error);
-
-      await expect(apiModule.getIsReceptorConfigured()).rejects.toThrow(
-        'Receptor check failed',
-      );
-    });
-
-    it('should use window.location.origin in endpoint URL', () => {
-      doGet.mockResolvedValue({ data: 'test' });
-
-      apiModule.getIsReceptorConfigured();
-
-      // Just verify doGet was called with a sources endpoint
-      expect(doGet).toHaveBeenCalledWith(
-        expect.stringContaining(
-          '/api/sources/v2.0/endpoints?filter[receptor_node][not_nil]',
-        ),
       );
     });
   });

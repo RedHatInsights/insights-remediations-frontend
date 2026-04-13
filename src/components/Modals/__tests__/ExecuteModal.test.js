@@ -383,10 +383,7 @@ describe('ExecuteModal', () => {
       };
 
       render(
-        <ExecuteModal
-          {...defaultProps}
-          remediationStatus={undefinedStatus}
-        />,
+        <ExecuteModal {...defaultProps} remediationStatus={undefinedStatus} />,
       );
 
       expect(
