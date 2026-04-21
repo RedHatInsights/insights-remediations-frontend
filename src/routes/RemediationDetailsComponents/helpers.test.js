@@ -50,7 +50,7 @@ describe('RemediationDetailsComponents helpers', () => {
   beforeEach(() => {
     // Mock current time to make tests predictable
     jest.useFakeTimers();
-    jest.setSystemTime(new Date('2023-12-01T12:00:00Z'));
+    jest.setSystemTime(Date.parse('2023-12-01T12:00:00Z'));
   });
 
   afterEach(() => {
@@ -245,7 +245,7 @@ describe('RemediationDetailsComponents helpers', () => {
   describe('getTimeAgo', () => {
     beforeEach(() => {
       // Set consistent current time
-      jest.setSystemTime(new Date('2023-12-01T12:00:00Z'));
+      jest.setSystemTime(Date.parse('2023-12-01T12:00:00Z'));
     });
 
     describe('Recent times', () => {
