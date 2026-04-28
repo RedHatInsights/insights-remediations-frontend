@@ -84,7 +84,7 @@
     "@testing-library/react-hooks": "^7.0.2",
     "@testing-library/user-event": "^14.6.1",
     "babel-loader": "^10.1.1",
-    "babel-plugin-istanbul": "^7.0.1",
+    "babel-plugin-istanbul": "^8.0.0",
     "eslint": "^9.39.4",
     "eslint-plugin-jest-dom": "^5.5.0",
     "eslint-plugin-jsdoc": "^55.4.0",
