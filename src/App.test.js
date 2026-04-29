@@ -10,6 +10,9 @@ jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
   __esModule: true,
   default: jest.fn(),
 }));
+jest.mock('@unleash/proxy-client-react', () => ({
+  useFlagsStatus: jest.fn(() => ({ flagsReady: true })),
+}));
 jest.mock('./Utilities/Hooks/useFeatureFlag', () => ({
   useFeatureFlag: jest.fn(() => false),
 }));
@@ -61,6 +64,7 @@ jest.mock('@project-kessel/react-kessel-access-check', () => {
 const mockStore = createStore(() => ({}));
 
 const { useFeatureFlag } = require('./Utilities/Hooks/useFeatureFlag');
+const { useFlagsStatus } = require('@unleash/proxy-client-react');
 const {
   fetchDefaultWorkspace,
   useSelfAccessCheck,
@@ -72,6 +76,7 @@ describe('App Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     useFeatureFlag.mockReturnValue(false);
+    useFlagsStatus.mockReturnValue({ flagsReady: true });
 
     mockChrome = {
       hideGlobalFilter: jest.fn(),
@@ -91,6 +96,16 @@ describe('App Component', () => {
   };
 
   describe('Initialization', () => {
+    it('should render loading spinner until Unleash flags are ready', () => {
+      useFlagsStatus.mockReturnValue({ flagsReady: false });
+
+      renderApp();
+
+      expect(screen.getByRole('progressbar')).toBeInTheDocument();
+      expect(mockChrome.getUserPermissions).not.toHaveBeenCalled();
+      expect(screen.queryByTestId('routes')).not.toBeInTheDocument();
+    });
+
     it('should render loading spinner initially', () => {
       mockChrome.getUserPermissions.mockImplementation(
         () => new Promise(() => {}),
