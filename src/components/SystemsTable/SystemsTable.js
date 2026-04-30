@@ -72,6 +72,11 @@ const SystemsTableWrapper = ({
     setRefreshKey((prev) => prev + 1);
   }, []);
 
+  const handleClose = useCallback(() => {
+    activeSystem.current = undefined;
+    setIsOpen(false);
+  }, []);
+
   useEffect(() => {
     systemsRef.current = [];
   }, []);
@@ -201,13 +206,7 @@ const SystemsTableWrapper = ({
               ? Array.from(selected, ([, value]) => value)
               : [activeSystem.current]
           }
-          onClose={() => {
-            if (isRemoving) {
-              return;
-            }
-            activeSystem.current = undefined;
-            setIsOpen(false);
-          }}
+          onClose={handleClose}
           remediationName={remediation.name}
         />
       </InventoryTable>
