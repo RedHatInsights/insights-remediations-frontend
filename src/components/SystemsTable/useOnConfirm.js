@@ -8,6 +8,7 @@ const useOnConfirm = ({
   remediation,
   refreshRemediation,
   refetchConnectionStatus,
+  setIsRemoving,
   setIsOpen,
   addNotification,
   clearSelection,
@@ -24,6 +25,7 @@ const useOnConfirm = ({
               },
             ];
       const itemsToDelete = selectedSystems.length;
+      setIsRemoving?.(true);
       const { status, errors } = await deleteRemediationSystemsBatched(
         selectedSystems,
         remediation,
@@ -74,6 +76,7 @@ const useOnConfirm = ({
         dismissable: true,
       });
     } finally {
+      setIsRemoving?.(false);
       setIsOpen(false);
     }
   }, [
@@ -83,6 +86,7 @@ const useOnConfirm = ({
     remediation,
     refreshRemediation,
     refetchConnectionStatus,
+    setIsRemoving,
     setIsOpen,
     addNotification,
     clearSelection,

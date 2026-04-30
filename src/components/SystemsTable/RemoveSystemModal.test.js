@@ -10,6 +10,8 @@ jest.mock('@patternfly/react-core', () => ({
     children,
     variant,
     onClick,
+    isLoading,
+    isDisabled,
     ouiaId,
     ...props
   }) {
@@ -17,6 +19,8 @@ jest.mock('@patternfly/react-core', () => ({
       <button
         data-testid={ouiaId || 'button'}
         data-variant={variant}
+        data-loading={isLoading ? 'true' : 'false'}
+        disabled={isDisabled}
         onClick={onClick}
         {...props}
       >
@@ -24,6 +28,9 @@ jest.mock('@patternfly/react-core', () => ({
       </button>
     );
   },
+}));
+
+jest.mock('@patternfly/react-core/deprecated', () => ({
   Modal: function MockModal({
     children,
     variant,
@@ -32,6 +39,7 @@ jest.mock('@patternfly/react-core', () => ({
     onClose,
     titleIconVariant,
     actions,
+    showClose = true,
     ...props
   }) {
     if (!isOpen) return null;
@@ -43,11 +51,17 @@ jest.mock('@patternfly/react-core', () => ({
         {...props}
       >
         <div data-testid="modal-title">{title}</div>
-        <div data-testid="modal-content">{children}</div>
+        <div data-testid="modal-body">{children}</div>
         <div data-testid="modal-actions">{actions}</div>
-        <button data-testid="modal-close" onClick={onClose}>
-          X
-        </button>
+        {showClose !== false && (
+          <button
+            data-testid="modal-close"
+            aria-label="Close"
+            onClick={onClose}
+          >
+            X
+          </button>
+        )}
       </div>
     );
   },
@@ -69,6 +83,7 @@ describe('RemoveSystemModal', () => {
     onConfirm: mockOnConfirm,
     onClose: mockOnClose,
     remediationName: 'Test Remediation Plan',
+    isRemoving: false,
   };
 
   beforeEach(() => {
@@ -151,12 +166,29 @@ describe('RemoveSystemModal', () => {
     expect(removeButton).toHaveAttribute('data-variant', 'primary');
   });
 
+  it('should disable Remove button and show loading state while removing', () => {
+    render(<RemoveSystemModal {...defaultProps} isRemoving={true} />);
+
+    const removeButton = screen.getByTestId('confirm-delete');
+    expect(removeButton).toBeDisabled();
+    expect(removeButton).toHaveAttribute('data-loading', 'true');
+  });
+
   it('should render Cancel button with correct properties', () => {
     render(<RemoveSystemModal {...defaultProps} />);
 
     const cancelButton = screen.getByRole('button', { name: 'Cancel' });
     expect(cancelButton).toBeInTheDocument();
     expect(cancelButton).toHaveAttribute('data-variant', 'link');
+  });
+
+  it('should hide Cancel and close buttons while removing', () => {
+    render(<RemoveSystemModal {...defaultProps} isRemoving={true} />);
+
+    expect(
+      screen.queryByRole('button', { name: 'Cancel' }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Close')).not.toBeInTheDocument();
   });
 
   it('should call onConfirm when Remove button is clicked', () => {
