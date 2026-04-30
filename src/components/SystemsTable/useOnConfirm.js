@@ -34,7 +34,7 @@ const useOnConfirm = ({
         ? rawResult
         : {
             status: 'success',
-            successfullBatches: 1,
+            successfulBatches: 1,
             failedBatches: 0,
             errors: [],
           };
