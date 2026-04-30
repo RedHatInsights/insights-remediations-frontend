@@ -28,10 +28,15 @@ export const deleteRemediationSystems = (systems, remediation) => {
 /**
  * Delete systems from a remediation by calling the deleteRemediationSystems with batches of system IDs.
  *
- *  @param   {Array}   systems     - Array of system objects with id property
- *  @param   {object}  remediation - Remediation object with id property
- *  @param   {number}  [batchSize] - Batch size
- *  @returns {Promise}             Axios delete promise
+ *  @param   {Array}                                                         systems     - Array of system objects with id property
+ *  @param   {object}                                                        remediation - Remediation object with id property
+ *  @param   {number}                                                        [batchSize] - Batch size
+ *  @returns {Promise<{
+ *    status: ('success' | 'partial_failure' | 'complete_failure'),
+ *    successfulBatches: number,
+ *    failedBatches: number,
+ *    errors: Array,
+ *  }>} Promise resolving to a batched deletion summary
  */
 export const deleteRemediationSystemsBatched = async (
   systems,
