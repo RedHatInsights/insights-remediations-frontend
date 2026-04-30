@@ -198,6 +198,7 @@ const RemediationDetails = () => {
                 refetchConnectionStatus={refetchConnectionStatus}
                 detailsLoading={detailsLoading}
                 initialNestedTab={searchParams.get('nestedTab') || 'actions'}
+                onNavigateToTab={handleTabClick}
                 remediationId={id}
               />
             </Tab>
