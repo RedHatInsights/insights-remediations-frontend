@@ -5,10 +5,11 @@ import { connect } from 'react-redux';
 import Routes from './Routes';
 
 import NotificationsProvider from '@redhat-cloud-services/frontend-components-notifications/NotificationsProvider';
-import { Spinner } from '@patternfly/react-core';
+import { Bullseye, Spinner } from '@patternfly/react-core';
 import { NotAuthorized } from '@redhat-cloud-services/frontend-components/NotAuthorized';
 import { RBACProvider } from '@redhat-cloud-services/frontend-components/RBACProvider';
 import { AccessCheck } from '@project-kessel/react-kessel-access-check';
+import { useFlagsStatus } from '@unleash/proxy-client-react';
 
 import { useFeatureFlag } from './Utilities/Hooks/useFeatureFlag';
 import { useKesselRemediationPermissionState } from './Utilities/Hooks/useKesselRemediationPermissionState';
@@ -107,12 +108,21 @@ KesselPermissionsGate.propTypes = {
 
 const App = () => {
   const chrome = useChrome();
+  const { flagsReady } = useFlagsStatus();
   const isKesselEnabled = useFeatureFlag('kessel-for-remediations');
   const baseUrl = window.location.origin || 'https://console.redhat.com';
 
   useEffect(() => {
     chrome?.hideGlobalFilter?.(true);
   }, [chrome]);
+
+  if (!flagsReady) {
+    return (
+      <Bullseye>
+        <Spinner size="xl" />
+      </Bullseye>
+    );
+  }
 
   return isKesselEnabled ? (
     <AccessCheck.Provider baseUrl={baseUrl} apiPath={KESSEL_API_BASE_URL}>
