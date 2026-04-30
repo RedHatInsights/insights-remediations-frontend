@@ -9,6 +9,7 @@ const useOnConfirm = ({
   remediation,
   refreshRemediation,
   refetchConnectionStatus,
+  setIsRemoving,
   setIsOpen,
   addNotification,
   clearSelection,
@@ -27,6 +28,7 @@ const useOnConfirm = ({
               },
             ];
       const itemsToDelete = selectedSystems.length;
+      setIsRemoving?.(true);
       const rawResult = await deleteSystems(selectedSystems, remediation);
       const result = rawResult?.status
         ? rawResult
@@ -82,6 +84,7 @@ const useOnConfirm = ({
         dismissable: true,
       });
     } finally {
+      setIsRemoving?.(false);
       setIsOpen(false);
     }
   }, [
@@ -92,6 +95,7 @@ const useOnConfirm = ({
     remediation,
     refreshRemediation,
     refetchConnectionStatus,
+    setIsRemoving,
     setIsOpen,
     addNotification,
     clearSelection,

@@ -39,6 +39,7 @@ const SystemsTableWrapper = ({
 }) => {
   const inventory = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
   const systemsRef = useRef();
   const configRef = useRef({});
   const activeSystem = useRef(undefined);
@@ -85,6 +86,7 @@ const SystemsTableWrapper = ({
       await refreshRemediation();
     },
     refetchConnectionStatus,
+    setIsRemoving,
     setIsOpen,
     addNotification,
     clearSelection,
@@ -174,13 +176,14 @@ const SystemsTableWrapper = ({
           <Button
             variant="secondary"
             onClick={() => setIsOpen(true)}
-            isDisabled={selected.size === 0}
+            isDisabled={selected.size === 0 || isRemoving}
           >
             Remove
           </Button>
         )}
         <RemoveSystemModal
           isOpen={isOpen}
+          isRemoving={isRemoving}
           onConfirm={onConfirm}
           selected={
             selected.size > 0
@@ -188,6 +191,9 @@ const SystemsTableWrapper = ({
               : [activeSystem.current]
           }
           onClose={() => {
+            if (isRemoving) {
+              return;
+            }
             activeSystem.current = undefined;
             setIsOpen(false);
           }}
