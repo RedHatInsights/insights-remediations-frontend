@@ -1,6 +1,7 @@
 import axiosInstance from '@redhat-cloud-services/frontend-components-utilities/interceptors';
 import { remediationsApi } from '../api';
 import { API_BASE } from '../constants';
+import chunk from 'lodash/chunk';
 
 /**
  * Delete systems from a remediation.
@@ -22,6 +23,54 @@ export const deleteRemediationSystems = (systems, remediation) => {
       data: { system_ids: systemIds },
     },
   );
+};
+
+/**
+ * Delete systems from a remediation by calling the deleteRemediationSystems with batches of system IDs.
+ *
+ *  @param   {Array}   systems     - Array of system objects with id property
+ *  @param   {object}  remediation - Remediation object with id property
+ *  @param   {number}  [batchSize] - Batch size
+ *  @returns {Promise}             Axios delete promise
+ */
+export const deleteRemediationSystemsBatched = async (
+  systems,
+  remediation,
+  batchSize = 100,
+) => {
+  const batches = chunk(systems, batchSize);
+  const errors = [];
+  let status = 'success';
+  let successfullBatches = 0;
+  let failedBatches = 0;
+
+  for (let i = 0; i < batches.length; i++) {
+    const batch = batches[i];
+
+    try {
+      await deleteRemediationSystems(batch, remediation);
+      successfullBatches += 1;
+    } catch (error) {
+      // TODO: Find out a reliable path for extracting only the usable error message
+      errors.push(error.statusText || 'Unknown error');
+      failedBatches += 1;
+    }
+  }
+
+  if (failedBatches === 0) {
+    status = 'success';
+  } else if (successfullBatches === 0) {
+    status = 'complete_failure';
+  } else {
+    status = 'partial_failure';
+  }
+
+  return {
+    status,
+    successfullBatches,
+    failedBatches,
+    errors,
+  };
 };
 
 /**

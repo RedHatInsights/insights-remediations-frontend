@@ -1,9 +1,10 @@
 import { useCallback } from 'react';
+import { pluralize } from '../../Utilities/utils';
 
 const useOnConfirm = ({
   selected,
   activeSystem,
-  deleteRemediationSystems,
+  deleteRemediationSystemsBatched,
   remediation,
   refreshRemediation,
   refetchConnectionStatus,
@@ -22,29 +23,49 @@ const useOnConfirm = ({
                 ...activeSystem.current,
               },
             ];
-      await deleteRemediationSystems(selectedSystems, remediation);
-      await refreshRemediation();
-      if (refetchConnectionStatus) {
-        await refetchConnectionStatus();
+      const itemsToDelete = selectedSystems.length;
+      const { status, errors } = await deleteRemediationSystemsBatched(
+        selectedSystems,
+        remediation,
+      );
+
+      if (status !== 'complete_failure') {
+        await refreshRemediation();
+        if (refetchConnectionStatus) {
+          await refetchConnectionStatus();
+        }
+
+        activeSystem.current = undefined;
+
+        clearSelection();
+        reloadTable();
       }
 
-      activeSystem.current = undefined;
-
-      clearSelection();
-      reloadTable();
-
-      const itemsToDelete = selected.size > 0 ? selected.size : 1;
-      addNotification({
-        title: `Removed ${itemsToDelete} ${
-          itemsToDelete > 1 ? 'systems' : 'system'
-        } from playbook`,
-        description: '',
-        variant: 'success',
-        dismissable: true,
-        autoDismiss: true,
-      });
-
-      setIsOpen(false);
+      if (status === 'success') {
+        addNotification({
+          title: `Removed ${pluralize(itemsToDelete, 'system')} from playbook`,
+          description: '',
+          variant: 'success',
+          dismissable: true,
+          autoDismiss: true,
+        });
+      } else if (status === 'partial_failure') {
+        addNotification({
+          title: 'Some selected systems may not have been removed',
+          description:
+            'The system list has been refreshed to show the current state.',
+          variant: 'warning',
+          dismissable: true,
+          autoDismiss: true,
+        });
+      } else {
+        addNotification({
+          title: 'Failed to remove systems',
+          description: errors[0] || 'An error occurred',
+          variant: 'danger',
+          dismissable: true,
+        });
+      }
     } catch (error) {
       addNotification({
         title: 'Failed to remove systems',
@@ -52,12 +73,13 @@ const useOnConfirm = ({
         variant: 'danger',
         dismissable: true,
       });
+    } finally {
       setIsOpen(false);
     }
   }, [
     selected,
     activeSystem,
-    deleteRemediationSystems,
+    deleteRemediationSystemsBatched,
     remediation,
     refreshRemediation,
     refetchConnectionStatus,
