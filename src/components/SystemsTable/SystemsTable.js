@@ -26,7 +26,7 @@ import useBulkSelect from './useBulkSelect';
 import useOnConfirm from './useOnConfirm';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
-import { deleteRemediationSystems } from '../../routes/api';
+import { deleteRemediationSystemsBatched } from '../../routes/api';
 import { selectEntity } from '../../actions';
 
 const SystemsTableWrapper = ({
@@ -79,7 +79,7 @@ const SystemsTableWrapper = ({
   const onConfirm = useOnConfirm({
     selected,
     activeSystem,
-    deleteRemediationSystems,
+    deleteRemediationSystemsBatched,
     remediation,
     refreshRemediation: async () => {
       await refreshRemediation();
