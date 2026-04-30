@@ -41,7 +41,7 @@ export const deleteRemediationSystemsBatched = async (
   const batches = chunk(systems, batchSize);
   const errors = [];
   let status = 'success';
-  let successfullBatches = 0;
+  let successfulBatches = 0;
   let failedBatches = 0;
 
   for (let i = 0; i < batches.length; i++) {
@@ -49,7 +49,7 @@ export const deleteRemediationSystemsBatched = async (
 
     try {
       await deleteRemediationSystems(batch, remediation);
-      successfullBatches += 1;
+      successfulBatches += 1;
     } catch (error) {
       // TODO: Find out a reliable path for extracting only the usable error message
       errors.push(error.statusText || 'Unknown error');
@@ -59,7 +59,7 @@ export const deleteRemediationSystemsBatched = async (
 
   if (failedBatches === 0) {
     status = 'success';
-  } else if (successfullBatches === 0) {
+  } else if (successfulBatches === 0) {
     status = 'complete_failure';
   } else {
     status = 'partial_failure';
@@ -67,7 +67,7 @@ export const deleteRemediationSystemsBatched = async (
 
   return {
     status,
-    successfullBatches,
+    successfulBatches,
     failedBatches,
     errors,
   };
