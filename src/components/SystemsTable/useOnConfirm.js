@@ -1,12 +1,15 @@
 import { useCallback } from 'react';
+import { pluralize } from '../../Utilities/utils';
 
 const useOnConfirm = ({
   selected,
   activeSystem,
+  deleteRemediationSystemsBatched,
   deleteRemediationSystems,
   remediation,
   refreshRemediation,
   refetchConnectionStatus,
+  setIsRemoving,
   setIsOpen,
   addNotification,
   clearSelection,
@@ -14,6 +17,8 @@ const useOnConfirm = ({
 }) => {
   return useCallback(async () => {
     try {
+      const deleteSystems =
+        deleteRemediationSystemsBatched || deleteRemediationSystems;
       const selectedSystems =
         selected.size > 0
           ? Array.from(selected, ([, value]) => value)
@@ -22,29 +27,55 @@ const useOnConfirm = ({
                 ...activeSystem.current,
               },
             ];
-      await deleteRemediationSystems(selectedSystems, remediation);
-      await refreshRemediation();
-      if (refetchConnectionStatus) {
-        await refetchConnectionStatus();
+      const itemsToDelete = selectedSystems.length;
+      setIsRemoving?.(true);
+      const rawResult = await deleteSystems(selectedSystems, remediation);
+      const result = rawResult?.status
+        ? rawResult
+        : {
+            status: 'success',
+            successfulBatches: 1,
+            failedBatches: 0,
+            errors: [],
+          };
+
+      if (result.status !== 'complete_failure') {
+        await refreshRemediation();
+        if (refetchConnectionStatus) {
+          await refetchConnectionStatus();
+        }
+
+        activeSystem.current = undefined;
+
+        clearSelection();
+        reloadTable();
       }
 
-      activeSystem.current = undefined;
-
-      clearSelection();
-      reloadTable();
-
-      const itemsToDelete = selected.size > 0 ? selected.size : 1;
-      addNotification({
-        title: `Removed ${itemsToDelete} ${
-          itemsToDelete > 1 ? 'systems' : 'system'
-        } from playbook`,
-        description: '',
-        variant: 'success',
-        dismissable: true,
-        autoDismiss: true,
-      });
-
-      setIsOpen(false);
+      if (result.status === 'success') {
+        addNotification({
+          title: `Removed ${pluralize(itemsToDelete, 'system')} from playbook`,
+          description: '',
+          variant: 'success',
+          dismissable: true,
+          autoDismiss: true,
+        });
+      } else if (result.status === 'partial_failure') {
+        addNotification({
+          title: 'Some selected systems may not have been removed',
+          description:
+            'The system list has been refreshed to show the current state.',
+          variant: 'warning',
+          dismissable: true,
+          autoDismiss: true,
+        });
+      } else {
+        addNotification({
+          title: 'Failed to remove systems',
+          description: result?.errors?.[0] || 'An error occurred',
+          variant: 'danger',
+          dismissable: true,
+        });
+      }
     } catch (error) {
       addNotification({
         title: 'Failed to remove systems',
@@ -52,15 +83,19 @@ const useOnConfirm = ({
         variant: 'danger',
         dismissable: true,
       });
+    } finally {
+      setIsRemoving?.(false);
       setIsOpen(false);
     }
   }, [
     selected,
     activeSystem,
+    deleteRemediationSystemsBatched,
     deleteRemediationSystems,
     remediation,
     refreshRemediation,
     refetchConnectionStatus,
+    setIsRemoving,
     setIsOpen,
     addNotification,
     clearSelection,

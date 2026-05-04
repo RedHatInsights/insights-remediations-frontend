@@ -22,6 +22,7 @@ const PlannedRemediationsContent = ({
   refetchConnectionStatus,
   detailsLoading,
   initialNestedTab = 'actions',
+  onNavigateToTab,
   remediationId,
 }) => {
   const [nestedActiveTab, setNestedActiveTab] = useState(initialNestedTab);
@@ -55,6 +56,7 @@ const PlannedRemediationsContent = ({
 
   const handleNestedTabClick = (_event, tabName) => {
     setNestedActiveTab(tabName);
+    onNavigateToTab?.(_event, `plannedRemediations:${tabName}`);
   };
 
   return (
@@ -151,6 +153,7 @@ PlannedRemediationsContent.propTypes = {
   refetchConnectionStatus: PropTypes.func,
   detailsLoading: PropTypes.bool,
   initialNestedTab: PropTypes.string,
+  onNavigateToTab: PropTypes.func,
   remediationId: PropTypes.string,
 };
 
