@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 
-jest.mock('@patternfly/react-charts', () => {
+jest.mock('@patternfly/react-charts/victory', () => {
   const React = require('react');
   const PropTypes = require('prop-types');
   const ChartBullet = (props) =>

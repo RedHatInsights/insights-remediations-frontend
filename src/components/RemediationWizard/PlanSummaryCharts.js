@@ -1,6 +1,6 @@
 import React from 'react';
 import { Flex, FlexItem } from '@patternfly/react-core';
-import { ChartAxis, ChartBullet } from '@patternfly/react-charts';
+import { ChartAxis, ChartBullet } from '@patternfly/react-charts/victory';
 import { pluralize } from '../../Utilities/utils';
 import { renderChartSkeleton } from '../helpers';
 import propTypes from 'prop-types';
@@ -27,6 +27,19 @@ export const PlanSummaryCharts = ({
     detailsLoading && isExistingPlanSelected
       ? { default: 'row' }
       : { default: 'column', md: 'row' };
+  const chartContainerStyle = {
+    maxWidth: 'fit-content',
+    '--pf-v6-chart-global--label--Fill':
+      'var(--pf-t--global--text--color--regular)',
+    '--pf-v6-chart-bullet--label--title--Fill':
+      'var(--pf-t--global--text--color--regular)',
+    '--pf-v6-chart-axis--tick-label--Fill':
+      'var(--pf-t--global--text--color--subtle)',
+    '--pf-v6-chart-axis--axis--stroke--Color':
+      'var(--pf-t--global--border--color--default)',
+    '--pf-v6-chart-axis--tick--stroke--Color':
+      'var(--pf-t--global--border--color--default)',
+  };
 
   return (
     <Flex
@@ -43,10 +56,7 @@ export const PlanSummaryCharts = ({
               renderChartSkeleton()
             ) : (
               <>
-                <div
-                  id="actions-chart-container"
-                  style={{ maxWidth: 'fit-content' }}
-                >
+                <div id="actions-chart-container" style={chartContainerStyle}>
                   <ChartBullet
                     ariaDesc="Action points bullet chart"
                     ariaTitle="Action points"
@@ -67,7 +77,7 @@ export const PlanSummaryCharts = ({
                       }
                       return `${datum.name}: ${datum.y}`;
                     }}
-                    {...(actionsExceedsLimit && { themeColor: 'gold' })}
+                    {...(actionsExceedsLimit && { themeColor: 'yellow' })}
                     height={120}
                     padding={{
                       bottom: 50,
@@ -119,10 +129,7 @@ export const PlanSummaryCharts = ({
             {detailsLoading && isExistingPlanSelected ? (
               renderChartSkeleton()
             ) : (
-              <div
-                id="systems-chart-container"
-                style={{ maxWidth: 'fit-content' }}
-              >
+              <div id="systems-chart-container" style={chartContainerStyle}>
                 <ChartBullet
                   ariaDesc="Systems bullet chart"
                   ariaTitle="Systems"
@@ -140,7 +147,7 @@ export const PlanSummaryCharts = ({
                     }
                     return `${datum.name}: ${datum.y}`;
                   }}
-                  {...(systemsExceedsLimit && { themeColor: 'gold' })}
+                  {...(systemsExceedsLimit && { themeColor: 'yellow' })}
                   height={120}
                   padding={{
                     bottom: 50,
