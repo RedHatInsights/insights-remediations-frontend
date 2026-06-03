@@ -12,7 +12,6 @@ export default [
     transforms: [wrappable],
     exportKey: 'action',
     Component: ActionsCell,
-    manageable: false,
   },
   {
     title: 'Reboot required',

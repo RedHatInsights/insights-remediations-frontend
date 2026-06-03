@@ -16,7 +16,6 @@ export const Name = {
   sortable: 'name',
   exportKey: 'name',
   Component: NameCell,
-  manageable: false,
 };
 
 export const LastExecuted = {
