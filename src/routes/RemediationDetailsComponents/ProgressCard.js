@@ -84,15 +84,6 @@ const ProgressCard = ({
     exceedsExecutionLimits,
   ]);
 
-  const isRhcNotEnabled = useMemo(() => {
-    const error = remediationStatus?.connectionError?.errors?.[0];
-    return (
-      error?.status === 403 ||
-      error?.status === 503 ||
-      error?.code === 'DEPENDENCY_UNAVAILABLE'
-    );
-  }, [remediationStatus?.connectionError]);
-
   const popoverState = { openPopover, setOpenPopover };
 
   const executionLimitsPopoverContent = (
@@ -225,47 +216,6 @@ const ProgressCard = ({
     </Flex>
   );
 
-  const rhcPopoverContent = (
-    <Flex
-      direction={{ default: 'column' }}
-      spaceItems={{ default: 'spaceItemsMd' }}
-    >
-      <Title headingLevel="h4">Remote Host Configuration Manager</Title>
-      <Content>
-        <p>
-          To allow users to execute a remediation plan on a remote system from{' '}
-          Red Hat Lightspeed, you must configure the Remote Host Configuration
-          Manager settings in the Lightspeed UI. You can find the settings in
-          the console under Inventory &gt; System Configurations &gt; Remote
-          Host Configuration.
-        </p>
-      </Content>
-      <Flex
-        direction={{ default: 'row' }}
-        spaceItems={{ default: 'spaceItemsSm' }}
-      >
-        <Button
-          variant="secondary"
-          onClick={() =>
-            quickStarts?.activateQuickstart('insights-remediate-plan-create')
-          }
-        >
-          Open the quick start
-        </Button>
-        <Button
-          variant="link"
-          icon={<ExternalLinkAltIcon />}
-          component="a"
-          href="https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/remote_host_configuration_and_management/index"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Go to documentation
-        </Button>
-      </Flex>
-    </Flex>
-  );
-
   return permissions === undefined || remediationStatus.areDetailsLoading ? (
     <Spinner />
   ) : (
@@ -347,45 +297,6 @@ const ProgressCard = ({
                 'permissionsStep',
                 'User access permissions',
                 permissionsPopoverContent,
-                popoverState,
-              )}
-            </span>
-          </ProgressStep>
-          <ProgressStep
-            variant={isRhcNotEnabled ? 'danger' : 'success'}
-            description={
-              <span className="pf-v6-u-color-100">
-                {isRhcNotEnabled ? (
-                  <>
-                    RHC Manager is not enabled. Enable it in&nbsp;
-                    <a
-                      href="https://console.redhat.com/insights/connector"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        textDecoration: 'underline',
-                        color:
-                          'var(--pf-t--global--text--color--link--default, #0066cc)',
-                      }}
-                    >
-                      Remote Host Configuration
-                    </a>
-                    .
-                  </>
-                ) : (
-                  'Enabled'
-                )}
-              </span>
-            }
-            id="RHCStep"
-            titleId="RHCStep-title"
-            aria-label="RHCStep2"
-          >
-            <span className="pf-v6-u-color-100">
-              {renderStepTitleWithPopover(
-                'RHCStep',
-                'Remote Host Configuration Manager',
-                rhcPopoverContent,
                 popoverState,
               )}
             </span>

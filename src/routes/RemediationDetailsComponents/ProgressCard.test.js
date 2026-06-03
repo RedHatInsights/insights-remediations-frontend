@@ -370,11 +370,11 @@ describe('ProgressCard', () => {
   });
 
   describe('Progress steps', () => {
-    it('should render all four progress steps', () => {
+    it('should render all three progress steps', () => {
       render(<ProgressCard {...defaultProps} />);
 
       const steps = screen.getAllByTestId('progress-step');
-      expect(steps).toHaveLength(4);
+      expect(steps).toHaveLength(3);
     });
 
     describe('User access permissions step', () => {
@@ -431,130 +431,6 @@ describe('ProgressCard', () => {
       });
     });
 
-    describe('RHC Manager step', () => {
-      it('should show success variant when no 403 error', () => {
-        render(
-          <ProgressCard
-            {...defaultProps}
-            remediationStatus={{
-              ...defaultProps.remediationStatus,
-              connectionError: null,
-            }}
-          />,
-        );
-
-        const steps = screen.getAllByTestId('progress-step');
-        const rhcStep = steps[2]; // RHCStep is now third (after executionLimitsStep and permissionsStep)
-        expect(rhcStep).toHaveAttribute('data-variant', 'success');
-        expect(
-          screen.getByText('Remote Host Configuration Manager'),
-        ).toBeInTheDocument();
-        expect(screen.getByText('Enabled')).toBeInTheDocument();
-      });
-
-      it('should show success variant when error is not 403', () => {
-        render(
-          <ProgressCard
-            {...defaultProps}
-            remediationStatus={{
-              ...defaultProps.remediationStatus,
-              connectionError: { errors: [{ status: 500 }] },
-            }}
-          />,
-        );
-
-        const steps = screen.getAllByTestId('progress-step');
-        const rhcStep = steps[2]; // RHCStep is now third (after executionLimitsStep and permissionsStep)
-        expect(rhcStep).toHaveAttribute('data-variant', 'success');
-        expect(screen.getByText('Enabled')).toBeInTheDocument();
-      });
-
-      it('should show danger variant when error is 403', () => {
-        render(
-          <ProgressCard
-            {...defaultProps}
-            remediationStatus={{
-              ...defaultProps.remediationStatus,
-              connectionError: { errors: [{ status: 403 }] },
-            }}
-          />,
-        );
-
-        const steps = screen.getAllByTestId('progress-step');
-        const rhcStep = steps[2]; // RHCStep is now third (after executionLimitsStep and permissionsStep)
-        expect(rhcStep).toHaveAttribute('data-variant', 'danger');
-        expect(
-          screen.getByText(/RHC Manager is not enabled/),
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText('Remote Host Configuration'),
-        ).toBeInTheDocument();
-      });
-
-      it('should show danger variant when error code is DEPENDENCY_UNAVAILABLE', () => {
-        render(
-          <ProgressCard
-            {...defaultProps}
-            remediationStatus={{
-              ...defaultProps.remediationStatus,
-              connectionError: {
-                errors: [
-                  {
-                    status: 503,
-                    code: 'DEPENDENCY_UNAVAILABLE',
-                    title:
-                      'Internal service dependency is temporarily unavailable.',
-                  },
-                ],
-              },
-            }}
-          />,
-        );
-
-        const steps = screen.getAllByTestId('progress-step');
-        const rhcStep = steps[2]; // RHCStep is now third (after executionLimitsStep and permissionsStep)
-        expect(rhcStep).toHaveAttribute('data-variant', 'danger');
-        expect(
-          screen.getByText(/RHC Manager is not enabled/),
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText('Remote Host Configuration'),
-        ).toBeInTheDocument();
-      });
-
-      it('should render external link when RHC is not enabled', () => {
-        render(
-          <ProgressCard
-            {...defaultProps}
-            remediationStatus={{
-              ...defaultProps.remediationStatus,
-              connectionError: { errors: [{ status: 403 }] },
-            }}
-          />,
-        );
-
-        const link = screen.getByRole('link', {
-          name: /Remote Host Configuration/,
-        });
-        expect(link).toHaveAttribute(
-          'href',
-          'https://console.redhat.com/insights/connector',
-        );
-        expect(link).toHaveAttribute('target', '_blank');
-        expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-      });
-
-      it('should have correct accessibility attributes', () => {
-        render(<ProgressCard {...defaultProps} />);
-
-        const steps = screen.getAllByTestId('progress-step');
-        const rhcStep = steps[2]; // RHCStep is now third (after executionLimitsStep and permissionsStep)
-        expect(rhcStep).toHaveAttribute('data-id', 'RHCStep');
-        expect(rhcStep).toHaveAttribute('data-title-id', 'RHCStep-title');
-        expect(rhcStep).toHaveAttribute('aria-label', 'RHCStep2');
-      });
-    });
-
     describe('Connected systems step', () => {
       it('should show success variant when connected systems > 0', () => {
         render(
@@ -568,7 +444,7 @@ describe('ProgressCard', () => {
         );
 
         const steps = screen.getAllByTestId('progress-step');
-        const systemsStep = steps[3]; // connectedSystemsStep is now fourth (last)
+        const systemsStep = steps[2];
         expect(systemsStep).toHaveAttribute('data-variant', 'success');
         expect(
           screen.getByText('Systems connected to Red Hat Lightspeed'),
@@ -590,7 +466,7 @@ describe('ProgressCard', () => {
         );
 
         const steps = screen.getAllByTestId('progress-step');
-        const systemsStep = steps[3]; // connectedSystemsStep is now fourth (last)
+        const systemsStep = steps[2];
         expect(systemsStep).toHaveAttribute('data-variant', 'danger');
         expect(screen.getByText(/No connected systems/)).toBeInTheDocument();
       });
@@ -627,7 +503,7 @@ describe('ProgressCard', () => {
         render(<ProgressCard {...defaultProps} />);
 
         const steps = screen.getAllByTestId('progress-step');
-        const systemsStep = steps[3]; // connectedSystemsStep is now fourth (last)
+        const systemsStep = steps[2];
         expect(systemsStep).toHaveAttribute('data-id', 'connectedSystemsStep');
         expect(systemsStep).toHaveAttribute(
           'data-title-id',
@@ -715,21 +591,6 @@ describe('ProgressCard', () => {
       ).toBeInTheDocument();
     });
 
-    it('should handle complex connectionError values', () => {
-      render(
-        <ProgressCard
-          {...defaultProps}
-          remediationStatus={{
-            ...defaultProps.remediationStatus,
-            connectionError: { errors: [{ status: '403' }] },
-          }}
-        />,
-      );
-
-      const steps = screen.getAllByTestId('progress-step');
-      const rhcStep = steps[2]; // RHCStep is now third (after executionLimitsStep and permissionsStep)
-      expect(rhcStep).toHaveAttribute('data-variant', 'success'); // '403' !== 403
-    });
   });
 
   describe('Component styling and classes', () => {
