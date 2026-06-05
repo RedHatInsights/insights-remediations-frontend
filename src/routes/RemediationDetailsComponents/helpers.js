@@ -168,14 +168,10 @@ export const calculateReadinessErrorCount = ({
 }) => {
   let count = 0;
   if (!hasExecutePermission) count++;
-  const error = connectionError?.errors?.[0];
-  if (
-    error?.status === 403 ||
-    error?.status === 503 ||
-    error?.code === 'DEPENDENCY_UNAVAILABLE'
-  )
-    count++;
-  if (connectedSystems === 0) count++;
+  // connection_status API call can fail and thus number of connected systems will be unknown
+  // OR connection_status API call can succed and return 0 connected systems
+  // Both cases are treated as error (+1 for the count), but ProgressCard will show different error message
+  if (connectionError || connectedSystems === 0) count++;
   if (exceedsExecutionLimits) count++;
   return count;
 };
