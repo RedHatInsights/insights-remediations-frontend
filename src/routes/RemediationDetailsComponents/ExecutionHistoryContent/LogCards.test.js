@@ -7,9 +7,14 @@ import { capitalize } from '../../../Utilities/utils';
 
 // Mock PatternFly components
 jest.mock('@patternfly/react-core', () => ({
-  Card: function MockCard({ isFullHeight, children, ...props }) {
+  Card: function MockCard({ isFullHeight, children, style, ...props }) {
     return (
-      <div data-testid="card" data-full-height={isFullHeight} {...props}>
+      <div
+        data-testid="card"
+        data-full-height={isFullHeight}
+        style={style}
+        {...props}
+      >
         {children}
       </div>
     );
@@ -371,6 +376,13 @@ describe('LogCards', () => {
       // Check that all flex items have the correct style
       flexItems.forEach((item) => {
         expect(item).toHaveStyle('flex: 1 1 0');
+        expect(item).toHaveStyle('display: flex');
+      });
+
+      const cards = screen.getAllByTestId('card');
+      cards.forEach((card) => {
+        expect(card).toHaveStyle('min-width: 12rem');
+        expect(card).toHaveStyle('min-height: 10rem');
       });
     });
 
