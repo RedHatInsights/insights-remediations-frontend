@@ -455,11 +455,11 @@ describe('DetailsGeneralContent', () => {
       const testCases = [
         {
           connectionError: { errors: [{ status: 500 }] },
-          expectedReadyOrNot: true,
+          expectedReadyOrNot: false,
         },
         {
           connectionError: { errors: [{ status: 404 }] },
-          expectedReadyOrNot: true,
+          expectedReadyOrNot: false,
         },
         {
           connectionError: { errors: [{ status: 403 }] },
@@ -477,7 +477,7 @@ describe('DetailsGeneralContent', () => {
         },
         {
           connectionError: { errors: [{ status: 0 }] },
-          expectedReadyOrNot: true,
+          expectedReadyOrNot: false,
         },
         { connectionError: null, expectedReadyOrNot: true },
         { connectionError: undefined, expectedReadyOrNot: true },

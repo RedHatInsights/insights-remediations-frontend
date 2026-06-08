@@ -303,11 +303,16 @@ const ProgressCard = ({
           </ProgressStep>
           <ProgressStep
             variant={
-              remediationStatus?.connectedSystems !== 0 ? 'success' : 'danger'
+              !remediationStatus?.connectionError &&
+              remediationStatus?.connectedSystems !== 0
+                ? 'success'
+                : 'danger'
             }
             description={
               <div className="pf-v6-u-color-100">
-                {remediationStatus?.connectedSystems === 0 ? (
+                {remediationStatus?.connectionError ? (
+                  <>Couldn&apos;t verify connection status.</>
+                ) : remediationStatus?.connectedSystems === 0 ? (
                   <>
                     No connected systems. You must connect one or more systems
                     to execute this plan. Review the{' '}
@@ -347,7 +352,8 @@ const ProgressCard = ({
                 'Systems connected to Red Hat Lightspeed',
                 connectedSystemsPopoverContent,
                 popoverState,
-                remediationStatus?.connectedSystems === 0,
+                remediationStatus?.connectedSystems === 0 ||
+                  remediationStatus?.connectionError,
               )}
             </span>
           </ProgressStep>
