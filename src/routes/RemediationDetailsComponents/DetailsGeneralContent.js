@@ -44,10 +44,7 @@ const DetailsGeneralContent = ({
 
   const canExecute =
     permissions?.execute &&
-    remediationStatus?.connectionError?.errors?.[0]?.status !== 403 &&
-    remediationStatus?.connectionError?.errors?.[0]?.status !== 503 &&
-    remediationStatus?.connectionError?.errors?.[0]?.code !==
-      'DEPENDENCY_UNAVAILABLE' &&
+    !remediationStatus?.connectionError &&
     remediationStatus?.connectedSystems !== 0 &&
     !exceedsExecutionLimits;
 

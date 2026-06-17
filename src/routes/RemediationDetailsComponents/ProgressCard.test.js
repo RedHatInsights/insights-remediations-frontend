@@ -590,7 +590,6 @@ describe('ProgressCard', () => {
         ),
       ).toBeInTheDocument();
     });
-
   });
 
   describe('Component styling and classes', () => {
