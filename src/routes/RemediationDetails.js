@@ -204,7 +204,7 @@ const RemediationDetails = () => {
             <Tab
               eventKey={'executionHistory'}
               aria-label="ExecutionHistoryTab"
-              title={<TabTitleText>Execution History</TabTitleText>}
+              title={<TabTitleText>Execution history</TabTitleText>}
             >
               <ExecutionHistoryTab
                 remediationPlaybookRuns={remediationPlaybookRuns}
