@@ -48,9 +48,16 @@ const statusIcon = (status) => {
   return map[status] ?? <QuestionCircleIcon />;
 };
 
-const cardStyle = {
+const flexItemStyle = {
   flex: '1 1 0',
+  display: 'flex',
 };
+
+const cardStyle = {
+  minWidth: '12rem',
+  minHeight: '10rem',
+};
+
 const LogCards = ({ systemName, status, connectionType, executedBy }) => {
   const connectionTypeTitle = 'Red Hat Lightspeed connection type';
 
@@ -67,15 +74,15 @@ const LogCards = ({ systemName, status, connectionType, executedBy }) => {
       className="pf-v6-u-mb-lg"
       data-testid="flex"
     >
-      <FlexItem style={cardStyle} data-testid="flex-item">
-        <Card isFullHeight data-testid="card">
+      <FlexItem style={flexItemStyle} data-testid="flex-item">
+        <Card isFullHeight style={cardStyle} data-testid="card">
           <CardTitle>System</CardTitle>
           <CardBody data-testid="card-body">{systemName ?? '-'}</CardBody>
         </Card>
       </FlexItem>
 
-      <FlexItem style={cardStyle} data-testid="flex-item">
-        <Card isFullHeight data-testid="card">
+      <FlexItem style={flexItemStyle} data-testid="flex-item">
+        <Card isFullHeight style={cardStyle} data-testid="card">
           <CardTitle>System execution status</CardTitle>
           <CardBody data-testid="card-body">
             <Flex
@@ -92,8 +99,8 @@ const LogCards = ({ systemName, status, connectionType, executedBy }) => {
         </Card>
       </FlexItem>
 
-      <FlexItem style={cardStyle} data-testid="flex-item">
-        <Card isFullHeight data-testid="card">
+      <FlexItem style={flexItemStyle} data-testid="flex-item">
+        <Card isFullHeight style={cardStyle} data-testid="card">
           <CardTitle>
             <Flex
               spaceItems={{ default: 'spaceItemsXs' }}
@@ -118,8 +125,8 @@ const LogCards = ({ systemName, status, connectionType, executedBy }) => {
         </Card>
       </FlexItem>
 
-      <FlexItem style={cardStyle} data-testid="flex-item">
-        <Card isFullHeight data-testid="card">
+      <FlexItem style={flexItemStyle} data-testid="flex-item">
+        <Card isFullHeight style={cardStyle} data-testid="card">
           <CardTitle>Executed by user</CardTitle>
           <CardBody data-testid="card-body">{executedBy ?? '-'}</CardBody>
         </Card>

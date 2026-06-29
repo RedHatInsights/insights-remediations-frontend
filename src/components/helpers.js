@@ -9,6 +9,7 @@ import {
   HintTitle,
   Skeleton,
   Spinner,
+  Tooltip,
 } from '@patternfly/react-core';
 import { DownloadIcon } from '@patternfly/react-icons';
 import React from 'react';
@@ -122,14 +123,16 @@ export const renderPreviewAlert = ({
           alignItems={{ default: 'alignItemsCenter' }}
           className="pf-v6-u-mt-sm"
         >
-          <Button
-            variant="link"
-            icon={<DownloadIcon />}
-            onClick={onPreviewClick}
-            isDisabled={!hasPlanSelection || previewLoading}
-          >
-            Download preview
-          </Button>
+          <Tooltip content="Enter a new plan name or select an existing plan.">
+            <Button
+              variant="link"
+              icon={<DownloadIcon />}
+              onClick={onPreviewClick}
+              isDisabled={!hasPlanSelection || previewLoading}
+            >
+              Download preview
+            </Button>
+          </Tooltip>
           {previewLoading && <Spinner size="sm" />}
           {previewStatus && !previewLoading && (
             <Alert

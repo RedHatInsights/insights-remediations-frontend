@@ -142,12 +142,6 @@ const ResolutionOptionsModal = ({
                   style={{ fontSize: '14px' }}
                 >
                   Select resolution{' '}
-                  <span
-                    style={{ color: '#c9190b', display: 'inline' }}
-                    aria-label="required"
-                  >
-                    *
-                  </span>
                 </span>
               </FlexItem>
               <FlexItem>
@@ -163,7 +157,7 @@ const ResolutionOptionsModal = ({
                 >
                   <Button
                     variant="plain"
-                    icon={<OutlinedQuestionCircleIcon color="#6a6e73" />}
+                    icon={<OutlinedQuestionCircleIcon />}
                     aria-label="Select resolution help"
                     hasNoPadding
                   />

@@ -144,7 +144,7 @@ export const ExecuteModal = ({
           title: `Executing playbook ${remediation.name}`,
           description: (
             <span>
-              View results in the <b>Execution History tab</b>
+              View results in the <b>Execution history tab</b>
             </span>
           ),
           variant: 'success',
