@@ -26,7 +26,7 @@ import useBulkSelect from './useBulkSelect';
 import useOnConfirm from './useOnConfirm';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
-import { deleteRemediationSystems } from '../../routes/api';
+import { deleteRemediationSystemsBatched } from '../../routes/api';
 import { selectEntity } from '../../actions';
 
 const SystemsTableWrapper = ({
@@ -39,6 +39,7 @@ const SystemsTableWrapper = ({
 }) => {
   const inventory = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
   const systemsRef = useRef();
   const configRef = useRef({});
   const activeSystem = useRef(undefined);
@@ -68,6 +69,11 @@ const SystemsTableWrapper = ({
     setRefreshKey((prev) => prev + 1);
   }, []);
 
+  const handleClose = useCallback(() => {
+    activeSystem.current = undefined;
+    setIsOpen(false);
+  }, []);
+
   useEffect(() => {
     systemsRef.current = [];
   }, []);
@@ -79,12 +85,13 @@ const SystemsTableWrapper = ({
   const onConfirm = useOnConfirm({
     selected,
     activeSystem,
-    deleteRemediationSystems,
+    deleteRemediationSystemsBatched,
     remediation,
     refreshRemediation: async () => {
       await refreshRemediation();
     },
     refetchConnectionStatus,
+    setIsRemoving,
     setIsOpen,
     addNotification,
     clearSelection,
@@ -174,23 +181,21 @@ const SystemsTableWrapper = ({
           <Button
             variant="secondary"
             onClick={() => setIsOpen(true)}
-            isDisabled={selected.size === 0}
+            isDisabled={selected.size === 0 || isRemoving}
           >
             Remove
           </Button>
         )}
         <RemoveSystemModal
           isOpen={isOpen}
+          isRemoving={isRemoving}
           onConfirm={onConfirm}
           selected={
             selected.size > 0
               ? Array.from(selected, ([, value]) => value)
               : [activeSystem.current]
           }
-          onClose={() => {
-            activeSystem.current = undefined;
-            setIsOpen(false);
-          }}
+          onClose={handleClose}
           remediationName={remediation.name}
         />
       </InventoryTable>
