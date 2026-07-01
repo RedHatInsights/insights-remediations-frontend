@@ -2,6 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import SystemsTable from './SystemsTable';
+import { PermissionContext } from '../../App';
 
 // Mock external dependencies to avoid complex integration issues
 const mockRemediationsClient = {
@@ -107,13 +108,27 @@ describe('SystemsTable', () => {
     areDetailsLoading: false,
   };
 
+  const renderWithPermissions = (
+    element,
+    permissions = { write: true, read: true, inventoryHostsRead: true },
+  ) =>
+    render(
+      <PermissionContext.Provider value={{ permissions }}>
+        {element}
+      </PermissionContext.Provider>,
+    );
+
   it('should render without crashing', () => {
-    const { container } = render(<SystemsTable {...defaultProps} />);
+    const { container } = renderWithPermissions(
+      <SystemsTable {...defaultProps} />,
+    );
     expect(container).toBeInTheDocument();
   });
 
   it('should handle loading state correctly', () => {
-    render(<SystemsTable {...defaultProps} areDetailsLoading={true} />);
+    renderWithPermissions(
+      <SystemsTable {...defaultProps} areDetailsLoading={true} />,
+    );
     // Component should handle loading state without crashing
     expect(true).toBe(true);
   });
@@ -123,7 +138,7 @@ describe('SystemsTable', () => {
       ...defaultProps,
       remediation: { id: 'empty', name: 'Empty', issues: [] },
     };
-    render(<SystemsTable {...emptyProps} />);
+    renderWithPermissions(<SystemsTable {...emptyProps} />);
     expect(true).toBe(true);
   });
 });

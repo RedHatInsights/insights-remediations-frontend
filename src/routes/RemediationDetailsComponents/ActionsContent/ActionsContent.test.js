@@ -11,6 +11,7 @@ import {
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import ActionsContent from './ActionsContent';
+import { PermissionContext } from '../../../App';
 import * as useRemediations from '../../../Utilities/Hooks/api/useRemediations';
 import * as useRemediationFetchExtras from '../../../api/useRemediationFetchExtras';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
@@ -370,9 +371,13 @@ describe('ActionsContent', () => {
     };
 
     return render(
-      <MemoryRouter>
-        <ActionsContent {...defaultProps} />
-      </MemoryRouter>,
+      <PermissionContext.Provider
+        value={{ permissions: { write: true, read: true } }}
+      >
+        <MemoryRouter>
+          <ActionsContent {...defaultProps} />
+        </MemoryRouter>
+      </PermissionContext.Provider>,
     );
   };
 
