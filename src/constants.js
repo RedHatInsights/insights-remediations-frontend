@@ -49,3 +49,4 @@ export const KESSEL_API_BASE_URL = '/api/kessel/v1beta2';
 export const KESSEL_REMEDIATIONS_VIEW = 'remediations_view_remediation';
 export const KESSEL_REMEDIATIONS_EDIT = 'remediations_edit_remediation';
 export const KESSEL_REMEDIATIONS_EXECUTE = 'remediations_execute_remediation';
+export const KESSEL_INVENTORY_HOSTS_READ = 'inventory_hosts_read';
