@@ -107,6 +107,25 @@ export const renderPreviewAlert = ({
   previewStatus,
   previewLoading,
 }) => {
+  const isPreviewDisabled = !hasPlanSelection || previewLoading;
+  const previewButton = (
+    <Button
+      variant="link"
+      icon={<DownloadIcon />}
+      onClick={onPreviewClick}
+      isDisabled={isPreviewDisabled}
+    >
+      Download preview
+    </Button>
+  );
+  const previewButtonContent = !hasPlanSelection ? (
+    <Tooltip content="Enter a new plan name or select an existing plan.">
+      <span className="pf-v6-u-display-inline-flex">{previewButton}</span>
+    </Tooltip>
+  ) : (
+    previewButton
+  );
+
   return (
     <Hint variant="info" className="pf-v6-u-mt-lg">
       <HintTitle>You can download a preview of this plan</HintTitle>
@@ -123,16 +142,7 @@ export const renderPreviewAlert = ({
           alignItems={{ default: 'alignItemsCenter' }}
           className="pf-v6-u-mt-sm"
         >
-          <Tooltip content="Enter a new plan name or select an existing plan.">
-            <Button
-              variant="link"
-              icon={<DownloadIcon />}
-              onClick={onPreviewClick}
-              isDisabled={!hasPlanSelection || previewLoading}
-            >
-              Download preview
-            </Button>
-          </Tooltip>
+          {previewButtonContent}
           {previewLoading && <Spinner size="sm" />}
           {previewStatus && !previewLoading && (
             <Alert
