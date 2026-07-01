@@ -1,10 +1,10 @@
 import React from 'react';
-import { Button } from '@patternfly/react-core';
 import { downloadPlaybook } from '../api';
 import keyBy from 'lodash/keyBy';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import PropTypes from 'prop-types';
 import { pluralize } from './utils';
+import ButtonWithToolTip from './ButtonWithToolTip';
 
 const verifyDownload = (selectedIds, data) => {
   const byId = keyBy(data, (r) => r.id);
@@ -51,23 +51,31 @@ export const download = (selectedIds, data, addNotification) => {
   }
 };
 
-export const DownloadPlaybookButton = ({ selectedItems = [], data }) => {
+export const DownloadPlaybookButton = ({
+  selectedItems = [],
+  data,
+  isDisabled = false,
+  tooltipContent,
+}) => {
   const addNotification = useAddNotification();
 
   return (
-    <Button
-      isDisabled={selectedItems?.length < 1}
+    <ButtonWithToolTip
+      isDisabled={isDisabled || selectedItems?.length < 1}
       variant="primary"
       onClick={() => {
         download(selectedItems, data, addNotification);
       }}
+      tooltipContent={tooltipContent}
     >
-      {`Download`}
-    </Button>
+      Download
+    </ButtonWithToolTip>
   );
 };
 
 DownloadPlaybookButton.propTypes = {
   selectedItems: PropTypes.array.isRequired,
   data: PropTypes.array.isRequired,
+  isDisabled: PropTypes.bool,
+  tooltipContent: PropTypes.node,
 };

@@ -213,6 +213,7 @@ export const OverViewPage = () => {
                       onClick: (_event, _index, { item }) => {
                         handleDownloadClick(item.id);
                       },
+                      isDisabled: !context.permissions.inventoryHostsRead,
                     },
                     {
                       title: 'Rename',
@@ -220,10 +221,17 @@ export const OverViewPage = () => {
                         setRemediation(item);
                         setIsRenameModalOpen(true);
                       },
+                      isDisabled: !context.permissions.write,
                     },
                     {
                       title: (
-                        <Content className="pf-v6-u-danger-color-100">
+                        <Content
+                          className={
+                            context.permissions.write
+                              ? 'pf-v6-u-danger-color-100'
+                              : ''
+                          }
+                        >
                           Delete
                         </Content>
                       ),
@@ -233,6 +241,7 @@ export const OverViewPage = () => {
                         setIsDeleteModalOpen(true);
                       },
                       props: { screenReaderText: 'Delete button' },
+                      isDisabled: !context.permissions.write,
                     },
                   ];
                 },
@@ -242,6 +251,15 @@ export const OverViewPage = () => {
                     selectedItems={currentlySelected}
                     data={result?.data}
                     dispatch={dispatch}
+                    isDisabled={!context.permissions.inventoryHostsRead}
+                    tooltipContent={
+                      !context.permissions.inventoryHostsRead ? (
+                        <div>
+                          You don&apos;t have the required permissions to
+                          download remediation plans.
+                        </div>
+                      ) : null
+                    }
                   />
                 ),
                 EmptyState: TableEmptyState,

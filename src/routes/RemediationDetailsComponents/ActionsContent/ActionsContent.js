@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, useContext } from 'react';
 import PropTypes from 'prop-types';
 import columns from './Columns';
 import { Button } from '@patternfly/react-core';
@@ -18,6 +18,7 @@ import {
 } from 'bastilian-tabletools';
 import TableEmptyState from '../../OverViewPage/TableEmptyState';
 import RemediationsTable from '../../../components/RemediationsTable/RemediationsTable';
+import { PermissionContext } from '../../../App';
 
 const ActionsContent = ({
   refetch,
@@ -36,6 +37,7 @@ const ActionsContent = ({
   const [isResolutionModalOpen, setIsResolutionModalOpen] = useState(false);
   const [selectedIssueForResolution, setSelectedIssueForResolution] =
     useState(null);
+  const permission = useContext(PermissionContext);
 
   const {
     result: issuesResult,
@@ -269,13 +271,16 @@ const ActionsContent = ({
                   setAction([item.id]);
                   setIsDeleteModalOpen(true);
                 },
+                isDisabled: !permission.permissions.write,
               },
             ];
           },
           dedicatedAction: () => (
             <Button
               variant="secondary"
-              isDisabled={currentlySelected?.length === 0}
+              isDisabled={
+                !permission.permissions.write || currentlySelected?.length === 0
+              }
               onClick={() => {
                 setIsBulkDelete(true);
                 setIsDeleteModalOpen(true);

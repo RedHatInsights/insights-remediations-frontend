@@ -44,6 +44,7 @@ PermissionsLayout.propTypes = {
     read: PropTypes.bool.isRequired,
     write: PropTypes.bool.isRequired,
     execute: PropTypes.bool.isRequired,
+    inventoryHostsRead: PropTypes.bool,
   }).isRequired,
 };
 
@@ -54,6 +55,7 @@ const RbacPermissionsGate = () => {
     read: false,
     write: false,
     execute: false,
+    inventoryHostsRead: false,
   });
   const [isLoading, setIsLoading] = useState(true);
   const didLoadRef = useRef(false);
@@ -70,19 +72,37 @@ const RbacPermissionsGate = () => {
 
     let cancelled = false;
 
-    chrome
-      .getUserPermissions('remediations')
-      .then((list) => {
+    Promise.all([
+      chrome.getUserPermissions('remediations'),
+      chrome.getUserPermissions('inventory'),
+    ])
+      .then(([remediationsList, inventoryList]) => {
         if (cancelled) return;
 
-        setPermissions(getChromePerms(list));
+        const remediationsPerms = getChromePerms(remediationsList);
+        const inventoryHostsRead = inventoryList?.some(
+          (item) =>
+            item?.permission === 'inventory:hosts:read' ||
+            item?.permission === 'inventory:hosts:*' ||
+            item?.permission === 'inventory:*:*',
+        );
+
+        setPermissions({
+          ...remediationsPerms,
+          inventoryHostsRead: !!inventoryHostsRead,
+        });
 
         setIsLoading(false);
       })
       .catch((error) => {
         console.error('Error loading user permissions:', error);
         if (!cancelled) {
-          setPermissions({ read: false, write: false, execute: false });
+          setPermissions({
+            read: false,
+            write: false,
+            execute: false,
+            inventoryHostsRead: false,
+          });
           setIsLoading(false);
         }
       });

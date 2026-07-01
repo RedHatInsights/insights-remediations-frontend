@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useContext } from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
@@ -36,6 +36,7 @@ import { execStatus } from './helpers';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import { pluralize } from '../../Utilities/utils';
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
+import { PermissionContext } from '../../App';
 
 const DetailsCard = ({
   details,
@@ -53,6 +54,7 @@ const DetailsCard = ({
   const [hasResolutionsAvailable, setHasResolutionsAvailable] = useState(false);
   const [isCheckingResolutions, setIsCheckingResolutions] = useState(true);
   const addNotification = useAddNotification();
+  const permission = useContext(PermissionContext);
   //This is paginated, so we must loop through issues until we find a batch with multiple resolutions or we reach the end of the issues.
   const { fetch: fetchRemediationIssues } = useRemediations(
     'getRemediationIssues',
@@ -207,6 +209,7 @@ const DetailsCard = ({
                 id="autoreboot-switch"
                 isChecked={rebootToggle}
                 onChange={onToggleAutoreboot}
+                isDisabled={!permission.permissions.write}
                 className="pf-v6-u-font-size-sm"
                 style={{ fontSize: 'var(--pf-t--global--font-size--sm)' }}
               />
@@ -248,20 +251,22 @@ const DetailsCard = ({
           <DescriptionListGroup>
             <DescriptionListTerm>
               <span>Name</span>
-              <Button
-                icon={
-                  <PencilAltIcon
-                    color={
-                      editing
-                        ? 'var(--pf-t--global--text--color--regular)'
-                        : undefined
-                    }
-                  />
-                }
-                variant="link"
-                onClick={() => setEditing(!editing)}
-                className="pf-v6-u-ml-sm"
-              ></Button>
+              {permission.permissions.write && (
+                <Button
+                  icon={
+                    <PencilAltIcon
+                      color={
+                        editing
+                          ? 'var(--pf-t--global--text--color--regular)'
+                          : undefined
+                      }
+                    />
+                  }
+                  variant="link"
+                  onClick={() => setEditing(!editing)}
+                  className="pf-v6-u-ml-sm"
+                ></Button>
+              )}
             </DescriptionListTerm>
             <DescriptionListDescription>
               {editing ? (
