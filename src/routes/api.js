@@ -99,3 +99,26 @@ export const updateRemediationWrapper = (params) => {
 export const postPlaybookPreview = (payload, options = {}) => {
   return axiosInstance.post(`${API_BASE}/playbook`, payload, options);
 };
+
+/**
+ * GET /config — effective organization-wide retention configuration.
+ * Not yet available in the generated remediations-client, so this is a plain axios
+ * wrapper. Passed directly as the "endpoint" to useRemediations, same as
+ * updateRemediationWrapper. `axiosInstance` already unwraps to `response.data`
+ * via a platform interceptor, so the resolved value is the config object itself.
+ *
+ *  @returns {Promise<{ plan_retention_days: number, plan_warning_days: number }>} Effective retention config
+ */
+export const getOrgConfig = () => axiosInstance.get(`${API_BASE}/config`);
+
+/**
+ * PUT /config/overrides — replace organization-wide retention overrides (org admins only).
+ * Not yet available in the generated remediations-client; see getOrgConfig above.
+ *
+ *  @param   {object}                                                                data                     - Override values to persist
+ *  @param   {number}                                                                data.plan_retention_days - Retention override, in days
+ *  @param   {number}                                                                data.plan_warning_days   - Expiration warning override, in days
+ *  @returns {Promise<{ plan_retention_days?: number, plan_warning_days?: number }>}                          Updated overrides
+ */
+export const putOrgConfigOverrides = (data) =>
+  axiosInstance.put(`${API_BASE}/config/overrides`, data);
