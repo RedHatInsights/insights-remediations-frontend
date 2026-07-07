@@ -32,6 +32,7 @@ import {
 import { useVerifyName } from '../../Utilities/useVerifyName';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { pluralize } from '../../Utilities/utils';
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 
@@ -43,6 +44,7 @@ const DetailsCard = ({
   refetch,
   refetchAllRemediations,
 }) => {
+  const chrome = useChrome();
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(details?.name);
   const [rebootToggle, setRebootToggle] = useState(details?.auto_reboot);
@@ -161,6 +163,12 @@ const DetailsCard = ({
     return <Spinner />;
   }
   const onToggleAutoreboot = async () => {
+    chrome.analytics?.track('remediations - Auto-Reboot Toggled', {
+      module: 'remediations',
+      remediation_id: details.id,
+      auto_reboot: !rebootToggle,
+    });
+
     setRebootToggle(!rebootToggle);
     try {
       await updateRemPlan({ id: details.id, auto_reboot: !rebootToggle });

@@ -2,6 +2,7 @@ import React, { useMemo, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import columns from './Columns';
 import { Button } from '@patternfly/react-core';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import useRemediations from '../../../Utilities/Hooks/api/useRemediations';
 import useRemediationFetchExtras from '../../../api/useRemediationFetchExtras';
 import { useParams } from 'react-router-dom';
@@ -24,6 +25,7 @@ const ActionsContent = ({
   remediationId,
   refetchRemediationDetails,
 }) => {
+  const chrome = useChrome();
   const { id } = useParams();
   const tableState = useRawTableState();
   const currentlySelected = tableState?.selected;
@@ -216,6 +218,12 @@ const ActionsContent = ({
             }
             try {
               await handleDelete(chopped);
+              chrome.analytics?.track('remediations - Actions Removed', {
+                module: 'remediations',
+                remediation_id: id,
+                count: chopped.length,
+                is_bulk: isBulkDelete,
+              });
               refetchIssues();
               addNotification({
                 title: 'Successfully deleted actions',

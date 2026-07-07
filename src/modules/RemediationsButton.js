@@ -27,6 +27,7 @@ const RemediationButtonContent = ({
   isCompliancePrecedenceEnabled,
   buttonTooltipContent,
 }) => {
+  const chrome = useChrome();
   const [remediationsData, setRemediationsData] = useState();
   const [isNoDataModalOpen, setNoDataModalOpen] = useState(false);
 
@@ -65,6 +66,14 @@ const RemediationButtonContent = ({
 
                 try {
                   validate(data);
+                  chrome.analytics?.track(
+                    'remediations - Remediate Button Clicked',
+                    {
+                      module: 'remediations',
+                      issue_count: data?.issues?.length,
+                      system_count: data?.systems?.length,
+                    },
+                  );
                   setRemediationsData(data);
                 } catch {
                   setNoDataModalOpen(true);

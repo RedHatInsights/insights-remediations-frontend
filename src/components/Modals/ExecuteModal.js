@@ -134,6 +134,14 @@ export const ExecuteModal = ({
     setExecutionTimestamp(timestamp);
     setIsExecuting(true);
 
+    chrome.analytics?.track('remediations - Plan Executed', {
+      module: 'remediations',
+      remediation_id: remediation.id,
+      action_count: remediation?.issue_count,
+      system_count: connectedCount,
+      auto_reboot: remediation?.auto_reboot ?? false,
+    });
+
     executeRun({
       id: remediation.id,
       playbookRunsInput: { exclude },

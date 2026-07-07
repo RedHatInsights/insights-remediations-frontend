@@ -38,6 +38,7 @@ import { PlaybookSelect } from './PlaybookSelect';
 import { usePlaybookSelect } from './usePlaybookSelect';
 import ModalStatusContent from './ModalStatusContent';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { postPlaybookPreview } from '../../routes/api';
 import { downloadFile } from '../../Utilities/helpers';
 
@@ -46,6 +47,7 @@ export const RemediationWizard = ({
   data,
   isCompliancePrecedenceEnabled = false,
 }) => {
+  const chrome = useChrome();
   const [isOpen, setIsOpen] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null); // 'complete_failure' | 'partial_failure'
@@ -210,6 +212,20 @@ export const RemediationWizard = ({
     if (!hasPlanSelection) {
       return;
     }
+
+    chrome.analytics?.track(
+      isExistingPlanSelected
+        ? 'remediations - Plan Updated'
+        : 'remediations - Plan Created',
+      {
+        module: 'remediations',
+        is_existing_plan: isExistingPlanSelected,
+        action_count: actionsCount,
+        system_count: systemsCount,
+        auto_reboot: autoReboot,
+      },
+    );
+
     setIsSubmitting(true);
     resetErrorState();
     totalBatchesRef.current = 0;
