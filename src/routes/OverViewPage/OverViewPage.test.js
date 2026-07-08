@@ -31,6 +31,10 @@ jest.mock('../../Utilities/Hooks/useFeatureFlag', () => ({
   useFeatureFlag: jest.fn(),
 }));
 
+jest.mock('../../Utilities/Hooks/useIsOrgAdmin', () => ({
+  useIsOrgAdmin: jest.fn(),
+}));
+
 jest.mock('@redhat-cloud-services/frontend-components/InsightsLink', () => {
   const MockInsightsLink = ({ children, to }) => (
     <a href={`/insights/${to}`}>{children}</a>
@@ -332,6 +336,7 @@ const renderPageWithList = (list, customStore) => {
 };
 
 const { useFeatureFlag } = require('../../Utilities/Hooks/useFeatureFlag');
+const { useIsOrgAdmin } = require('../../Utilities/Hooks/useIsOrgAdmin');
 const useRemediations =
   require('../../Utilities/Hooks/api/useRemediations').default;
 
@@ -356,6 +361,11 @@ describe('OverViewPage', () => {
     // This is critical when tests run together - mocks from other files can leak
     useFeatureFlag.mockReset();
     useFeatureFlag.mockReturnValue(false);
+    useIsOrgAdmin.mockReset();
+    useIsOrgAdmin.mockReturnValue({
+      isOrgAdmin: false,
+      isLoading: false,
+    });
 
     // Reset useRemediations to default implementation for this test file
     useRemediations.mockReset();
@@ -556,6 +566,42 @@ describe('OverViewPage', () => {
     expect(global.mockActivateQuickstart).toHaveBeenCalledWith(
       'insights-remediate-plan-create',
     );
+  });
+
+  it('shows a disabled retention policy action for non-admin users', async () => {
+    const user = userEvent.setup();
+    const view = renderPage(store);
+    cleanup = view.unmount;
+
+    const actionsToggle = await screen.findByRole('button', {
+      name: /overview page actions/i,
+    });
+    await user.click(actionsToggle);
+
+    const retentionPolicyItem = await screen.findByRole('menuitem', {
+      name: /edit retention policy/i,
+    });
+    expect(retentionPolicyItem).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('keeps the retention policy action visible in the empty state', async () => {
+    const user = userEvent.setup();
+    const view = renderPageWithList([], store);
+    cleanup = view.unmount;
+
+    await waitFor(() => {
+      expect(screen.getByText(/no remediation plans/i)).toBeInTheDocument();
+    });
+
+    const actionsToggle = screen.getByRole('button', {
+      name: /overview page actions/i,
+    });
+    await user.click(actionsToggle);
+
+    const retentionPolicyItem = await screen.findByRole('menuitem', {
+      name: /edit retention policy/i,
+    });
+    expect(retentionPolicyItem).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('hides Launch Quick Start button when no remediations exist', async () => {
