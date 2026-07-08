@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Button,
   Dropdown,
-  DropdownItem,
   DropdownList,
   Flex,
   FlexItem,
@@ -19,16 +18,16 @@ import { RemediationsPopover } from '../RemediationsPopover';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import PropTypes from 'prop-types';
 import RetentionPolicyModal from '../../components/RetentionPolicyModal';
+import RetentionPolicyDropdownItem from '../../components/RetentionPolicyDropdownItem';
 import { useIsOrgAdmin } from '../../Utilities/Hooks/useIsOrgAdmin';
 
 export const OverViewPageHeader = ({ hasRemediations }) => {
   const { quickStarts } = useChrome();
-  const { isOrgAdmin: canManageRetentionPolicy } = useIsOrgAdmin();
+  const { isOrgAdmin: canManageRetentionPolicy, isLoading: isOrgAdminLoading } =
+    useIsOrgAdmin();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [retentionPolicyModalOpen, setRetentionPolicyModalOpen] =
     useState(false);
-
-  const showActions = hasRemediations || canManageRetentionPolicy;
 
   return (
     <PageHeader className="pf-v6-u-pb-lg">
@@ -69,59 +68,54 @@ export const OverViewPageHeader = ({ hasRemediations }) => {
           </Stack>
         </FlexItem>
 
-        {showActions && (
-          <FlexItem>
-            <Flex
-              spaceItems={{ default: 'spaceItemsSm' }}
-              alignItems={{ default: 'alignItemsCenter' }}
-            >
-              {hasRemediations && (
-                <FlexItem>
-                  <Button
-                    icon={<OpenDrawerRightIcon className="pf-v6-u-ml-sm" />}
-                    variant="secondary"
-                    onClick={() =>
-                      quickStarts?.activateQuickstart(
-                        'insights-remediate-plan-create',
-                      )
-                    }
+        <FlexItem>
+          <Flex
+            spaceItems={{ default: 'spaceItemsSm' }}
+            alignItems={{ default: 'alignItemsCenter' }}
+          >
+            {hasRemediations && (
+              <FlexItem>
+                <Button
+                  icon={<OpenDrawerRightIcon className="pf-v6-u-ml-sm" />}
+                  variant="secondary"
+                  onClick={() =>
+                    quickStarts?.activateQuickstart(
+                      'insights-remediate-plan-create',
+                    )
+                  }
+                >
+                  Launch Quick Start
+                </Button>
+              </FlexItem>
+            )}
+            <FlexItem>
+              <Dropdown
+                onSelect={() => setDropdownOpen(false)}
+                toggle={(toggleRef) => (
+                  <MenuToggle
+                    ref={toggleRef}
+                    variant="plain"
+                    onClick={() => setDropdownOpen((value) => !value)}
+                    isExpanded={dropdownOpen}
+                    aria-label="Overview page actions"
                   >
-                    Launch Quick Start
-                  </Button>
-                </FlexItem>
-              )}
-              {canManageRetentionPolicy && (
-                <FlexItem>
-                  <Dropdown
-                    onSelect={() => setDropdownOpen(false)}
-                    toggle={(toggleRef) => (
-                      <MenuToggle
-                        ref={toggleRef}
-                        variant="plain"
-                        onClick={() => setDropdownOpen((value) => !value)}
-                        isExpanded={dropdownOpen}
-                        aria-label="Overview page actions"
-                      >
-                        <EllipsisVIcon />
-                      </MenuToggle>
-                    )}
-                    isOpen={dropdownOpen}
-                    popperProps={{ position: 'right' }}
-                  >
-                    <DropdownList>
-                      <DropdownItem
-                        key="retention-policy"
-                        onClick={() => setRetentionPolicyModalOpen(true)}
-                      >
-                        Edit retention policy
-                      </DropdownItem>
-                    </DropdownList>
-                  </Dropdown>
-                </FlexItem>
-              )}
-            </Flex>
-          </FlexItem>
-        )}
+                    <EllipsisVIcon />
+                  </MenuToggle>
+                )}
+                isOpen={dropdownOpen}
+                popperProps={{ position: 'right' }}
+              >
+                <DropdownList>
+                  <RetentionPolicyDropdownItem
+                    canManageRetentionPolicy={canManageRetentionPolicy}
+                    isLoading={isOrgAdminLoading}
+                    onClick={() => setRetentionPolicyModalOpen(true)}
+                  />
+                </DropdownList>
+              </Dropdown>
+            </FlexItem>
+          </Flex>
+        </FlexItem>
       </Flex>
     </PageHeader>
   );

@@ -12,6 +12,7 @@ import { EllipsisVIcon } from '@patternfly/react-icons';
 import RenameModal from './RenameModal';
 import ConfirmationDialog from './ConfirmationDialog';
 import RetentionPolicyModal from './RetentionPolicyModal';
+import RetentionPolicyDropdownItem from './RetentionPolicyDropdownItem';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 
 import { PermissionContext } from '../App';
@@ -30,7 +31,8 @@ function RemediationDetailsDropdown({
   const [retentionPolicyModalOpen, setRetentionPolicyModalOpen] =
     useState(false);
   const permission = useContext(PermissionContext);
-  const { isOrgAdmin: canManageRetentionPolicy } = useIsOrgAdmin();
+  const { isOrgAdmin: canManageRetentionPolicy, isLoading: isOrgAdminLoading } =
+    useIsOrgAdmin();
   const navigate = useNavigate();
   const addNotification = useAddNotification();
 
@@ -116,14 +118,11 @@ function RemediationDetailsDropdown({
                 Rename
               </DropdownItem>
             )}
-            {canManageRetentionPolicy && (
-              <DropdownItem
-                key="retention-policy"
-                onClick={() => setRetentionPolicyModalOpen(true)}
-              >
-                Edit retention policy
-              </DropdownItem>
-            )}
+            <RetentionPolicyDropdownItem
+              canManageRetentionPolicy={canManageRetentionPolicy}
+              isLoading={isOrgAdminLoading}
+              onClick={() => setRetentionPolicyModalOpen(true)}
+            />
             {permission.permissions.write && (
               <DropdownItem
                 key="delete"
