@@ -30,13 +30,12 @@ const RenameModal = ({
     }
     const trimmedName = name.trim();
 
-    chrome.analytics?.track('remediations - Plan Renamed', {
-      module: 'remediations',
-      remediation_id: id,
-    });
-
     try {
       await updateRemediation({ id, name: trimmedName });
+      chrome.analytics?.track('remediations - Plan Renamed', {
+        module: 'remediations',
+        remediation_id: id,
+      });
       addNotification({
         title: `Remediation plan renamed`,
         variant: 'success',

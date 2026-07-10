@@ -166,23 +166,22 @@ export const OverViewPage = () => {
           onClose={(confirm) => {
             setIsDeleteModalOpen(false);
             if (confirm) {
-              if (isBulkDelete) {
-                chrome.analytics?.track('remediations - Plans Bulk Deleted', {
-                  module: 'remediations',
-                  count: currentlySelected.length,
-                });
-              } else {
-                chrome.analytics?.track('remediations - Plan Deleted', {
-                  module: 'remediations',
-                  remediation_id: remediation.itemId,
-                });
-              }
-
               let executeDeleteFunction = isBulkDelete
                 ? handleBulkDeleteClick(currentlySelected)
                 : handleSingleDeleteClick(remediation.itemId);
 
               executeDeleteFunction.then(() => {
+                if (isBulkDelete) {
+                  chrome.analytics?.track('remediations - Plans Bulk Deleted', {
+                    module: 'remediations',
+                    count: currentlySelected.length,
+                  });
+                } else {
+                  chrome.analytics?.track('remediations - Plan Deleted', {
+                    module: 'remediations',
+                    remediation_id: remediation.itemId,
+                  });
+                }
                 addNotification({
                   title: `Remediation plan${
                     currentlySelected.length > 1 ? 's' : ''

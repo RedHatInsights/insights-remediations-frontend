@@ -141,6 +141,10 @@ const DetailsCard = ({
         await refetchAllRemediations();
       });
 
+      chrome.analytics?.track('remediations - Plan Renamed', {
+        module: 'remediations',
+        remediation_id: details.id,
+      });
       addNotification({
         title: `Remediation plan renamed`,
         variant: 'success',
@@ -163,15 +167,15 @@ const DetailsCard = ({
     return <Spinner />;
   }
   const onToggleAutoreboot = async () => {
-    chrome.analytics?.track('remediations - Auto-Reboot Toggled', {
-      module: 'remediations',
-      remediation_id: details.id,
-      auto_reboot: !rebootToggle,
-    });
-
-    setRebootToggle(!rebootToggle);
+    const newValue = !rebootToggle;
+    setRebootToggle(newValue);
     try {
-      await updateRemPlan({ id: details.id, auto_reboot: !rebootToggle });
+      await updateRemPlan({ id: details.id, auto_reboot: newValue });
+      chrome.analytics?.track('remediations - Auto-Reboot Toggled', {
+        module: 'remediations',
+        remediation_id: details.id,
+        auto_reboot: newValue,
+      });
       await refetch();
     } catch (error) {
       console.error(error);

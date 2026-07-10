@@ -213,19 +213,6 @@ export const RemediationWizard = ({
       return;
     }
 
-    chrome.analytics?.track(
-      isExistingPlanSelected
-        ? 'remediations - Plan Updated'
-        : 'remediations - Plan Created',
-      {
-        module: 'remediations',
-        is_existing_plan: isExistingPlanSelected,
-        action_count: actionsCount,
-        system_count: systemsCount,
-        auto_reboot: autoReboot,
-      },
-    );
-
     setIsSubmitting(true);
     resetErrorState();
     totalBatchesRef.current = 0;
@@ -269,6 +256,18 @@ export const RemediationWizard = ({
         result?.status === 'success' &&
         result?.remediationId
       ) {
+        chrome.analytics?.track(
+          isExistingPlanSelected
+            ? 'remediations - Plan Updated'
+            : 'remediations - Plan Created',
+          {
+            module: 'remediations',
+            is_existing_plan: isExistingPlanSelected,
+            action_count: actionsCount,
+            system_count: systemsCount,
+            auto_reboot: autoReboot,
+          },
+        );
         // If there's only one batch (no batching occurred), add a 3-second delay
         if (totalBatchesRef.current === 1) {
           await new Promise((resolve) => setTimeout(resolve, 3000));

@@ -44,13 +44,12 @@ function RemediationDetailsDropdown({
   });
 
   const handleDelete = async (id) => {
-    chrome.analytics?.track('remediations - Plan Deleted', {
-      module: 'remediations',
-      remediation_id: id,
-    });
-
     try {
       await deleteRemediation({ id });
+      chrome.analytics?.track('remediations - Plan Deleted', {
+        module: 'remediations',
+        remediation_id: id,
+      });
       addNotification({
         title: `Deleted remediation plan ${remediation.name}`,
         variant: 'success',

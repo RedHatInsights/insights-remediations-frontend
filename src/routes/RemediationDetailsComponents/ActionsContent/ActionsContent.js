@@ -220,7 +220,7 @@ const ActionsContent = ({
               await handleDelete(chopped);
               chrome.analytics?.track('remediations - Actions Removed', {
                 module: 'remediations',
-                remediation_id: id,
+                remediation_id: remediationId,
                 count: chopped.length,
                 is_bulk: isBulkDelete,
               });
