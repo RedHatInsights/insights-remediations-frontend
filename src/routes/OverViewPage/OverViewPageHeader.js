@@ -25,7 +25,7 @@ export const OverViewPageHeader = ({
   hasRemediations,
   onRetentionPolicyUpdated,
 }) => {
-  const { quickStarts } = useChrome();
+  const chrome = useChrome();
   const { isOrgAdmin: canManageRetentionPolicy, isLoading: isOrgAdminLoading } =
     useIsOrgAdmin();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -82,11 +82,18 @@ export const OverViewPageHeader = ({
                 <Button
                   icon={<OpenDrawerRightIcon className="pf-v6-u-ml-sm" />}
                   variant="secondary"
-                  onClick={() =>
-                    quickStarts?.activateQuickstart(
+                  onClick={() => {
+                    chrome.quickStarts?.activateQuickstart(
                       'insights-remediate-plan-create',
-                    )
-                  }
+                    );
+                    chrome.analytics?.track(
+                      'remediations - Quick Start Launched',
+                      {
+                        module: 'remediations',
+                        source: 'overview_page',
+                      },
+                    );
+                  }}
                 >
                   Launch Quick Start
                 </Button>

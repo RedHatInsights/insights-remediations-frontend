@@ -6,6 +6,7 @@ import {
   GridItem,
 } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { calculateActionPointsFromSummary } from '../../components/helpers';
 import { calculateExecutionLimits } from './helpers';
 import DetailsCard from './DetailsCard';
@@ -26,6 +27,7 @@ const DetailsGeneralContent = ({
   retentionPolicyRefreshNonce,
   actionPoints: actionPointsProp,
 }) => {
+  const chrome = useChrome();
   const actionPointsComputed = useMemo(() => {
     return calculateActionPointsFromSummary(details?.issue_count_details);
   }, [details?.issue_count_details]);
@@ -95,6 +97,15 @@ const DetailsGeneralContent = ({
               href="http://sandbox.redhat.com"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() =>
+                chrome.analytics?.track(
+                  'remediations - AAP Trial Link Clicked',
+                  {
+                    module: 'remediations',
+                    remediation_id: details.id,
+                  },
+                )
+              }
             >
               Get a 30-day free trial of Red Hat Ansible Automation Platform
             </a>

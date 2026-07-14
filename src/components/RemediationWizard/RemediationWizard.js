@@ -349,6 +349,12 @@ export const RemediationWizard = ({
 
       downloadFile(response, sanitizedFilename, 'yml');
       setPreviewStatus('success');
+      chrome.analytics?.track('remediations - Preview Downloaded', {
+        module: 'remediations',
+        is_existing_plan: isExistingPlanSelected,
+        action_count: actionsCount,
+        system_count: systemsCount,
+      });
     } catch (error) {
       console.error('Error generating playbook preview:', error);
       setPreviewStatus('failure');
@@ -451,7 +457,16 @@ export const RemediationWizard = ({
               {isExistingPlanSelected ? 'Update' : 'Create'} plan
             </Button>
           )}
-          <Button key="cancel" variant="link" onClick={handleClose}>
+          <Button
+            key="cancel"
+            variant="link"
+            onClick={() => {
+              chrome.analytics?.track('remediations - Create Modal Cancelled', {
+                module: 'remediations',
+              });
+              handleClose();
+            }}
+          >
             Cancel
           </Button>
         </Flex>
@@ -505,11 +520,20 @@ export const RemediationWizard = ({
     handleModalClose = handleClose;
   }
 
+  const handleModalCloseWithTracking = handleModalClose
+    ? () => {
+        chrome.analytics?.track('remediations - Create Modal Closed', {
+          module: 'remediations',
+        });
+        handleModalClose();
+      }
+    : undefined;
+
   return (
     <Modal
       isOpen={isOpen}
       variant={ModalVariant.medium}
-      onClose={handleModalClose}
+      onClose={handleModalCloseWithTracking}
     >
       {renderStatusContent() || renderMainContent()}
     </Modal>
