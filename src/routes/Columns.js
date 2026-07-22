@@ -1,7 +1,4 @@
-import React from 'react';
-import { Icon, Tooltip } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
-import { wrappable, breakWord } from '@patternfly/react-table';
+import { wrappable, breakWord, info } from '@patternfly/react-table';
 import {
   Name as NameCell,
   LastExecutedCell,
@@ -12,19 +9,6 @@ import {
   LastModifiedCell,
   ExpirationCell,
 } from './Cells.js';
-
-export const ExpirationColumnHeader = () => {
-  return (
-    <span style={{ whiteSpace: 'nowrap' }}>
-      Expiration
-      <Tooltip content="Time remaining until the remediation plan is automatically deleted due to inactivity.">
-        <Icon status="custom" className="pf-v6-u-ml-xs">
-          <OutlinedQuestionCircleIcon color="var(--pf-t--global--icon--color--subtle)" />
-        </Icon>
-      </Tooltip>
-    </span>
-  );
-};
 
 export const Name = {
   title: 'Name',
@@ -68,8 +52,15 @@ export const Systems = {
 };
 
 export const Expiration = {
-  title: <ExpirationColumnHeader />,
-  transforms: [wrappable],
+  title: 'Expiration',
+  transforms: [
+    wrappable,
+    info({
+      tooltip:
+        'Time remaining until the remediation plan is automatically deleted due to inactivity.',
+      ariaLabel: 'Expiration column help',
+    }),
+  ],
   sortable: 'expires_at',
   exportKey: 'expires_at',
   Component: ExpirationCell,
