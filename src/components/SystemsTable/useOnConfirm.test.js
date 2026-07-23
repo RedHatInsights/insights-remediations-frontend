@@ -12,6 +12,7 @@ describe('useOnConfirm Hook', () => {
   let mockDeleteSystems;
   let mockRefreshRemediation;
   let mockSetIsOpen;
+  let mockSetIsRemoving;
   let mockActiveSystem;
   let mockSelected;
   let mockRemediation;
@@ -25,6 +26,7 @@ describe('useOnConfirm Hook', () => {
     mockDeleteSystems = jest.fn().mockResolvedValue({});
     mockRefreshRemediation = jest.fn().mockResolvedValue({});
     mockSetIsOpen = jest.fn();
+    mockSetIsRemoving = jest.fn();
     mockAddNotification = jest.fn();
     mockClearSelection = jest.fn();
     mockReloadTable = jest.fn();
@@ -38,6 +40,7 @@ describe('useOnConfirm Hook', () => {
     mockDeleteSystems.mockClear();
     mockRefreshRemediation.mockClear();
     mockSetIsOpen.mockClear();
+    mockSetIsRemoving.mockClear();
     mockAddNotification.mockClear();
     mockDispatch.mockClear();
     mockClearSelection.mockClear();
@@ -421,6 +424,34 @@ describe('useOnConfirm Hook', () => {
       });
 
       expect(mockRefreshRemediation).toHaveBeenCalled();
+    });
+
+    it('should toggle removing state while delete is in progress', async () => {
+      mockSelected = new Map();
+      mockDeleteSystems.mockResolvedValue({});
+      mockRefreshRemediation.mockResolvedValue();
+
+      const { result } = renderHook(() =>
+        useOnConfirm({
+          selected: mockSelected,
+          activeSystem: mockActiveSystem,
+          deleteRemediationSystems: mockDeleteSystems,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
+          remediation: mockRemediation,
+          refreshRemediation: mockRefreshRemediation,
+          setIsRemoving: mockSetIsRemoving,
+          setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
+        }),
+      );
+
+      await act(async () => {
+        await result.current();
+      });
+
+      expect(mockSetIsRemoving).toHaveBeenNthCalledWith(1, true);
+      expect(mockSetIsRemoving).toHaveBeenLastCalledWith(false);
     });
 
     it('should call refetchConnectionStatus when provided', async () => {
