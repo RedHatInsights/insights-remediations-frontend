@@ -15,12 +15,24 @@ jest.mock('@redhat-cloud-services/frontend-components/useChrome', () => ({
     getApp: () => 'remediations',
     getBundle: () => 'insights',
     quickStarts: { activateQuickstart: mockActivateQuickstart },
+    analytics: { track: jest.fn(), group: jest.fn() },
+    auth: {
+      getUser: jest
+        .fn()
+        .mockResolvedValue({ identity: { user: { username: 'test-user' } } }),
+    },
   }),
   useChrome: () => ({
     isBeta: jest.fn(),
     chrome: jest.fn(),
     updateDocumentTitle: jest.fn(),
     quickStarts: { activateQuickstart: mockActivateQuickstart },
+    analytics: { track: jest.fn(), group: jest.fn() },
+    auth: {
+      getUser: jest
+        .fn()
+        .mockResolvedValue({ identity: { user: { username: 'test-user' } } }),
+    },
   }),
 }));
 

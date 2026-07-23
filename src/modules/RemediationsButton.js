@@ -4,6 +4,7 @@ import propTypes from 'prop-types';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { AccessCheck } from '@project-kessel/react-kessel-access-check';
 import validate from './RemediationsModal/validate';
+import { normalizeRemediationData } from '../components/helpers';
 
 import { Button, Tooltip } from '@patternfly/react-core';
 import RemediationWizard from '../components/RemediationWizard/RemediationWizard';
@@ -27,6 +28,7 @@ const RemediationButtonContent = ({
   isCompliancePrecedenceEnabled,
   buttonTooltipContent,
 }) => {
+  const chrome = useChrome();
   const [remediationsData, setRemediationsData] = useState();
   const [isNoDataModalOpen, setNoDataModalOpen] = useState(false);
 
@@ -65,6 +67,15 @@ const RemediationButtonContent = ({
 
                 try {
                   validate(data);
+                  const normalizedData = normalizeRemediationData(data);
+                  chrome.analytics?.track(
+                    'remediations - Remediate Button Clicked',
+                    {
+                      module: 'remediations',
+                      issue_count: normalizedData?.issues?.length ?? 0,
+                      system_count: normalizedData?.systems?.length ?? 0,
+                    },
+                  );
                   setRemediationsData(data);
                 } catch {
                   setNoDataModalOpen(true);

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '@patternfly/react-core';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { downloadPlaybook } from '../api';
 import keyBy from 'lodash/keyBy';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
@@ -20,7 +21,7 @@ const verifyDownload = (selectedIds, data) => {
   }, []);
 };
 
-export const download = (selectedIds, data, addNotification) => {
+export const download = (selectedIds, data, addNotification, chrome) => {
   const valid = verifyDownload(selectedIds, data);
 
   if (valid.length === 0) {
@@ -32,6 +33,10 @@ export const download = (selectedIds, data, addNotification) => {
       autoDismiss: true,
     });
   } else if (valid.length < selectedIds.length) {
+    chrome?.analytics?.track('remediations - Playbook Downloaded', {
+      module: 'remediations',
+      count: valid.length,
+    });
     downloadPlaybook(valid);
     const skipped = selectedIds.length - valid.length;
     addNotification({
@@ -40,6 +45,10 @@ export const download = (selectedIds, data, addNotification) => {
       description: `${skipped} empty remediation plan${skipped === 1 ? ' was' : 's were'} not downloaded`,
     });
   } else {
+    chrome?.analytics?.track('remediations - Playbook Downloaded', {
+      module: 'remediations',
+      count: valid.length,
+    });
     downloadPlaybook(valid);
     addNotification({
       title: `Download ready`,
@@ -53,13 +62,14 @@ export const download = (selectedIds, data, addNotification) => {
 
 export const DownloadPlaybookButton = ({ selectedItems = [], data }) => {
   const addNotification = useAddNotification();
+  const chrome = useChrome();
 
   return (
     <Button
       isDisabled={selectedItems?.length < 1}
       variant="primary"
       onClick={() => {
-        download(selectedItems, data, addNotification);
+        download(selectedItems, data, addNotification, chrome);
       }}
     >
       {`Download`}

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import TextInputDialog from './Dialogs/TextInputDialog';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import useRemediations from '../Utilities/Hooks/api/useRemediations';
 import { updateRemediationWrapper } from '../routes/api';
 
@@ -15,6 +16,7 @@ const RenameModal = ({
   refetch,
 }) => {
   const addNotification = useAddNotification();
+  const chrome = useChrome();
   const { fetch: updateRemediation } = useRemediations(
     updateRemediationWrapper,
     {
@@ -30,6 +32,10 @@ const RenameModal = ({
 
     try {
       await updateRemediation({ id, name: trimmedName });
+      chrome.analytics?.track('remediations - Plan Renamed', {
+        module: 'remediations',
+        remediation_id: id,
+      });
       addNotification({
         title: `Remediation plan renamed`,
         variant: 'success',

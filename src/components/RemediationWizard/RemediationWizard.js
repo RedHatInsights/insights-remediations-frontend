@@ -38,6 +38,7 @@ import { PlaybookSelect } from './PlaybookSelect';
 import { usePlaybookSelect } from './usePlaybookSelect';
 import ModalStatusContent from './ModalStatusContent';
 import InsightsLink from '@redhat-cloud-services/frontend-components/InsightsLink';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { postPlaybookPreview } from '../../routes/api';
 import { downloadFile } from '../../Utilities/helpers';
 
@@ -46,6 +47,7 @@ export const RemediationWizard = ({
   data,
   isCompliancePrecedenceEnabled = false,
 }) => {
+  const chrome = useChrome();
   const [isOpen, setIsOpen] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null); // 'complete_failure' | 'partial_failure'
@@ -210,6 +212,7 @@ export const RemediationWizard = ({
     if (!hasPlanSelection) {
       return;
     }
+
     setIsSubmitting(true);
     resetErrorState();
     totalBatchesRef.current = 0;
@@ -253,6 +256,18 @@ export const RemediationWizard = ({
         result?.status === 'success' &&
         result?.remediationId
       ) {
+        chrome.analytics?.track(
+          isExistingPlanSelected
+            ? 'remediations - Plan Updated'
+            : 'remediations - Plan Created',
+          {
+            module: 'remediations',
+            is_existing_plan: isExistingPlanSelected,
+            action_count: actionsCount,
+            system_count: systemsCount,
+            auto_reboot: autoReboot,
+          },
+        );
         // If there's only one batch (no batching occurred), add a 3-second delay
         if (totalBatchesRef.current === 1) {
           await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -334,6 +349,12 @@ export const RemediationWizard = ({
 
       downloadFile(response, sanitizedFilename, 'yml');
       setPreviewStatus('success');
+      chrome.analytics?.track('remediations - Preview Downloaded', {
+        module: 'remediations',
+        is_existing_plan: isExistingPlanSelected,
+        action_count: actionsCount,
+        system_count: systemsCount,
+      });
     } catch (error) {
       console.error('Error generating playbook preview:', error);
       setPreviewStatus('failure');
@@ -436,7 +457,16 @@ export const RemediationWizard = ({
               {isExistingPlanSelected ? 'Update' : 'Create'} plan
             </Button>
           )}
-          <Button key="cancel" variant="link" onClick={handleClose}>
+          <Button
+            key="cancel"
+            variant="link"
+            onClick={() => {
+              chrome.analytics?.track('remediations - Create Modal Cancelled', {
+                module: 'remediations',
+              });
+              handleClose();
+            }}
+          >
             Cancel
           </Button>
         </Flex>
@@ -490,11 +520,20 @@ export const RemediationWizard = ({
     handleModalClose = handleClose;
   }
 
+  const handleModalCloseWithTracking = handleModalClose
+    ? () => {
+        chrome.analytics?.track('remediations - Create Modal Closed', {
+          module: 'remediations',
+        });
+        handleModalClose();
+      }
+    : undefined;
+
   return (
     <Modal
       isOpen={isOpen}
       variant={ModalVariant.medium}
-      onClose={handleModalClose}
+      onClose={handleModalCloseWithTracking}
     >
       {renderStatusContent() || renderMainContent()}
     </Modal>

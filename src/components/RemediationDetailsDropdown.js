@@ -15,6 +15,7 @@ import RetentionPolicyModal from './RetentionPolicyModal';
 import RetentionPolicyDropdownItem from './RetentionPolicyDropdownItem';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { PermissionContext } from '../App';
 import useRemediations from '../Utilities/Hooks/api/useRemediations';
 import { useIsOrgAdmin } from '../Utilities/Hooks/useIsOrgAdmin';
@@ -36,6 +37,7 @@ function RemediationDetailsDropdown({
     useIsOrgAdmin();
   const navigate = useNavigate();
   const addNotification = useAddNotification();
+  const chrome = useChrome();
 
   const { fetch: deleteRemediation } = useRemediations('deleteRemediation', {
     skip: true,
@@ -44,6 +46,10 @@ function RemediationDetailsDropdown({
   const handleDelete = async (id) => {
     try {
       await deleteRemediation({ id });
+      chrome.analytics?.track('remediations - Plan Deleted', {
+        module: 'remediations',
+        remediation_id: id,
+      });
       addNotification({
         title: `Deleted remediation plan ${remediation.name}`,
         variant: 'success',

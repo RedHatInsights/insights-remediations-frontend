@@ -1,4 +1,5 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import columns from '../Columns';
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import RemediationsTable from '../../components/RemediationsTable/RemediationsTable';
@@ -36,6 +37,7 @@ import { CalendarFilterType } from './CalendarFilterType';
 
 export const OverViewPage = () => {
   const dispatch = useDispatch();
+  const chrome = useChrome();
   const addNotification = useAddNotification();
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -83,7 +85,7 @@ export const OverViewPage = () => {
   });
 
   const handleDownloadClick = async (itemId) => {
-    await download([itemId], result.data, addNotification);
+    await download([itemId], result.data, addNotification, chrome);
   };
 
   const handleBulkDeleteClick = async (selected) => {
@@ -169,6 +171,17 @@ export const OverViewPage = () => {
                 : handleSingleDeleteClick(remediation.itemId);
 
               executeDeleteFunction.then(() => {
+                if (isBulkDelete) {
+                  chrome.analytics?.track('remediations - Plans Bulk Deleted', {
+                    module: 'remediations',
+                    count: currentlySelected.length,
+                  });
+                } else {
+                  chrome.analytics?.track('remediations - Plan Deleted', {
+                    module: 'remediations',
+                    remediation_id: remediation.itemId,
+                  });
+                }
                 addNotification({
                   title: `Remediation plan${
                     currentlySelected.length > 1 ? 's' : ''
