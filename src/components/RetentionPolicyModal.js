@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Button,
+  Form,
+  FormHelperText,
   FormGroup,
   HelperText,
   HelperTextItem,
@@ -192,8 +194,8 @@ const RetentionPolicyModal = ({
         {!isReady ? (
           <Skeleton screenreaderText="Loading retention policy settings" />
         ) : (
-          <>
-            <p className="pf-v6-u-mb-lg">
+          <Form>
+            <p>
               By default, remediation plans are deleted after 4 months of
               inactivity. Any plan modifications or executions will reset the
               retention period. Changes to this retention policy will affect all
@@ -212,19 +214,20 @@ const RetentionPolicyModal = ({
                 onChange={handleRetentionChange}
                 isDisabled={isSaving}
               />
-              <HelperText className="pf-v6-u-pt-sm">
-                <HelperTextItem>
-                  The duration that an inactive remediation plan is kept before
-                  being automatically deleted.
-                </HelperTextItem>
-              </HelperText>
+              <FormHelperText>
+                <HelperText>
+                  <HelperTextItem>
+                    The duration that an inactive remediation plan is kept
+                    before being automatically deleted.
+                  </HelperTextItem>
+                </HelperText>
+              </FormHelperText>
             </FormGroup>
 
             <FormGroup
               label="Expiration warning"
               isRequired
               fieldId="expiration-warning"
-              className="pf-v6-u-mt-md"
             >
               <DurationSelect
                 fieldId="expiration-warning"
@@ -233,14 +236,16 @@ const RetentionPolicyModal = ({
                 onChange={setWarningDays}
                 isDisabled={isSaving}
               />
-              <HelperText className="pf-v6-u-pt-sm">
-                <HelperTextItem>
-                  The duration to display a warning before an inactive plan is
-                  automatically deleted.
-                </HelperTextItem>
-              </HelperText>
+              <FormHelperText>
+                <HelperText>
+                  <HelperTextItem>
+                    The duration to display a warning before an inactive plan is
+                    automatically deleted.
+                  </HelperTextItem>
+                </HelperText>
+              </FormHelperText>
             </FormGroup>
-          </>
+          </Form>
         )}
       </ModalBody>
       {isReady && (
