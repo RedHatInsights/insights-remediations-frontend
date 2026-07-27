@@ -64,6 +64,23 @@ jest.mock('@patternfly/react-core', () => ({
       </div>
     );
   },
+  CardExpandableContent: function MockCardExpandableContent({
+    children,
+    ...props
+  }) {
+    return (
+      <div data-testid="card-expandable-content" {...props}>
+        {children}
+      </div>
+    );
+  },
+  CardHeader: function MockCardHeader({ children, ...props }) {
+    return (
+      <div data-testid="card-header" {...props}>
+        {children}
+      </div>
+    );
+  },
   CardFooter: function MockCardFooter({ children, className, ...props }) {
     return (
       <div data-testid="card-footer" className={className} {...props}>
@@ -194,6 +211,12 @@ jest.mock('@patternfly/react-core', () => ({
 }));
 
 jest.mock('@patternfly/react-icons', () => ({
+  AngleDownIcon: function MockAngleDownIcon(props) {
+    return <span data-testid="angle-down-icon" {...props} />;
+  },
+  AngleUpIcon: function MockAngleUpIcon(props) {
+    return <span data-testid="angle-up-icon" {...props} />;
+  },
   OpenDrawerRightIcon: function MockOpenDrawerRightIcon({
     className,
     ...props
@@ -312,9 +335,8 @@ describe('ProgressCard', () => {
       render(<ProgressCard {...defaultProps} />);
 
       expect(screen.getByTestId('card')).toBeInTheDocument();
-      expect(screen.getByTestId('card')).toHaveAttribute(
+      expect(screen.getByTestId('card')).not.toHaveAttribute(
         'data-full-height',
-        'true',
       );
       expect(screen.queryByTestId('spinner')).not.toBeInTheDocument();
     });
@@ -322,6 +344,7 @@ describe('ProgressCard', () => {
     it('should render card title correctly', () => {
       render(<ProgressCard {...defaultProps} />);
 
+      expect(screen.getByTestId('card-header')).toBeInTheDocument();
       expect(screen.getByTestId('card-title')).toBeInTheDocument();
       expect(screen.getByTestId('title')).toBeInTheDocument();
       expect(screen.getByTestId('title')).toHaveAttribute(
@@ -332,6 +355,19 @@ describe('ProgressCard', () => {
       expect(
         screen.getByText('Execution readiness summary'),
       ).toBeInTheDocument();
+    });
+
+    it('should toggle the expandable card state', () => {
+      render(<ProgressCard {...defaultProps} />);
+
+      const toggle = screen.getByRole('button', {
+        name: /toggle execution readiness summary card/i,
+      });
+      expect(toggle).toHaveAttribute('aria-expanded', 'true');
+
+      fireEvent.click(toggle);
+
+      expect(toggle).toHaveAttribute('aria-expanded', 'false');
     });
 
     it('should render card body with description', () => {

@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import {
   Card,
   CardBody,
+  CardExpandableContent,
+  CardHeader,
   CardTitle,
   DescriptionList,
   DescriptionListGroup,
@@ -23,6 +25,8 @@ import {
   Skeleton,
 } from '@patternfly/react-core';
 import {
+  AngleDownIcon,
+  AngleUpIcon,
   CheckIcon,
   ExternalLinkAltIcon,
   OutlinedQuestionCircleIcon,
@@ -35,6 +39,12 @@ import { useAddNotification } from '@redhat-cloud-services/frontend-components-n
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { pluralize } from '../../Utilities/utils';
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
+import { getExpandableCardToggleProps } from './helpers';
+
+const DETAILS_CARD_OUIA_ID = 'details-card';
+const DETAILS_CARD_TITLE_ID = 'details-card-title';
+const DETAILS_CARD_TOGGLE_ID = 'details-card-toggle';
+const DETAILS_CARD_CONTENT_ID = 'details-card-content';
 
 const DetailsCard = ({
   details,
@@ -48,6 +58,7 @@ const DetailsCard = ({
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(details?.name);
   const [rebootToggle, setRebootToggle] = useState(details?.auto_reboot);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [hasResolutionsAvailable, setHasResolutionsAvailable] = useState(false);
   const [isCheckingResolutions, setIsCheckingResolutions] = useState(true);
   const addNotification = useAddNotification();
@@ -191,19 +202,32 @@ const DetailsCard = ({
   };
 
   return (
-    <Card isFullHeight>
-      <CardTitle>
-        <Flex
-          direction={{ default: 'column' }}
-          spaceItems={{ default: 'spaceItemsMd' }}
-        >
+    <Card data-ouia-component-id={DETAILS_CARD_OUIA_ID} isExpanded={isExpanded}>
+      <CardHeader>
+        <CardTitle id={DETAILS_CARD_TITLE_ID} style={{ width: '100%' }}>
           <Flex
             justifyContent={{ default: 'justifyContentSpaceBetween' }}
             alignItems={{ default: 'alignItemsCenter' }}
           >
-            <Title headingLevel="h4" size="xl">
-              Details
-            </Title>
+            <Flex
+              alignItems={{ default: 'alignItemsCenter' }}
+              spaceItems={{ default: 'spaceItemsSm' }}
+            >
+              <Button
+                variant="plain"
+                icon={isExpanded ? <AngleUpIcon /> : <AngleDownIcon />}
+                onClick={() => setIsExpanded((current) => !current)}
+                {...getExpandableCardToggleProps(
+                  DETAILS_CARD_TOGGLE_ID,
+                  DETAILS_CARD_CONTENT_ID,
+                  isExpanded,
+                  'Toggle details card',
+                )}
+              />
+              <Title headingLevel="h4" size="xl">
+                Details
+              </Title>
+            </Flex>
             <Flex
               alignItems={{ default: 'alignItemsCenter' }}
               spaceItems={{ default: 'spaceItemsSm' }}
@@ -221,9 +245,17 @@ const DetailsCard = ({
               </span>
             </Flex>
           </Flex>
+        </CardTitle>
+      </CardHeader>
+      <CardExpandableContent
+        id={DETAILS_CARD_CONTENT_ID}
+        data-ouia-component-id={DETAILS_CARD_CONTENT_ID}
+      >
+        <CardBody>
           <Content
             component="p"
-            style={{ wordBreak: 'break-word', fontWeight: 'normal' }}
+            className="pf-v6-u-mb-md"
+            style={{ wordBreak: 'break-word' }}
           >
             New to remediating through Red Hat Lightspeed?{' '}
             <InsightsLink
@@ -238,176 +270,174 @@ const DetailsCard = ({
               <ExternalLinkAltIcon size="md" className="pf-v6-u-ml-sm" />
             </InsightsLink>
           </Content>
-        </Flex>
-      </CardTitle>
-      <CardBody>
-        <DescriptionList
-          orientation={{
-            sm: 'vertical',
-            md: 'vertical',
-            lg: 'vertical',
-            xl: 'vertical',
-            '2xl': 'vertical',
-          }}
-        >
-          {/* Editable Name */}
-          <DescriptionListGroup>
-            <DescriptionListTerm>
-              <span>Name</span>
-              <Button
-                icon={
-                  <PencilAltIcon
-                    color={
-                      editing
-                        ? 'var(--pf-t--global--text--color--regular)'
-                        : undefined
-                    }
-                  />
-                }
-                variant="link"
-                onClick={() => setEditing(!editing)}
-                className="pf-v6-u-ml-sm"
-                aria-label={
-                  editing
-                    ? 'Close remediation plan name editor'
-                    : 'Edit remediation plan name'
-                }
-              ></Button>
-            </DescriptionListTerm>
-            <DescriptionListDescription>
-              {editing ? (
-                <Flex
-                  direction={{ default: 'column', md: 'row' }}
-                  spaceItems={{ default: 'spaceItemsXs' }}
-                  alignItems={{ default: 'alignItemsStretch' }}
-                >
-                  <FlexItem>
-                    <FormGroup fieldId="remediation-name">
-                      <TextInput
-                        value={value}
-                        type="text"
-                        onChange={(_, v) => setValue(v)}
-                        aria-label="Rename Input"
-                        autoFocus
-                        validated={validationState}
-                      />
-                      {nameStatus === 'duplicate' && (
-                        <p className="pf-v6-u-font-size-sm pf-v6-u-danger-color-100">
-                          A remediation plan with the same name already exists
-                          in your organization. Enter a unique name and try
-                          again.
-                        </p>
-                      )}
-                      {nameStatus === 'empty' && (
-                        <p className="pf-v6-u-font-size-sm pf-v6-u-danger-color-100">
-                          Playbook name cannot be empty.
-                        </p>
-                      )}
-                    </FormGroup>
-                  </FlexItem>
-                  <FlexItem>
-                    <Flex spaceItems={{ default: 'spaceItemsXs' }}>
-                      <Button
-                        icon={
-                          <CheckIcon
-                            color={
-                              nameStatus !== 'valid'
-                                ? 'var(--pf-t--global--icon--color--disabled)'
-                                : 'var(--pf-t--global--text--color--link--default)'
-                            }
-                          />
-                        }
-                        variant="link"
-                        onClick={() => onSubmit(value)}
-                        isDisabled={nameStatus !== 'valid'}
-                        aria-label="Save remediation plan name"
-                      ></Button>
-                      <Button
-                        icon={
-                          <TimesIcon color="var(--pf-t--global--text--color--subtle)" />
-                        }
-                        variant="link"
-                        onClick={() => setEditing(false)}
-                        aria-label="Cancel remediation plan name edit"
-                      ></Button>
-                    </Flex>
-                  </FlexItem>
-                </Flex>
-              ) : (
-                <Content component="p" style={{ wordBreak: 'break-word' }}>
-                  {details.name}
-                </Content>
-              )}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          {/* Actions */}
-          <DescriptionListGroup>
-            <DescriptionListTerm>
-              Actions
-              <Popover
-                bodyContent={() => (
-                  <>
-                    Actions taken to remediate issues on selected systems when
-                    the remediation plan is executed.
-                  </>
+          <DescriptionList
+            orientation={{
+              sm: 'vertical',
+              md: 'vertical',
+              lg: 'vertical',
+              xl: 'vertical',
+              '2xl': 'vertical',
+            }}
+          >
+            {/* Editable Name */}
+            <DescriptionListGroup>
+              <DescriptionListTerm>
+                <span>Name</span>
+                <Button
+                  icon={
+                    <PencilAltIcon
+                      color={
+                        editing
+                          ? 'var(--pf-t--global--text--color--regular)'
+                          : undefined
+                      }
+                    />
+                  }
+                  variant="link"
+                  onClick={() => setEditing(!editing)}
+                  className="pf-v6-u-ml-sm"
+                  aria-label={
+                    editing
+                      ? 'Close remediation plan name editor'
+                      : 'Edit remediation plan name'
+                  }
+                ></Button>
+              </DescriptionListTerm>
+              <DescriptionListDescription>
+                {editing ? (
+                  <Flex
+                    direction={{ default: 'column', md: 'row' }}
+                    spaceItems={{ default: 'spaceItemsXs' }}
+                    alignItems={{ default: 'alignItemsStretch' }}
+                  >
+                    <FlexItem>
+                      <FormGroup fieldId="remediation-name">
+                        <TextInput
+                          value={value}
+                          type="text"
+                          onChange={(_, v) => setValue(v)}
+                          aria-label="Rename Input"
+                          autoFocus
+                          validated={validationState}
+                        />
+                        {nameStatus === 'duplicate' && (
+                          <p className="pf-v6-u-font-size-sm pf-v6-u-danger-color-100">
+                            A remediation plan with the same name already exists
+                            in your organization. Enter a unique name and try
+                            again.
+                          </p>
+                        )}
+                        {nameStatus === 'empty' && (
+                          <p className="pf-v6-u-font-size-sm pf-v6-u-danger-color-100">
+                            Playbook name cannot be empty.
+                          </p>
+                        )}
+                      </FormGroup>
+                    </FlexItem>
+                    <FlexItem>
+                      <Flex spaceItems={{ default: 'spaceItemsXs' }}>
+                        <Button
+                          icon={
+                            <CheckIcon
+                              color={
+                                nameStatus !== 'valid'
+                                  ? 'var(--pf-t--global--icon--color--disabled)'
+                                  : 'var(--pf-t--global--text--color--link--default)'
+                              }
+                            />
+                          }
+                          variant="link"
+                          onClick={() => onSubmit(value)}
+                          isDisabled={nameStatus !== 'valid'}
+                          aria-label="Save remediation plan name"
+                        ></Button>
+                        <Button
+                          icon={
+                            <TimesIcon color="var(--pf-t--global--text--color--subtle)" />
+                          }
+                          variant="link"
+                          onClick={() => setEditing(false)}
+                          aria-label="Cancel remediation plan name edit"
+                        ></Button>
+                      </Flex>
+                    </FlexItem>
+                  </Flex>
+                ) : (
+                  <Content component="p" style={{ wordBreak: 'break-word' }}>
+                    {details.name}
+                  </Content>
                 )}
-              >
-                <OutlinedQuestionCircleIcon style={{ marginLeft: '5px' }} />
-              </Popover>
-            </DescriptionListTerm>
-            <DescriptionListDescription>
-              <Flex
-                direction={{ default: 'row' }}
-                alignItems={{ default: 'alignItemsCenter' }}
-                spaceItems={{ default: 'spaceItemsMd' }}
-              >
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            {/* Actions */}
+            <DescriptionListGroup>
+              <DescriptionListTerm>
+                Actions
+                <Popover
+                  bodyContent={() => (
+                    <>
+                      Actions taken to remediate issues on selected systems when
+                      the remediation plan is executed.
+                    </>
+                  )}
+                >
+                  <OutlinedQuestionCircleIcon style={{ marginLeft: '5px' }} />
+                </Popover>
+              </DescriptionListTerm>
+              <DescriptionListDescription>
+                <Flex
+                  direction={{ default: 'row' }}
+                  alignItems={{ default: 'alignItemsCenter' }}
+                  spaceItems={{ default: 'spaceItemsMd' }}
+                >
+                  <Button
+                    variant="link"
+                    onClick={() =>
+                      onNavigateToTab(null, 'plannedRemediations:actions')
+                    }
+                    isInline
+                  >
+                    {`${details?.issue_count} action${
+                      details?.issue_count !== 1 ? 's' : ''
+                    }`}
+                  </Button>
+                  {isCheckingResolutions ? (
+                    <Skeleton
+                      height="1.5rem"
+                      width="200px"
+                      screenreaderText="Checking for resolution options"
+                    />
+                  ) : (
+                    hasResolutionsAvailable && (
+                      <Alert
+                        isInline
+                        isPlain
+                        variant="info"
+                        title="Resolution options are available."
+                      />
+                    )
+                  )}
+                </Flex>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            {/* Systems */}
+            <DescriptionListGroup>
+              <DescriptionListTerm>Systems</DescriptionListTerm>
+              <DescriptionListDescription>
                 <Button
                   variant="link"
                   onClick={() =>
-                    onNavigateToTab(null, 'plannedRemediations:actions')
+                    onNavigateToTab(null, 'plannedRemediations:systems')
                   }
                   isInline
                 >
-                  {`${details?.issue_count} action${
-                    details?.issue_count !== 1 ? 's' : ''
-                  }`}
+                  {pluralize(details?.system_count, 'system')}
                 </Button>
-                {isCheckingResolutions ? (
-                  <Skeleton
-                    height="1.5rem"
-                    width="200px"
-                    screenreaderText="Checking for resolution options"
-                  />
-                ) : (
-                  hasResolutionsAvailable && (
-                    <Alert
-                      isInline
-                      isPlain
-                      variant="info"
-                      title="Resolution options are available."
-                    />
-                  )
-                )}
-              </Flex>
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          {/* Systems */}
-          <DescriptionListGroup>
-            <DescriptionListTerm>Systems</DescriptionListTerm>
-            <DescriptionListDescription>
-              <Button
-                variant="link"
-                onClick={() =>
-                  onNavigateToTab(null, 'plannedRemediations:systems')
-                }
-                isInline
-              >
-                {pluralize(details?.system_count, 'system')}
-              </Button>
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-        </DescriptionList>
-      </CardBody>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+          </DescriptionList>
+        </CardBody>
+      </CardExpandableContent>
     </Card>
   );
 };

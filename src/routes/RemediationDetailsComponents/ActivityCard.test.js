@@ -133,6 +133,21 @@ describe('ActivityCard', () => {
 
       expect(refetchOrgConfig).toHaveBeenCalledTimes(1);
     });
+
+    it('toggles the expandable card state', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+
+      renderComponent();
+
+      const toggle = screen.getByRole('button', {
+        name: /toggle activity card/i,
+      });
+      expect(toggle).toHaveAttribute('aria-expanded', 'true');
+
+      await user.click(toggle);
+
+      expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    });
   });
 
   describe('expiration states', () => {
