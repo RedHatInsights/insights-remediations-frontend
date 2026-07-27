@@ -84,6 +84,19 @@ export const renderComponent = (Component, props) => (_data, _id, entity) => (
   <Component {...entity} {...props} />
 );
 
+export const getExpandableCardToggleProps = (
+  toggleId,
+  contentId,
+  isExpanded,
+  label,
+) => ({
+  id: toggleId,
+  'aria-label': label,
+  'aria-controls': contentId,
+  'aria-expanded': isExpanded,
+  'data-ouia-component-id': toggleId,
+});
+
 // Execution limits constants
 export const MAX_SYSTEMS = 100;
 export const MAX_ACTIONS = 1000;

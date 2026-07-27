@@ -2,6 +2,8 @@ import React, { useMemo, useState, useEffect } from 'react';
 import {
   Alert,
   AlertActionCloseButton,
+  Flex,
+  FlexItem,
   Grid,
   GridItem,
 } from '@patternfly/react-core';
@@ -115,14 +117,30 @@ const DetailsGeneralContent = ({
 
       <Grid hasGutter>
         <GridItem span={12} md={6}>
-          <DetailsCard
-            details={details}
-            refetch={refetch}
-            updateRemPlan={updateRemPlan}
-            onNavigateToTab={onNavigateToTab}
-            allRemediations={allRemediations}
-            refetchAllRemediations={refetchAllRemediations}
-          />
+          <Flex
+            direction={{ default: 'column' }}
+            spaceItems={{ default: 'spaceItemsMd' }}
+          >
+            <FlexItem>
+              <DetailsCard
+                details={details}
+                refetch={refetch}
+                updateRemPlan={updateRemPlan}
+                onNavigateToTab={onNavigateToTab}
+                allRemediations={allRemediations}
+                refetchAllRemediations={refetchAllRemediations}
+              />
+            </FlexItem>
+            <FlexItem>
+              <ActivityCard
+                details={details}
+                lastRemediationPlaybookRun={lastRemediationPlaybookRun}
+                isPlaybookRunsLoading={isPlaybookRunsLoading}
+                onNavigateToTab={onNavigateToTab}
+                retentionPolicyRefreshNonce={retentionPolicyRefreshNonce}
+              />
+            </FlexItem>
+          </Flex>
         </GridItem>
         <GridItem span={12} md={6}>
           <ProgressCard
@@ -132,15 +150,6 @@ const DetailsGeneralContent = ({
             onNavigateToTab={onNavigateToTab}
             details={details}
             actionPoints={actionPoints}
-          />
-        </GridItem>
-        <GridItem span={12} md={6}>
-          <ActivityCard
-            details={details}
-            lastRemediationPlaybookRun={lastRemediationPlaybookRun}
-            isPlaybookRunsLoading={isPlaybookRunsLoading}
-            onNavigateToTab={onNavigateToTab}
-            retentionPolicyRefreshNonce={retentionPolicyRefreshNonce}
           />
         </GridItem>
       </Grid>

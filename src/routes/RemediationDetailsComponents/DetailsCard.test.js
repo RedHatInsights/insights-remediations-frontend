@@ -133,6 +133,21 @@ describe('DetailsCard', () => {
       expect(screen.getByText(/Auto-reboot/)).toBeInTheDocument();
     });
 
+    it('toggles the expandable card state', async () => {
+      const user = userEvent.setup();
+
+      renderComponent();
+
+      const toggle = screen.getByRole('button', {
+        name: /toggle details card/i,
+      });
+      expect(toggle).toHaveAttribute('aria-expanded', 'true');
+
+      await user.click(toggle);
+
+      expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    });
+
     it('displays correct action and system counts', () => {
       renderComponent();
 

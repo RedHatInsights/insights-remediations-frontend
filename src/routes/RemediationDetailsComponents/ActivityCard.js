@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
+  CardExpandableContent,
+  CardHeader,
   CardTitle,
   Flex,
   Title,
   Label,
-  Tooltip,
   Popover,
   DescriptionList,
   DescriptionListGroup,
@@ -16,19 +17,31 @@ import {
   Spinner,
   Button,
   Icon,
+  Timestamp,
 } from '@patternfly/react-core';
 import { formatDate } from '../Cells';
-import { execStatus, toValidDate } from './helpers';
+import {
+  execStatus,
+  getExpandableCardToggleProps,
+  toValidDate,
+} from './helpers';
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import { getOrgConfig } from '../api';
 import { capitalize } from '../../Utilities/utils';
 import { formatDuration } from '../../Utilities/retentionPolicy';
 import {
+  AngleDownIcon,
+  AngleUpIcon,
   ExclamationCircleIcon,
   ExclamationTriangleIcon,
   OutlinedQuestionCircleIcon,
 } from '@patternfly/react-icons';
 import { getExpirationState } from '../helpers';
+
+const ACTIVITY_CARD_OUIA_ID = 'activity-card';
+const ACTIVITY_CARD_TITLE_ID = 'activity-card-title';
+const ACTIVITY_CARD_TOGGLE_ID = 'activity-card-toggle';
+const ACTIVITY_CARD_CONTENT_ID = 'activity-card-content';
 
 const getActivityExpirationDisplay = (expiration) => {
   if (expiration.status === 'unknown') {
@@ -83,6 +96,7 @@ const ActivityCard = ({
   isPlaybookRunsLoading,
   retentionPolicyRefreshNonce = 0,
 }) => {
+  const [isExpanded, setIsExpanded] = useState(true);
   // Get organization configuration
   const {
     result: orgConfig,
@@ -113,140 +127,159 @@ const ActivityCard = ({
     retentionDays != null ? formatDuration(retentionDays) : 'an unknown period';
 
   return (
-    <Card isFullHeight>
-      <CardTitle>
-        <Flex
-          justifyContent={{ default: 'justifyContentSpaceBetween' }}
-          alignItems={{ default: 'alignItemsCenter' }}
-        >
-          <Title headingLevel="h4" size="xl">
-            Activity
-          </Title>
-          {expirationDisplay.label && (
-            <Label status={expirationDisplay.labelStatus} variant="outline">
-              {expirationDisplay.label}
-            </Label>
-          )}
-        </Flex>
-      </CardTitle>
-      <CardBody>
-        <DescriptionList>
-          {/* Last Execution Status */}
-          <DescriptionListGroup>
-            <DescriptionListTerm>Latest execution status</DescriptionListTerm>
-            <DescriptionListDescription>
-              {isPlaybookRunsLoading ? (
-                <Spinner size="md" />
-              ) : (
-                <Button
-                  variant="link"
-                  isInline
-                  onClick={() => onNavigateToTab(null, 'executionHistory')}
-                >
-                  {execStatus(
-                    lastRemediationPlaybookRun?.status,
-                    updatedAtDate,
-                  )}
-                </Button>
-              )}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          {/* Created */}
-          <DescriptionListGroup>
-            <DescriptionListTerm>Created</DescriptionListTerm>
-            <DescriptionListDescription>
-              {formatDate(details?.created_at)}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          {/* Expiration */}
-          <DescriptionListGroup>
-            <DescriptionListTerm>
-              <Flex
-                spaceItems={{ default: 'spaceItemsXs' }}
-                alignItems={{ default: 'alignItemsCenter' }}
-              >
-                <span>Expiration</span>
-                <Popover
-                  aria-label="Retention policy help popover"
-                  headerContent="Retention policy"
-                  bodyContent={
-                    <div>
-                      Remediation plans are automatically deleted after{' '}
-                      {retentionDurationText} of inactivity. An administrator
-                      can change this period for your organization by editing
-                      the retention policy.
-                    </div>
-                  }
-                >
+    <Card
+      data-ouia-component-id={ACTIVITY_CARD_OUIA_ID}
+      isExpanded={isExpanded}
+    >
+      <CardHeader>
+        <CardTitle id={ACTIVITY_CARD_TITLE_ID} style={{ width: '100%' }}>
+          <Flex
+            justifyContent={{ default: 'justifyContentSpaceBetween' }}
+            alignItems={{ default: 'alignItemsCenter' }}
+          >
+            <Flex
+              alignItems={{ default: 'alignItemsCenter' }}
+              spaceItems={{ default: 'spaceItemsSm' }}
+            >
+              <Button
+                variant="plain"
+                icon={isExpanded ? <AngleUpIcon /> : <AngleDownIcon />}
+                onClick={() => setIsExpanded((current) => !current)}
+                {...getExpandableCardToggleProps(
+                  ACTIVITY_CARD_TOGGLE_ID,
+                  ACTIVITY_CARD_CONTENT_ID,
+                  isExpanded,
+                  'Toggle activity card',
+                )}
+              />
+              <Title headingLevel="h4" size="xl">
+                Activity
+              </Title>
+            </Flex>
+            {expirationDisplay.label && (
+              <Label status={expirationDisplay.labelStatus} variant="outline">
+                {expirationDisplay.label}
+              </Label>
+            )}
+          </Flex>
+        </CardTitle>
+      </CardHeader>
+      <CardExpandableContent
+        id={ACTIVITY_CARD_CONTENT_ID}
+        data-ouia-component-id={ACTIVITY_CARD_CONTENT_ID}
+      >
+        <CardBody>
+          <DescriptionList>
+            {/* Last Execution Status */}
+            <DescriptionListGroup>
+              <DescriptionListTerm>Latest execution status</DescriptionListTerm>
+              <DescriptionListDescription>
+                {isPlaybookRunsLoading ? (
+                  <Spinner size="md" />
+                ) : (
                   <Button
-                    variant="plain"
-                    icon={<OutlinedQuestionCircleIcon />}
-                    aria-label="Retention policy help"
-                    hasNoPadding
-                  />
-                </Popover>
-              </Flex>
-            </DescriptionListTerm>
-            <DescriptionListDescription>
-              <Flex
-                spaceItems={{ default: 'spaceItemsSm' }}
-                alignItems={{ default: 'alignItemsCenter' }}
-              >
-                {expirationDisplay.icon === 'danger' ? (
-                  <Icon status="danger" data-testid="icon">
-                    <ExclamationCircleIcon />
-                  </Icon>
-                ) : expirationDisplay.icon === 'warning' ? (
-                  <Icon status="warning" data-testid="icon">
-                    <ExclamationTriangleIcon />
-                  </Icon>
-                ) : null}
-                {expirationDisplay.hasTooltip ? (
-                  <Tooltip
-                    content={formatDate(expirationState.expiresAtDate)}
-                    position="top"
+                    variant="link"
+                    isInline
+                    onClick={() => onNavigateToTab(null, 'executionHistory')}
                   >
-                    <span
-                      style={{
-                        textDecorationLine: 'underline',
-                        textDecorationStyle: 'dashed',
-                        textDecorationColor:
-                          'var(--pf-t--global--border--color--default)',
-                        textUnderlineOffset: '2px',
-                        cursor: 'pointer',
+                    {execStatus(
+                      lastRemediationPlaybookRun?.status,
+                      updatedAtDate,
+                    )}
+                  </Button>
+                )}
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            {/* Created */}
+            <DescriptionListGroup>
+              <DescriptionListTerm>Created</DescriptionListTerm>
+              <DescriptionListDescription>
+                {formatDate(details?.created_at)}
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            {/* Expiration */}
+            <DescriptionListGroup>
+              <DescriptionListTerm>
+                <Flex
+                  spaceItems={{ default: 'spaceItemsXs' }}
+                  alignItems={{ default: 'alignItemsCenter' }}
+                >
+                  <span>Expiration</span>
+                  <Popover
+                    aria-label="Retention policy help popover"
+                    headerContent="Retention policy"
+                    bodyContent={
+                      <div>
+                        Remediation plans are automatically deleted after{' '}
+                        {retentionDurationText} of inactivity. An administrator
+                        can change this period for your organization by editing
+                        the retention policy.
+                      </div>
+                    }
+                  >
+                    <Button
+                      variant="plain"
+                      icon={<OutlinedQuestionCircleIcon />}
+                      aria-label="Retention policy help"
+                      hasNoPadding
+                    />
+                  </Popover>
+                </Flex>
+              </DescriptionListTerm>
+              <DescriptionListDescription>
+                <Flex
+                  spaceItems={{ default: 'spaceItemsSm' }}
+                  alignItems={{ default: 'alignItemsCenter' }}
+                >
+                  {expirationDisplay.icon === 'danger' ? (
+                    <Icon status="danger" data-testid="icon">
+                      <ExclamationCircleIcon />
+                    </Icon>
+                  ) : expirationDisplay.icon === 'warning' ? (
+                    <Icon status="warning" data-testid="icon">
+                      <ExclamationTriangleIcon />
+                    </Icon>
+                  ) : null}
+                  {expirationDisplay.hasTooltip ? (
+                    <Timestamp
+                      date={expirationState.expiresAtDate}
+                      tooltip={{
+                        variant: 'custom',
+                        content: formatDate(expirationState.expiresAtDate),
+                        tooltipProps: { position: 'top' },
                       }}
                     >
                       {expirationDisplay.text}
-                    </span>
-                  </Tooltip>
+                    </Timestamp>
+                  ) : (
+                    <span>{expirationDisplay.text}</span>
+                  )}
+                </Flex>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            {/* Last Modified */}
+            <DescriptionListGroup>
+              <DescriptionListTerm>Last modified</DescriptionListTerm>
+              <DescriptionListDescription>
+                {formatDate(details?.updated_at)}
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            {/* Last Executed */}
+            <DescriptionListGroup>
+              <DescriptionListTerm>Last executed</DescriptionListTerm>
+              <DescriptionListDescription>
+                {isPlaybookRunsLoading ? (
+                  <Spinner size="md" />
+                ) : updatedAtDate ? (
+                  formatDate(updatedAtDate)
                 ) : (
-                  <span>{expirationDisplay.text}</span>
+                  'Never'
                 )}
-              </Flex>
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          {/* Last Modified */}
-          <DescriptionListGroup>
-            <DescriptionListTerm>Last modified</DescriptionListTerm>
-            <DescriptionListDescription>
-              {formatDate(details?.updated_at)}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          {/* Last Executed */}
-          <DescriptionListGroup>
-            <DescriptionListTerm>Last executed</DescriptionListTerm>
-            <DescriptionListDescription>
-              {isPlaybookRunsLoading ? (
-                <Spinner size="md" />
-              ) : updatedAtDate ? (
-                formatDate(updatedAtDate)
-              ) : (
-                'Never'
-              )}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-        </DescriptionList>
-      </CardBody>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+          </DescriptionList>
+        </CardBody>
+      </CardExpandableContent>
     </Card>
   );
 };

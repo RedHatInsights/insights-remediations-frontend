@@ -91,6 +91,25 @@ jest.mock('@patternfly/react-core', () => ({
       </div>
     );
   },
+  Flex: function MockFlex({ children, direction, spaceItems, ...props }) {
+    return (
+      <div
+        data-testid="flex"
+        data-direction={JSON.stringify(direction)}
+        data-space-items={JSON.stringify(spaceItems)}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  },
+  FlexItem: function MockFlexItem({ children, ...props }) {
+    return (
+      <div data-testid="flex-item" {...props}>
+        {children}
+      </div>
+    );
+  },
 }));
 
 describe('DetailsGeneralContent', () => {
@@ -163,19 +182,15 @@ describe('DetailsGeneralContent', () => {
       render(<DetailsGeneralContent {...defaultProps} />);
 
       const gridItems = screen.getAllByTestId('grid-item');
-      expect(gridItems).toHaveLength(3);
+      expect(gridItems).toHaveLength(2);
 
-      // First grid item (DetailsCard)
+      // First grid item (Details + Activity column)
       expect(gridItems[0]).toHaveAttribute('data-span', '12');
       expect(gridItems[0]).toHaveAttribute('data-md', '6');
 
       // Second grid item (ProgressCard)
       expect(gridItems[1]).toHaveAttribute('data-span', '12');
       expect(gridItems[1]).toHaveAttribute('data-md', '6');
-
-      // Third grid item (ActivityCard)
-      expect(gridItems[2]).toHaveAttribute('data-span', '12');
-      expect(gridItems[2]).toHaveAttribute('data-md', '6');
     });
   });
 
@@ -647,16 +662,15 @@ describe('DetailsGeneralContent', () => {
       const gridItems = screen.getAllByTestId('grid-item');
 
       // Check hierarchy
-      expect(gridItems).toHaveLength(3);
+      expect(gridItems).toHaveLength(2);
       expect(grid).toContainElement(gridItems[0]);
       expect(grid).toContainElement(gridItems[1]);
-      expect(grid).toContainElement(gridItems[2]);
       expect(gridItems[0]).toContainElement(screen.getByTestId('details-card'));
+      expect(gridItems[0]).toContainElement(
+        screen.getByTestId('activity-card'),
+      );
       expect(gridItems[1]).toContainElement(
         screen.getByTestId('progress-card'),
-      );
-      expect(gridItems[2]).toContainElement(
-        screen.getByTestId('activity-card'),
       );
     });
 
@@ -665,17 +679,15 @@ describe('DetailsGeneralContent', () => {
 
       const gridItems = screen.getAllByTestId('grid-item');
 
-      // First grid item should contain DetailsCard
+      // First grid item should contain DetailsCard and ActivityCard
       expect(gridItems[0]).toContainElement(screen.getByTestId('details-card'));
+      expect(gridItems[0]).toContainElement(
+        screen.getByTestId('activity-card'),
+      );
 
       // Second grid item should contain ProgressCard
       expect(gridItems[1]).toContainElement(
         screen.getByTestId('progress-card'),
-      );
-
-      // Third grid item should contain ActivityCard
-      expect(gridItems[2]).toContainElement(
-        screen.getByTestId('activity-card'),
       );
     });
   });
