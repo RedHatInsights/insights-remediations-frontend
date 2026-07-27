@@ -148,21 +148,21 @@ export const ExpirationCell = ({
   const shouldShowWarning = expiration.status !== 'normal';
 
   return (
-    <Tooltip content={formatDate(expires_at)}>
-      <Flex
-        spaceItems={{ default: 'spaceItemsXs' }}
-        alignItems={{ default: 'alignItemsCenter' }}
-      >
-        {shouldShowWarning && (
-          <span aria-label="Expiration warning">
-            <Icon status="warning">
-              <ExclamationTriangleIcon />
-            </Icon>
-          </span>
-        )}
+    <Flex
+      spaceItems={{ default: 'spaceItemsXs' }}
+      alignItems={{ default: 'alignItemsCenter' }}
+    >
+      {shouldShowWarning && (
+        <span aria-label="Expiration warning">
+          <Icon status="warning">
+            <ExclamationTriangleIcon />
+          </Icon>
+        </span>
+      )}
+      <Tooltip content={formatDate(expires_at)}>
         <Content component="p">{displayValue}</Content>
-      </Flex>
-    </Tooltip>
+      </Tooltip>
+    </Flex>
   );
 };
 
