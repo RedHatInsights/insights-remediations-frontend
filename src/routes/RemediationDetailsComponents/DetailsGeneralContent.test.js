@@ -5,11 +5,11 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import DetailsGeneralContent from './DetailsGeneralContent';
 
-jest.mock('./DetailsCard', () => {
-  return function MockDetailsCard(props) {
+jest.mock('./OverviewCard', () => {
+  return function MockOverviewCard(props) {
     return (
-      <div data-testid="details-card">
-        <div data-testid="details-card-props">
+      <div data-testid="overview-card">
+        <div data-testid="overview-card-props">
           {JSON.stringify(props, null, 2)}
         </div>
       </div>
@@ -156,7 +156,7 @@ describe('DetailsGeneralContent', () => {
       render(<DetailsGeneralContent {...defaultProps} />);
 
       expect(screen.getByTestId('grid')).toBeInTheDocument();
-      expect(screen.getByTestId('details-card')).toBeInTheDocument();
+      expect(screen.getByTestId('overview-card')).toBeInTheDocument();
       expect(screen.getByTestId('progress-card')).toBeInTheDocument();
       expect(screen.getByTestId('activity-card')).toBeInTheDocument();
     });
@@ -166,7 +166,7 @@ describe('DetailsGeneralContent', () => {
 
       // Component should render without crashing and contain expected elements
       expect(screen.getByTestId('grid')).toBeInTheDocument();
-      expect(screen.getByTestId('details-card')).toBeInTheDocument();
+      expect(screen.getByTestId('overview-card')).toBeInTheDocument();
       expect(screen.getByTestId('progress-card')).toBeInTheDocument();
       expect(screen.getByTestId('activity-card')).toBeInTheDocument();
     });
@@ -431,23 +431,25 @@ describe('DetailsGeneralContent', () => {
   });
 
   describe('Props passing to child components', () => {
-    it('should pass correct props to DetailsCard', () => {
+    it('should pass correct props to OverviewCard', () => {
       render(<DetailsGeneralContent {...defaultProps} />);
 
-      const detailsCardProps = JSON.parse(
-        screen.getByTestId('details-card-props').textContent,
+      const overviewCardProps = JSON.parse(
+        screen.getByTestId('overview-card-props').textContent,
       );
 
-      expect(detailsCardProps.details).toEqual(defaultProps.details);
-      expect(detailsCardProps.allRemediations).toEqual(
+      expect(overviewCardProps.details).toEqual(defaultProps.details);
+      expect(overviewCardProps.allRemediations).toEqual(
         defaultProps.allRemediations,
       );
-      expect(detailsCardProps).not.toHaveProperty('remediationStatus');
-      expect(detailsCardProps).not.toHaveProperty('lastRemediationPlaybookRun');
-      expect(detailsCardProps).not.toHaveProperty('isPlaybookRunsLoading');
+      expect(overviewCardProps).not.toHaveProperty('remediationStatus');
+      expect(overviewCardProps).not.toHaveProperty(
+        'lastRemediationPlaybookRun',
+      );
+      expect(overviewCardProps).not.toHaveProperty('isPlaybookRunsLoading');
 
-      // Check that DetailsCard component is rendered (functions are passed but not visible in JSON)
-      expect(screen.getByTestId('details-card')).toBeInTheDocument();
+      // Check that OverviewCard component is rendered (functions are passed but not visible in JSON)
+      expect(screen.getByTestId('overview-card')).toBeInTheDocument();
     });
 
     it('should pass correct props to ProgressCard', () => {
@@ -499,17 +501,19 @@ describe('DetailsGeneralContent', () => {
 
       render(<DetailsGeneralContent {...minimalProps} />);
 
-      expect(screen.getByTestId('details-card')).toBeInTheDocument();
+      expect(screen.getByTestId('overview-card')).toBeInTheDocument();
       expect(screen.getByTestId('progress-card')).toBeInTheDocument();
       expect(screen.getByTestId('activity-card')).toBeInTheDocument();
 
-      const detailsCardProps = JSON.parse(
-        screen.getByTestId('details-card-props').textContent,
+      const overviewCardProps = JSON.parse(
+        screen.getByTestId('overview-card-props').textContent,
       );
-      expect(detailsCardProps.allRemediations).toBeUndefined();
-      expect(detailsCardProps).not.toHaveProperty('remediationStatus');
-      expect(detailsCardProps).not.toHaveProperty('lastRemediationPlaybookRun');
-      expect(detailsCardProps).not.toHaveProperty('isPlaybookRunsLoading');
+      expect(overviewCardProps.allRemediations).toBeUndefined();
+      expect(overviewCardProps).not.toHaveProperty('remediationStatus');
+      expect(overviewCardProps).not.toHaveProperty(
+        'lastRemediationPlaybookRun',
+      );
+      expect(overviewCardProps).not.toHaveProperty('isPlaybookRunsLoading');
 
       const activityCardProps = JSON.parse(
         screen.getByTestId('activity-card-props').textContent,
@@ -523,15 +527,15 @@ describe('DetailsGeneralContent', () => {
       render(<DetailsGeneralContent {...defaultProps} />);
 
       // Function props won't appear in JSON.stringify, but the components should render correctly
-      expect(screen.getByTestId('details-card')).toBeInTheDocument();
+      expect(screen.getByTestId('overview-card')).toBeInTheDocument();
       expect(screen.getByTestId('progress-card')).toBeInTheDocument();
       expect(screen.getByTestId('activity-card')).toBeInTheDocument();
 
       // This confirms the props are being passed (even if we can't see functions in JSON)
-      const detailsCardProps = JSON.parse(
-        screen.getByTestId('details-card-props').textContent,
+      const overviewCardProps = JSON.parse(
+        screen.getByTestId('overview-card-props').textContent,
       );
-      expect(detailsCardProps.details).toEqual(defaultProps.details);
+      expect(overviewCardProps.details).toEqual(defaultProps.details);
     });
   });
 
@@ -665,7 +669,7 @@ describe('DetailsGeneralContent', () => {
       expect(gridItems).toHaveLength(2);
       expect(grid).toContainElement(gridItems[0]);
       expect(grid).toContainElement(gridItems[1]);
-      expect(gridItems[0]).toContainElement(screen.getByTestId('details-card'));
+      expect(gridItems[0]).toContainElement(screen.getByTestId('overview-card'));
       expect(gridItems[0]).toContainElement(
         screen.getByTestId('activity-card'),
       );
@@ -679,8 +683,8 @@ describe('DetailsGeneralContent', () => {
 
       const gridItems = screen.getAllByTestId('grid-item');
 
-      // First grid item should contain DetailsCard and ActivityCard
-      expect(gridItems[0]).toContainElement(screen.getByTestId('details-card'));
+      // First grid item should contain OverviewCard and ActivityCard
+      expect(gridItems[0]).toContainElement(screen.getByTestId('overview-card'));
       expect(gridItems[0]).toContainElement(
         screen.getByTestId('activity-card'),
       );

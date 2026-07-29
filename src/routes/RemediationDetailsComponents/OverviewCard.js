@@ -40,14 +40,14 @@ import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { pluralize } from '../../Utilities/utils';
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import { getExpandableCardToggleProps } from './helpers';
-
-const DETAILS_CARD_OUIA_ID = 'details-card';
-const DETAILS_CARD_TITLE_ID = 'details-card-title';
-const DETAILS_CARD_TOGGLE_ID = 'details-card-toggle';
-const DETAILS_CARD_CONTENT_ID = 'details-card-content';
 import { PermissionContext } from '../../App';
 
-const DetailsCard = ({
+const OVERVIEW_CARD_OUIA_ID = 'overview-card';
+const OVERVIEW_CARD_TITLE_ID = 'overview-card-title';
+const OVERVIEW_CARD_TOGGLE_ID = 'overview-card-toggle';
+const OVERVIEW_CARD_CONTENT_ID = 'overview-card-content';
+
+const OverviewCard = ({
   details,
   updateRemPlan,
   onNavigateToTab,
@@ -204,9 +204,12 @@ const DetailsCard = ({
   };
 
   return (
-    <Card data-ouia-component-id={DETAILS_CARD_OUIA_ID} isExpanded={isExpanded}>
+    <Card
+      data-ouia-component-id={OVERVIEW_CARD_OUIA_ID}
+      isExpanded={isExpanded}
+    >
       <CardHeader>
-        <CardTitle id={DETAILS_CARD_TITLE_ID} style={{ width: '100%' }}>
+        <CardTitle id={OVERVIEW_CARD_TITLE_ID} style={{ width: '100%' }}>
           <Flex
             justifyContent={{ default: 'justifyContentSpaceBetween' }}
             alignItems={{ default: 'alignItemsCenter' }}
@@ -220,14 +223,14 @@ const DetailsCard = ({
                 icon={isExpanded ? <AngleUpIcon /> : <AngleDownIcon />}
                 onClick={() => setIsExpanded((current) => !current)}
                 {...getExpandableCardToggleProps(
-                  DETAILS_CARD_TOGGLE_ID,
-                  DETAILS_CARD_CONTENT_ID,
+                  OVERVIEW_CARD_TOGGLE_ID,
+                  OVERVIEW_CARD_CONTENT_ID,
                   isExpanded,
-                  'Toggle details card',
+                  'Toggle overview card',
                 )}
               />
               <Title headingLevel="h4" size="xl">
-                Details
+                Overview
               </Title>
             </Flex>
             <Flex
@@ -251,8 +254,8 @@ const DetailsCard = ({
         </CardTitle>
       </CardHeader>
       <CardExpandableContent
-        id={DETAILS_CARD_CONTENT_ID}
-        data-ouia-component-id={DETAILS_CARD_CONTENT_ID}
+        id={OVERVIEW_CARD_CONTENT_ID}
+        data-ouia-component-id={OVERVIEW_CARD_CONTENT_ID}
       >
         <CardBody>
           <Content
@@ -448,7 +451,7 @@ const DetailsCard = ({
   );
 };
 
-DetailsCard.propTypes = {
+OverviewCard.propTypes = {
   details: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
@@ -476,4 +479,4 @@ DetailsCard.propTypes = {
   refetchAllRemediations: PropTypes.func,
 };
 
-export default DetailsCard;
+export default OverviewCard;
