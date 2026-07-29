@@ -8,14 +8,14 @@ import {
   KESSEL_REMEDIATIONS_EDIT,
   KESSEL_REMEDIATIONS_EXECUTE,
   KESSEL_REMEDIATIONS_VIEW,
-  KESSEL_INVENTORY_HOSTS_READ,
+  KESSEL_INVENTORY_HOST_VIEW,
 } from '../../constants';
 
 const KESSEL_RELATIONS = [
   KESSEL_REMEDIATIONS_VIEW,
   KESSEL_REMEDIATIONS_EDIT,
   KESSEL_REMEDIATIONS_EXECUTE,
-  KESSEL_INVENTORY_HOSTS_READ,
+  KESSEL_INVENTORY_HOST_VIEW,
 ];
 
 /** workspace + rbac reporter, aligned with fec kesselPermissions defaults */
@@ -98,7 +98,7 @@ export function useKesselRemediationPermissionState(baseUrl) {
     const read = getAllowed(checks, KESSEL_REMEDIATIONS_VIEW);
     const write = getAllowed(checks, KESSEL_REMEDIATIONS_EDIT);
     const execute = getAllowed(checks, KESSEL_REMEDIATIONS_EXECUTE);
-    const inventoryHostsRead = getAllowed(checks, KESSEL_INVENTORY_HOSTS_READ);
+    const inventoryHostsRead = getAllowed(checks, KESSEL_INVENTORY_HOST_VIEW);
     return { read, write, execute, inventoryHostsRead };
   }, [checks]);
 
