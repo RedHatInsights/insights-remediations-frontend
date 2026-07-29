@@ -10,6 +10,7 @@ import {
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import DetailsCard from './DetailsCard';
+import { PermissionContext } from '../../App';
 import * as useVerifyName from '../../Utilities/useVerifyName';
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
@@ -95,7 +96,7 @@ describe('DetailsCard', () => {
     jest.restoreAllMocks();
   });
 
-  const renderComponent = (props = {}) => {
+  const renderComponent = (props = {}, permissions = { write: true, read: true }) => {
     const defaultProps = {
       details: mockDetails,
       updateRemPlan: mockUpdateRemPlan,
@@ -106,7 +107,11 @@ describe('DetailsCard', () => {
       ...props,
     };
 
-    return render(<DetailsCard {...defaultProps} />);
+    return render(
+      <PermissionContext.Provider value={{ permissions }}>
+        <DetailsCard {...defaultProps} />
+      </PermissionContext.Provider>,
+    );
   };
 
   describe('Component Rendering', () => {
@@ -244,6 +249,23 @@ describe('DetailsCard', () => {
   });
 
   describe('Name Editing', () => {
+    it('disables inline rename for users without write permission', async () => {
+      const user = userEvent.setup();
+
+      renderComponent({}, { write: false, read: true });
+
+      const editButton = screen.getByRole('button', {
+        name: /edit remediation plan name/i,
+      });
+      expect(editButton).toBeDisabled();
+
+      await user.click(editButton);
+
+      expect(
+        screen.queryByRole('textbox', { name: /rename input/i }),
+      ).not.toBeInTheDocument();
+    });
+
     it('toggles edit mode when pencil icon is clicked', async () => {
       const user = userEvent.setup();
 
@@ -561,14 +583,18 @@ describe('DetailsCard', () => {
       const newDetails = { ...mockDetails, name: 'Updated External Name' };
 
       rerender(
-        <DetailsCard
-          details={newDetails}
-          updateRemPlan={mockUpdateRemPlan}
-          onNavigateToTab={mockOnNavigateToTab}
-          allRemediations={mockAllRemediations}
-          refetch={mockRefetch}
-          refetchAllRemediations={mockRefetchAllRemediations}
-        />,
+        <PermissionContext.Provider
+          value={{ permissions: { write: true, read: true } }}
+        >
+          <DetailsCard
+            details={newDetails}
+            updateRemPlan={mockUpdateRemPlan}
+            onNavigateToTab={mockOnNavigateToTab}
+            allRemediations={mockAllRemediations}
+            refetch={mockRefetch}
+            refetchAllRemediations={mockRefetchAllRemediations}
+          />
+        </PermissionContext.Provider>,
       );
 
       expect(screen.getByText('Updated External Name')).toBeInTheDocument();

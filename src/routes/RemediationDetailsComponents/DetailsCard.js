@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useContext } from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
@@ -45,6 +45,7 @@ const DETAILS_CARD_OUIA_ID = 'details-card';
 const DETAILS_CARD_TITLE_ID = 'details-card-title';
 const DETAILS_CARD_TOGGLE_ID = 'details-card-toggle';
 const DETAILS_CARD_CONTENT_ID = 'details-card-content';
+import { PermissionContext } from '../../App';
 
 const DetailsCard = ({
   details,
@@ -62,6 +63,7 @@ const DetailsCard = ({
   const [hasResolutionsAvailable, setHasResolutionsAvailable] = useState(false);
   const [isCheckingResolutions, setIsCheckingResolutions] = useState(true);
   const addNotification = useAddNotification();
+  const permission = useContext(PermissionContext);
   //This is paginated, so we must loop through issues until we find a batch with multiple resolutions or we reach the end of the issues.
   const { fetch: fetchRemediationIssues } = useRemediations(
     'getRemediationIssues',
@@ -237,6 +239,7 @@ const DetailsCard = ({
                 id="autoreboot-switch"
                 isChecked={rebootToggle}
                 onChange={onToggleAutoreboot}
+                isDisabled={!permission.permissions.write}
                 className="pf-v6-u-font-size-sm"
                 style={{ fontSize: 'var(--pf-t--global--font-size--sm)' }}
               />
@@ -295,6 +298,7 @@ const DetailsCard = ({
                   }
                   variant="link"
                   onClick={() => setEditing(!editing)}
+                  isDisabled={!permission.permissions.write}
                   className="pf-v6-u-ml-sm"
                   aria-label={
                     editing
@@ -348,7 +352,9 @@ const DetailsCard = ({
                           }
                           variant="link"
                           onClick={() => onSubmit(value)}
-                          isDisabled={nameStatus !== 'valid'}
+                          isDisabled={
+                            !permission.permissions.write || nameStatus !== 'valid'
+                          }
                           aria-label="Save remediation plan name"
                         ></Button>
                         <Button

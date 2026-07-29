@@ -37,6 +37,10 @@ const RemediationDetailsPageHeader = ({
   }, [remediation, addNotification]);
 
   const getDownloadTooltipMessage = () => {
+    if (!permissions?.inventoryHostsRead) {
+      return "The remediation plan cannot be downloaded because you don't have the required permissions.";
+    }
+
     const hasNoActions = !remediation?.issue_count;
     const hasNoSystems = remediation?.system_count === 0;
     let message =
@@ -119,7 +123,9 @@ const RemediationDetailsPageHeader = ({
               <FlexItem>
                 <ButtonWithToolTip
                   isDisabled={
-                    !remediation?.issue_count || remediation.system_count === 0
+                    !remediation?.issue_count ||
+                    remediation.system_count === 0 ||
+                    !permissions?.inventoryHostsRead
                   }
                   onClick={handleDownload}
                   tooltipContent={<div>{getDownloadTooltipMessage()}</div>}
