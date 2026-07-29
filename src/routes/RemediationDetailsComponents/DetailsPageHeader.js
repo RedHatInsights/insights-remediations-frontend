@@ -38,7 +38,7 @@ const RemediationDetailsPageHeader = ({
 
   const getDownloadTooltipMessage = () => {
     if (!permissions?.inventoryHostsRead) {
-      return 'The remediation plan cannot be downloaded because you dont have the required permissions.';
+      return "The remediation plan cannot be downloaded because you don't have the required permissions.";
     }
 
     const hasNoActions = !remediation?.issue_count;
