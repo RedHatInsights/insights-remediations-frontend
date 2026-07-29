@@ -298,6 +298,7 @@ const DetailsCard = ({
                   }
                   variant="link"
                   onClick={() => setEditing(!editing)}
+                  isDisabled={!permission.permissions.write}
                   className="pf-v6-u-ml-sm"
                   aria-label={
                     editing
@@ -351,7 +352,9 @@ const DetailsCard = ({
                           }
                           variant="link"
                           onClick={() => onSubmit(value)}
-                          isDisabled={nameStatus !== 'valid'}
+                          isDisabled={
+                            !permission.permissions.write || nameStatus !== 'valid'
+                          }
                           aria-label="Save remediation plan name"
                         ></Button>
                         <Button

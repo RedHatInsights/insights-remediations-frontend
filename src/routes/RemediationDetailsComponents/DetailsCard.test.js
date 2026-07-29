@@ -249,6 +249,23 @@ describe('DetailsCard', () => {
   });
 
   describe('Name Editing', () => {
+    it('disables inline rename for users without write permission', async () => {
+      const user = userEvent.setup();
+
+      renderComponent({}, { write: false, read: true });
+
+      const editButton = screen.getByRole('button', {
+        name: /edit remediation plan name/i,
+      });
+      expect(editButton).toBeDisabled();
+
+      await user.click(editButton);
+
+      expect(
+        screen.queryByRole('textbox', { name: /rename input/i }),
+      ).not.toBeInTheDocument();
+    });
+
     it('toggles edit mode when pencil icon is clicked', async () => {
       const user = userEvent.setup();
 
