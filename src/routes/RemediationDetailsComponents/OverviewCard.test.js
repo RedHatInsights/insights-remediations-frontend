@@ -9,7 +9,7 @@ import {
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import DetailsCard from './DetailsCard';
+import OverviewCard from './OverviewCard';
 import { PermissionContext } from '../../App';
 import * as useVerifyName from '../../Utilities/useVerifyName';
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
@@ -33,7 +33,7 @@ jest.mock('@redhat-cloud-services/frontend-components/InsightsLink', () => {
   };
 });
 
-describe('DetailsCard', () => {
+describe('OverviewCard', () => {
   let mockUpdateRemPlan;
   let mockOnNavigateToTab;
   let mockRefetch;
@@ -109,7 +109,7 @@ describe('DetailsCard', () => {
 
     return render(
       <PermissionContext.Provider value={{ permissions }}>
-        <DetailsCard {...defaultProps} />
+        <OverviewCard {...defaultProps} />
       </PermissionContext.Provider>,
     );
   };
@@ -118,14 +118,14 @@ describe('DetailsCard', () => {
     it('renders without crashing', () => {
       renderComponent();
 
-      expect(screen.getByText('Details')).toBeInTheDocument();
+      expect(screen.getByText('Overview')).toBeInTheDocument();
     });
 
     it('displays loading spinner when no details provided', () => {
       renderComponent({ details: null });
 
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
-      expect(screen.queryByText('Details')).not.toBeInTheDocument();
+      expect(screen.queryByText('Overview')).not.toBeInTheDocument();
     });
 
     it('displays all required information when details are provided', () => {
@@ -144,7 +144,7 @@ describe('DetailsCard', () => {
       renderComponent();
 
       const toggle = screen.getByRole('button', {
-        name: /toggle details card/i,
+        name: /toggle overview card/i,
       });
       expect(toggle).toHaveAttribute('aria-expanded', 'true');
 
@@ -550,7 +550,7 @@ describe('DetailsCard', () => {
         allRemediations: undefined,
       });
 
-      expect(screen.getByText('Details')).toBeInTheDocument();
+      expect(screen.getByText('Overview')).toBeInTheDocument();
     });
   });
 
@@ -586,7 +586,7 @@ describe('DetailsCard', () => {
         <PermissionContext.Provider
           value={{ permissions: { write: true, read: true } }}
         >
-          <DetailsCard
+          <OverviewCard
             details={newDetails}
             updateRemPlan={mockUpdateRemPlan}
             onNavigateToTab={mockOnNavigateToTab}

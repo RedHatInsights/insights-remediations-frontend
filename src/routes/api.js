@@ -69,7 +69,7 @@ export const getPlaybookLogs = (params) =>
 
 /**
  * Update a remediation. Wrapper to handle the two-parameter API signature.
- * Used by RenameModal, DetailsCard, and other components that need to update remediation properties.
+ * Used by RenameModal, OverviewCard, and other components that need to update remediation properties.
  *
  * The API client's updateRemediation expects (id, data) as two separate parameters,
  * but useRemediationsQuery passes a single params object. This wrapper converts

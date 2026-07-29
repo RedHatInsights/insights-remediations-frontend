@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import { calculateActionPointsFromSummary } from '../../components/helpers';
 import { calculateExecutionLimits } from './helpers';
-import DetailsCard from './DetailsCard';
+import OverviewCard from './OverviewCard';
 import ProgressCard from './ProgressCard';
 import ActivityCard from './ActivityCard';
 
@@ -122,7 +122,7 @@ const DetailsGeneralContent = ({
             spaceItems={{ default: 'spaceItemsMd' }}
           >
             <FlexItem>
-              <DetailsCard
+              <OverviewCard
                 details={details}
                 refetch={refetch}
                 updateRemPlan={updateRemPlan}
