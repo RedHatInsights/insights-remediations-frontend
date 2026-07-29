@@ -5,6 +5,7 @@ import React, {
   Fragment,
   useMemo,
   useCallback,
+  useContext,
 } from 'react';
 import PropTypes from 'prop-types';
 import { InventoryTable } from '@redhat-cloud-services/frontend-components/Inventory';
@@ -28,6 +29,7 @@ import { useAddNotification } from '@redhat-cloud-services/frontend-components-n
 import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import { deleteRemediationSystems } from '../../routes/api';
 import { selectEntity } from '../../actions';
+import { PermissionContext } from '../../App';
 
 const SystemsTableWrapper = ({
   remediation,
@@ -51,6 +53,7 @@ const SystemsTableWrapper = ({
   );
   const loaded = useSelector(({ entities }) => entities?.loaded);
   const rows = useSelector(({ entities }) => entities?.rows);
+  const permission = useContext(PermissionContext);
 
   const { fetch: fetchSystems } = useRemediations('getRemediationSystems', {
     skip: true,
@@ -122,9 +125,12 @@ const SystemsTableWrapper = ({
           };
           setIsOpen(true);
         },
+        isDisabled:
+          !permission.permissions.write ||
+          !permission.permissions.inventoryHostsRead,
       },
     ],
-    [],
+    [permission.permissions.write, permission.permissions.inventoryHostsRead],
   );
 
   const columns = useMemo(
@@ -174,7 +180,11 @@ const SystemsTableWrapper = ({
           <Button
             variant="secondary"
             onClick={() => setIsOpen(true)}
-            isDisabled={selected.size === 0}
+            isDisabled={
+              !permission.permissions.write ||
+              !permission.permissions.inventoryHostsRead ||
+              selected.size === 0
+            }
           >
             Remove
           </Button>
