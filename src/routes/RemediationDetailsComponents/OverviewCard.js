@@ -356,7 +356,8 @@ const OverviewCard = ({
                           variant="link"
                           onClick={() => onSubmit(value)}
                           isDisabled={
-                            !permission.permissions.write || nameStatus !== 'valid'
+                            !permission.permissions.write ||
+                            nameStatus !== 'valid'
                           }
                           aria-label="Save remediation plan name"
                         ></Button>
