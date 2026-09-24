@@ -264,6 +264,9 @@ jest.mock('bastilian-tabletools', () => {
   return {
     ...actualModule,
     useRawTableState: jest.fn(() => ({ selected: [] })),
+    usePagination: jest.fn(() => ({
+      toolbarProps: { pagination: { onSetPage: jest.fn() } },
+    })),
     useStateCallbacks: jest.fn(() => ({
       current: {
         resetSelection: jest.fn(),
@@ -356,14 +359,107 @@ const renderPageWithList = (list, customStore) => {
   return renderPage(customStore);
 };
 
+const openDeleteModalForRow = async (user, rowName) => {
+  const row = await screen.findByRole('row', { name: rowName });
+  const kebab = await waitFor(() => {
+    const button = within(row).getByRole('button', {
+      name: /kebab toggle/i,
+    });
+    expect(button).toBeVisible();
+    return button;
+  });
+
+  await user.click(kebab);
+
+  const deleteItem = await waitFor(() => {
+    const menuItem = screen.getByRole('menuitem', { name: /delete/i });
+    expect(menuItem).toBeVisible();
+    return menuItem;
+  });
+
+  await user.click(deleteItem);
+
+  return await waitFor(() => {
+    const dialog = screen.getByRole('dialog', {
+      name: /delete remediation plan/i,
+    });
+    expect(dialog).toBeVisible();
+    return dialog;
+  });
+};
+
+const mockSingleDeleteScenario = ({
+  fetchRemediationsMock,
+  rows,
+  total,
+  currentPage,
+  deleteRemediationMock,
+}) => {
+  mockRemediationsData = {
+    data: rows,
+    meta: { total },
+  };
+
+  useRawTableState.mockReturnValue({
+    selected: [],
+    pagination: {
+      state: {
+        page: currentPage,
+        perPage: 10,
+      },
+    },
+  });
+
+  useRemediations.mockImplementation((endpoint) => {
+    if (endpoint === 'getRemediations') {
+      return {
+        result: mockRemediationsData,
+        loading: false,
+        refetch: fetchRemediationsMock,
+        fetchAllIds: jest.fn().mockResolvedValue(rows.map(({ id }) => id)),
+      };
+    }
+    if (endpoint === mockGetOrgConfig) {
+      return {
+        result: mockOrgConfig,
+        loading: false,
+        refetch: jest.fn(),
+      };
+    }
+    if (endpoint === 'deleteRemediations') {
+      return {
+        fetchBatched: jest.fn().mockResolvedValue({}),
+      };
+    }
+    if (endpoint === 'deleteRemediation') {
+      return {
+        fetch: deleteRemediationMock,
+      };
+    }
+    return {
+      result: null,
+      loading: false,
+      refetch: jest.fn(),
+    };
+  });
+};
+
 const { useFeatureFlag } = require('../../Utilities/Hooks/useFeatureFlag');
 const { useIsOrgAdmin } = require('../../Utilities/Hooks/useIsOrgAdmin');
 const useRemediations =
   require('../../Utilities/Hooks/api/useRemediations').default;
+const {
+  usePagination,
+  useRawTableState,
+  useStateCallbacks,
+} = require('bastilian-tabletools');
 
 describe('OverViewPage', () => {
   let store;
   let cleanup;
+  let mockFetchRemediations;
+  let mockPaginationOnSetPage;
+  let mockResetSelection;
 
   beforeEach(() => {
     // Clear all mocks first to prevent leakage from other test files
@@ -371,6 +467,31 @@ describe('OverViewPage', () => {
 
     // Create a fresh Redux store for each test
     store = mockStore({});
+    mockFetchRemediations = jest.fn();
+    mockPaginationOnSetPage = jest.fn();
+    mockResetSelection = jest.fn();
+
+    useRawTableState.mockReturnValue({
+      selected: [],
+      pagination: {
+        state: {
+          page: 1,
+          perPage: 10,
+        },
+      },
+    });
+    usePagination.mockReturnValue({
+      toolbarProps: {
+        pagination: {
+          onSetPage: mockPaginationOnSetPage,
+        },
+      },
+    });
+    useStateCallbacks.mockReturnValue({
+      current: {
+        resetSelection: mockResetSelection,
+      },
+    });
 
     // Reset mockRemediationsData to default with deep copy to prevent mutations
     mockRemediationsData = {
@@ -399,7 +520,7 @@ describe('OverViewPage', () => {
         return {
           result: mockRemediationsData,
           loading: false,
-          refetch: jest.fn(),
+          refetch: mockFetchRemediations,
           fetchAllIds: jest
             .fn()
             .mockResolvedValue(mockRemediationsData.data.map((r) => r.id)),
@@ -545,6 +666,73 @@ describe('OverViewPage', () => {
     );
 
     expect(modal).toBeVisible();
+  });
+
+  it('clamps to the actual last page when deletion leaves the current page out of range', async () => {
+    const user = userEvent.setup();
+    const deleteRemediationMock = jest.fn().mockResolvedValue({});
+    mockSingleDeleteScenario({
+      fetchRemediationsMock: mockFetchRemediations,
+      rows: [
+        {
+          id: 'last-page-row',
+          itemId: 'last-page-row',
+          name: 'Last page row',
+          last_modified: '2024-07-03T00:00:00Z',
+          playbook_runs: [],
+        },
+      ],
+      total: 21,
+      currentPage: 3,
+      deleteRemediationMock,
+    });
+
+    const view = renderPage(store);
+    cleanup = view.unmount;
+
+    const modal = await openDeleteModalForRow(user, /last page row/i);
+    await user.click(within(modal).getByRole('button', { name: /^delete$/i }));
+
+    await waitFor(() => {
+      expect(deleteRemediationMock).toHaveBeenCalledWith({
+        id: 'last-page-row',
+      });
+      expect(mockPaginationOnSetPage).toHaveBeenCalledWith(undefined, 2);
+    });
+    expect(mockFetchRemediations).not.toHaveBeenCalled();
+    expect(mockResetSelection).toHaveBeenCalled();
+  });
+
+  it('refetches when deletion keeps the current page within the actual last page', async () => {
+    const user = userEvent.setup();
+    const deleteRemediationMock = jest.fn().mockResolvedValue({});
+    mockSingleDeleteScenario({
+      fetchRemediationsMock: mockFetchRemediations,
+      rows: [
+        {
+          id: 'middle-page-row',
+          itemId: 'middle-page-row',
+          name: 'Middle page row',
+          last_modified: '2024-07-04T00:00:00Z',
+          playbook_runs: [],
+        },
+      ],
+      total: 21,
+      currentPage: 2,
+      deleteRemediationMock,
+    });
+
+    const view = renderPage(store);
+    cleanup = view.unmount;
+
+    const modal = await openDeleteModalForRow(user, /middle page row/i);
+    await user.click(within(modal).getByRole('button', { name: /^delete$/i }));
+
+    await waitFor(() => {
+      expect(mockFetchRemediations).toHaveBeenCalled();
+    });
+    expect(mockPaginationOnSetPage).not.toHaveBeenCalled();
+    expect(mockResetSelection).toHaveBeenCalled();
   });
 
   it('renders the Expiration column in the overview table', async () => {

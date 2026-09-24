@@ -20,6 +20,7 @@ import RenameModal from '../../components/RenameModal';
 import { useAddNotification } from '@redhat-cloud-services/frontend-components-notifications/hooks';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import {
+  usePagination,
   useRawTableState,
   TableStateProvider,
   useStateCallbacks,
@@ -34,6 +35,16 @@ import { getOrgConfig } from '../api';
 
 import TableEmptyState from './TableEmptyState';
 import { CalendarFilterType } from './CalendarFilterType';
+
+const getActualLastPageAfterDeletion = ({
+  perPage = 10,
+  total = 0,
+  deletedCount = 1,
+}) => {
+  // Manually count the actual total items and last page index after deletion
+  const actualTotal = Math.max(0, total - deletedCount);
+  return Math.max(1, Math.ceil(actualTotal / perPage));
+};
 
 export const OverViewPage = () => {
   const dispatch = useDispatch();
@@ -59,6 +70,11 @@ export const OverViewPage = () => {
     useTableState: true,
     params: { hideArchived: false, fieldsData: ['last_playbook_run'] },
   });
+  const { toolbarProps: { pagination: paginationControls } = {} } =
+    usePagination({
+      total: result?.meta?.total,
+      perPage: tableState?.pagination?.state?.perPage || 10,
+    });
 
   const { result: allRemediations, refetch: refetchAllRemediations } =
     useRemediations('getRemediations', {
@@ -136,6 +152,37 @@ export const OverViewPage = () => {
     fetchRemediations?.();
   }, [refetchOrgConfig, fetchRemediations]);
 
+  const refetchAfterDeletion = useCallback(
+    // Refetch only if anything was deleted
+    (deletedCount = 1) => {
+      // Get the current page from the time of deletion
+      const currentPage = tableState?.pagination?.state?.page;
+
+      // Get the actual last page after deletion
+      const actualLastPage = getActualLastPageAfterDeletion({
+        perPage: tableState?.pagination?.state?.perPage,
+        total: result?.meta?.total,
+        deletedCount,
+      });
+
+      // If we eneded up being "behind" the actual last page after deletion, paginate back
+      if (currentPage > actualLastPage) {
+        paginationControls?.onSetPage?.(undefined, actualLastPage);
+        return;
+      }
+
+      // Refetch
+      fetchRemediations?.();
+    },
+    [
+      fetchRemediations,
+      paginationControls,
+      result?.meta?.total,
+      tableState?.pagination?.state?.page,
+      tableState?.pagination?.state?.perPage,
+    ],
+  );
+
   return (
     <div>
       {isRenameModalOpen && (
@@ -191,7 +238,9 @@ export const OverViewPage = () => {
                   autoDismiss: true,
                 });
                 callbacks?.current?.resetSelection();
-                fetchRemediations();
+                refetchAfterDeletion(
+                  isBulkDelete ? currentlySelected.length : 1,
+                );
                 setIsDeleteModalOpen(false);
               });
             }
