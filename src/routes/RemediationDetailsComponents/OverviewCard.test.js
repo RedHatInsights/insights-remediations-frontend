@@ -96,7 +96,10 @@ describe('OverviewCard', () => {
     jest.restoreAllMocks();
   });
 
-  const renderComponent = (props = {}, permissions = { write: true, read: true }) => {
+  const renderComponent = (
+    props = {},
+    permissions = { write: true, read: true },
+  ) => {
     const defaultProps = {
       details: mockDetails,
       updateRemPlan: mockUpdateRemPlan,
