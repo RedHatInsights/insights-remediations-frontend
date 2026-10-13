@@ -18,7 +18,6 @@ describe('useOnConfirm Hook', () => {
     status: 'success',
     successfulBatches: 1,
     failedBatches: 0,
-    errors: [],
   };
 
   beforeEach(() => {
@@ -479,17 +478,40 @@ describe('useOnConfirm Hook', () => {
 
   describe('Batched deletion results', () => {
     it.each([
-      ['partial_failure', 2, 1, 'warning', true],
-      ['complete_failure', 0, 3, 'danger', false],
+      {
+        status: 'partial_failure',
+        successfulBatches: 2,
+        failedBatches: 1,
+        shouldRefresh: true,
+        notification: {
+          title: 'Some selected systems may not have been removed',
+          description:
+            'The system list has been refreshed to show the current state.',
+          variant: 'warning',
+          dismissable: true,
+          autoDismiss: true,
+        },
+      },
+      {
+        status: 'complete_failure',
+        successfulBatches: 0,
+        failedBatches: 3,
+        shouldRefresh: false,
+        notification: {
+          title: 'Failed to remove systems',
+          variant: 'danger',
+          dismissable: true,
+        },
+      },
     ])(
-      'should handle %s and finish the removal',
-      async (
+      'should handle $status and finish the removal',
+      async ({
         status,
         successfulBatches,
         failedBatches,
-        variant,
         shouldRefresh,
-      ) => {
+        notification,
+      }) => {
         mockSelected = new Map(
           Array.from({ length: 201 }, (_, index) => [
             `sys-${index}`,
@@ -500,7 +522,6 @@ describe('useOnConfirm Hook', () => {
           status,
           successfulBatches,
           failedBatches,
-          errors: Array(failedBatches).fill('Batch failed'),
         });
         const mockRefetchConnectionStatus = jest.fn().mockResolvedValue();
         const activeSystem = mockActiveSystem.current;
@@ -533,13 +554,48 @@ describe('useOnConfirm Hook', () => {
         expect(mockActiveSystem.current).toEqual(
           shouldRefresh ? undefined : activeSystem,
         );
-        expect(mockAddNotification).toHaveBeenCalledWith(
-          expect.objectContaining({ variant }),
-        );
+        expect(mockAddNotification).toHaveBeenCalledWith(notification);
         expect(mockSetIsRemoving).toHaveBeenLastCalledWith(false);
         expect(mockSetIsOpen).toHaveBeenCalledWith(false);
       },
     );
+
+    it('should show a generic notification and close the modal if deletion throws', async () => {
+      mockSelected = new Map();
+      mockDeleteSystemsBatched.mockRejectedValue(
+        new Error('Backend error details'),
+      );
+
+      const { result } = renderHook(() =>
+        useOnConfirm({
+          selected: mockSelected,
+          activeSystem: mockActiveSystem,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
+          remediation: mockRemediation,
+          refreshRemediation: mockRefreshRemediation,
+          setIsRemoving: mockSetIsRemoving,
+          setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
+        }),
+      );
+
+      await act(async () => {
+        await result.current();
+      });
+
+      expect(mockAddNotification).toHaveBeenCalledWith({
+        title: 'Failed to remove systems',
+        variant: 'danger',
+        dismissable: true,
+      });
+      expect(mockRefreshRemediation).not.toHaveBeenCalled();
+      expect(mockClearSelection).not.toHaveBeenCalled();
+      expect(mockReloadTable).not.toHaveBeenCalled();
+      expect(mockSetIsRemoving).toHaveBeenLastCalledWith(false);
+      expect(mockSetIsOpen).toHaveBeenCalledWith(false);
+    });
   });
 
   describe('Edge cases', () => {

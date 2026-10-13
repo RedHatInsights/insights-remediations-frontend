@@ -35,7 +35,6 @@ export const deleteRemediationSystems = (systems, remediation) => {
  *    status: ('success' | 'partial_failure' | 'complete_failure'),
  *    successfulBatches: number,
  *    failedBatches: number,
- *    errors: Array,
  *  }>} Promise resolving to a batched deletion summary
  */
 export const deleteRemediationSystemsBatched = async (
@@ -44,7 +43,6 @@ export const deleteRemediationSystemsBatched = async (
   batchSize = 100,
 ) => {
   const batches = chunk(systems, batchSize);
-  const errors = [];
   let status = 'success';
   let successfulBatches = 0;
   let failedBatches = 0;
@@ -55,9 +53,7 @@ export const deleteRemediationSystemsBatched = async (
     try {
       await deleteRemediationSystems(batch, remediation);
       successfulBatches += 1;
-    } catch (error) {
-      // TODO: Find out a reliable path for extracting only the usable error message
-      errors.push(error.statusText || 'Unknown error');
+    } catch {
       failedBatches += 1;
     }
   }
@@ -74,7 +70,6 @@ export const deleteRemediationSystemsBatched = async (
     status,
     successfulBatches,
     failedBatches,
-    errors,
   };
 };
 

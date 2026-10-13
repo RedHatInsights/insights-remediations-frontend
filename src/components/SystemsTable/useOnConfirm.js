@@ -26,7 +26,7 @@ const useOnConfirm = ({
             ];
       const itemsToDelete = selectedSystems.length;
       setIsRemoving?.(true);
-      const { status, errors } = await deleteRemediationSystemsBatched(
+      const { status } = await deleteRemediationSystemsBatched(
         selectedSystems,
         remediation,
       );
@@ -63,15 +63,13 @@ const useOnConfirm = ({
       } else {
         addNotification({
           title: 'Failed to remove systems',
-          description: errors[0] || 'An error occurred',
           variant: 'danger',
           dismissable: true,
         });
       }
-    } catch (error) {
+    } catch {
       addNotification({
         title: 'Failed to remove systems',
-        description: error?.message || 'An error occurred',
         variant: 'danger',
         dismissable: true,
       });
