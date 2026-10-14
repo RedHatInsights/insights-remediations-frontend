@@ -669,7 +669,9 @@ describe('DetailsGeneralContent', () => {
       expect(gridItems).toHaveLength(2);
       expect(grid).toContainElement(gridItems[0]);
       expect(grid).toContainElement(gridItems[1]);
-      expect(gridItems[0]).toContainElement(screen.getByTestId('overview-card'));
+      expect(gridItems[0]).toContainElement(
+        screen.getByTestId('overview-card'),
+      );
       expect(gridItems[0]).toContainElement(
         screen.getByTestId('activity-card'),
       );
@@ -684,7 +686,9 @@ describe('DetailsGeneralContent', () => {
       const gridItems = screen.getAllByTestId('grid-item');
 
       // First grid item should contain OverviewCard and ActivityCard
-      expect(gridItems[0]).toContainElement(screen.getByTestId('overview-card'));
+      expect(gridItems[0]).toContainElement(
+        screen.getByTestId('overview-card'),
+      );
       expect(gridItems[0]).toContainElement(
         screen.getByTestId('activity-card'),
       );

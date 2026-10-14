@@ -1,17 +1,11 @@
 import { renderHook, act } from '@testing-library/react';
-import { useDispatch } from 'react-redux';
 import useOnConfirm from './useOnConfirm';
 
-// Mock external dependencies
-jest.mock('react-redux', () => ({
-  useDispatch: jest.fn(),
-}));
-
 describe('useOnConfirm Hook', () => {
-  let mockDispatch;
-  let mockDeleteSystems;
+  let mockDeleteSystemsBatched;
   let mockRefreshRemediation;
   let mockSetIsOpen;
+  let mockSetIsRemoving;
   let mockActiveSystem;
   let mockSelected;
   let mockRemediation;
@@ -20,11 +14,17 @@ describe('useOnConfirm Hook', () => {
   let mockClearSelection;
   let mockReloadTable;
 
+  const successfulDeletion = {
+    status: 'success',
+    successfulBatches: 1,
+    failedBatches: 0,
+  };
+
   beforeEach(() => {
-    mockDispatch = jest.fn();
-    mockDeleteSystems = jest.fn().mockResolvedValue({});
+    mockDeleteSystemsBatched = jest.fn().mockResolvedValue(successfulDeletion);
     mockRefreshRemediation = jest.fn().mockResolvedValue({});
     mockSetIsOpen = jest.fn();
+    mockSetIsRemoving = jest.fn();
     mockAddNotification = jest.fn();
     mockClearSelection = jest.fn();
     mockReloadTable = jest.fn();
@@ -32,21 +32,6 @@ describe('useOnConfirm Hook', () => {
       current: { id: 'active-system-1', name: 'Active System' },
     };
     mockRemediation = { id: 'rem-123', name: 'Test Remediation' };
-
-    // Reset mocks
-    useDispatch.mockReturnValue(mockDispatch);
-    mockDeleteSystems.mockClear();
-    mockRefreshRemediation.mockClear();
-    mockSetIsOpen.mockClear();
-    mockAddNotification.mockClear();
-    mockDispatch.mockClear();
-    mockClearSelection.mockClear();
-    mockReloadTable.mockClear();
-  });
-
-  const createMockAction = (payload = Promise.resolve()) => ({
-    payload,
-    type: 'DELETE_SYSTEMS',
   });
 
   describe('Hook initialization', () => {
@@ -56,7 +41,7 @@ describe('useOnConfirm Hook', () => {
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
           clearSelection: mockClearSelection,
           reloadTable: mockReloadTable,
           remediation: mockRemediation,
@@ -75,7 +60,7 @@ describe('useOnConfirm Hook', () => {
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
           clearSelection: mockClearSelection,
           reloadTable: mockReloadTable,
           remediation: mockRemediation,
@@ -99,7 +84,7 @@ describe('useOnConfirm Hook', () => {
           useOnConfirm({
             selected,
             activeSystem: mockActiveSystem,
-            deleteRemediationSystems: mockDeleteSystems,
+            deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
             clearSelection: mockClearSelection,
             reloadTable: mockReloadTable,
             remediation: mockRemediation,
@@ -125,42 +110,11 @@ describe('useOnConfirm Hook', () => {
     });
 
     it('should delete active system when no systems selected', async () => {
-      mockDeleteSystems.mockReturnValue(createMockAction());
-      mockRefreshRemediation.mockResolvedValue();
-
       const { result } = renderHook(() =>
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
-          clearSelection: mockClearSelection,
-          reloadTable: mockReloadTable,
-          remediation: mockRemediation,
-          refreshRemediation: mockRefreshRemediation,
-          setIsOpen: mockSetIsOpen,
-          addNotification: mockAddNotification,
-        }),
-      );
-
-      await act(async () => {
-        result.current();
-      });
-
-      expect(mockDeleteSystems).toHaveBeenCalledWith(
-        [{ id: 'active-system-1', name: 'Active System' }],
-        mockRemediation,
-      );
-    });
-
-    it('should call deleteRemediationSystems with correct arguments', async () => {
-      mockDeleteSystems.mockResolvedValue({});
-      mockRefreshRemediation.mockResolvedValue();
-
-      const { result } = renderHook(() =>
-        useOnConfirm({
-          selected: mockSelected,
-          activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
           clearSelection: mockClearSelection,
           reloadTable: mockReloadTable,
           remediation: mockRemediation,
@@ -174,21 +128,43 @@ describe('useOnConfirm Hook', () => {
         await result.current();
       });
 
-      expect(mockDeleteSystems).toHaveBeenCalledWith(
+      expect(mockDeleteSystemsBatched).toHaveBeenCalledWith(
+        [{ id: 'active-system-1', name: 'Active System' }],
+        mockRemediation,
+      );
+    });
+
+    it('should call deleteRemediationSystemsBatched with correct arguments', async () => {
+      const { result } = renderHook(() =>
+        useOnConfirm({
+          selected: mockSelected,
+          activeSystem: mockActiveSystem,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
+          remediation: mockRemediation,
+          refreshRemediation: mockRefreshRemediation,
+          setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
+        }),
+      );
+
+      await act(async () => {
+        await result.current();
+      });
+
+      expect(mockDeleteSystemsBatched).toHaveBeenCalledWith(
         [{ id: 'active-system-1', name: 'Active System' }],
         mockRemediation,
       );
     });
 
     it('should clear active system reference', async () => {
-      mockDeleteSystems.mockReturnValue(createMockAction());
-      mockRefreshRemediation.mockResolvedValue();
-
       const { result } = renderHook(() =>
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
           clearSelection: mockClearSelection,
           reloadTable: mockReloadTable,
           remediation: mockRemediation,
@@ -199,21 +175,18 @@ describe('useOnConfirm Hook', () => {
       );
 
       await act(async () => {
-        result.current();
+        await result.current();
       });
 
       expect(mockActiveSystem.current).toBeUndefined();
     });
 
     it('should show success notification for single system', async () => {
-      mockDeleteSystems.mockReturnValue(createMockAction());
-      mockRefreshRemediation.mockResolvedValue();
-
       const { result } = renderHook(() =>
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
           clearSelection: mockClearSelection,
           reloadTable: mockReloadTable,
           remediation: mockRemediation,
@@ -224,7 +197,7 @@ describe('useOnConfirm Hook', () => {
       );
 
       await act(async () => {
-        result.current();
+        await result.current();
       });
 
       expect(mockAddNotification).toHaveBeenCalledWith({
@@ -237,14 +210,11 @@ describe('useOnConfirm Hook', () => {
     });
 
     it('should close the modal', async () => {
-      mockDeleteSystems.mockReturnValue(createMockAction());
-      mockRefreshRemediation.mockResolvedValue();
-
       const { result } = renderHook(() =>
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
           clearSelection: mockClearSelection,
           reloadTable: mockReloadTable,
           remediation: mockRemediation,
@@ -255,7 +225,7 @@ describe('useOnConfirm Hook', () => {
       );
 
       await act(async () => {
-        result.current();
+        await result.current();
       });
 
       expect(mockSetIsOpen).toHaveBeenCalledWith(false);
@@ -272,14 +242,11 @@ describe('useOnConfirm Hook', () => {
     });
 
     it('should delete selected systems when systems are selected', async () => {
-      mockDeleteSystems.mockReturnValue(createMockAction());
-      mockRefreshRemediation.mockResolvedValue();
-
       const { result } = renderHook(() =>
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
           clearSelection: mockClearSelection,
           reloadTable: mockReloadTable,
           remediation: mockRemediation,
@@ -290,10 +257,10 @@ describe('useOnConfirm Hook', () => {
       );
 
       await act(async () => {
-        result.current();
+        await result.current();
       });
 
-      expect(mockDeleteSystems).toHaveBeenCalledWith(
+      expect(mockDeleteSystemsBatched).toHaveBeenCalledWith(
         [
           { id: 'sys1', name: 'System 1' },
           { id: 'sys2', name: 'System 2' },
@@ -304,14 +271,11 @@ describe('useOnConfirm Hook', () => {
     });
 
     it('should show success notification for multiple systems', async () => {
-      mockDeleteSystems.mockReturnValue(createMockAction());
-      mockRefreshRemediation.mockResolvedValue();
-
       const { result } = renderHook(() =>
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
           clearSelection: mockClearSelection,
           reloadTable: mockReloadTable,
           remediation: mockRemediation,
@@ -322,7 +286,7 @@ describe('useOnConfirm Hook', () => {
       );
 
       await act(async () => {
-        result.current();
+        await result.current();
       });
 
       expect(mockAddNotification).toHaveBeenCalledWith({
@@ -336,14 +300,12 @@ describe('useOnConfirm Hook', () => {
 
     it('should handle single selected system correctly', async () => {
       mockSelected = new Map([['sys1', { id: 'sys1', name: 'System 1' }]]);
-      mockDeleteSystems.mockReturnValue(createMockAction());
-      mockRefreshRemediation.mockResolvedValue();
 
       const { result } = renderHook(() =>
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
           clearSelection: mockClearSelection,
           reloadTable: mockReloadTable,
           remediation: mockRemediation,
@@ -354,7 +316,7 @@ describe('useOnConfirm Hook', () => {
       );
 
       await act(async () => {
-        result.current();
+        await result.current();
       });
 
       expect(mockAddNotification).toHaveBeenCalledWith({
@@ -370,14 +332,12 @@ describe('useOnConfirm Hook', () => {
   describe('Async operations', () => {
     it('should call deleteSystems and refreshRemediation', async () => {
       mockSelected = new Map();
-      mockDeleteSystems.mockResolvedValue({});
-      mockRefreshRemediation.mockResolvedValue();
 
       const { result } = renderHook(() =>
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
           clearSelection: mockClearSelection,
           reloadTable: mockReloadTable,
           remediation: mockRemediation,
@@ -391,20 +351,18 @@ describe('useOnConfirm Hook', () => {
         await result.current();
       });
 
-      expect(mockDeleteSystems).toHaveBeenCalled();
+      expect(mockDeleteSystemsBatched).toHaveBeenCalled();
       expect(mockRefreshRemediation).toHaveBeenCalled();
     });
 
     it('should call refreshRemediation after delete action', async () => {
       mockSelected = new Map();
-      mockDeleteSystems.mockReturnValue(createMockAction());
-      mockRefreshRemediation.mockResolvedValue();
 
       const { result } = renderHook(() =>
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
           clearSelection: mockClearSelection,
           reloadTable: mockReloadTable,
           remediation: mockRemediation,
@@ -415,25 +373,63 @@ describe('useOnConfirm Hook', () => {
       );
 
       await act(async () => {
-        result.current();
-        // Give the async IIFE time to complete
-        await Promise.resolve();
+        await result.current();
       });
 
       expect(mockRefreshRemediation).toHaveBeenCalled();
     });
 
-    it('should call refetchConnectionStatus when provided', async () => {
+    it('should toggle removing state while delete is in progress', async () => {
       mockSelected = new Map();
-      const mockRefetchConnectionStatus = jest.fn().mockResolvedValue();
-      mockDeleteSystems.mockReturnValue(createMockAction());
-      mockRefreshRemediation.mockResolvedValue();
+      let resolveDeletion;
+      const deletionPromise = new Promise((resolve) => {
+        resolveDeletion = resolve;
+      });
+      mockDeleteSystemsBatched.mockReturnValue(deletionPromise);
 
       const { result } = renderHook(() =>
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
+          remediation: mockRemediation,
+          refreshRemediation: mockRefreshRemediation,
+          setIsRemoving: mockSetIsRemoving,
+          setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
+        }),
+      );
+
+      let confirmation;
+      act(() => {
+        confirmation = result.current();
+      });
+
+      expect(mockSetIsRemoving).toHaveBeenNthCalledWith(1, true);
+      expect(mockSetIsRemoving).toHaveBeenCalledTimes(1);
+      expect(mockSetIsOpen).not.toHaveBeenCalled();
+      expect(mockRefreshRemediation).not.toHaveBeenCalled();
+
+      await act(async () => {
+        resolveDeletion(successfulDeletion);
+        await confirmation;
+      });
+
+      expect(mockSetIsRemoving).toHaveBeenLastCalledWith(false);
+      expect(mockSetIsOpen).toHaveBeenCalledWith(false);
+    });
+
+    it('should call refetchConnectionStatus when provided', async () => {
+      mockSelected = new Map();
+      const mockRefetchConnectionStatus = jest.fn().mockResolvedValue();
+
+      const { result } = renderHook(() =>
+        useOnConfirm({
+          selected: mockSelected,
+          activeSystem: mockActiveSystem,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
           clearSelection: mockClearSelection,
           reloadTable: mockReloadTable,
           remediation: mockRemediation,
@@ -448,21 +444,19 @@ describe('useOnConfirm Hook', () => {
         await result.current();
       });
 
-      expect(mockDeleteSystems).toHaveBeenCalled();
+      expect(mockDeleteSystemsBatched).toHaveBeenCalled();
       expect(mockRefreshRemediation).toHaveBeenCalled();
       expect(mockRefetchConnectionStatus).toHaveBeenCalled();
     });
 
     it('should not call refetchConnectionStatus when not provided', async () => {
       mockSelected = new Map();
-      mockDeleteSystems.mockReturnValue(createMockAction());
-      mockRefreshRemediation.mockResolvedValue();
 
       const { result } = renderHook(() =>
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
           clearSelection: mockClearSelection,
           reloadTable: mockReloadTable,
           remediation: mockRemediation,
@@ -476,9 +470,131 @@ describe('useOnConfirm Hook', () => {
         await result.current();
       });
 
-      expect(mockDeleteSystems).toHaveBeenCalled();
+      expect(mockDeleteSystemsBatched).toHaveBeenCalled();
       expect(mockRefreshRemediation).toHaveBeenCalled();
       // refetchConnectionStatus is not provided, so it shouldn't be called
+    });
+  });
+
+  describe('Batched deletion results', () => {
+    it.each([
+      {
+        status: 'partial_failure',
+        successfulBatches: 2,
+        failedBatches: 1,
+        shouldRefresh: true,
+        notification: {
+          title: 'Some selected systems may not have been removed',
+          description:
+            'The system list has been refreshed to show the current state.',
+          variant: 'warning',
+          dismissable: true,
+          autoDismiss: true,
+        },
+      },
+      {
+        status: 'complete_failure',
+        successfulBatches: 0,
+        failedBatches: 3,
+        shouldRefresh: false,
+        notification: {
+          title: 'Failed to remove systems',
+          variant: 'danger',
+          dismissable: true,
+        },
+      },
+    ])(
+      'should handle $status and finish the removal',
+      async ({
+        status,
+        successfulBatches,
+        failedBatches,
+        shouldRefresh,
+        notification,
+      }) => {
+        mockSelected = new Map(
+          Array.from({ length: 201 }, (_, index) => [
+            `sys-${index}`,
+            { id: `sys-${index}` },
+          ]),
+        );
+        mockDeleteSystemsBatched.mockResolvedValue({
+          status,
+          successfulBatches,
+          failedBatches,
+        });
+        const mockRefetchConnectionStatus = jest.fn().mockResolvedValue();
+        const activeSystem = mockActiveSystem.current;
+
+        const { result } = renderHook(() =>
+          useOnConfirm({
+            selected: mockSelected,
+            activeSystem: mockActiveSystem,
+            deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
+            clearSelection: mockClearSelection,
+            reloadTable: mockReloadTable,
+            remediation: mockRemediation,
+            refreshRemediation: mockRefreshRemediation,
+            refetchConnectionStatus: mockRefetchConnectionStatus,
+            setIsRemoving: mockSetIsRemoving,
+            setIsOpen: mockSetIsOpen,
+            addNotification: mockAddNotification,
+          }),
+        );
+
+        await act(async () => {
+          await result.current();
+        });
+
+        const refreshCount = shouldRefresh ? 1 : 0;
+        expect(mockRefreshRemediation).toHaveBeenCalledTimes(refreshCount);
+        expect(mockRefetchConnectionStatus).toHaveBeenCalledTimes(refreshCount);
+        expect(mockClearSelection).toHaveBeenCalledTimes(refreshCount);
+        expect(mockReloadTable).toHaveBeenCalledTimes(refreshCount);
+        expect(mockActiveSystem.current).toEqual(
+          shouldRefresh ? undefined : activeSystem,
+        );
+        expect(mockAddNotification).toHaveBeenCalledWith(notification);
+        expect(mockSetIsRemoving).toHaveBeenLastCalledWith(false);
+        expect(mockSetIsOpen).toHaveBeenCalledWith(false);
+      },
+    );
+
+    it('should show a generic notification and close the modal if deletion throws', async () => {
+      mockSelected = new Map();
+      mockDeleteSystemsBatched.mockRejectedValue(
+        new Error('Backend error details'),
+      );
+
+      const { result } = renderHook(() =>
+        useOnConfirm({
+          selected: mockSelected,
+          activeSystem: mockActiveSystem,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
+          clearSelection: mockClearSelection,
+          reloadTable: mockReloadTable,
+          remediation: mockRemediation,
+          refreshRemediation: mockRefreshRemediation,
+          setIsRemoving: mockSetIsRemoving,
+          setIsOpen: mockSetIsOpen,
+          addNotification: mockAddNotification,
+        }),
+      );
+
+      await act(async () => {
+        await result.current();
+      });
+
+      expect(mockAddNotification).toHaveBeenCalledWith({
+        title: 'Failed to remove systems',
+        variant: 'danger',
+        dismissable: true,
+      });
+      expect(mockRefreshRemediation).not.toHaveBeenCalled();
+      expect(mockClearSelection).not.toHaveBeenCalled();
+      expect(mockReloadTable).not.toHaveBeenCalled();
+      expect(mockSetIsRemoving).toHaveBeenLastCalledWith(false);
+      expect(mockSetIsOpen).toHaveBeenCalledWith(false);
     });
   });
 
@@ -486,14 +602,12 @@ describe('useOnConfirm Hook', () => {
     it('should handle undefined activeSystem gracefully', async () => {
       mockSelected = new Map();
       mockActiveSystem = { current: undefined };
-      mockDeleteSystems.mockReturnValue(createMockAction());
-      mockRefreshRemediation.mockResolvedValue();
 
       const { result } = renderHook(() =>
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
           clearSelection: mockClearSelection,
           reloadTable: mockReloadTable,
           remediation: mockRemediation,
@@ -504,10 +618,10 @@ describe('useOnConfirm Hook', () => {
       );
 
       await act(async () => {
-        result.current();
+        await result.current();
       });
 
-      expect(mockDeleteSystems).toHaveBeenCalledWith(
+      expect(mockDeleteSystemsBatched).toHaveBeenCalledWith(
         [{ undefined }],
         mockRemediation,
       );
@@ -516,14 +630,12 @@ describe('useOnConfirm Hook', () => {
 
     it('should handle empty selected map', async () => {
       mockSelected = new Map();
-      mockDeleteSystems.mockReturnValue(createMockAction());
-      mockRefreshRemediation.mockResolvedValue();
 
       const { result } = renderHook(() =>
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
           clearSelection: mockClearSelection,
           reloadTable: mockReloadTable,
           remediation: mockRemediation,
@@ -534,7 +646,7 @@ describe('useOnConfirm Hook', () => {
       );
 
       await act(async () => {
-        result.current();
+        await result.current();
       });
 
       expect(mockSelected.size).toBe(0);
@@ -547,14 +659,12 @@ describe('useOnConfirm Hook', () => {
 
     it('should handle concurrent executions', async () => {
       mockSelected = new Map();
-      mockDeleteSystems.mockReturnValue(createMockAction());
-      mockRefreshRemediation.mockResolvedValue();
 
       const { result } = renderHook(() =>
         useOnConfirm({
           selected: mockSelected,
           activeSystem: mockActiveSystem,
-          deleteRemediationSystems: mockDeleteSystems,
+          deleteRemediationSystemsBatched: mockDeleteSystemsBatched,
           clearSelection: mockClearSelection,
           reloadTable: mockReloadTable,
           remediation: mockRemediation,
@@ -573,7 +683,7 @@ describe('useOnConfirm Hook', () => {
         ]);
       });
 
-      expect(mockDeleteSystems).toHaveBeenCalledTimes(3);
+      expect(mockDeleteSystemsBatched).toHaveBeenCalledTimes(3);
       expect(mockSetIsOpen).toHaveBeenCalledTimes(3);
       expect(mockAddNotification).toHaveBeenCalledTimes(3);
     });

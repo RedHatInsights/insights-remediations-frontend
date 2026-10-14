@@ -2,6 +2,7 @@ import { remediationsApi } from '../api';
 import { API_BASE } from '../constants';
 import {
   deleteRemediationSystems,
+  deleteRemediationSystemsBatched,
   getRemediationPlaybookSystemsList,
   getPlaybookLogs,
   updateRemediationWrapper,
@@ -71,6 +72,103 @@ describe('Routes API', () => {
           data: { system_ids: [] },
         },
       );
+    });
+  });
+
+  describe('deleteRemediationSystemsBatched', () => {
+    const remediation = { id: 'remediation-123' };
+
+    it('should delete systems in batches of 100 by default', async () => {
+      const systems = Array.from({ length: 250 }, (_, i) => ({
+        id: `sys-${i}`,
+      }));
+      axiosInstance.delete.mockResolvedValue({ success: true });
+
+      const result = await deleteRemediationSystemsBatched(
+        systems,
+        remediation,
+      );
+
+      expect(axiosInstance.delete).toHaveBeenCalledTimes(3);
+      expect(
+        axiosInstance.delete.mock.calls.map(
+          ([, options]) => options.data.system_ids.length,
+        ),
+      ).toEqual([100, 100, 50]);
+      expect(result).toEqual({
+        status: 'success',
+        successfulBatches: 3,
+        failedBatches: 0,
+      });
+    });
+
+    it('should support custom batchSize', async () => {
+      const systems = [{ id: 'sys-1' }, { id: 'sys-2' }, { id: 'sys-3' }];
+      axiosInstance.delete.mockResolvedValue({ success: true });
+
+      const result = await deleteRemediationSystemsBatched(
+        systems,
+        remediation,
+        2,
+      );
+
+      expect(axiosInstance.delete).toHaveBeenCalledTimes(2);
+      expect(result.status).toBe('success');
+      expect(result.successfulBatches).toBe(2);
+    });
+
+    it('should return partial_failure when some batches fail', async () => {
+      const systems = [{ id: 'sys-1' }, { id: 'sys-2' }];
+      axiosInstance.delete
+        .mockResolvedValueOnce({ success: true })
+        .mockRejectedValueOnce({ statusText: 'Bad Request' });
+
+      const result = await deleteRemediationSystemsBatched(
+        systems,
+        remediation,
+        1,
+      );
+
+      expect(axiosInstance.delete).toHaveBeenCalledTimes(2);
+      expect(result).toEqual({
+        status: 'partial_failure',
+        successfulBatches: 1,
+        failedBatches: 1,
+      });
+    });
+
+    it('should return complete_failure when all batches fail', async () => {
+      const systems = [{ id: 'sys-1' }];
+      axiosInstance.delete.mockRejectedValue({
+        statusText: 'Internal Server Error',
+      });
+
+      const result = await deleteRemediationSystemsBatched(
+        systems,
+        remediation,
+      );
+
+      expect(result).toEqual({
+        status: 'complete_failure',
+        successfulBatches: 0,
+        failedBatches: 1,
+      });
+    });
+
+    it('should return complete_failure when error has no statusText', async () => {
+      const systems = [{ id: 'sys-1' }];
+      axiosInstance.delete.mockRejectedValue(new Error('Connection timed out'));
+
+      const result = await deleteRemediationSystemsBatched(
+        systems,
+        remediation,
+      );
+
+      expect(result).toEqual({
+        status: 'complete_failure',
+        successfulBatches: 0,
+        failedBatches: 1,
+      });
     });
   });
 

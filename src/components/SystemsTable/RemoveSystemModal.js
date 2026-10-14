@@ -9,12 +9,14 @@ const RemoveSystemModal = ({
   onConfirm,
   onClose,
   remediationName,
+  isRemoving = false,
 }) => (
   <Modal
     variant={ModalVariant.medium}
     title={`Remove selected system${selected?.length > 1 ? 's' : ''}?`}
     isOpen={isOpen}
-    onClose={onClose}
+    onClose={isRemoving ? () => {} : onClose}
+    showClose={!isRemoving}
     titleIconVariant={'warning'}
     data-testid="modal"
     actions={[
@@ -23,12 +25,18 @@ const RemoveSystemModal = ({
         variant="primary"
         onClick={onConfirm}
         data-testid="confirm-delete"
+        isDisabled={isRemoving}
+        isLoading={isRemoving}
       >
         Remove
       </Button>,
-      <Button key="remove-cancel" variant="link" onClick={onClose}>
-        Cancel
-      </Button>,
+      ...(!isRemoving
+        ? [
+            <Button key="remove-cancel" variant="link" onClick={onClose}>
+              Cancel
+            </Button>,
+          ]
+        : []),
     ]}
   >
     <span data-testid="modal-content">
@@ -49,11 +57,12 @@ RemoveSystemModal.propTypes = {
       id: PropTypes.string,
       display_name: PropTypes.string,
     }),
-  ).isRequired,
+  ),
   remediationName: PropTypes.string.isRequired,
   isOpen: PropTypes.bool.isRequired,
   onConfirm: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
+  isRemoving: PropTypes.bool,
 };
 
 export default RemoveSystemModal;
