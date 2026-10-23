@@ -5,7 +5,10 @@ import {
   sortSerialiser,
 } from './serealisers';
 import propTypes from 'prop-types';
-import { TableToolsTable } from 'bastilian-tabletools';
+import {
+  QueryProviderWithUtilities,
+  TableToolsTable,
+} from 'bastilian-tabletools';
 /**
  * This component serves as a place to either use the non-async TableTools or the AsyncTableTools
  * And allow preparing the AsyncTableToolsTable props/options common across tables in Remediations
@@ -19,17 +22,19 @@ import { TableToolsTable } from 'bastilian-tabletools';
  */
 const RemediationsTable = (props) => {
   return (
-    <TableToolsTable
-      {...props}
-      options={{
-        serialisers: {
-          filters: filtersSerialiser,
-          sort: sortSerialiser,
-          pagination: paginationSerialiser,
-        },
-        ...props.options,
-      }}
-    />
+    <QueryProviderWithUtilities>
+      <TableToolsTable
+        {...props}
+        options={{
+          serialisers: {
+            filters: filtersSerialiser,
+            sort: sortSerialiser,
+            pagination: paginationSerialiser,
+          },
+          ...props.options,
+        }}
+      />
+    </QueryProviderWithUtilities>
   );
 };
 

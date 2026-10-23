@@ -285,12 +285,7 @@ describe('useFetchTotalBatched', () => {
         // No data property
         meta: { total: 75 },
       };
-      const additionalPages = [
-        { data: [{ id: 1 }] },
-        {
-          /* no data property */
-        },
-      ];
+      const additionalPages = [{ data: [{ id: 1 }] }, {/* no data property */}];
 
       mockFetchFn.mockResolvedValue(firstPageResponse);
       pAll.mockResolvedValue(additionalPages);
