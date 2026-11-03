@@ -78,16 +78,33 @@ describe('Routes API', () => {
   describe('deleteRemediationSystemsBatched', () => {
     const remediation = { id: 'remediation-123' };
 
-    it('should delete systems in batches of 100 by default', async () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      axiosInstance.delete.mockReset();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should throttle batches of 100 with a 250 ms delay', async () => {
       const systems = Array.from({ length: 250 }, (_, i) => ({
         id: `sys-${i}`,
       }));
       axiosInstance.delete.mockResolvedValue({ success: true });
 
-      const result = await deleteRemediationSystemsBatched(
-        systems,
-        remediation,
-      );
+      const deletion = deleteRemediationSystemsBatched(systems, remediation);
+
+      expect(axiosInstance.delete).toHaveBeenCalledTimes(1);
+      await jest.advanceTimersByTimeAsync(249);
+      expect(axiosInstance.delete).toHaveBeenCalledTimes(1);
+      await jest.advanceTimersByTimeAsync(1);
+      expect(axiosInstance.delete).toHaveBeenCalledTimes(2);
+      await jest.advanceTimersByTimeAsync(249);
+      expect(axiosInstance.delete).toHaveBeenCalledTimes(2);
+      await jest.advanceTimersByTimeAsync(1);
+
+      const result = await deletion;
 
       expect(axiosInstance.delete).toHaveBeenCalledTimes(3);
       expect(
@@ -100,34 +117,34 @@ describe('Routes API', () => {
         successfulBatches: 3,
         failedBatches: 0,
       });
+      expect(jest.getTimerCount()).toBe(0);
     });
 
     it('should support custom batchSize', async () => {
       const systems = [{ id: 'sys-1' }, { id: 'sys-2' }, { id: 'sys-3' }];
       axiosInstance.delete.mockResolvedValue({ success: true });
 
-      const result = await deleteRemediationSystemsBatched(
-        systems,
-        remediation,
-        2,
-      );
+      const deletion = deleteRemediationSystemsBatched(systems, remediation, 2);
+      await jest.runAllTimersAsync();
+      const result = await deletion;
 
       expect(axiosInstance.delete).toHaveBeenCalledTimes(2);
       expect(result.status).toBe('success');
       expect(result.successfulBatches).toBe(2);
     });
 
-    it('should return partial_failure when some batches fail', async () => {
+    it('should throttle after failed batches and return partial_failure', async () => {
       const systems = [{ id: 'sys-1' }, { id: 'sys-2' }];
       axiosInstance.delete
-        .mockResolvedValueOnce({ success: true })
-        .mockRejectedValueOnce({ statusText: 'Bad Request' });
+        .mockRejectedValueOnce({ statusText: 'Bad Request' })
+        .mockResolvedValueOnce({ success: true });
 
-      const result = await deleteRemediationSystemsBatched(
-        systems,
-        remediation,
-        1,
-      );
+      const deletion = deleteRemediationSystemsBatched(systems, remediation, 1);
+
+      await jest.advanceTimersByTimeAsync(249);
+      expect(axiosInstance.delete).toHaveBeenCalledTimes(1);
+      await jest.advanceTimersByTimeAsync(1);
+      const result = await deletion;
 
       expect(axiosInstance.delete).toHaveBeenCalledTimes(2);
       expect(result).toEqual({
@@ -135,6 +152,58 @@ describe('Routes API', () => {
         successfulBatches: 1,
         failedBatches: 1,
       });
+    });
+
+    it('should wait for a batch to finish before starting the delay', async () => {
+      const systems = [{ id: 'sys-1' }, { id: 'sys-2' }];
+      let finishFirstBatch;
+      axiosInstance.delete
+        .mockImplementationOnce(
+          () =>
+            new Promise((resolve) => {
+              finishFirstBatch = resolve;
+            }),
+        )
+        .mockResolvedValueOnce({ success: true });
+
+      const deletion = deleteRemediationSystemsBatched(systems, remediation, 1);
+
+      await jest.advanceTimersByTimeAsync(1000);
+      expect(axiosInstance.delete).toHaveBeenCalledTimes(1);
+
+      finishFirstBatch({ success: true });
+      await jest.advanceTimersByTimeAsync(249);
+      expect(axiosInstance.delete).toHaveBeenCalledTimes(1);
+      await jest.advanceTimersByTimeAsync(1);
+      await deletion;
+
+      expect(axiosInstance.delete).toHaveBeenCalledTimes(2);
+      expect(jest.getTimerCount()).toBe(0);
+    });
+
+    it('should not delay removal of a single batch', async () => {
+      axiosInstance.delete.mockResolvedValue({ success: true });
+
+      const result = await deleteRemediationSystemsBatched(
+        [{ id: 'sys-1' }],
+        remediation,
+      );
+
+      expect(axiosInstance.delete).toHaveBeenCalledTimes(1);
+      expect(result.status).toBe('success');
+      expect(jest.getTimerCount()).toBe(0);
+    });
+
+    it('should not send requests or wait when no systems are selected', async () => {
+      const result = await deleteRemediationSystemsBatched([], remediation);
+
+      expect(axiosInstance.delete).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        status: 'success',
+        successfulBatches: 0,
+        failedBatches: 0,
+      });
+      expect(jest.getTimerCount()).toBe(0);
     });
 
     it('should return complete_failure when all batches fail', async () => {

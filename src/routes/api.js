@@ -3,6 +3,8 @@ import { remediationsApi } from '../api';
 import { API_BASE } from '../constants';
 import chunk from 'lodash/chunk';
 
+const SYSTEM_REMOVAL_BATCH_DELAY_MS = 250;
+
 /**
  * Delete systems from a remediation.
  * IMPORTANT: This wrapper exists to work around a bug in the API client.
@@ -27,6 +29,7 @@ export const deleteRemediationSystems = (systems, remediation) => {
 
 /**
  * Delete systems from a remediation by calling the deleteRemediationSystems with batches of system IDs.
+ * Wait 250 ms between batches to keep removal below Akamai's burst and sustained rate limits.
  *
  *  @param   {Array}                                                         systems     - Array of system objects with id property
  *  @param   {object}                                                        remediation - Remediation object with id property
@@ -48,6 +51,12 @@ export const deleteRemediationSystemsBatched = async (
   let failedBatches = 0;
 
   for (let i = 0; i < batches.length; i++) {
+    if (i > 0) {
+      await new Promise((resolve) =>
+        setTimeout(resolve, SYSTEM_REMOVAL_BATCH_DELAY_MS),
+      );
+    }
+
     const batch = batches[i];
 
     try {
