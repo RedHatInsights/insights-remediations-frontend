@@ -7,9 +7,10 @@ import {
   CardTitle,
   ProgressStep,
   ProgressStepper,
-  Spinner,
+  Skeleton,
   Title,
   Flex,
+  FlexItem,
   Content,
   Label,
 } from '@patternfly/react-core';
@@ -50,6 +51,8 @@ const ProgressCard = ({
   const [openPopover, setOpenPopover] = useState(null);
   const [isExpanded, setIsExpanded] = useState(true);
   const { quickStarts } = useChrome();
+  const isLoading =
+    permissions === undefined || remediationStatus?.areDetailsLoading;
 
   const actionPointsComputed = useMemo(() => {
     return calculateActionPointsFromSummary(details?.issue_count_details);
@@ -227,12 +230,11 @@ const ProgressCard = ({
     </Flex>
   );
 
-  return permissions === undefined || remediationStatus.areDetailsLoading ? (
-    <Spinner />
-  ) : (
+  return (
     <Card
       data-ouia-component-id={PROGRESS_CARD_OUIA_ID}
       isExpanded={isExpanded}
+      aria-busy={isLoading}
     >
       <CardHeader>
         <CardTitle id={PROGRESS_CARD_TITLE_ID} style={{ width: '100%' }}>
@@ -240,26 +242,37 @@ const ProgressCard = ({
             justifyContent={{ default: 'justifyContentSpaceBetween' }}
             alignItems={{ default: 'alignItemsCenter' }}
           >
-            <Flex
-              alignItems={{ default: 'alignItemsCenter' }}
-              spaceItems={{ default: 'spaceItemsSm' }}
-            >
-              <Button
-                variant="plain"
-                icon={isExpanded ? <AngleUpIcon /> : <AngleDownIcon />}
-                onClick={() => setIsExpanded((current) => !current)}
-                {...getExpandableCardToggleProps(
-                  PROGRESS_CARD_TOGGLE_ID,
-                  PROGRESS_CARD_CONTENT_ID,
-                  isExpanded,
-                  'Toggle execution readiness summary card',
-                )}
+            {isLoading ? (
+              <FlexItem grow={{ default: 'grow' }}>
+                <Skeleton height="var(--pf-t--global--spacer--2xl)" />
+              </FlexItem>
+            ) : (
+              <Flex
+                alignItems={{ default: 'alignItemsCenter' }}
+                spaceItems={{ default: 'spaceItemsSm' }}
+              >
+                <Button
+                  variant="plain"
+                  icon={isExpanded ? <AngleUpIcon /> : <AngleDownIcon />}
+                  onClick={() => setIsExpanded((current) => !current)}
+                  {...getExpandableCardToggleProps(
+                    PROGRESS_CARD_TOGGLE_ID,
+                    PROGRESS_CARD_CONTENT_ID,
+                    isExpanded,
+                    'Toggle execution readiness summary card',
+                  )}
+                />
+                <Title headingLevel="h4" size="xl">
+                  Execution readiness summary
+                </Title>
+              </Flex>
+            )}
+            {isLoading ? (
+              <Skeleton
+                className="pf-m-width-33"
+                height="var(--pf-t--global--spacer--2xl)"
               />
-              <Title headingLevel="h4" size="xl">
-                Execution readiness summary
-              </Title>
-            </Flex>
-            {readyOrNot ? (
+            ) : readyOrNot ? (
               <Label status="success">Ready</Label>
             ) : (
               <Label status="danger" variant="outline">
@@ -274,128 +287,139 @@ const ProgressCard = ({
         data-ouia-component-id={PROGRESS_CARD_CONTENT_ID}
       >
         <CardBody>
-          <p className="pf-v6-u-mb-md">
-            Address errors in this section to ensure that your remediation plan
-            is ready for execution.{' '}
-            <Button
-              variant="link"
-              onClick={() =>
-                quickStarts?.activateQuickstart(
-                  'insights-remediate-plan-create',
-                )
-              }
-            >
-              Learn more
-              <OpenDrawerRightIcon size="xl" className="pf-v6-u-ml-sm" />
-            </Button>
-          </p>
+          {isLoading ? (
+            <Skeleton
+              className="pf-v6-u-mb-md"
+              height="var(--pf-t--global--spacer--2xl)"
+            />
+          ) : (
+            <p className="pf-v6-u-mb-md">
+              Address errors in this section to ensure that your remediation
+              plan is ready for execution.{' '}
+              <Button
+                variant="link"
+                onClick={() =>
+                  quickStarts?.activateQuickstart(
+                    'insights-remediate-plan-create',
+                  )
+                }
+              >
+                Learn more
+                <OpenDrawerRightIcon size="xl" className="pf-v6-u-ml-sm" />
+              </Button>
+            </p>
+          )}
 
-          <ProgressStepper
-            isVertical={true}
-            aria-label="Remediation Readiness card"
-          >
-            <ProgressStep
-              variant={exceedsExecutionLimits ? 'danger' : 'success'}
-              description={executionLimitsDescription}
-              id="executionLimitsStep"
-              titleId="ExecutionLimitsStep"
-              aria-label="ExecutionLimitsStep"
+          {isLoading ? (
+            <Skeleton className="pf-m-height-lg" />
+          ) : (
+            <ProgressStepper
+              isVertical={true}
+              aria-label="Remediation Readiness card"
             >
-              <span className="pf-v6-u-color-100">
-                {renderStepTitleWithPopover(
-                  'executionLimitsStep',
-                  'Planned remediations',
-                  executionLimitsPopoverContent,
-                  popoverState,
-                  exceedsLimits,
-                )}
-              </span>
-            </ProgressStep>
-            <ProgressStep
-              variant={permissions?.execute ? 'success' : 'danger'}
-              description={
+              <ProgressStep
+                variant={exceedsExecutionLimits ? 'danger' : 'success'}
+                description={executionLimitsDescription}
+                id="executionLimitsStep"
+                titleId="ExecutionLimitsStep"
+                aria-label="ExecutionLimitsStep"
+              >
                 <span className="pf-v6-u-color-100">
-                  {permissions?.execute ? (
-                    'Authorized'
-                  ) : (
-                    <>
-                      Not authorized. Check your user access permissions to
-                      ensure that you have the Remediations administrator RBAC
-                      role.
-                    </>
+                  {renderStepTitleWithPopover(
+                    'executionLimitsStep',
+                    'Planned remediations',
+                    executionLimitsPopoverContent,
+                    popoverState,
+                    exceedsLimits,
                   )}
                 </span>
-              }
-              id="permissionsStep"
-              titleId="PermissionsStep"
-              aria-label="PermissionsStep1"
-            >
-              <span className="pf-v6-u-color-100">
-                {renderStepTitleWithPopover(
-                  'permissionsStep',
-                  'User access permissions',
-                  permissionsPopoverContent,
-                  popoverState,
-                )}
-              </span>
-            </ProgressStep>
-            <ProgressStep
-              variant={
-                !remediationStatus?.connectionError &&
-                remediationStatus?.connectedSystems !== 0
-                  ? 'success'
-                  : 'danger'
-              }
-              description={
-                <div className="pf-v6-u-color-100">
-                  {remediationStatus?.connectionError ? (
-                    <>Couldn&apos;t verify connection status.</>
-                  ) : remediationStatus?.connectedSystems === 0 ? (
-                    <>
-                      No connected systems. You must connect one or more systems
-                      to execute this plan. Review the{' '}
-                      <strong>Connection status</strong> details for each
-                      disconnected system{' '}
-                      <Button
-                        variant="link"
-                        onClick={() =>
-                          onNavigateToTab(null, 'plannedRemediations:systems')
-                        }
-                      >
-                        View systems
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      {`${remediationStatus?.connectedSystems} (of ${remediationStatus?.totalSystems}) connected systems`}{' '}
-                      <Button
-                        variant="link"
-                        onClick={() =>
-                          onNavigateToTab(null, 'plannedRemediations:systems')
-                        }
-                      >
-                        View systems
-                      </Button>
-                    </>
+              </ProgressStep>
+              <ProgressStep
+                variant={permissions?.execute ? 'success' : 'danger'}
+                description={
+                  <span className="pf-v6-u-color-100">
+                    {permissions?.execute ? (
+                      'Authorized'
+                    ) : (
+                      <>
+                        Not authorized. Check your user access permissions to
+                        ensure that you have the Remediations administrator RBAC
+                        role.
+                      </>
+                    )}
+                  </span>
+                }
+                id="permissionsStep"
+                titleId="PermissionsStep"
+                aria-label="PermissionsStep1"
+              >
+                <span className="pf-v6-u-color-100">
+                  {renderStepTitleWithPopover(
+                    'permissionsStep',
+                    'User access permissions',
+                    permissionsPopoverContent,
+                    popoverState,
                   )}
-                </div>
-              }
-              id="connectedSystemsStep"
-              titleId="connectedSystemsStep-title"
-              aria-label="connectedSystemsStep"
-            >
-              <span className="pf-v6-u-color-100">
-                {renderStepTitleWithPopover(
-                  'connectedSystemsStep',
-                  'Systems connected to Red Hat Lightspeed',
-                  connectedSystemsPopoverContent,
-                  popoverState,
-                  remediationStatus?.connectedSystems === 0 ||
-                    remediationStatus?.connectionError,
-                )}
-              </span>
-            </ProgressStep>
-          </ProgressStepper>
+                </span>
+              </ProgressStep>
+              <ProgressStep
+                variant={
+                  !remediationStatus?.connectionError &&
+                  remediationStatus?.connectedSystems !== 0
+                    ? 'success'
+                    : 'danger'
+                }
+                description={
+                  <div className="pf-v6-u-color-100">
+                    {remediationStatus?.connectionError ? (
+                      <>Couldn&apos;t verify connection status.</>
+                    ) : remediationStatus?.connectedSystems === 0 ? (
+                      <>
+                        No connected systems. You must connect one or more
+                        systems to execute this plan. Review the{' '}
+                        <strong>Connection status</strong> details for each
+                        disconnected system{' '}
+                        <Button
+                          variant="link"
+                          onClick={() =>
+                            onNavigateToTab(null, 'plannedRemediations:systems')
+                          }
+                        >
+                          View systems
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        {`${remediationStatus?.connectedSystems} (of ${remediationStatus?.totalSystems}) connected systems`}{' '}
+                        <Button
+                          variant="link"
+                          onClick={() =>
+                            onNavigateToTab(null, 'plannedRemediations:systems')
+                          }
+                        >
+                          View systems
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                }
+                id="connectedSystemsStep"
+                titleId="connectedSystemsStep-title"
+                aria-label="connectedSystemsStep"
+              >
+                <span className="pf-v6-u-color-100">
+                  {renderStepTitleWithPopover(
+                    'connectedSystemsStep',
+                    'Systems connected to Red Hat Lightspeed',
+                    connectedSystemsPopoverContent,
+                    popoverState,
+                    remediationStatus?.connectedSystems === 0 ||
+                      remediationStatus?.connectionError,
+                  )}
+                </span>
+              </ProgressStep>
+            </ProgressStepper>
+          )}
         </CardBody>
       </CardExpandableContent>
     </Card>
