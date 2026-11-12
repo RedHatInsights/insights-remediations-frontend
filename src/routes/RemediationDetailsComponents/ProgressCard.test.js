@@ -135,8 +135,8 @@ jest.mock('@patternfly/react-core', () => ({
       </div>
     );
   },
-  Spinner: function MockSpinner({ ...props }) {
-    return <div data-testid="spinner" {...props} />;
+  Skeleton: function MockSkeleton(props) {
+    return <div data-testid="skeleton" {...props} />;
   },
   Title: function MockTitle({ children, headingLevel, size, ...props }) {
     return (
@@ -156,6 +156,9 @@ jest.mock('@patternfly/react-core', () => ({
         {children}
       </div>
     );
+  },
+  FlexItem: function MockFlexItem({ children, grow, ...props }) {
+    return <div {...props}>{children}</div>;
   },
   Content: function MockContent({ children, component, className, ...props }) {
     const Tag = component || 'div';
@@ -291,42 +294,51 @@ describe('ProgressCard', () => {
   });
 
   describe('Loading state', () => {
-    it('should render spinner when permissions are undefined', () => {
-      render(<ProgressCard {...defaultProps} permissions={undefined} />);
+    it.each([
+      ['permissions are undefined', true, false],
+      ['areDetailsLoading is true', false, true],
+      ['both conditions are true', true, true],
+    ])(
+      'should render card skeletons when %s',
+      (_, permissionsLoading, areDetailsLoading) => {
+        render(
+          <ProgressCard
+            {...defaultProps}
+            permissions={
+              permissionsLoading ? undefined : defaultProps.permissions
+            }
+            remediationStatus={{
+              ...defaultProps.remediationStatus,
+              areDetailsLoading,
+            }}
+          />,
+        );
 
-      expect(screen.getByTestId('spinner')).toBeInTheDocument();
-      expect(screen.queryByTestId('card')).not.toBeInTheDocument();
-    });
+        expect(screen.getByTestId('card')).toHaveAttribute('aria-busy', 'true');
+        expect(screen.getAllByTestId('skeleton')).toHaveLength(4);
+        expect(screen.queryByTestId('label')).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId('progress-stepper'),
+        ).not.toBeInTheDocument();
+      },
+    );
 
-    it('should render spinner when areDetailsLoading is true', () => {
-      render(
-        <ProgressCard
-          {...defaultProps}
-          remediationStatus={{
-            ...defaultProps.remediationStatus,
-            areDetailsLoading: true,
-          }}
-        />,
+    it('should replace skeletons with readiness content once loading finishes', () => {
+      const { rerender } = render(
+        <ProgressCard {...defaultProps} permissions={undefined} />,
       );
 
-      expect(screen.getByTestId('spinner')).toBeInTheDocument();
-      expect(screen.queryByTestId('card')).not.toBeInTheDocument();
-    });
+      expect(screen.getAllByTestId('skeleton')).toHaveLength(4);
 
-    it('should render spinner when both conditions are true', () => {
-      render(
-        <ProgressCard
-          {...defaultProps}
-          permissions={undefined}
-          remediationStatus={{
-            ...defaultProps.remediationStatus,
-            areDetailsLoading: true,
-          }}
-        />,
-      );
+      rerender(<ProgressCard {...defaultProps} />);
 
-      expect(screen.getByTestId('spinner')).toBeInTheDocument();
-      expect(screen.queryByTestId('card')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('skeleton')).not.toBeInTheDocument();
+      expect(screen.getByTestId('card')).toHaveAttribute('aria-busy', 'false');
+      expect(
+        screen.getByText('Execution readiness summary'),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Ready')).toBeInTheDocument();
+      expect(screen.getAllByTestId('progress-step')).toHaveLength(3);
     });
   });
 
@@ -338,7 +350,7 @@ describe('ProgressCard', () => {
       expect(screen.getByTestId('card')).not.toHaveAttribute(
         'data-full-height',
       );
-      expect(screen.queryByTestId('spinner')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('skeleton')).not.toBeInTheDocument();
     });
 
     it('should render card title correctly', () => {

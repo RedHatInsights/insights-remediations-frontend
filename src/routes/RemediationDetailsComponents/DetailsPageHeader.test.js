@@ -5,6 +5,13 @@ import RemediationDetailsPageHeader from './DetailsPageHeader';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 
+jest.mock('@patternfly/react-core', () => ({
+  ...jest.requireActual('@patternfly/react-core'),
+  Skeleton: function MockSkeleton(props) {
+    return <div data-testid="skeleton" {...props} />;
+  },
+}));
+
 jest.mock('../../components/RemediationDetailsDropdown', () => {
   const Dropdown = () => <div>Dropdown</div>;
   Dropdown.displayName = 'RemediationDetailsDropdown';
@@ -144,7 +151,7 @@ describe('RemediationDetailsPageHeader', () => {
     expect(screen.getByText('Execute')).toBeDisabled();
   });
 
-  it('shows spinner when loading', () => {
+  it('shows an actions skeleton when loading', () => {
     render(
       <Provider store={store}>
         <RemediationDetailsPageHeader
@@ -161,6 +168,10 @@ describe('RemediationDetailsPageHeader', () => {
         />
       </Provider>,
     );
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(screen.getByTestId('skeleton')).toBeInTheDocument();
+    expect(screen.getByText('Test Remediation')).toBeInTheDocument();
+    expect(screen.queryByText('Execute')).not.toBeInTheDocument();
+    expect(screen.queryByText('Download')).not.toBeInTheDocument();
+    expect(screen.queryByText('Dropdown')).not.toBeInTheDocument();
   });
 });
