@@ -66,6 +66,30 @@ describe('validator', () => {
     expect(() => validate(data)).toThrow(TypeError);
   });
 
+  it.each([{}, { var_accounts_maximum_age_login_defs: '180' }])(
+    'accepts per-issue value overrides %j',
+    (valueOverrides) => {
+      const data = validData();
+      data.issues[0].value_overrides = valueOverrides;
+
+      expect(() => validate(data)).not.toThrow();
+    },
+  );
+
+  it.each([
+    ['null', null],
+    ['a string', '180'],
+    ['an array', ['180']],
+    ['non-string entries', { var_accounts_maximum_age_login_defs: 180 }],
+  ])('rejects %s as value overrides', (_label, valueOverrides) => {
+    const data = validData();
+    data.issues[0].value_overrides = valueOverrides;
+
+    expect(() => validate(data)).toThrow(
+      'Value overrides must be an object with string values',
+    );
+  });
+
   it('fails when issue missing id', () => {
     const data = validData();
     delete data.issues[2].id;
