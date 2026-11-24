@@ -1,4 +1,4 @@
-import { Flex, FlexItem, Spinner } from '@patternfly/react-core';
+import { Flex, FlexItem, Skeleton } from '@patternfly/react-core';
 import {
   PageHeader,
   PageHeaderTitle,
@@ -100,7 +100,10 @@ const RemediationDetailsPageHeader = ({
         </FlexItem>
         <FlexItem style={{ marginTop: 'var(--pf-t--global--spacer--sm)' }}>
           {remediationStatus.areDetailsLoading ? (
-            <Spinner />
+            <Skeleton
+              className="pf-m-width-md"
+              height="var(--pf-t--global--spacer--xl)"
+            />
           ) : (
             <Flex
               spaceItems={{ default: 'spaceItemsSm' }}
