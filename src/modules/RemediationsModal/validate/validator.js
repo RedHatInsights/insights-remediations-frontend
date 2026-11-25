@@ -42,7 +42,14 @@ export default function validate(data) {
       typeof issue === 'object' && issue !== null,
       'Issue must be an object',
     );
-    checkAllowedKeys(issue, 'id', 'description', 'precedence', 'systems');
+    checkAllowedKeys(
+      issue,
+      'id',
+      'description',
+      'precedence',
+      'systems',
+      'value_overrides',
+    );
     checkRequiredKeys(issue, 'id', 'description');
     Object.prototype.hasOwnProperty.call(issue, 'systems') &&
       checkSystems(issue.systems);
@@ -51,6 +58,19 @@ export default function validate(data) {
         Object.prototype.hasOwnProperty.call(data, 'systems'),
       `No systems defined for ${issue.id}`,
     );
+
+    const { value_overrides: valueOverrides } = issue;
+    if (valueOverrides !== undefined) {
+      assert(
+        valueOverrides !== null &&
+          typeof valueOverrides === 'object' &&
+          !Array.isArray(valueOverrides) &&
+          Object.values(valueOverrides).every(
+            (value) => typeof value === 'string',
+          ),
+        'Value overrides must be an object with string values',
+      );
+    }
   });
 
   Object.prototype.hasOwnProperty.call(data, 'systems') &&

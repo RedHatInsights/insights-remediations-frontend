@@ -382,6 +382,10 @@ export const prepareRemediationPayload = (
       issuePayload.precedence = issue.precedence;
     }
 
+    if (issue.value_overrides !== undefined) {
+      issuePayload.value_overrides = issue.value_overrides;
+    }
+
     return issuePayload;
   });
 
