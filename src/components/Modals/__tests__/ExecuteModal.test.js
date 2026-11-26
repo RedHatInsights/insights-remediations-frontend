@@ -223,6 +223,85 @@ describe('ExecuteModal', () => {
     });
   });
 
+  describe('Execution status', () => {
+    afterEach(() => jest.useRealTimers());
+
+    it('shows when the execution finishes and stops refreshing its status', () => {
+      jest.useFakeTimers();
+      const run = {
+        id: 'run-1',
+        status: 'running',
+        created_by: { username: 'run-owner' },
+      };
+      const onNavigateToExecutionHistory = jest.fn();
+      const props = { ...defaultProps, onNavigateToExecutionHistory };
+      const { rerender } = render(
+        <ExecuteModal {...props} remediationPlaybookRuns={{ data: [run] }} />,
+      );
+
+      expect(screen.getByText(/Execution is in progress/)).toBeInTheDocument();
+      jest.advanceTimersByTime(5_000);
+      expect(props.refetchRemediationPlaybookRuns).toHaveBeenCalledTimes(1);
+
+      rerender(
+        <ExecuteModal
+          {...props}
+          remediationPlaybookRuns={{
+            data: [
+              { id: 'run-2', status: 'running' },
+              { ...run, status: 'failure' },
+            ],
+          }}
+        />,
+      );
+
+      expect(screen.getByText(/Execution has finished/)).toBeInTheDocument();
+      expect(
+        screen.queryByText(/Changes are in progress/),
+      ).not.toBeInTheDocument();
+      expect(props.onClose).not.toHaveBeenCalled();
+      jest.advanceTimersByTime(5_000);
+      expect(props.refetchRemediationPlaybookRuns).toHaveBeenCalledTimes(1);
+
+      fireEvent.click(screen.getByText('Close'));
+      expect(props.onClose).toHaveBeenCalledTimes(1);
+      fireEvent.click(screen.getByRole('button', { name: 'View details' }));
+      expect(props.onClose).toHaveBeenCalledTimes(2);
+      expect(onNavigateToExecutionHistory).toHaveBeenCalledWith(
+        null,
+        'executionHistory',
+      );
+    });
+
+    it('shows completion when a new execution finishes before the first refresh', async () => {
+      mockExecuteRun.mockResolvedValueOnce({ id: 'run-2' });
+      const previousRun = { id: 'run-1', status: 'success' };
+      const { rerender } = render(
+        <ExecuteModal
+          {...defaultProps}
+          remediationPlaybookRuns={{ data: [previousRun] }}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'Execute' }));
+      await waitFor(() => {
+        expect(defaultProps.refetchRemediationPlaybookRuns).toHaveBeenCalled();
+      });
+      expect(screen.getByText(/Execution is in progress/)).toBeInTheDocument();
+
+      rerender(
+        <ExecuteModal
+          {...defaultProps}
+          remediationPlaybookRuns={{
+            data: [{ id: 'run-2', status: 'success' }, previousRun],
+          }}
+        />,
+      );
+
+      expect(screen.getByText(/Execution has finished/)).toBeInTheDocument();
+    });
+  });
+
   describe('User interactions', () => {
     it('should execute remediation when Execute button is clicked', async () => {
       const mockOnClose = jest.fn();

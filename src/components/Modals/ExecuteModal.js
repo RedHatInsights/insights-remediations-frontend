@@ -14,6 +14,8 @@ import useRemediations from '../../Utilities/Hooks/api/useRemediations';
 import { pluralize } from '../../Utilities/utils';
 import { formatUtc } from '../../routes/RemediationDetailsComponents/ExecutionHistoryContent/helpers';
 
+const ACTIVE_RUN_STATUSES = ['pending', 'running'];
+
 export const ExecuteModal = ({
   isOpen,
   onClose,
@@ -27,9 +29,21 @@ export const ExecuteModal = ({
 }) => {
   const addNotification = useAddNotification();
   const chrome = useChrome();
-  const [isExecuting, setIsExecuting] = useState(false);
-  const [executionTimestamp, setExecutionTimestamp] = useState(null);
-  const [executionUsername, setExecutionUsername] = useState(null);
+  const [trackedRun, setTrackedRun] = useState(null);
+  const [currentUsername, setCurrentUsername] = useState(null);
+
+  const runFromHistory = remediationPlaybookRuns?.data?.find((run) =>
+    trackedRun
+      ? run.id === trackedRun.id
+      : ACTIVE_RUN_STATUSES.includes(run.status),
+  );
+  const execution = runFromHistory ?? trackedRun;
+  const isExecutionFinished =
+    !!execution && !ACTIVE_RUN_STATUSES.includes(execution.status);
+  const shouldRefreshExecution =
+    isOpen && !!execution?.id && !isExecutionFinished;
+  const executionTimestamp = execution?.created_at || execution?.updated_at;
+  const runUsername = execution?.created_by?.username;
 
   const { connected, disconnected } = useMemo(() => {
     const connectedData = remediationStatus?.connectedData;
@@ -58,87 +72,41 @@ export const ExecuteModal = ({
     skip: true,
   });
 
-  // Get username from chrome when component mounts or chrome becomes available
   useEffect(() => {
-    // Check if there's a running execution with a username first
-    const hasRunningExecutionWithUsername = () => {
-      if (isOpen && remediationPlaybookRuns?.data) {
-        const runs = remediationPlaybookRuns.data;
-        const runningRun = runs.find((run) => run.status === 'running');
-        return !!runningRun?.created_by?.username;
-      }
-      return false;
-    };
+    const auth = chrome?.auth;
+    if (!isOpen || runUsername || typeof auth?.getUser !== 'function') return;
 
-    // Don't fetch chrome username if there's already a running execution with username
-    if (hasRunningExecutionWithUsername()) {
-      return;
-    }
+    auth
+      .getUser()
+      .then((user) => setCurrentUsername(user?.identity?.user?.username))
+      .catch(() => setCurrentUsername(null));
+  }, [chrome, isOpen, runUsername]);
 
-    if (chrome && chrome.auth && typeof chrome.auth.getUser === 'function') {
-      chrome.auth
-        .getUser()
-        .then((user) => {
-          // Double-check there's still no running execution before setting
-          if (hasRunningExecutionWithUsername()) {
-            return;
-          }
-
-          if (user) {
-            const username = user.identity?.user?.username || 'Unknown user';
-            setExecutionUsername(username);
-          } else {
-            setExecutionUsername('Unknown user');
-          }
-        })
-        .catch(() => {
-          // Only set fallback if no running execution with username
-          if (!hasRunningExecutionWithUsername()) {
-            setExecutionUsername('Unknown user');
-          }
-        });
-    } else {
-      // Only set fallback if no running execution with username
-      if (!hasRunningExecutionWithUsername()) {
-        setExecutionUsername('Unknown user');
-      }
-    }
-  }, [chrome, isOpen, remediationPlaybookRuns]);
-
-  // Check for running execution when modal opens
   useEffect(() => {
-    if (isOpen && remediationPlaybookRuns?.data) {
-      const runs = remediationPlaybookRuns.data;
-      const runningRun = runs.find((run) => run.status === 'running');
-      if (runningRun) {
-        setIsExecuting(true);
-        setExecutionTimestamp(runningRun.created_at || runningRun.updated_at);
-        // Get username from the run if available
-        if (runningRun.created_by?.username) {
-          setExecutionUsername(runningRun.created_by.username);
-        }
-      } else {
-        // Only reset if there's no running execution
-        setIsExecuting(false);
-        setExecutionTimestamp(null);
-      }
-    } else if (!isOpen) {
-      setIsExecuting(false);
-      setExecutionTimestamp(null);
+    if (!isOpen) {
+      setTrackedRun(null);
+    } else if (runFromHistory) {
+      setTrackedRun(runFromHistory);
     }
-  }, [isOpen, remediationPlaybookRuns]);
+  }, [isOpen, runFromHistory]);
+
+  useEffect(() => {
+    if (!shouldRefreshExecution || !refetchRemediationPlaybookRuns) return;
+    const interval = setInterval(refetchRemediationPlaybookRuns, 5_000);
+    return () => clearInterval(interval);
+  }, [shouldRefreshExecution, refetchRemediationPlaybookRuns]);
 
   const handleExecute = () => {
     const exclude = disconnected.map((e) => e.executor_id).filter(Boolean);
-    const timestamp = new Date().toISOString();
-    setExecutionTimestamp(timestamp);
-    setIsExecuting(true);
+    const newRun = { status: 'running', created_at: new Date().toISOString() };
+    setTrackedRun(newRun);
 
     executeRun({
       id: remediation.id,
       playbookRunsInput: { exclude },
     })
-      .then(() => {
+      .then(({ id }) => {
+        setTrackedRun({ ...newRun, id });
         chrome.analytics?.track('remediations - Plan Executed', {
           module: 'remediations',
           remediation_id: remediation.id,
@@ -160,8 +128,7 @@ export const ExecuteModal = ({
         });
       })
       .catch((err) => {
-        setIsExecuting(false);
-        setExecutionTimestamp(null);
+        setTrackedRun(null);
         addNotification({
           title: 'Failed to execute playbook',
           description: err.message || 'Unknown error',
@@ -180,8 +147,11 @@ export const ExecuteModal = ({
   };
 
   const autoRebootEnabled = remediation?.auto_reboot ?? false;
+  const executionStatusText = isExecutionFinished
+    ? 'has finished'
+    : 'is in progress';
 
-  const renderExecutionInProgress = () => (
+  const renderExecutionStatus = () => (
     <>
       <Content>
         <Content
@@ -190,14 +160,17 @@ export const ExecuteModal = ({
         >
           {executionTimestamp && (
             <>
-              {formatUtc(executionTimestamp)}, initiated by {executionUsername}
+              {formatUtc(executionTimestamp)}, initiated by{' '}
+              {runUsername || currentUsername || 'Unknown user'}
             </>
           )}
         </Content>
         <Content component="p" className="pf-v6-u-mb-md">
-          Changes are in progress and cannot be rolled back. Go to the Execution
-          History tab of this plan to view more information about the execution,
-          or review the execution log file for each system in the plan.
+          {!isExecutionFinished &&
+            'Changes are in progress and cannot be rolled back. '}
+          Go to the Execution History tab of this plan to view more information
+          about the execution, or review the execution log file for each system
+          in the plan.
         </Content>
       </Content>
     </>
@@ -250,16 +223,16 @@ export const ExecuteModal = ({
       data-testid="execute-modal"
       variant={ModalVariant.medium}
       title={
-        isExecuting
-          ? `Execution is in progress for plan ${remediation?.name || ''}`
+        execution
+          ? `Execution ${executionStatusText} for plan ${remediation?.name || ''}`
           : 'Plan execution cannot be stopped or rolled back'
       }
-      titleIconVariant={isExecuting ? 'info' : 'warning'}
+      titleIconVariant={execution ? 'info' : 'warning'}
       isOpen={isOpen}
       onClose={onClose}
       isFooterLeftAligned
       actions={
-        isExecuting
+        execution
           ? [
               <Button
                 key="view-details"
@@ -304,7 +277,7 @@ export const ExecuteModal = ({
             ]
       }
     >
-      {isExecuting ? renderExecutionInProgress() : renderMainContent()}
+      {execution ? renderExecutionStatus() : renderMainContent()}
     </Modal>
   );
 };
